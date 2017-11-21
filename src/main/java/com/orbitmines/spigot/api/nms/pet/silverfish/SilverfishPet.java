@@ -1,0 +1,13 @@
+package com.orbitmines.spigot.api.nms.pet.silverfish;
+
+import org.bukkit.Location;
+import org.bukkit.entity.Entity;
+
+/**
+ * Created by Fadi on 30-4-2016.
+ */
+public interface SilverfishPet {
+
+    public Entity spawn(Location location, String displayName);
+
+}

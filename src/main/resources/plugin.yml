@@ -1,0 +1,5 @@
+name: OrbitMines
+main: com.orbitmines.spigot.OrbitMines
+authors: Fadi Shawki
+version: 1.0.0
+commands:

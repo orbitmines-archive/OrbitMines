@@ -1,0 +1,4 @@
+name: OrbitMines
+main: com.orbitmines.bungeecord.OrbitMinesBungee
+version: 1.0.0
+author: Fadi Shawki
