@@ -8,6 +8,6 @@ import org.bukkit.entity.Player;
  */
 public interface TitleNms {
 
-    public void send(Player player, Title title);
+    void send(Player player, Title title);
 
 }

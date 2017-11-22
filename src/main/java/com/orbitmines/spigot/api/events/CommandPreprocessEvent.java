@@ -1,8 +1,8 @@
 package com.orbitmines.spigot.api.events;
 
-import com.madblock.api.utils.Message;
-import com.madblock.spigot.api.handlers.OMPlayer;
-import com.madblock.spigot.api.handlers.cmd.Command;
+import com.orbitmines.api.Message;
+import com.orbitmines.spigot.api.handlers.OMPlayer;
+import com.orbitmines.spigot.api.handlers.cmd.Command;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -24,10 +24,10 @@ public class CommandPreprocessEvent implements Listener {
         event.setCancelled(true);
 
         if (command == null) {
-            mbp.sendMessage(Message.UNKNOWN_COMMAND);
+            omp.sendMessage(Message.UNKNOWN_COMMAND);
             return;
         }
 
-        command.dispatch(mbp, a);
+        command.dispatch(omp, a);
     }
 }

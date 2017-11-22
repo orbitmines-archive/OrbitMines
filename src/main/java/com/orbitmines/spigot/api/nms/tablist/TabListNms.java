@@ -7,6 +7,6 @@ import org.bukkit.entity.Player;
  */
 public interface TabListNms {
 
-    public void send(Player player, String header, String footer);
+    void send(Player player, String header, String footer);
 
 }

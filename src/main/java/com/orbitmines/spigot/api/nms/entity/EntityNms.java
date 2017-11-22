@@ -13,7 +13,7 @@ import java.util.Collection;
  */
 public interface EntityNms {
 
-    void setInvisible(Player player, boolean bl);
+    void setInvisible(Entity entity, boolean bl);
 
     void destroyEntity(Player player, Entity entity);
 
@@ -30,6 +30,8 @@ public interface EntityNms {
     void mountUpdate(Entity vehicle);
 
     void navigate(LivingEntity le, Location location, double v);
+
+    int nextEntityId();
 
     enum Attribute {
 

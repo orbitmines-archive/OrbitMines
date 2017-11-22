@@ -10,6 +10,6 @@ import java.util.Collection;
  */
 public interface ParticleNms {
 
-    public void send(Collection<? extends Player> players, Particle particle, float x, float y, float z, float xSize, float ySize, float zSize, float special, int amount);
+    void send(Collection<? extends Player> players, Particle particle, boolean longDistance, float x, float y, float z, float xOff, float yOff, float zOff, float speed, int amount, int... args);
 
 }

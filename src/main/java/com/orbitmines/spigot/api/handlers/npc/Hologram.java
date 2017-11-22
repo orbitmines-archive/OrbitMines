@@ -1,26 +1,25 @@
 package com.orbitmines.spigot.api.handlers.npc;
 
 /*
-* MadBlock, LLC CONFIDENTIAL - @author Fadi Shawki - 2017
+* OrbitMines, LLC CONFIDENTIAL - @author Fadi Shawki - 2017
 * __________________
 *
-*  2017 MadBlock, LLC
+*  2017 OrbitMines, LLC
 *  All Rights Reserved.
 *
 * NOTICE:  All information contained herein is, and remains
-* the property of MadBlock, LLC and its suppliers,
+* the property of OrbitMines, LLC and its suppliers,
 * if any.  The intellectual and technical concepts contained
-* herein are proprietary to MadBlock, LLC
+* herein are proprietary to OrbitMines, LLC
 * and its suppliers and may be covered by U.S. and Foreign Patents,
 * patents in process, and are protected by trade secret or copyright law.
 * Dissemination of this information or reproduction of this material
 * is strictly forbidden unless prior written permission is obtained
-* from MadBlock, LLC.
+* from OrbitMines, LLC.
 */
 
-import com.madblock.spigot.MadBlock;
-import com.madblock.spigot.api.nms.entity.EntityNms;
-import com.madblock.spigot.api.utils.LocationUtils;
+import com.orbitmines.spigot.OrbitMines;
+import com.orbitmines.spigot.api.nms.entity.EntityNms;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
@@ -35,7 +34,7 @@ public class Hologram {
 
     private static List<Hologram> holograms = new ArrayList<>();
 
-    private MadBlock madBlock;
+    private OrbitMines orbitMines;
     private EntityNms nms;
 
     private Location location;
@@ -53,10 +52,10 @@ public class Hologram {
     public Hologram(Location location, boolean hideOnJoin) {
         holograms.add(this);
 
-        madBlock = MadBlock.getInstance();
-        nms = madBlock.getNms().entity();
+        orbitMines = OrbitMines.getInstance();
+        nms = orbitMines.getNms().entity();
 
-        this.location = LocationUtils.copy(location).add(0, 1.75, 0);
+        this.location = location.clone().add(0, 1.75, 0);
         this.hideOnJoin = hideOnJoin;
         this.armorStands = new ArrayList<>();
         this.lines = new ArrayList<>();
@@ -69,7 +68,7 @@ public class Hologram {
     }
 
     public void setLocation(Location location) {
-        this.location = LocationUtils.copy(location).add(0, 1.75, 0);
+        this.location = location.clone().add(0, 1.75, 0);
     }
 
     public boolean hideOnJoin() {
@@ -174,7 +173,7 @@ public class Hologram {
 
         int index = 0;
         for (String displayName : lines) {
-            ArmorStand armorStand = madBlock.getNms().armorStand().spawn(new Location(location.getWorld(), location.getX(), location.getY() - (index * 0.25), location.getZ()), false);
+            ArmorStand armorStand = orbitMines.getNms().armorStand().spawn(new Location(location.getWorld(), location.getX(), location.getY() - (index * 0.25), location.getZ()), false);
             armorStand.setMarker(true);
             armorStand.setCustomName(displayName);
             armorStand.setCustomNameVisible(true);

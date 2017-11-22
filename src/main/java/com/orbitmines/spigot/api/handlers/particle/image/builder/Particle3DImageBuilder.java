@@ -1,6 +1,6 @@
 package com.orbitmines.spigot.api.handlers.particle.image.builder;
 
-import com.madblock.spigot.api.handlers.particle.ParticleImage;
+import com.orbitmines.spigot.api.handlers.particle.ParticleImage;
 
 /*
 * OrbitMines - @author Fadi Shawki - 29-7-2017

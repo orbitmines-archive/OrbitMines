@@ -1,6 +1,6 @@
 package com.orbitmines.spigot.api.handlers.chat;
 
-import com.madblock.spigot.api.handlers.OMPlayer;
+import com.orbitmines.spigot.api.handlers.OMPlayer;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;

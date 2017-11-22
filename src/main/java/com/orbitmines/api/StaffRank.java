@@ -7,7 +7,8 @@ public enum StaffRank {
 
     NONE("None", Color.GRAY, Color.SILVER),
     BUILDER("Builder", Color.FUCHSIA, Color.SILVER),
-    MOD("Moderator", Color.AQUA, Color.SILVER),
+    MODERATOR("Moderator", Color.AQUA, Color.SILVER),
+    DEVELOPER("Developer", Color.RED, Color.SILVER),
     OWNER("Owner", Color.MAROON, Color.SILVER);
 
     private final String name;

@@ -7,6 +7,6 @@ import org.bukkit.entity.Firework;
  */
 public interface FireworkNms {
 
-    public void explode(Firework firework);
+    void explode(Firework firework);
 
 }

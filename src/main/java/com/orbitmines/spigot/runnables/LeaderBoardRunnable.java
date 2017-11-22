@@ -1,7 +1,7 @@
 package com.orbitmines.spigot.runnables;
 
-import com.madblock.spigot.api.handlers.leaderboards.LeaderBoard;
-import com.madblock.spigot.api.runnables.SpigotRunnable;
+import com.orbitmines.spigot.api.handlers.leaderboard.LeaderBoard;
+import com.orbitmines.spigot.api.runnables.SpigotRunnable;
 
 /*
 * OrbitMines - @author Fadi Shawki - 2017

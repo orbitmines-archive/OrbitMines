@@ -1,7 +1,7 @@
 package com.orbitmines.spigot.api.handlers.npc;
 
-import com.madblock.spigot.MadBlock;
-import com.madblock.spigot.api.handlers.OMPlayer;
+import com.orbitmines.spigot.OrbitMines;
+import com.orbitmines.spigot.api.handlers.OMPlayer;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
@@ -19,7 +19,7 @@ public class NpcArmorStand {
 
     private static ArrayList<NpcArmorStand> npcArmorStands = new ArrayList<>();
 
-    private MadBlock madBlock;
+    private OrbitMines orbitMines;
 
     private Location location;
     private ArmorStand armorStand;
@@ -56,7 +56,7 @@ public class NpcArmorStand {
     public NpcArmorStand(Location location, boolean hideOnJoin, ClickAction clickAction) {
         npcArmorStands.add(this);
 
-        madBlock = MadBlock.getInstance();
+        orbitMines = OrbitMines.getInstance();
 
         this.location = location;
         this.hideOnJoin = hideOnJoin;
@@ -313,7 +313,7 @@ public class NpcArmorStand {
     }
 
     public void hideFor(Collection<? extends Player> players) {
-        madBlock.getNms().entity().destroyEntityFor(players, armorStand);
+        orbitMines.getNms().entity().destroyEntityFor(players, armorStand);
     }
 
     public void update() {

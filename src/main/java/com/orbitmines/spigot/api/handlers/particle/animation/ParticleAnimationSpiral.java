@@ -1,7 +1,6 @@
 package com.orbitmines.spigot.api.handlers.particle.animation;
 
-import com.madblock.spigot.api.handlers.particle.ParticleAnimation;
-import net.minecraft.server.v1_8_R3.EnumParticle;
+import com.orbitmines.spigot.api.handlers.particle.ParticleAnimation;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
@@ -29,7 +28,7 @@ public abstract class ParticleAnimationSpiral extends ParticleAnimation {
 
     protected int currentStep;
 
-    public ParticleAnimationSpiral(EnumParticle particle, Location from, Location to) {
+    public ParticleAnimationSpiral(org.bukkit.Particle particle, Location from, Location to) {
         super(particle, from);
 
         this.from = from;

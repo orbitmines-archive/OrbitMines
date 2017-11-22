@@ -13,6 +13,10 @@ public enum PluginMessage {
 
     LOGIN_2FA(Server.BUNGEECORD),
 
+    CHECK_VOTE_CACHE(Server.BUNGEECORD),
+    UPDATE_RANKS(Server.BUNGEECORD),
+    UPDATE_LANGUAGE(Server.BUNGEECORD),
+    UPDATE_SILENT(Server.BUNGEECORD),
     ;
 
     public static final String CHANNEL = "OrbitMines";

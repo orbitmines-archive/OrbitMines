@@ -1,10 +1,10 @@
 package com.orbitmines.spigot.api.events;
 
-import com.madblock.api.handlers.Cooldown;
-import com.madblock.spigot.MadBlock;
-import com.madblock.spigot.api.handlers.OMPlayer;
-import com.madblock.spigot.api.handlers.npc.*;
-import com.madblock.spigot.api.utils.PlayerUtils;
+import com.orbitmines.api.Cooldown;
+import com.orbitmines.spigot.OrbitMines;
+import com.orbitmines.spigot.api.handlers.OMPlayer;
+import com.orbitmines.spigot.api.handlers.npc.*;
+import com.orbitmines.spigot.api.utils.PlayerUtils;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -23,12 +23,12 @@ import java.util.ArrayList;
 */
 public class NpcEvents implements Listener {
 
-    private MadBlock madBlock;
+    private OrbitMines orbitMines;
 
     private final Cooldown INTERACT_COOLDOWN = new Cooldown(1000);
 
     public NpcEvents() {
-        madBlock = MadBlock.getInstance();
+        orbitMines = OrbitMines.getInstance();
     }
 
     @EventHandler
@@ -40,10 +40,10 @@ public class NpcEvents implements Listener {
         event.setCancelled(true);
 
         OMPlayer omp = OMPlayer.getPlayer(event.getPlayer());
-        if (!mbp.onCooldown(INTERACT_COOLDOWN)) {
-            npc.click(mbp);
+        if (!omp.onCooldown(INTERACT_COOLDOWN)) {
+            npc.click(omp);
 
-            mbp.resetCooldown(INTERACT_COOLDOWN);
+            omp.resetCooldown(INTERACT_COOLDOWN);
         }
     }
 
@@ -74,6 +74,7 @@ public class NpcEvents implements Listener {
             floatingItem.pickUp(event, OMPlayer.getPlayer(event.getPlayer()));
             return;
         }
+
         CustomItem customItem = CustomItem.getCustomItem(event.getItem());
 
         if (customItem == null)

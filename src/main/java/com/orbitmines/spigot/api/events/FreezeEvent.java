@@ -1,7 +1,7 @@
 package com.orbitmines.spigot.api.events;
 
-import com.madblock.spigot.api.Freezer;
-import com.madblock.spigot.api.handlers.OMPlayer;
+import com.orbitmines.spigot.api.Freezer;
+import com.orbitmines.spigot.api.handlers.OMPlayer;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -15,10 +15,10 @@ public class FreezeEvent implements Listener {
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
         OMPlayer omp = OMPlayer.getPlayer(event.getPlayer());
-        if (!mbp.isFrozen())
+        if (!omp.isFrozen())
             return;
 
-        switch (mbp.getFreezer()) {
+        switch (omp.getFreezer()) {
 
             case MOVE:
             case MOVE_AND_JUMP:
@@ -28,7 +28,7 @@ public class FreezeEvent implements Listener {
                 newTo.setYaw(to.getYaw());
                 newTo.setPitch(to.getPitch());
 
-                if (mbp.getFreezer() != Freezer.MOVE_AND_JUMP)
+                if (omp.getFreezer() != Freezer.MOVE_AND_JUMP)
                     newTo.setY(to.getY());
 
                 event.setTo(newTo);

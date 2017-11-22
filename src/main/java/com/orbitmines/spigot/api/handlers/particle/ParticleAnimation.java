@@ -1,7 +1,6 @@
 package com.orbitmines.spigot.api.handlers.particle;
 
-import com.madblock.spigot.api.runnables.SpigotRunnable;
-import net.minecraft.server.v1_8_R3.EnumParticle;
+import com.orbitmines.spigot.api.runnables.SpigotRunnable;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -18,11 +17,11 @@ public abstract class ParticleAnimation extends Particle {
 
     protected SpigotRunnable runnable;
 
-    public ParticleAnimation(EnumParticle particle) {
+    public ParticleAnimation(org.bukkit.Particle particle) {
         this(particle, null);
     }
 
-    public ParticleAnimation(EnumParticle particle, Location location) {
+    public ParticleAnimation(org.bukkit.Particle particle, Location location) {
         super(particle, location);
 
         runnable = new SpigotRunnable(getInterval(), false) {
@@ -66,7 +65,7 @@ public abstract class ParticleAnimation extends Particle {
     }
 
     public void sendOpposite(Collection<? extends Player> players) {
-        madBlock.getNms().particle().send(players, particle, longDistance, getOppositeX(), getOppositeY(), getOppositeZ(), xOff, yOff, zOff, speed, amount);
+        orbitMines.getNms().particle().send(players, particle, longDistance, getOppositeX(), getOppositeY(), getOppositeZ(), xOff, yOff, zOff, speed, amount);
     }
 
     public void sendInvert() {
@@ -78,7 +77,7 @@ public abstract class ParticleAnimation extends Particle {
     }
 
     public void sendInvert(Collection<? extends Player> players) {
-        madBlock.getNms().particle().send(players, particle, longDistance, getOppositeX(), getY(), getOppositeZ(), xOff, yOff, zOff, speed, amount);
+        orbitMines.getNms().particle().send(players, particle, longDistance, getOppositeX(), getY(), getOppositeZ(), xOff, yOff, zOff, speed, amount);
     }
 
     public void sendOppositeInvert() {
@@ -90,7 +89,7 @@ public abstract class ParticleAnimation extends Particle {
     }
 
     public void sendOppositeInvert(Collection<? extends Player> players) {
-        madBlock.getNms().particle().send(players, particle, longDistance, getX(), getOppositeY(), getZ(), xOff, yOff, zOff, speed, amount);
+        orbitMines.getNms().particle().send(players, particle, longDistance, getX(), getOppositeY(), getZ(), xOff, yOff, zOff, speed, amount);
     }
 
     /* Library methods */

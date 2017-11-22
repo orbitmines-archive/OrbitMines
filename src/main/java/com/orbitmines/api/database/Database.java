@@ -228,6 +228,10 @@ public class Database {
         return integer;
     }
 
+    public boolean getBoolean(Table table, Column column, Where... wheres) {
+        return "1".equals(getString(table, column, wheres));
+    }
+
     public String getString(Table table, Column column, Where... wheres) {
         String string = "";
 

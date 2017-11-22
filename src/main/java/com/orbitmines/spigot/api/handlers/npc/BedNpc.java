@@ -1,10 +1,10 @@
 package com.orbitmines.spigot.api.handlers.npc;
 
-import com.madblock.api.utils.RandomUtils;
-import com.madblock.spigot.MadBlock;
-import com.madblock.spigot.api.Direction;
-import com.madblock.spigot.api.handlers.OMPlayer;
-import com.madblock.spigot.api.nms.bednpc.BedNpcNms;
+import com.orbitmines.api.utils.RandomUtils;
+import com.orbitmines.spigot.OrbitMines;
+import com.orbitmines.spigot.api.Direction;
+import com.orbitmines.spigot.api.handlers.OMPlayer;
+import com.orbitmines.spigot.api.nms.bednpc.BedNpcNms;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -37,7 +37,7 @@ public class BedNpc {
     }
 
     public BedNpc(Player player, Location location, boolean firstPerson, boolean withItemsInHand, boolean withArmor) {
-        nms = MadBlock.getInstance().getNms().bedNpc();
+        nms = OrbitMines.getInstance().getNms().bedNpc();
 
         this.player = player;
         this.location = location;

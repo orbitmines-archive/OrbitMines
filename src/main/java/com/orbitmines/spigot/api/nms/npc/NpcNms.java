@@ -5,8 +5,8 @@ package com.orbitmines.spigot.api.nms.npc;
  */
 public interface NpcNms {
 
-    public void setClassFields();
+    void setClassFields();
 
-    public void addCustomEntity(Class entityClass, String name, int id);
+    void addCustomEntity(Class entityClass, String name, int id);
 
 }

@@ -1,8 +1,8 @@
 package com.orbitmines.spigot.api.handlers.npc;
 
-import com.madblock.spigot.MadBlock;
-import com.madblock.spigot.api.handlers.OMPlayer;
-import com.madblock.spigot.api.runnables.SpigotRunnable;
+import com.orbitmines.spigot.OrbitMines;
+import com.orbitmines.spigot.api.handlers.OMPlayer;
+import com.orbitmines.spigot.api.runnables.SpigotRunnable;
 import org.bukkit.Location;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -15,11 +15,10 @@ import java.util.*;
 * OrbitMines - @author Fadi Shawki - 29-7-2017
 */
 public class CustomItem {
-
-
+    
     private static List<CustomItem> customItems = new ArrayList<>();
 
-    private MadBlock madBlock;
+    private OrbitMines orbitMines;
 
     private Location location;
 
@@ -32,7 +31,7 @@ public class CustomItem {
     }
 
     public CustomItem(Location location, CustomItem.PickUpAction pickUpAction) {
-        madBlock = MadBlock.getInstance();
+        orbitMines = OrbitMines.getInstance();
 
         customItems.add(this);
 
@@ -212,7 +211,7 @@ public class CustomItem {
         }
 
         public void hideFor(Collection<? extends Player> players) {
-            MadBlock.getInstance().getNms().entity().destroyEntityFor(players, item);
+            OrbitMines.getInstance().getNms().entity().destroyEntityFor(players, item);
         }
 
         public void updateItemStack() {

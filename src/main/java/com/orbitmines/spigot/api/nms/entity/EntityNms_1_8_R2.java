@@ -1,6 +1,7 @@
 package com.orbitmines.spigot.api.nms.entity;
 
 import com.orbitmines.spigot.api.Mob;
+import com.orbitmines.spigot.api.utils.ReflectionUtils;
 import net.minecraft.server.v1_8_R2.*;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R2.entity.CraftEntity;
@@ -11,6 +12,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
+import java.lang.reflect.Field;
 import java.util.Collection;
 
 /**
@@ -19,8 +21,8 @@ import java.util.Collection;
 public class EntityNms_1_8_R2 implements EntityNms {
 
     @Override
-    public void setInvisible(Player player, boolean bl) {
-        ((CraftPlayer) player).getHandle().setInvisible(true);
+    public void setInvisible(Entity entity, boolean bl) {
+        ((CraftEntity) entity).getHandle().setInvisible(bl);
     }
 
     @Override
@@ -237,5 +239,18 @@ public class EntityNms_1_8_R2 implements EntityNms {
     @Override
     public void navigate(LivingEntity le, Location location, double v) {
         ((EntityInsentient) ((CraftLivingEntity) le).getHandle()).getNavigation().a(location.getX(), location.getY(), location.getZ(), v);
+    }
+
+    @Override
+    public int nextEntityId() {
+        try {
+            Field entityCount = ReflectionUtils.getDeclaredField(net.minecraft.server.v1_8_R2.Entity.class, "entityCount");
+            int id = entityCount.getInt(null);
+            entityCount.setInt(null, id + 1);
+            return id;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return (int) Math.round(Math.random() * Integer.MAX_VALUE * 0.25);
+        }
     }
 }

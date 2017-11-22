@@ -1,9 +1,9 @@
 package com.orbitmines.spigot.runnables;
 
-import com.madblock.spigot.api.handlers.npc.FloatingItem;
-import com.madblock.spigot.api.handlers.npc.Hologram;
-import com.madblock.spigot.api.handlers.npc.NpcArmorStand;
-import com.madblock.spigot.api.runnables.SpigotRunnable;
+import com.orbitmines.spigot.api.handlers.npc.FloatingItem;
+import com.orbitmines.spigot.api.handlers.npc.Hologram;
+import com.orbitmines.spigot.api.handlers.npc.NpcArmorStand;
+import com.orbitmines.spigot.api.runnables.SpigotRunnable;
 
 /*
 * OrbitMines - @author Fadi Shawki - 2017

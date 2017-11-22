@@ -1,7 +1,8 @@
 package com.orbitmines.spigot.api.handlers.cmd;
 
-import com.madblock.api.VipRank;
-import com.madblock.spigot.api.handlers.OMPlayer;
+import com.orbitmines.api.Message;
+import com.orbitmines.api.VipRank;
+import com.orbitmines.spigot.api.handlers.OMPlayer;
 
 /*
 * OrbitMines - @author Fadi Shawki - 29-7-2017
@@ -18,10 +19,10 @@ public abstract class VipCommand extends Command {
 
     @Override
     public void dispatch(OMPlayer omp, String[] a) {
-        if (mbp.isEligible(vipRank))
-            onDispatch(mbp, a);
+        if (omp.isEligible(vipRank))
+            onDispatch(omp, a);
         else
-            mbp.sendMessage("§7Access denied, you do not own the following rank: " + vipRank.getPrefix() + "§7.");
+            omp.sendMessage(Message.REQUIRE_RANK(vipRank));
     }
 
     public VipRank getVipRank() {

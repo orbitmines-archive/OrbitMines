@@ -1,7 +1,7 @@
 package com.orbitmines.spigot.api.handlers.npc;
 
-import com.madblock.spigot.MadBlock;
-import com.madblock.spigot.api.runnables.SpigotRunnable;
+import com.orbitmines.spigot.OrbitMines;
+import com.orbitmines.spigot.api.runnables.SpigotRunnable;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -41,8 +41,8 @@ public class PlayerFreezer extends NpcArmorStand {
         runnable = new SpigotRunnable(SpigotRunnable.TimeUnit.TICK, 1) {
             @Override
             public void run() {
-                if (getArmorStand().getPassenger() != player)
-                    getArmorStand().setPassenger(player);
+                if (!getArmorStand().getPassengers().contains(player))
+                    getArmorStand().addPassenger(player);
             }
         };
     }
@@ -51,7 +51,7 @@ public class PlayerFreezer extends NpcArmorStand {
     public void spawn() {
         super.spawn();
 
-        MadBlock.getInstance().getNms().entity().setInvisible(getArmorStand(), true);
+        OrbitMines.getInstance().getNms().entity().setInvisible(getArmorStand(), true);
     }
 
     @Override

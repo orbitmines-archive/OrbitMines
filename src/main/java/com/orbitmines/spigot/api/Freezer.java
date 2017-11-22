@@ -1,5 +1,7 @@
 package com.orbitmines.spigot.api;
 
+import com.orbitmines.spigot.api.handlers.OMPlayer;
+import com.orbitmines.spigot.api.handlers.npc.PlayerFreezer;
 import org.bukkit.Location;
 
 /*

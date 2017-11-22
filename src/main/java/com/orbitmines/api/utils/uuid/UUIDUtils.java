@@ -92,7 +92,7 @@ public class UUIDUtils {
         }
     }
 
-    private static UUID getUUIDFromDatabase(String playerName) {
+    public static UUID getUUIDFromDatabase(String playerName) {
         return Database.get().contains(Table.PLAYERS, TablePlayers.UUID, new Where(TablePlayers.NAME, playerName)) ? UUID.fromString(Database.get().getString(Table.PLAYERS, TablePlayers.UUID, new Where(TablePlayers.NAME, playerName))) : null;
     }
 }

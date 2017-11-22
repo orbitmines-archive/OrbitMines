@@ -16,12 +16,9 @@ public class TablePlayers extends Table {
     public static final Column SILENT = new Column("Silent", Column.Type.TINYINT, 1);
     public static final Column POINTS = new Column("Points", Column.Type.INT);
     public static final Column TOKENS = new Column("Tokens", Column.Type.INT);
-    public static final Column MONTHLYBONUS = new Column("MonthlyBonus", Column.Type.TINYINT, 1);
-    public static final Column VOTES = new Column("Votes", Column.Type.INT);
-    public static final Column TOTAL_VOTES = new Column("TotalVotes", Column.Type.INT);
-    public static final Column CACHED_VOTES = new Column("CachedVotes", Column.Type.VARCHAR, 500);
+    public static final Column MONTHLY_BONUS = new Column("MonthlyBonus", Column.Type.VARCHAR, 32);
 
     public TablePlayers() {
-        super("Players", UUID, NAME, STAFFRANK, VIPRANK, LANGUAGE, SILENT, POINTS, TOKENS, MONTHLYBONUS, VOTES, TOTAL_VOTES, CACHED_VOTES);
+        super("Players", UUID, NAME, STAFFRANK, VIPRANK, LANGUAGE, SILENT, POINTS, TOKENS, MONTHLY_BONUS);
     }
 }

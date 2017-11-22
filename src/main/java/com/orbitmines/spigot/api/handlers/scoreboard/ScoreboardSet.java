@@ -1,6 +1,6 @@
 package com.orbitmines.spigot.api.handlers.scoreboard;
 
-import com.madblock.spigot.api.handlers.OMPlayer;
+import com.orbitmines.spigot.api.handlers.OMPlayer;
 
 import java.util.HashMap;
 import java.util.List;

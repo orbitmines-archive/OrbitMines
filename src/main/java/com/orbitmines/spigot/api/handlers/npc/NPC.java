@@ -1,8 +1,8 @@
 package com.orbitmines.spigot.api.handlers.npc;
 
 import com.orbitmines.spigot.api.Mob;
+import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.runnables.SpigotRunnable;
-import com.orbitmines.spigot.api.utils.LocationUtils;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -122,7 +122,7 @@ public class NPC {
     }
 
     public Location getFixedLocation() {
-        return mob == Mob.BAT || mob == Mob.SQUID || mob == Mob.GUARDIAN ? LocationUtils.asNewLocation(location, 0, 1, 0) : location;
+        return mob == Mob.BAT || mob == Mob.SQUID || mob == Mob.GUARDIAN ? location.clone().add(0, 1, 0) : location;
     }
 
     public SpigotRunnable getRunnable() {
@@ -132,7 +132,7 @@ public class NPC {
     public void spawn() {
         remove();
 
-        if (this instanceof NpcMoving)
+        if (this instanceof NPCMoving)
             this.entity = mob.spawnMoving(getFixedLocation(), displayName);
         else
             this.entity = mob.spawn(getFixedLocation(), displayName);

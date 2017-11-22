@@ -1,8 +1,8 @@
 package com.orbitmines.spigot.api.handlers.leaderboard;
 
-import com.madblock.api.GameMode;
-import com.madblock.spigot.MadBlock;
-import com.madblock.spigot.api.handlers.npc.Hologram;
+import com.orbitmines.api.Server;
+import com.orbitmines.spigot.OrbitMines;
+import com.orbitmines.spigot.api.handlers.npc.Hologram;
 import org.bukkit.Location;
 
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ public abstract class LeaderBoard {
     }
 
     public static void setup(Map<Location, String[]> leaderboardData) {
-        GameMode.Type serverType = MadBlock.getInstance().getGameServer().getGameModeType();
+        Server server = OrbitMines.getInstance().getServerHandler().getServer();
 
         Map<String, Instantiator> instantiators = Instantiator.getInstantiators();
 
@@ -48,7 +48,7 @@ public abstract class LeaderBoard {
             String name = data[0].toUpperCase();
 
             if (instantiators.containsKey(name))
-                instantiators.get(name).instantiate(serverType, location, data);
+                instantiators.get(name).instantiate(server, location, data);
         }
     }
 
@@ -64,7 +64,7 @@ public abstract class LeaderBoard {
             instantiators.put(datapointName, this);
         }
 
-        public abstract LeaderBoard instantiate(GameMode.Type serverType, Location location, String[] data);
+        public abstract LeaderBoard instantiate(Server server, Location location, String[] data);
 
         public String getDatapointName() {
             return datapointName;

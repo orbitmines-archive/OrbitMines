@@ -3,3 +3,5 @@ port: 3306
 database: 'OrbitMines'
 user: 'root'
 password: 'password'
+
+server: 'HUB'

@@ -35,6 +35,14 @@ public class ScoreboardTeam {
         this.options.put(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public List<Player> getPlayers() {
+        return players;
+    }
+
     public void setPrefix(String prefix) {
         this.prefix = prefix;
     }

@@ -1,6 +1,6 @@
 package com.orbitmines.spigot.api.handlers.cmd;
 
-import com.madblock.spigot.api.handlers.OMPlayer;
+import com.orbitmines.spigot.api.handlers.OMPlayer;
 
 import java.util.ArrayList;
 import java.util.List;

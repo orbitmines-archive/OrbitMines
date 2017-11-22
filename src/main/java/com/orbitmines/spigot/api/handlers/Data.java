@@ -27,7 +27,7 @@ public abstract class Data {
 
     public enum Type {
 
-        ;
+        VOTES;
 
     }
 }

@@ -1,8 +1,8 @@
 package com.orbitmines.spigot.api.handlers.kit;
 
-import com.madblock.spigot.MadBlock;
-import com.madblock.spigot.api.handlers.OMPlayer;
-import com.madblock.spigot.api.utils.ItemUtils;
+import com.orbitmines.spigot.OrbitMines;
+import com.orbitmines.spigot.api.handlers.OMPlayer;
+import com.orbitmines.spigot.api.utils.ItemUtils;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -28,8 +28,8 @@ public class KitInteractive extends Kit {
         if (!enabled) {
             enabled = true;
 
-            MadBlock madBlock = MadBlock.getInstance();
-            madBlock.getServer().getPluginManager().registerEvents(new InteractiveKitEvent(), madBlock);
+            OrbitMines orbitMines = OrbitMines.getInstance();
+            orbitMines.getServer().getPluginManager().registerEvents(new InteractiveKitEvent(), orbitMines);
         }
     }
 
@@ -41,35 +41,35 @@ public class KitInteractive extends Kit {
 
     @Override
     public void setItems(OMPlayer omp) {
-        super.setItems(mbp);
+        super.setItems(omp);
 
         for (InteractAction action : interactions) {
-            action.onReceive(mbp);
+            action.onReceive(omp);
         }
 
-        registerLast(mbp);
+        registerLast(omp);
     }
 
     @Override
     public void addItems(OMPlayer omp) {
-        super.addItems(mbp);
+        super.addItems(omp);
 
         for (InteractAction action : interactions) {
-            action.onReceive(mbp);
+            action.onReceive(omp);
         }
 
-        registerLast(mbp);
+        registerLast(omp);
     }
 
     @Override
     public void replaceItems(OMPlayer omp) {
-        super.replaceItems(mbp);
+        super.replaceItems(omp);
 
         for (InteractAction action : interactions) {
-            action.onReceive(mbp);
+            action.onReceive(omp);
         }
 
-        registerLast(mbp);
+        registerLast(omp);
     }
 
     public List<InteractAction> getInteractions() {
@@ -77,7 +77,7 @@ public class KitInteractive extends Kit {
     }
 
     private void registerLast(OMPlayer omp) {
-        mbp.setLastInteractiveKit(this);
+        omp.setLastInteractiveKit(this);
     }
 
     public static abstract class InteractAction {
@@ -110,18 +110,18 @@ public class KitInteractive extends Kit {
         @EventHandler
         public void onInteract(PlayerInteractEvent event) {
             OMPlayer omp = OMPlayer.getPlayer(event.getPlayer());
-            if (mbp == null)
+            if (omp == null)
                 return;
 
             ItemStack itemStack = event.getItem();
 
-            KitInteractive last = mbp.getLastInteractiveKit();
+            KitInteractive last = omp.getLastInteractiveKit();
             if (last == null || ItemUtils.isNull(itemStack))
                 return;
 
             for (KitInteractive.InteractAction action : last.getInteractions()) {
                 if (action.equals(itemStack)) {
-                    action.onInteract(event, mbp);
+                    action.onInteract(event, omp);
                     break;
                 }
             }

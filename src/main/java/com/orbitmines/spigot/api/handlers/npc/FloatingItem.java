@@ -1,8 +1,8 @@
 package com.orbitmines.spigot.api.handlers.npc;
 
-import com.madblock.spigot.MadBlock;
-import com.madblock.spigot.api.handlers.OMPlayer;
-import com.madblock.spigot.api.runnables.SpigotRunnable;
+import com.orbitmines.spigot.OrbitMines;
+import com.orbitmines.spigot.api.handlers.OMPlayer;
+import com.orbitmines.spigot.api.runnables.SpigotRunnable;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Item;
@@ -20,7 +20,7 @@ public class FloatingItem {
 
     private static List<FloatingItem> floatingItems = new ArrayList<>();
 
-    private MadBlock madBlock;
+    private OrbitMines orbitMines;
 
     private Location location;
     private ArmorStand armorStand;
@@ -43,7 +43,7 @@ public class FloatingItem {
     }
 
     public FloatingItem(Location location, PickUpAction pickUpAction, ClickAction clickAction) {
-        madBlock = MadBlock.getInstance();
+        orbitMines = OrbitMines.getInstance();
 
         floatingItems.add(this);
 
@@ -82,7 +82,7 @@ public class FloatingItem {
         }
         clear();
 
-        armorStand = madBlock.getNms().armorStand().spawn(location, false);
+        armorStand = orbitMines.getNms().armorStand().spawn(location, false);
         armorStand.setRemoveWhenFarAway(false);
         armorStand.setGravity(false);
 
@@ -271,7 +271,7 @@ public class FloatingItem {
         }
 
         public void hideFor(Collection<? extends Player> players) {
-            MadBlock.getInstance().getNms().entity().destroyEntityFor(players, item);
+            OrbitMines.getInstance().getNms().entity().destroyEntityFor(players, item);
         }
 
         public void updateItemStack() {

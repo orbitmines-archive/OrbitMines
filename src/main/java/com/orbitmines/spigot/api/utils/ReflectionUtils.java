@@ -1,5 +1,6 @@
 package com.orbitmines.spigot.api.utils;
 
+import com.orbitmines.spigot.OrbitMines;
 import org.bukkit.Bukkit;
 
 import java.lang.reflect.Field;
@@ -58,7 +59,7 @@ public class ReflectionUtils {
     }
 
     public static Class<?> getNMSClass(String name) {
-        String version = MadBlock.getInstance().getServer().getClass().getPackage().getName().split("\\.")[3];
+        String version = OrbitMines.getInstance().getServer().getClass().getPackage().getName().split("\\.")[3];
         try {
             return Class.forName("net.minecraft.server." + version + "." + name);
         } catch (ClassNotFoundException e) {
@@ -68,12 +69,12 @@ public class ReflectionUtils {
     }
 
     public static String getNMSClassName(String name) {
-        String version = MadBlock.getInstance().getServer().getClass().getPackage().getName().split("\\.")[3];
+        String version = OrbitMines.getInstance().getServer().getClass().getPackage().getName().split("\\.")[3];
         return "net.minecraft.server." + version + "." + name;
     }
 
     public static Class<?> getOBCClass(String name) {
-        String version = MadBlock.getInstance().getServer().getClass().getPackage().getName().split("\\.")[3];
+        String version = OrbitMines.getInstance().getServer().getClass().getPackage().getName().split("\\.")[3];
         try {
             return Class.forName("org.bukkit.craftbukkit." + version + "." + name);
         } catch (ClassNotFoundException e) {

@@ -1,7 +1,6 @@
 package com.orbitmines.spigot.api.handlers.particle.animation;
 
-import com.madblock.spigot.api.handlers.particle.ParticleAnimation;
-import net.minecraft.server.v1_8_R3.EnumParticle;
+import com.orbitmines.spigot.api.handlers.particle.ParticleAnimation;
 import org.bukkit.Location;
 
 /*
@@ -11,11 +10,11 @@ public abstract class ParticleAnimationCircle extends ParticleAnimation {
 
     protected double angle;
 
-    public ParticleAnimationCircle(EnumParticle particle) {
+    public ParticleAnimationCircle(org.bukkit.Particle particle) {
         super(particle);
     }
 
-    public ParticleAnimationCircle(EnumParticle particle, Location location) {
+    public ParticleAnimationCircle(org.bukkit.Particle particle, Location location) {
         super(particle, location);
     }
 

@@ -1,7 +1,6 @@
 package com.orbitmines.spigot.api.handlers.particle;
 
-import com.madblock.spigot.MadBlock;
-import net.minecraft.server.v1_8_R3.EnumParticle;
+import com.orbitmines.spigot.OrbitMines;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -15,9 +14,8 @@ import java.util.Collection;
 */
 public class Particle {
 
-    protected MadBlock madBlock;
-    /* 1.8 */
-    protected EnumParticle particle;
+    protected OrbitMines orbitMines;
+    protected org.bukkit.Particle particle;
     protected boolean longDistance;
     protected Location location;
     protected Entity entity;
@@ -29,12 +27,12 @@ public class Particle {
 
     protected Vector vector;
 
-    public Particle(EnumParticle particle) {
+    public Particle(org.bukkit.Particle particle) {
         this(particle, null);
     }
 
-    public Particle(EnumParticle particle, Location location) {
-        this.madBlock = MadBlock.getInstance();
+    public Particle(org.bukkit.Particle particle, Location location) {
+        this.orbitMines = OrbitMines.getInstance();
         this.particle = particle;
         this.longDistance = true;
         this.location = location;
@@ -47,11 +45,11 @@ public class Particle {
         vector = new Vector(0, 0, 0);
     }
 
-    public EnumParticle getParticle() {
+    public org.bukkit.Particle getParticle() {
         return particle;
     }
 
-    public void setParticle(EnumParticle particle) {
+    public void setParticle(org.bukkit.Particle particle) {
         this.particle = particle;
     }
 
@@ -140,6 +138,6 @@ public class Particle {
     }
 
     public void send(Collection<? extends Player> players) {
-        madBlock.getNms().particle().send(players, particle, longDistance, getX(), getY(), getZ(), xOff, yOff, zOff, speed, amount);
+        orbitMines.getNms().particle().send(players, particle, longDistance, getX(), getY(), getZ(), xOff, yOff, zOff, speed, amount);
     }
 }

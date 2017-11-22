@@ -1,7 +1,7 @@
 package com.orbitmines.spigot.api.handlers.leaderboard;
 
-import com.madblock.spigot.api.handlers.OMPlayer;
-import com.madblock.spigot.api.handlers.npc.Hologram;
+import com.orbitmines.spigot.api.handlers.OMPlayer;
+import com.orbitmines.spigot.api.handlers.npc.Hologram;
 import org.bukkit.Location;
 
 import java.util.HashMap;
@@ -27,25 +27,25 @@ public abstract class PlayerLeaderBoard extends LeaderBoard {
     @Override
     public void update() {
         for (OMPlayer omp : holograms.keySet()) {
-            update(mbp);
+            update(omp);
         }
     }
 
     private void update(OMPlayer omp) {
-        Hologram hologram = holograms.get(mbp);
+        Hologram hologram = holograms.get(omp);
         hologram.clearLines();
 
-        setupLines(mbp, hologram);
+        setupLines(omp, hologram);
 
-        hologram.create(mbp.getPlayer());
+        hologram.create(omp.getPlayer());
     }
 
     public void onLogin(OMPlayer omp) {
-        holograms.put(mbp, new Hologram(location, true));
-        update(mbp);
+        holograms.put(omp, new Hologram(location, true));
+        update(omp);
     }
 
     public void onLogout(OMPlayer omp) {
-        holograms.remove(mbp);
+        holograms.remove(omp);
     }
 }

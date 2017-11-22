@@ -8,10 +8,10 @@ import org.bukkit.inventory.ItemStack;
  */
 public interface CustomItemNms {
 
-    public ItemStack hideFlags(ItemStack item, int... hideFlags);
+    ItemStack hideFlags(ItemStack item, int... hideFlags);
 
-    public ItemStack setUnbreakable(ItemStack item);
+    ItemStack setUnbreakable(ItemStack item);
 
-    public ItemStack setEggId(ItemStack item, Mob mob);
+    ItemStack setEggId(ItemStack item, Mob mob);
 
 }

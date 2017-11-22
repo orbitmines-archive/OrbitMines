@@ -9,10 +9,10 @@ import java.util.HashMap;
  */
 public interface AnvilNms {
 
-    public void open();
-    public HashMap<AnvilSlot, ItemStack> getItems();
+    void open();
+    HashMap<AnvilSlot, ItemStack> getItems();
 
-    public enum AnvilSlot {
+    enum AnvilSlot {
         INPUT_LEFT(0),
         INPUT_RIGHT(1),
         OUTPUT(2);

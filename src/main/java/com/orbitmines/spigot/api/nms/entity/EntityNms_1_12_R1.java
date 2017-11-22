@@ -1,7 +1,8 @@
 package com.orbitmines.spigot.api.nms.entity;
 
+import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.Mob;
-import com.orbitmines.spigot.api.OrbitMinesApi;
+import com.orbitmines.spigot.api.utils.ReflectionUtils;
 import net.minecraft.server.v1_12_R1.*;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftEntity;
@@ -13,6 +14,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.lang.reflect.Field;
 import java.util.Collection;
 
 /**
@@ -21,8 +23,8 @@ import java.util.Collection;
 public class EntityNms_1_12_R1 implements EntityNms {
 
     @Override
-    public void setInvisible(Player player, boolean bl) {
-        ((CraftPlayer) player).getHandle().setInvisible(true);
+    public void setInvisible(Entity entity, boolean bl) {
+        ((CraftEntity) entity).getHandle().setInvisible(bl);
     }
 
     @Override
@@ -288,11 +290,24 @@ public class EntityNms_1_12_R1 implements EntityNms {
                 PacketPlayOutMount packet = new PacketPlayOutMount(((CraftPlayer) vehicle).getHandle());
                 ((CraftPlayer) vehicle).getHandle().playerConnection.sendPacket(packet);
             }
-        }.runTaskLater(OrbitMinesApi.getApi(), 1);
+        }.runTaskLater(OrbitMines.getInstance(), 1);
     }
 
     @Override
     public void navigate(LivingEntity le, Location location, double v) {
         ((EntityInsentient) ((CraftLivingEntity) le).getHandle()).getNavigation().a(location.getX(), location.getY(), location.getZ(), v);
+    }
+
+    @Override
+    public int nextEntityId() {
+        try {
+            Field entityCount = ReflectionUtils.getDeclaredField(net.minecraft.server.v1_12_R1.Entity.class, "entityCount");
+            int id = entityCount.getInt(null);
+            entityCount.setInt(null, id + 1);
+            return id;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return (int) Math.round(Math.random() * Integer.MAX_VALUE * 0.25);
+        }
     }
 }

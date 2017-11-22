@@ -1,6 +1,6 @@
 package com.orbitmines.spigot.api.handlers.kit;
 
-import com.madblock.spigot.api.handlers.OMPlayer;
+import com.orbitmines.spigot.api.handlers.OMPlayer;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -133,7 +133,7 @@ public class Kit {
         for (ItemStack item : getContents()) {
             if (item != null && item.getType() == Material.SKULL_ITEM && item.getDurability() == (short) 3) {
                 SkullMeta meta = (SkullMeta) item.getItemMeta();
-                meta.setOwner(mbp.getName());
+                meta.setOwner(omp.getName());
                 item.setItemMeta(meta);
             }
         }
@@ -144,25 +144,25 @@ public class Kit {
             if (item != null)
                 armorContents[index] = item;
             else
-                armorContents[index] = mbp.getPlayer().getInventory().getArmorContents()[index];
+                armorContents[index] = omp.getPlayer().getInventory().getArmorContents()[index];
 
             index++;
         }
-        mbp.getPlayer().getInventory().setArmorContents(armorContents);
+        omp.getPlayer().getInventory().setArmorContents(armorContents);
 
         index = 0;
         for (ItemStack item : getContents()) {
             if (item != null)
-                mbp.getPlayer().getInventory().setItem(index, item);
+                omp.getPlayer().getInventory().setItem(index, item);
 
             index++;
         }
 
-        p.getInventory().setItemInOffHand(itemInOffHand);
+        omp.getPlayer().getInventory().setItemInOffHand(itemOffHand);
 
         if (potionEffects.size() != 0) {
             for (PotionEffect potionEffect : potionEffects) {
-                mbp.getPlayer().addPotionEffect(potionEffect);
+                omp.getPlayer().addPotionEffect(potionEffect);
             }
         }
     }
@@ -171,7 +171,7 @@ public class Kit {
         for (ItemStack item : getContents()) {
             if (item != null && item.getType() == Material.SKULL_ITEM && item.getDurability() == (short) 3) {
                 SkullMeta meta = (SkullMeta) item.getItemMeta();
-                meta.setOwner(mbp.getName());
+                meta.setOwner(omp.getName());
                 item.setItemMeta(meta);
             }
         }
@@ -179,29 +179,29 @@ public class Kit {
         ItemStack[] armorContents = new ItemStack[4];
         int index = 0;
         for (ItemStack item : getArmorContents()) {
-            if (item != null && setItem(mbp.getPlayer().getInventory().getArmorContents(), index, item))
+            if (item != null && setItem(omp.getPlayer().getInventory().getArmorContents(), index, item))
                 armorContents[index] = item;
             else
-                armorContents[index] = mbp.getPlayer().getInventory().getArmorContents()[index];
+                armorContents[index] = omp.getPlayer().getInventory().getArmorContents()[index];
 
             index++;
         }
-        mbp.getPlayer().getInventory().setArmorContents(armorContents);
+        omp.getPlayer().getInventory().setArmorContents(armorContents);
 
         index = 0;
         for (ItemStack item : getContents()) {
-            if (item != null && setItem(mbp.getPlayer().getInventory().getContents(), index, item))
-                mbp.getPlayer().getInventory().setItem(index, item);
+            if (item != null && setItem(omp.getPlayer().getInventory().getContents(), index, item))
+                omp.getPlayer().getInventory().setItem(index, item);
 
             index++;
         }
 
-        if (getItemOffHand() != null && setItem(getItemOffHand(), p.getInventory().getItemInOffHand()))
-            p.getInventory().setItemInOffHand(getItemOffHand());
+        if (getItemOffHand() != null && setItem(itemOffHand, omp.getPlayer().getInventory().getItemInOffHand()))
+            omp.getPlayer().getInventory().setItemInOffHand(itemOffHand);
 
         if (potionEffects.size() != 0) {
             for (PotionEffect potionEffect : potionEffects) {
-                mbp.getPlayer().addPotionEffect(potionEffect);
+                omp.getPlayer().addPotionEffect(potionEffect);
             }
         }
     }
@@ -225,35 +225,35 @@ public class Kit {
     public void addItems(OMPlayer omp) {
         for (ItemStack item : getContents()) {
             if (item != null)
-                mbp.getPlayer().getInventory().addItem(item);
+                omp.getPlayer().getInventory().addItem(item);
         }
         int index = 0;
         for (ItemStack item : getArmorContents()) {
-            ItemStack item2 = mbp.getPlayer().getInventory().getArmorContents()[index];
+            ItemStack item2 = omp.getPlayer().getInventory().getArmorContents()[index];
 
             if (item2 != null)
-                mbp.getPlayer().getInventory().addItem(item2);
+                omp.getPlayer().getInventory().addItem(item2);
 
             if (index == 0)
-                mbp.getPlayer().getInventory().setBoots(item);
+                omp.getPlayer().getInventory().setBoots(item);
             else if (index == 1)
-                mbp.getPlayer().getInventory().setLeggings(item);
+                omp.getPlayer().getInventory().setLeggings(item);
             else if (index == 2)
-                mbp.getPlayer().getInventory().setChestplate(item);
+                omp.getPlayer().getInventory().setChestplate(item);
             else
-                mbp.getPlayer().getInventory().setHelmet(item);
+                omp.getPlayer().getInventory().setHelmet(item);
 
             index++;
         }
 
-        if (p.getInventory().getItemInOffHand() == null)
-            p.getInventory().setItemInOffHand(getItemOffHand());
+        if (omp.getPlayer().getInventory().getItemInOffHand() == null)
+            omp.getPlayer().getInventory().setItemInOffHand(itemOffHand);
         else
-            p.getInventory().addItem(getItemOffHand());
+            omp.getPlayer().getInventory().addItem(itemOffHand);
 
         if (potionEffects.size() != 0) {
             for (PotionEffect potionEffect : potionEffects) {
-                mbp.getPlayer().addPotionEffect(potionEffect);
+                omp.getPlayer().addPotionEffect(potionEffect);
             }
         }
     }

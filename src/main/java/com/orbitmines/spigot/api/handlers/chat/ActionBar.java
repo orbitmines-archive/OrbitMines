@@ -1,9 +1,9 @@
 package com.orbitmines.spigot.api.handlers.chat;
 
-import com.madblock.spigot.MadBlock;
-import com.madblock.spigot.api.handlers.OMPlayer;
-import com.madblock.spigot.api.handlers.timer.Timer;
-import com.madblock.spigot.api.runnables.SpigotRunnable;
+import com.orbitmines.spigot.OrbitMines;
+import com.orbitmines.spigot.api.handlers.OMPlayer;
+import com.orbitmines.spigot.api.handlers.timer.Timer;
+import com.orbitmines.spigot.api.runnables.SpigotRunnable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,13 +15,13 @@ public class ActionBar {
 
     private Map<OMPlayer, ActionBar> actionBars = new HashMap<>();
 
-    private MadBlock madblock;
+    private OrbitMines orbitMines;
     private String message;
     private OMPlayer player;
     private long stay;
 
     public ActionBar(OMPlayer player, String message, long stay) {
-        this.madblock = MadBlock.getInstance();
+        this.orbitMines = OrbitMines.getInstance();
         this.player = player;
         this.message = message;
         this.stay = stay;
@@ -70,7 +70,7 @@ public class ActionBar {
             @Override
             public void onInterval() {
                 if (actionBars.get(player) == ActionBar.this)
-                    madblock.getNms().actionBar().send(player.getPlayer(), ActionBar.this);
+                    orbitMines.getNms().actionBar().send(player.getPlayer(), ActionBar.this);
             }
 
             @Override

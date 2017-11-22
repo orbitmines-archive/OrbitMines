@@ -9,6 +9,6 @@ import org.bukkit.entity.Player;
  */
 public interface ActionBarNms {
 
-    public void send(Player player, ActionBar actionBar);
+    void send(Player player, ActionBar actionBar);
 
 }

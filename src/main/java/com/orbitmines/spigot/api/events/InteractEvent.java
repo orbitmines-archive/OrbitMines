@@ -1,7 +1,7 @@
 package com.orbitmines.spigot.api.events;
 
-import com.madblock.spigot.api.handlers.ItemInteraction;
-import com.madblock.spigot.api.handlers.OMPlayer;
+import com.orbitmines.spigot.api.handlers.ItemInteraction;
+import com.orbitmines.spigot.api.handlers.OMPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -28,17 +28,17 @@ public class InteractEvent implements Listener {
 
             event.setCancelled(true);
 
-            interaction.onInteract(mbp, event, item);
+            interaction.onInteract(omp, event, item);
 
             switch (event.getAction()) {
 
                 case LEFT_CLICK_AIR:
                 case LEFT_CLICK_BLOCK:
-                    interaction.onLeftClick(mbp, event, item);
+                    interaction.onLeftClick(omp, event, item);
                     break;
                 case RIGHT_CLICK_AIR:
                 case RIGHT_CLICK_BLOCK:
-                    interaction.onRightClick(mbp, event, item);
+                    interaction.onRightClick(omp, event, item);
                     break;
             }
             break;

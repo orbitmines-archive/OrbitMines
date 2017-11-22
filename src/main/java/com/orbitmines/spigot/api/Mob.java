@@ -1,5 +1,6 @@
 package com.orbitmines.spigot.api;
 
+import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.nms.Nms;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -110,7 +111,7 @@ public enum Mob {
     }
 
     public Entity spawn(Location location, String displayName, boolean moving, boolean noAttack) {
-        Nms nms = OrbitMinesApi.getApi().getNms();
+        Nms nms = OrbitMines.getInstance().getNms();
         switch (this) {
             case BAT:
                 return nms.getBatNpc().spawn(location, displayName, moving, noAttack);

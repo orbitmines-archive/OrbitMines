@@ -1,5 +1,7 @@
 package com.orbitmines.spigot.api.handlers.timer;
 
+import com.orbitmines.api.Cooldown;
+import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.runnables.SpigotRunnable;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -46,7 +48,7 @@ public abstract class Timer extends Cooldown {
             public void run() {
                 startRunnable();
             }
-        }.runTaskLater(MadBlock.getInstance(), delay);
+        }.runTaskLater(OrbitMines.getInstance(), delay);
     }
 
     /* Called on Finish */

@@ -2,7 +2,6 @@ package com.orbitmines.spigot.api.handlers;
 
 import com.orbitmines.spigot.api.utils.PlayerUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.Sound;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -130,8 +129,6 @@ public abstract class GUI {
         }
 
         @Override
-        public void onClick(InventoryClickEvent event, OMPlayer omp) {
-            omp.playSound(Sound.ANVIL_LAND);
-        }
+        public void onClick(InventoryClickEvent event, OMPlayer omp) { }
     }
 }

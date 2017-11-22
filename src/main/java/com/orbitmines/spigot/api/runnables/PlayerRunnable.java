@@ -1,6 +1,7 @@
 package com.orbitmines.spigot.api.runnables;
 
 import com.orbitmines.spigot.OrbitMines;
+import com.orbitmines.spigot.api.handlers.OMPlayer;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -63,7 +64,7 @@ public abstract class PlayerRunnable {
                 List<PlayerRunnable> runnables = playerRunnables.get(time.getTicks());
                 for (OMPlayer omp : OMPlayer.getPlayers()) {
                     for (PlayerRunnable runnable : runnables) {
-                        runnable.run(mbp);
+                        runnable.run(omp);
                     }
                 }
             }

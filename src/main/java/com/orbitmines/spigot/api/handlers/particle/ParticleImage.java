@@ -1,7 +1,5 @@
 package com.orbitmines.spigot.api.handlers.particle;
 
-import com.madblock.spigot.api.utils.LocationUtils;
-import net.minecraft.server.v1_8_R3.EnumParticle;
 import org.bukkit.Location;
 
 /*
@@ -25,7 +23,7 @@ public abstract class ParticleImage extends ParticleAnimation {
 
     @Override
     public void playAnimation() {
-        Location center = LocationUtils.copy(location);
+        Location center = location.clone();
         float yaw = getYaw();
         if (yaw < 0)
             yaw = 180 + Math.abs(yaw);
@@ -71,14 +69,14 @@ public abstract class ParticleImage extends ParticleAnimation {
 
     public static class Pixel {
 
-        private EnumParticle particle;
+        private org.bukkit.Particle particle;
         private float xOff;
         private float yOff;
         private float zOff;
         private float speed;
         private int amount;
 
-        public Pixel(EnumParticle particle, float xOff, float yOff, float zOff, float speed, int amount) {
+        public Pixel(org.bukkit.Particle particle, float xOff, float yOff, float zOff, float speed, int amount) {
             this.particle = particle;
             this.xOff = xOff;
             this.yOff = yOff;
@@ -87,11 +85,11 @@ public abstract class ParticleImage extends ParticleAnimation {
             this.amount = amount;
         }
 
-        public EnumParticle getParticle() {
+        public org.bukkit.Particle getParticle() {
             return particle;
         }
 
-        public void setParticle(EnumParticle particle) {
+        public void setParticle(org.bukkit.Particle particle) {
             this.particle = particle;
         }
 

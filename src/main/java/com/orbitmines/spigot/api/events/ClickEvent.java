@@ -1,7 +1,7 @@
 package com.orbitmines.spigot.api.events;
 
-import com.madblock.spigot.api.handlers.GUI;
-import com.madblock.spigot.api.handlers.OMPlayer;
+import com.orbitmines.spigot.api.handlers.GUI;
+import com.orbitmines.spigot.api.handlers.OMPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

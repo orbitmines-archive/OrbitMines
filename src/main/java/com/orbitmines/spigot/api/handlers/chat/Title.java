@@ -1,7 +1,7 @@
 package com.orbitmines.spigot.api.handlers.chat;
 
-import com.madblock.spigot.MadBlock;
-import com.madblock.spigot.api.handlers.OMPlayer;
+import com.orbitmines.spigot.OrbitMines;
+import com.orbitmines.spigot.api.handlers.OMPlayer;
 
 import java.util.Collection;
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.List;
 */
 public class Title {
 
-    private final MadBlock madBlock;
+    private final OrbitMines orbitMines;
 
     private String title;
     private String subTitle;
@@ -20,7 +20,7 @@ public class Title {
     private int fadeOut;
 
     public Title(String title, String subTitle, int fadeIn, int stay, int fadeOut) {
-        madBlock = MadBlock.getInstance();
+        orbitMines = OrbitMines.getInstance();
 
         this.title = title;
         this.subTitle = subTitle;
@@ -31,7 +31,7 @@ public class Title {
 
     public void send(OMPlayer player) {
         if (player.isLoggedIn())
-            madBlock.getNms().title().send(player.getPlayer(), this);
+            orbitMines.getNms().title().send(player.getPlayer(), this);
     }
 
     public void send(OMPlayer... players) {

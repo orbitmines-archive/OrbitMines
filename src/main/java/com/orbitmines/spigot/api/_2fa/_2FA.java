@@ -1,19 +1,19 @@
 package com.orbitmines.spigot.api._2fa;
 
 import com.google.zxing.WriterException;
-import com.madblock.api.database.Column;
-import com.madblock.api.database.Database;
-import com.madblock.api.database.Table;
-import com.madblock.api.database.Where;
-import com.madblock.api.database.tables.Table2FA;
-import com.madblock.api.utils.Message;
-import com.madblock.api.utils.UUIDUtils;
-import com.madblock.spigot.MadBlock;
-import com.madblock.spigot.api.Freezer;
-import com.madblock.spigot.api.handlers.OMPlayer;
-import com.madblock.spigot.api.handlers.chat.ComponentMessage;
-import com.madblock.spigot.api.handlers.itembuilders.ItemBuilder;
-import com.madblock.spigot.api.runnables.SpigotRunnable;
+import com.orbitmines.api.Color;
+import com.orbitmines.api.Message;
+import com.orbitmines.api.database.Database;
+import com.orbitmines.api.database.Table;
+import com.orbitmines.api.database.Where;
+import com.orbitmines.api.database.tables.Table2FA;
+import com.orbitmines.api.utils.uuid.UUIDUtils;
+import com.orbitmines.spigot.OrbitMines;
+import com.orbitmines.spigot.api.Freezer;
+import com.orbitmines.spigot.api.handlers.OMPlayer;
+import com.orbitmines.spigot.api.handlers.chat.ComponentMessage;
+import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
+import com.orbitmines.spigot.api.runnables.SpigotRunnable;
 import com.warrenstrange.googleauth.GoogleAuthenticator;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -29,66 +29,52 @@ import java.util.Map;
 import java.util.UUID;
 
 /*
-* MadBlock, LLC CONFIDENTIAL - @author Fadi Shawki - 2017
-* __________________
-*
-*  2017 MadBlock, LLC 
-*  All Rights Reserved.
-*
-* NOTICE:  All information contained herein is, and remains
-* the property of MadBlock, LLC and its suppliers,
-* if any.  The intellectual and technical concepts contained
-* herein are proprietary to MadBlock, LLC
-* and its suppliers and may be covered by U.S. and Foreign Patents,
-* patents in process, and are protected by trade secret or copyright law.
-* Dissemination of this information or reproduction of this material
-* is strictly forbidden unless prior written permission is obtained
-* from MadBlock, LLC.
+* OrbitMines - @author Fadi Shawki - 2017
 */
 public class _2FA {
 
     private final GoogleAuthenticator GOOGLE_AUTH = new GoogleAuthenticator();
 
-    private MadBlock madBlock;
+    private OrbitMines orbitMines;
 
     private Map<OMPlayer, String> tempKeys;
     private Map<OMPlayer, ItemStack[]> contents;
     private Map<OMPlayer, ItemStack[]> armorContents;
 
     public _2FA() {
-        madBlock = MadBlock.getInstance();
+        orbitMines = OrbitMines.getInstance();
         this.tempKeys = new HashMap<>();
         this.contents = new HashMap<>();
         this.armorContents = new HashMap<>();
     }
 
     public void initiateLogin(OMPlayer omp) {
-        mbp.setLoggedIn(false);
-        mbp.freeze(Freezer.MOVE_AND_JUMP);
+        omp.setLoggedIn(false);
+        omp.freeze(Freezer.MOVE_AND_JUMP);
 
-        contents.put(mbp, mbp.getPlayer().getInventory().getContents());
-        armorContents.put(mbp, mbp.getPlayer().getInventory().getArmorContents());
+        contents.put(omp, omp.getPlayer().getInventory().getContents());
+        armorContents.put(omp, omp.getPlayer().getInventory().getArmorContents());
 
-        mbp.clearFullInventory();
+        omp.clearFullInventory();
 
-        if (!Database.get().contains(Table._2FA, new Column[] { Table2FA.UUID }, new Where(Table2FA.UUID, mbp.getUUID().toString())))
-            processNewLogin(mbp);
+        if (!Database.get().contains(Table._2FA, Table2FA.UUID, new Where(Table2FA.UUID, omp.getUUID().toString())))
+            processNewLogin(omp);
 
-        mbp.sendMessage(Message.PREFIX_2FA, Message.ENTER_2FA);
+        omp.sendMessage(Message.ENTER_2FA);
 
         new BukkitRunnable() {
             @Override
             public void run() {
-                tempKeys.remove(mbp);
-                contents.remove(mbp);
-                armorContents.remove(mbp);
+                tempKeys.remove(omp);
+                contents.remove(omp);
+                armorContents.remove(omp);
 
-                if (mbp.isLoggedIn())
+                if (omp.isLoggedIn())
                     return;
 
-                mbp.kick("§c§lMad§9§lBlock §c§l2FA§r\n§7Timeout\n\n§7IGN: " + mbp.getName() + "\n§7UUID: " + mbp.getUUID().toString());
+                omp.kick("§6§lTITLE §c§l2FA§r\n§7Timeout\n\n§7IGN: " + omp.getName() + "\n§7UUID: " + omp.getUUID().toString());
             }
-        }.runTaskLater(madBlock, SpigotRunnable.TimeUnit.MINUTE.getTicks() * 3);
+        }.runTaskLater(orbitMines, SpigotRunnable.TimeUnit.MINUTE.getTicks() * 3);
     }
 
     public Result login(OMPlayer omp, String code) {
@@ -102,30 +88,30 @@ public class _2FA {
 
         String secret;
 
-        if (tempKeys.containsKey(mbp)) {
-            secret = tempKeys.get(mbp);
+        if (tempKeys.containsKey(omp)) {
+            secret = tempKeys.get(omp);
         } else {
-            secret = getSecret(mbp.getUUID());
+            secret = getSecret(omp.getUUID());
         }
 
         boolean authorized = GOOGLE_AUTH.authorize(secret, password);
 
         if (!authorized) {
             return Result.INVALID_CODE;
-        } else if (tempKeys.containsKey(mbp)) {
-            mbp.sendMessage(Message.PREFIX_2FA, "Successfully setup your 2FA!");
-            mbp.sendMessage(Message.PREFIX_2FA, "You will be asked for your 2FA code every 24 hours.");
+        } else if (tempKeys.containsKey(omp)) {
+            omp.sendMessage(Message.PREFIX_2FA, Color.LIME, "Successfully setup your 2FA!");
+            omp.sendMessage(Message.PREFIX_2FA, Color.BLUE, "You will be asked for your 2FA code every 24 hours.");
 
-            tempKeys.remove(mbp);
+            tempKeys.remove(omp);
 
-            Database.get().insert(Table._2FA, Table._2FA.values(mbp.getUUID().toString(), secret));
+            Database.get().insert(Table._2FA, Table._2FA.values(omp.getUUID().toString(), secret));
         }
 
-        mbp.setLoggedIn(true);
-        mbp.clearFreeze();
+        omp.setLoggedIn(true);
+        omp.clearFreeze();
 
-        mbp.getPlayer().getInventory().setContents(contents.get(mbp));
-        mbp.getPlayer().getInventory().setArmorContents(armorContents.get(mbp));
+        omp.getPlayer().getInventory().setContents(contents.get(omp));
+        omp.getPlayer().getInventory().setArmorContents(armorContents.get(omp));
 
         return Result.SUCCESSFUL;
     }
@@ -133,13 +119,13 @@ public class _2FA {
     public void processNewLogin(OMPlayer omp) {
         String secret = GOOGLE_AUTH.createCredentials().getKey();
 
-        tempKeys.put(mbp, secret);
+        tempKeys.put(omp, secret);
 
-        mbp.sendMessage(Message.PREFIX_2FA, "§r§7Initiating new 2FA. Use the QR code on the map.");
+        omp.sendMessage(Message.PREFIX_2FA, Color.BLUE, "§r§7Initiating new 2FA. Use the QR code on the map.");
 
         QRMapRenderer qrMap;
         try {
-            qrMap = new QRMapRenderer(this, mbp, secret);
+            qrMap = new QRMapRenderer(this, omp, secret);
         } catch (WriterException e) {
             e.printStackTrace();
             qrMap = null;
@@ -147,30 +133,30 @@ public class _2FA {
 
         if (qrMap == null) {
             ComponentMessage cM = new ComponentMessage();
-            cM.addPart(Message.FORMAT(Message.PREFIX_2FA, "§r§7n error occurred, please "));
-            cM.addPart("§6click here", ClickEvent.Action.OPEN_URL, "https://www.google.com/chart?chs=250x250&cht=qr&chl=" + otpAuth(mbp, secret), HoverEvent.Action.SHOW_TEXT, "§7Open QR Code in browser.");
+            cM.addPart(Message.FORMAT(Message.PREFIX_2FA, Color.RED, "§r§7n error occurred, please "));
+            cM.addPart("§6click here", ClickEvent.Action.OPEN_URL, "https://www.google.com/chart?chs=250x250&cht=qr&chl=" + otpAuth(omp, secret), HoverEvent.Action.SHOW_TEXT, "§7Open QR Code in browser.");
             cM.addPart("§7.");
 
-            cM.send(mbp);
+            cM.send(omp);
         } else {
-            MapView mapView = Bukkit.createMap(mbp.getWorld());
+            MapView mapView = Bukkit.createMap(omp.getWorld());
 
             ItemStack item = new ItemBuilder(Material.MAP, 1, mapView.getId(), "§c§l2FA").build();
 
-            mbp.getPlayer().getInventory().setItem(0, item);
-            mbp.getPlayer().getInventory().setHeldItemSlot(0);
+            omp.getPlayer().getInventory().setItem(0, item);
+            omp.getPlayer().getInventory().setHeldItemSlot(0);
 
             for (MapRenderer mapRenderer : mapView.getRenderers()) {
                 mapView.removeRenderer(mapRenderer);
             }
             mapView.addRenderer(qrMap);
 
-            mbp.getPlayer().sendMap(mapView);
+            omp.getPlayer().sendMap(mapView);
         }
     }
 
     public String otpAuth(OMPlayer omp, String secret) {
-        return "otpauth://totp/" + "MadBlock_2FA_IGN_" + mbp.getName() + "_UUID_" + UUIDUtils.trim(mbp.getUUID()) + "@" + MadBlock.DOMAIN + "?secret=" + secret;
+        return "otpauth://totp/" + "OrbitMines_2FA_IGN_" + omp.getName() + "_UUID_" + UUIDUtils.trim(omp.getUUID()) + "@" + OrbitMines.DOMAIN + "?secret=" + secret;
     }
 
     private String getSecret(UUID uuid) {

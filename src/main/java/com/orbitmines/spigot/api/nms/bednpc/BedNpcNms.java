@@ -1,5 +1,6 @@
 package com.orbitmines.spigot.api.nms.bednpc;
 
+import com.orbitmines.spigot.api.handlers.npc.BedNpc;
 import org.bukkit.Location;
 
 /*

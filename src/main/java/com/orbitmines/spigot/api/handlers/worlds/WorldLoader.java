@@ -159,6 +159,9 @@ public class WorldLoader {
         for (World world : worlds) {
             cleanUp(world);
         }
+        for (World world : normalWorlds) {
+            Bukkit.unloadWorld(world, true);
+        }
 
         cleanUpData();
     }

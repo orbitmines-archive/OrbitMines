@@ -1,8 +1,10 @@
 package com.orbitmines.spigot.api.nms.bednpc;
 
 import com.mojang.authlib.GameProfile;
+import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.Freezer;
-import com.orbitmines.spigot.api.utils.LocationUtils;
+import com.orbitmines.spigot.api.handlers.OMPlayer;
+import com.orbitmines.spigot.api.handlers.npc.BedNpc;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -30,7 +32,7 @@ public class BedNpcNms_1_8_R3 implements BedNpcNms {
         GameProfile profile = getProfileFrom(craftPlayer.getProfile(), "");
 
         /* Next Entity ID */
-        int entityId = bedNpc.getEntityId() != -1 ? bedNpc.getEntityId() : MadBlock.getInstance().getNms().entity().nextEntityId();
+        int entityId = bedNpc.getEntityId() != -1 ? bedNpc.getEntityId() : OrbitMines.getInstance().getNms().entity().nextEntityId();
 
         DataWatcher dataWatcher = clonedEntityHumanClass(bedNpc.getPlayer(), entityId);
 //        dataWatcher.watch(10, craftPlayer.getDataWatcher().getByte(10));
@@ -152,7 +154,7 @@ public class BedNpcNms_1_8_R3 implements BedNpcNms {
 //            }
 
             if (bedNpc.isFirstPerson() && watcher == bedNpc.getPlayer()) {
-                OMPlayer.getPlayer(bedNpc.getPlayer()).freeze(Freezer.ARMORSTAND_RIDE, bedNpc.getDirection().getAsNewLocation(LocationUtils.copy(location).subtract(0, 2, 0), 0.4));
+                OMPlayer.getPlayer(bedNpc.getPlayer()).freeze(Freezer.ARMORSTAND_RIDE, bedNpc.getDirection().getAsNewLocation(location.clone().subtract(0, 2, 0), 0.4));
             }
         }
 
@@ -163,7 +165,7 @@ public class BedNpcNms_1_8_R3 implements BedNpcNms {
                     ((CraftPlayer) watcher).getHandle().playerConnection.sendPacket(packetPlayOutPlayerInfoRemove);
                 }
             }
-        }.runTaskLater(MadBlock.getInstance(), 20);
+        }.runTaskLater(OrbitMines.getInstance(), 20);
 
         return entityId;
     }

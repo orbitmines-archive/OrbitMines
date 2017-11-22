@@ -1,9 +1,9 @@
 package com.orbitmines.spigot.api.handlers.itembuilders;
 
-import com.madblock.api.Color;
-import com.madblock.api.utils.RandomUtils;
-import com.madblock.spigot.MadBlock;
-import com.madblock.spigot.api.utils.ColorUtils;
+import com.orbitmines.api.Color;
+import com.orbitmines.api.utils.RandomUtils;
+import com.orbitmines.spigot.OrbitMines;
+import com.orbitmines.spigot.api.utils.ColorUtils;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
@@ -96,7 +96,7 @@ public class FireworkBuilder {
     }
 
     public FireworkBuilder explode() {
-        MadBlock.getInstance().getNms().firework().explode(firework);
+        OrbitMines.getInstance().getNms().firework().explode(firework);
 
         return this;
     }

@@ -1,12 +1,12 @@
 package com.orbitmines.spigot.api.handlers.leaderboard;
 
-import com.madblock.api.Rank;
-import com.madblock.api.VipRank;
-import com.madblock.api.database.Column;
-import com.madblock.api.database.Database;
-import com.madblock.api.database.Table;
-import com.madblock.api.database.Where;
-import com.madblock.api.handlers.CachedPlayer;
+import com.orbitmines.api.CachedPlayer;
+import com.orbitmines.api.StaffRank;
+import com.orbitmines.api.VipRank;
+import com.orbitmines.api.database.Column;
+import com.orbitmines.api.database.Database;
+import com.orbitmines.api.database.Table;
+import com.orbitmines.api.database.Where;
 import org.bukkit.Location;
 
 import java.util.*;
@@ -17,15 +17,17 @@ import java.util.*;
 public class DefaultLeaderBoard extends LeaderBoard {
 
     private final String name;
+    private final int size;
 
     private final Table table;
     private final Column[] columnArray;
     private final Where[] wheres;
 
-    public DefaultLeaderBoard(Location location, String name, Table table, Column uuidColumn, Column column, Where... wheres) {
+    public DefaultLeaderBoard(Location location, String name, int size, Table table, Column uuidColumn, Column column, Where... wheres) {
         super(location);
 
         this.name = name;
+        this.size = size;
         this.table = table;
         this.columnArray = new Column[] { uuidColumn, column };
         this.wheres = wheres;
@@ -47,8 +49,8 @@ public class DefaultLeaderBoard extends LeaderBoard {
         List<String> ordered = new ArrayList<>(map.keySet());
         ordered.sort(Comparator.comparing(map::get));
 
-        if (ordered.size() > 10)
-            ordered = ordered.subList(ordered.size() -10, ordered.size());
+        if (ordered.size() > size)
+            ordered = ordered.subList(ordered.size() -size, ordered.size());
 
         hologram.clearLines();
         hologram.addLine(name);
@@ -60,10 +62,10 @@ public class DefaultLeaderBoard extends LeaderBoard {
             CachedPlayer player = CachedPlayer.getPlayer(UUID.fromString(stringUuid));
             int count = map.get(stringUuid);
 
-            Rank rank = player.getRank();
+            StaffRank staffRank = player.getStaffRank();
             VipRank vipRank = player.getVipRank();
 
-            hologram.addLine("§7" + (i + 1) + ". " + (rank != Rank.NONE ? rank.getPrefixColor() : vipRank.getPrefixColor()).getChatColor() + player.getPlayerName() + "  §6" + getValue(player, count));
+            hologram.addLine("§7" + (i + 1) + ". " + (staffRank != StaffRank.NONE ? staffRank.getPrefixColor() : vipRank.getPrefixColor()).getChatColor() + player.getPlayerName() + "  §6" + getValue(player, count));
         }
 
         hologram.create();

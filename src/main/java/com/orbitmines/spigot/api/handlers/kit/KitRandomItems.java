@@ -1,7 +1,7 @@
 package com.orbitmines.spigot.api.handlers.kit;
 
-import com.madblock.api.utils.RandomUtils;
-import com.madblock.spigot.api.handlers.OMPlayer;
+import com.orbitmines.api.utils.RandomUtils;
+import com.orbitmines.spigot.api.handlers.OMPlayer;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -41,30 +41,30 @@ public class KitRandomItems extends Kit {
 
     @Override
     public void setItems(OMPlayer omp) {
-        super.setItems(mbp);
+        super.setItems(omp);
 
-        randomize(mbp);
+        randomize(omp);
     }
 
     @Override
     public void addItems(OMPlayer omp) {
-        super.addItems(mbp);
+        super.addItems(omp);
 
-        randomize(mbp);
+        randomize(omp);
     }
 
     @Override
     public void replaceItems(OMPlayer omp) {
-        super.replaceItems(mbp);
+        super.replaceItems(omp);
 
-        randomize(mbp);
+        randomize(omp);
     }
 
     private void randomize(OMPlayer omp) {
         int index = 0;
         for (List<ItemStack> items : getRandomItems()) {
             if (items != null && items.size() > 0)
-                mbp.getPlayer().getInventory().setItem(index, RandomUtils.randomFrom(items));
+                omp.getPlayer().getInventory().setItem(index, RandomUtils.randomFrom(items));
 
             index++;
         }

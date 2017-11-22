@@ -1,5 +1,11 @@
 package com.orbitmines.api;
 
+import com.orbitmines.api.database.Database;
+import com.orbitmines.api.database.Set;
+import com.orbitmines.api.database.Table;
+import com.orbitmines.api.database.Where;
+import com.orbitmines.api.database.tables.TableServers;
+
 /*
 * OrbitMines - @author Fadi Shawki - 2017
 */
@@ -20,9 +26,6 @@ public enum Server {
     Server(String name, Color color) {
         this.name = name;
         this.color = color;
-        this.players = 0;
-        this.maxPlayers = 0;
-        this.status = Status.OFFLINE;
     }
 
     public String getName() {
@@ -33,16 +36,32 @@ public enum Server {
         return color;
     }
 
+    public String getDisplayName() {
+        return color.getChatColor() + "§l" + name;
+    }
+
     public int getPlayers() {
-        return players;
+        return Database.get().getInt(Table.SERVERS, TableServers.PLAYERS, new Where(TableServers.SERVER, toString()));
+    }
+
+    public void setPlayers(int players) {
+        Database.get().update(Table.SERVERS, new Set(TableServers.PLAYERS, players), new Where(TableServers.SERVER, toString()));
     }
 
     public int getMaxPlayers() {
-        return maxPlayers;
+        return Database.get().getInt(Table.SERVERS, TableServers.MAX_PLAYERS, new Where(TableServers.SERVER, toString()));
+    }
+
+    public void setMaxPlayers(int maxPlayers) {
+        Database.get().update(Table.SERVERS, new Set(TableServers.MAX_PLAYERS, maxPlayers), new Where(TableServers.SERVER, toString()));
     }
 
     public Status getStatus() {
-        return status;
+        return Status.valueOf(Database.get().getString(Table.SERVERS, TableServers.STATUS, new Where(TableServers.SERVER, toString())));
+    }
+
+    public void setStatus(Status status) {
+        Database.get().update(Table.SERVERS, new Set(TableServers.STATUS, status.toString()), new Where(TableServers.SERVER, toString()));
     }
 
     public enum Status {

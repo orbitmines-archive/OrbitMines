@@ -8,6 +8,6 @@ import org.bukkit.entity.ArmorStand;
  */
 public interface ArmorStandNms {
 
-    public ArmorStand spawn(Location location, boolean visible);
+    ArmorStand spawn(Location location, boolean visible);
 
 }

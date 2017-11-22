@@ -4,28 +4,14 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
-import com.madblock.spigot.api.handlers.OMPlayer;
+import com.orbitmines.spigot.api.handlers.OMPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.map.*;
 
 import java.awt.*;
 
 /*
-* MadBlock, LLC CONFIDENTIAL - @author Fadi Shawki - 2017
-* __________________
-*
-*  2017 MadBlock, LLC 
-*  All Rights Reserved.
-*
-* NOTICE:  All information contained herein is, and remains
-* the property of MadBlock, LLC and its suppliers,
-* if any.  The intellectual and technical concepts contained
-* herein are proprietary to MadBlock, LLC
-* and its suppliers and may be covered by U.S. and Foreign Patents,
-* patents in process, and are protected by trade secret or copyright law.
-* Dissemination of this information or reproduction of this material
-* is strictly forbidden unless prior written permission is obtained
-* from MadBlock, LLC.
+* OrbitMines - @author Fadi Shawki - 2017
 */
 public class QRMapRenderer extends MapRenderer {
 
@@ -34,9 +20,9 @@ public class QRMapRenderer extends MapRenderer {
     private final BitMatrix bitMatrix;
 
     public QRMapRenderer(_2FA _2fa, OMPlayer omp, String secret) throws WriterException {
-        this.mbp = mbp;
+        this.omp = omp;
         this.secret = secret;
-        this.bitMatrix = new QRCodeWriter().encode(_2fa.otpAuth(mbp, secret), BarcodeFormat.QR_CODE, 128, 128);
+        this.bitMatrix = new QRCodeWriter().encode(_2fa.otpAuth(omp, secret), BarcodeFormat.QR_CODE, 128, 128);
     }
 
     @Override
