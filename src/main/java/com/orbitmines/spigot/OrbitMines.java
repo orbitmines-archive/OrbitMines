@@ -87,7 +87,7 @@ public class OrbitMines extends JavaPlugin {
 
         /* Setup World Loader & Lobby */
         resourceFolder = configHandler.get("resources").getString("path");
-        worldLoader = new WorldLoader(resourceFolder, true);
+        worldLoader = new WorldLoader(resourceFolder, server.cleanUpPlayerData());
 
         lobby = OrbitMinesMap.getLobby(server);
 

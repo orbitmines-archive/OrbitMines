@@ -11,21 +11,23 @@ import com.orbitmines.api.database.tables.TableServers;
 */
 public enum Server {
 
-    KITPVP("KitPvP", Color.RED),
-    PRISON("Prison", Color.MAROON),
-    CREATIVE("Creative", Color.FUCHSIA),
-    HUB("Hub", Color.TEAL),
-    SURVIVAL("Survival", Color.LIME),
-    SKYBLOCK("SkyBlock", Color.PURPLE),
-    FOG("FoG", Color.YELLOW),
-    MINIGAMES("MiniGames", Color.WHITE);
+    KITPVP("KitPvP", Color.RED, true),
+    PRISON("Prison", Color.MAROON, false),
+    CREATIVE("Creative", Color.FUCHSIA, false),
+    HUB("Hub", Color.TEAL, true),
+    SURVIVAL("Survival", Color.LIME, false),
+    SKYBLOCK("SkyBlock", Color.PURPLE, false),
+    FOG("FoG", Color.YELLOW, false),
+    MINIGAMES("MiniGames", Color.WHITE, true);
 
     private final String name;
     private final Color color;
+    private final boolean cleanUpPlayerData;
 
-    Server(String name, Color color) {
+    Server(String name, Color color, boolean cleanUpPlayerData) {
         this.name = name;
         this.color = color;
+        this.cleanUpPlayerData = cleanUpPlayerData;
     }
 
     public String getName() {
@@ -34,6 +36,10 @@ public enum Server {
 
     public Color getColor() {
         return color;
+    }
+
+    public boolean cleanUpPlayerData() {
+        return cleanUpPlayerData;
     }
 
     public String getDisplayName() {
