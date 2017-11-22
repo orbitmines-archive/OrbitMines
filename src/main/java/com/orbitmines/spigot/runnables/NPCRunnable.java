@@ -1,8 +1,6 @@
 package com.orbitmines.spigot.runnables;
 
-import com.orbitmines.spigot.api.handlers.npc.FloatingItem;
-import com.orbitmines.spigot.api.handlers.npc.Hologram;
-import com.orbitmines.spigot.api.handlers.npc.NpcArmorStand;
+import com.orbitmines.spigot.api.handlers.npc.*;
 import com.orbitmines.spigot.api.runnables.SpigotRunnable;
 
 /*
@@ -32,6 +30,41 @@ public class NPCRunnable extends SpigotRunnable {
         for (Hologram hologram : Hologram.getHolograms()) {
             if (hologram.hideOnJoin())
                 hologram.createForWatchers();
+        }
+
+        /* Moving Npcs */
+        for (NPC npc : NPC.getNpcs()) {
+            if (!(npc instanceof NPCMoving))
+                continue;
+
+            NPCMoving npcMoving = (NPCMoving) npc;
+
+            if (npcMoving.getMoveLocations().size() > 0) {
+                if (npcMoving.getMovingTo() != null) {
+                    if (npcMoving.isAtLocation(npcMoving.getMovingTo())) {
+                        int index = npcMoving.getMovingToIndex();
+                        npcMoving.setSecondsToStay(npcMoving.getSecondsToStay() - 1);
+
+                        if (npcMoving.getSecondsToStay() == 0) {
+                            npcMoving.setMovingTo(npcMoving.nextLocation());
+                            npcMoving.setSecondsToStay(npcMoving.getSecondsToStay(npcMoving.getMovingTo()));
+
+                            if (npcMoving.getSecondsToStay() == 0) {
+                                npcMoving.setMovingTo(npcMoving.nextLocation());
+                                npcMoving.setSecondsToStay(npcMoving.getSecondsToStay(npcMoving.getMovingTo()));
+                            }
+                        } else {
+                            int seconds = npcMoving.getSecondsToStay();
+
+                            npcMoving.arrive(index, seconds);
+                        }
+                    }
+                } else {
+                    npcMoving.setMovingTo(npcMoving.nextLocation());
+                }
+            }
+
+            npcMoving.moveToLocation(npcMoving.getMovingTo());
         }
     }
 }

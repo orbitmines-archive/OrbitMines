@@ -4,6 +4,7 @@ import com.orbitmines.spigot.api.Freezer;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 
@@ -12,7 +13,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 */
 public class FreezeEvent implements Listener {
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onMove(PlayerMoveEvent event) {
         OMPlayer omp = OMPlayer.getPlayer(event.getPlayer());
         if (!omp.isFrozen())

@@ -31,7 +31,7 @@ public class NpcEvents implements Listener {
         orbitMines = OrbitMines.getInstance();
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onInteractEntityEvent(PlayerInteractEntityEvent event) {
         NPC npc = NPC.getNpc(event.getRightClicked());
         if (npc == null)
@@ -47,7 +47,7 @@ public class NpcEvents implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onEntityDamageEvent(EntityDamageEvent event) {
         NPC npc = NPC.getNpc(event.getEntity());
         if (npc != null)
@@ -91,7 +91,7 @@ public class NpcEvents implements Listener {
 
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onInteractAtEntityEvent(PlayerInteractAtEntityEvent event) {
         if (!(event.getRightClicked() instanceof ArmorStand))
             return;
@@ -134,7 +134,7 @@ public class NpcEvents implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onWorldUnload(WorldUnloadEvent event) {
         String worldName = event.getWorld().getName();
 

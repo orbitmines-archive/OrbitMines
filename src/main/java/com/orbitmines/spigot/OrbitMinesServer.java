@@ -5,6 +5,7 @@ import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.PluginMessageHandler;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 /*
 * OrbitMines - @author Fadi Shawki - 2017
@@ -19,6 +20,10 @@ public abstract class OrbitMinesServer {
         this.orbitMines = orbitMines;
         this.server = server;
         this.messageHandler = messageHandler;
+
+        registerEvents();
+        registerCommands();
+        registerRunnables();
     }
 
     public abstract void onEnable();
@@ -27,7 +32,21 @@ public abstract class OrbitMinesServer {
 
     public abstract OMPlayer newPlayerInstance(Player player);
 
+    /* OMPlayer is not yet initiated here */
+    public abstract boolean teleportToSpawn(Player player);
+
+    /* OMPlayer is not yet initiated here */
     public abstract Location getSpawnLocation(Player player);
+
+    public abstract void registerEvents();
+
+    public abstract void registerCommands();
+
+    public abstract void registerRunnables();
+
+    public void format(AsyncPlayerChatEvent event, OMPlayer omp) {
+
+    }
 
     public static OrbitMinesServer getServer(OrbitMines orbitMines, Server server) {
         switch (server) {

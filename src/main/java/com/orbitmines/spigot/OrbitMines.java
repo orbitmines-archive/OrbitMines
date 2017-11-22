@@ -104,12 +104,17 @@ public class OrbitMines extends JavaPlugin {
         /* Register */
         registerCommands();
         registerEvents(
-            new ClickEvent(),
+                new AfkEvents(),
+                new ClickEvent(),
                 new CommandPreprocessEvent(),
                 new FreezeEvent(),
                 new InteractEvent(),
+                new JoinQuitEvents(),
                 new NpcEvents(),
-                new VoidDamageEvent()
+                new PlayerChatEvent(),
+                new SpawnLocationEvent(),
+                new VoidDamageEvent(),
+                new WorldAdvancementsFix_1_12()
         );
         registerRunnables();
 

@@ -40,4 +40,8 @@ public enum VipRank {
     public String getPrefix(Color color) {
         return this == NONE ? color.getChatColor() : prefixColor.getChatColor() + "§l" + name + (color == null ? "" : "§r " + color.getChatColor());
     }
+
+    public String getDisplayName() {
+        return this == NONE ? "§f§lNone" : prefixColor.getChatColor() + "§l" + name;
+    }
 }

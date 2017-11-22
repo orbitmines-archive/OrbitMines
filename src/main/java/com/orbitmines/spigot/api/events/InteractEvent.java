@@ -4,6 +4,7 @@ import com.orbitmines.spigot.api.handlers.ItemInteraction;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -13,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 */
 public class InteractEvent implements Listener {
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         OMPlayer omp = OMPlayer.getPlayer(player);

@@ -2,6 +2,7 @@ package com.orbitmines.spigot.api.events;
 
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 
@@ -10,7 +11,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 */
 public class VoidDamageEvent implements Listener {
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onDamage(EntityDamageEvent event) {
         if (event.getCause() == EntityDamageEvent.DamageCause.VOID && event.getEntity() instanceof LivingEntity)
             event.setDamage(((LivingEntity) event.getEntity()).getHealth());

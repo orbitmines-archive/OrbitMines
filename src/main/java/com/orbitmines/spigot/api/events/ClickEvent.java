@@ -4,6 +4,7 @@ import com.orbitmines.spigot.api.handlers.GUI;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
@@ -12,7 +13,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 */
 public class ClickEvent implements Listener {
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onClick(InventoryClickEvent event) {
         OMPlayer omp = OMPlayer.getPlayer((Player) event.getWhoClicked());
 
