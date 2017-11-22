@@ -1,6 +1,6 @@
 package com.orbitmines.spigot.api.nms.npc.slime;
 
-import com.orbitmines.spigot.api.OrbitMinesApi;
+import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.nms.npc.NpcNms_1_10_R1;
 import com.orbitmines.spigot.api.nms.npc.slime.custom.EntitySlime_1_10_R1;
 import net.minecraft.server.v1_10_R1.World;
@@ -15,7 +15,7 @@ import org.bukkit.entity.Entity;
 public class SlimeNpc_1_10_R1 implements SlimeNpc {
 
     public SlimeNpc_1_10_R1() {
-        OrbitMinesApi.getApi().getNms().npc().addCustomEntity(EntitySlime_1_10_R1.class, "CustomSlime", Id);
+        OrbitMines.getInstance().getNms().npc().addCustomEntity(EntitySlime_1_10_R1.class, "CustomSlime", Id);
     }
 
     @Override

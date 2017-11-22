@@ -1,6 +1,6 @@
 package com.orbitmines.spigot.api.nms.npc.vindicator;
 
-import com.orbitmines.spigot.api.OrbitMinesApi;
+import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.nms.npc.NpcNms_1_12_R1;
 import com.orbitmines.spigot.api.nms.npc.vindicator.custom.EntityVindicator_1_12_R1;
 import net.minecraft.server.v1_12_R1.World;
@@ -15,7 +15,7 @@ import org.bukkit.entity.Entity;
 public class VindicatorNpc_1_12_R1 implements VindicatorNpc {
 
     public VindicatorNpc_1_12_R1() {
-        OrbitMinesApi.getApi().getNms().npc().addCustomEntity(EntityVindicator_1_12_R1.class, "CustomVindicator", Id);
+        OrbitMines.getInstance().getNms().npc().addCustomEntity(EntityVindicator_1_12_R1.class, "CustomVindicator", Id);
     }
 
     @Override

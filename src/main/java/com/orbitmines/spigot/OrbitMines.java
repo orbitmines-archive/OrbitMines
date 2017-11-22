@@ -1,10 +1,11 @@
 package com.orbitmines.spigot;
 
-import com.orbitmines.api.Color;
-import com.orbitmines.api.Message;
-import com.orbitmines.api.ScrollerList;
-import com.orbitmines.api.Server;
+import com.orbitmines.api.*;
+import com.orbitmines.api.database.Column;
 import com.orbitmines.api.database.Database;
+import com.orbitmines.api.database.Table;
+import com.orbitmines.api.database.Where;
+import com.orbitmines.api.database.tables.TableServers;
 import com.orbitmines.spigot.api._2fa._2FA;
 import com.orbitmines.spigot.api.events.*;
 import com.orbitmines.spigot.api.handlers.ConfigHandler;
@@ -70,12 +71,20 @@ public class OrbitMines extends JavaPlugin {
         database.setupTables();
 
         /* Setup Server */
+        String ip = getServer().getIp();
+        int port = getServer().getPort();
         Server server;
 
-        try {
-            server = Server.valueOf(configHandler.get("settings").getString("server"));
-        } catch(IllegalArgumentException ex) {
-            getLogger().warning("Invalid Server in settings.yml, shutting down...");
+        if (Database.get().contains(Table.SERVERS, new Column[] { TableServers.IP, TableServers.PORT }, new Where(TableServers.IP, ip), new Where(TableServers.PORT, port))) {
+            try {
+                server = Server.valueOf(Database.get().getString(Table.SERVERS, TableServers.SERVER, new Where(TableServers.IP, ip), new Where(TableServers.PORT, port)));
+            } catch(IllegalArgumentException ex) {
+                getLogger().warning("Invalid Server in the database, shutting down...");
+                getServer().shutdown();
+                return;
+            }
+        } else {
+            getLogger().warning("Server IP and Port are not found in the database, shutting down...");
             getServer().shutdown();
             return;
         }
@@ -194,16 +203,29 @@ public class OrbitMines extends JavaPlugin {
     }
 
     public void broadcast(String... messages) {
-        broadcast(new Message(messages));
+        broadcast(null, new Message(messages));
     }
 
     public void broadcast(String prefix, Color prefixColor, String... messages) {
-        broadcast(new Message(prefix, prefixColor, messages));
+        broadcast(null, new Message(prefix, prefixColor, messages));
     }
 
     public void broadcast(Message message) {
+        broadcast(null, message);
+    }
+
+    public void broadcast(StaffRank staffRank, String... messages) {
+        broadcast(staffRank, new Message(messages));
+    }
+
+    public void broadcast(StaffRank staffRank, String prefix, Color prefixColor, String... messages) {
+        broadcast(staffRank, new Message(prefix, prefixColor, messages));
+    }
+
+    public void broadcast(StaffRank staffRank, Message message) {
         for (OMPlayer omp : OMPlayer.getPlayers()) {
-            omp.sendMessage(message);
+            if (staffRank == null || omp.isEligible(staffRank))
+                omp.sendMessage(message);
         }
     }
 }

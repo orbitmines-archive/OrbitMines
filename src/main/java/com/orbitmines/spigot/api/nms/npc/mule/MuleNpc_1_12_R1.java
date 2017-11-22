@@ -1,6 +1,6 @@
 package com.orbitmines.spigot.api.nms.npc.mule;
 
-import com.orbitmines.spigot.api.OrbitMinesApi;
+import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.nms.npc.NpcNms_1_12_R1;
 import com.orbitmines.spigot.api.nms.npc.mule.custom.EntityMule_1_12_R1;
 import net.minecraft.server.v1_12_R1.World;
@@ -15,7 +15,7 @@ import org.bukkit.entity.Entity;
 public class MuleNpc_1_12_R1 implements MuleNpc {
 
     public MuleNpc_1_12_R1() {
-        OrbitMinesApi.getApi().getNms().npc().addCustomEntity(EntityMule_1_12_R1.class, "CustomMule", Id);
+        OrbitMines.getInstance().getNms().npc().addCustomEntity(EntityMule_1_12_R1.class, "CustomMule", Id);
     }
 
     @Override

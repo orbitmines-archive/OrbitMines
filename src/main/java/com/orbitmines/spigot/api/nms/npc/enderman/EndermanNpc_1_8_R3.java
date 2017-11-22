@@ -1,6 +1,6 @@
 package com.orbitmines.spigot.api.nms.npc.enderman;
 
-import com.orbitmines.spigot.api.OrbitMinesApi;
+import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.nms.npc.NpcNms_1_8_R3;
 import com.orbitmines.spigot.api.nms.npc.enderman.custom.EntityEnderman_1_8_R3;
 import net.minecraft.server.v1_8_R3.World;
@@ -15,7 +15,7 @@ import org.bukkit.entity.Entity;
 public class EndermanNpc_1_8_R3 implements EndermanNpc {
 
     public EndermanNpc_1_8_R3() {
-        OrbitMinesApi.getApi().getNms().npc().addCustomEntity(EntityEnderman_1_8_R3.class, "CustomEnderman", Id);
+        OrbitMines.getInstance().getNms().npc().addCustomEntity(EntityEnderman_1_8_R3.class, "CustomEnderman", Id);
     }
 
     @Override

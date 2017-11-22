@@ -1,6 +1,6 @@
 package com.orbitmines.spigot.api.nms.npc.villager;
 
-import com.orbitmines.spigot.api.OrbitMinesApi;
+import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.nms.npc.NpcNms_1_8_R3;
 import com.orbitmines.spigot.api.nms.npc.villager.custom.EntityVillager_1_8_R3;
 import net.minecraft.server.v1_8_R3.World;
@@ -15,7 +15,7 @@ import org.bukkit.entity.Entity;
 public class VillagerNpc_1_8_R3 implements VillagerNpc {
 
     public VillagerNpc_1_8_R3() {
-        OrbitMinesApi.getApi().getNms().npc().addCustomEntity(EntityVillager_1_8_R3.class, "CustomVillager", Id);
+        OrbitMines.getInstance().getNms().npc().addCustomEntity(EntityVillager_1_8_R3.class, "CustomVillager", Id);
     }
 
     @Override

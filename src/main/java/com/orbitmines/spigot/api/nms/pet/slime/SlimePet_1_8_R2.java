@@ -1,7 +1,7 @@
 package com.orbitmines.spigot.api.nms.pet.slime;
 
 import com.orbitmines.spigot.api.Mob;
-import com.orbitmines.spigot.api.OrbitMinesApi;
+import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.nms.npc.NpcNms_1_8_R2;
 import com.orbitmines.spigot.api.nms.pet.Pet_1_8_R2;
 import net.minecraft.server.v1_8_R2.EntityHuman;
@@ -21,7 +21,7 @@ import java.util.List;
 public class SlimePet_1_8_R2 implements SlimePet {
 
     public SlimePet_1_8_R2() {
-        OrbitMinesApi.getApi().getNms().npc().addCustomEntity(CustomNPC.class, "CustomSlime", Mob.SLIME.getEggId());
+        OrbitMines.getInstance().getNms().npc().addCustomEntity(CustomNPC.class, "CustomSlime", Mob.SLIME.getEggId());
     }
 
     @Override

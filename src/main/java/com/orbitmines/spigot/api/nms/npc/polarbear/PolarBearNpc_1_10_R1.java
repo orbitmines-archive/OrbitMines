@@ -1,6 +1,6 @@
 package com.orbitmines.spigot.api.nms.npc.polarbear;
 
-import com.orbitmines.spigot.api.OrbitMinesApi;
+import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.nms.npc.NpcNms_1_10_R1;
 import com.orbitmines.spigot.api.nms.npc.polarbear.custom.EntityPolarBear_1_10_R1;
 import net.minecraft.server.v1_10_R1.World;
@@ -15,7 +15,7 @@ import org.bukkit.entity.Entity;
 public class PolarBearNpc_1_10_R1 implements PolarBearNpc {
 
     public PolarBearNpc_1_10_R1() {
-        OrbitMinesApi.getApi().getNms().npc().addCustomEntity(EntityPolarBear_1_10_R1.class, "CustomPolarBear", Id);
+        OrbitMines.getInstance().getNms().npc().addCustomEntity(EntityPolarBear_1_10_R1.class, "CustomPolarBear", Id);
     }
 
     @Override

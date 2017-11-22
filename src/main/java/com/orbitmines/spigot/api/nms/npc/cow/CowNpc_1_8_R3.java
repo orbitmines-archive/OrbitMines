@@ -1,6 +1,6 @@
 package com.orbitmines.spigot.api.nms.npc.cow;
 
-import com.orbitmines.spigot.api.OrbitMinesApi;
+import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.nms.npc.NpcNms_1_8_R3;
 import com.orbitmines.spigot.api.nms.npc.cow.custom.EntityCow_1_8_R3;
 import net.minecraft.server.v1_8_R3.World;
@@ -15,7 +15,7 @@ import org.bukkit.entity.Entity;
 public class CowNpc_1_8_R3 implements CowNpc {
 
     public CowNpc_1_8_R3() {
-        OrbitMinesApi.getApi().getNms().npc().addCustomEntity(EntityCow_1_8_R3.class, "CustomCow", Id);
+        OrbitMines.getInstance().getNms().npc().addCustomEntity(EntityCow_1_8_R3.class, "CustomCow", Id);
     }
 
     @Override

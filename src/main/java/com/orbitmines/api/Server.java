@@ -70,6 +70,14 @@ public enum Server {
         Database.get().update(Table.SERVERS, new Set(TableServers.STATUS, status.toString()), new Where(TableServers.SERVER, toString()));
     }
 
+    public String getIp() {
+        return Database.get().getString(Table.SERVERS, TableServers.IP, new Where(TableServers.SERVER, toString()));
+    }
+
+    public int getPort() {
+        return Database.get().getInt(Table.SERVERS, TableServers.PORT, new Where(TableServers.SERVER, toString()));
+    }
+
     public enum Status {
 
         ONLINE("Online", Color.LIME),

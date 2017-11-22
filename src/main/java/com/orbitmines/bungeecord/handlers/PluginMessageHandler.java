@@ -134,10 +134,7 @@ public class PluginMessageHandler implements Listener {
                     String serverName = in.readUTF();
                     boolean notify = Boolean.parseBoolean(in.readUTF());
 
-                    if (!serverName.equals("LOBBY"))
-                        mbp.connect(bungee.getServerFinder().getServer(serverName), notify);
-                    else
-                        mbp.connectToLobby(notify);
+                    mbp.connect(bungee.getServer(serverName), notify);
 
                     break;
                 }

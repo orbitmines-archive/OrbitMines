@@ -1,5 +1,9 @@
 package com.orbitmines.spigot.api.handlers.worlds;
 
+import com.orbitmines.api.database.Column;
+import com.orbitmines.api.database.Database;
+import com.orbitmines.api.database.Table;
+import com.orbitmines.api.database.tables.TableMaps;
 import com.orbitmines.spigot.api.handlers.worlds.flatgenerator.WorldCreatorFlat;
 import com.orbitmines.spigot.api.handlers.worlds.voidgenerator.WorldCreatorVoid;
 import com.orbitmines.spigot.api.utils.WorldUtils;
@@ -11,6 +15,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -34,6 +39,18 @@ public class WorldLoader {
         this.cleanUpPlayerData = cleanUpPlayerData;
 
         cleanUpData();
+
+        /* Cleanup WorldData after crash or forcibly closed servers */
+        String worldContainer = Bukkit.getWorldContainer().getAbsoluteFile().getPath();
+
+        List<Map<Column, String>> entries = Database.get().getEntries(Table.MAPS, TableMaps.WORLD_NAME);
+
+        for (Map<Column, String> entry : entries) {
+            File file = new File(worldContainer + "/" + entry.get(TableMaps.WORLD_NAME));
+
+            if (file.exists())
+                deleteDirectory(file);
+        }
     }
 
     /*

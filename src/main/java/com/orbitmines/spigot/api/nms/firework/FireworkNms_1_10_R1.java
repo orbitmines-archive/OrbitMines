@@ -1,6 +1,6 @@
 package com.orbitmines.spigot.api.nms.firework;
 
-import com.orbitmines.spigot.api.OrbitMinesApi;
+import com.orbitmines.spigot.OrbitMines;
 import org.bukkit.craftbukkit.v1_10_R1.entity.CraftFirework;
 import org.bukkit.entity.Firework;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -10,10 +10,10 @@ import org.bukkit.scheduler.BukkitRunnable;
  */
 public class FireworkNms_1_10_R1 implements FireworkNms {
 
-    private OrbitMinesApi api;
+    private OrbitMines orbitMines;
 
     public FireworkNms_1_10_R1() {
-        this.api = OrbitMinesApi.getApi();
+        this.orbitMines = OrbitMines.getInstance();
     }
 
     @Override
@@ -22,6 +22,6 @@ public class FireworkNms_1_10_R1 implements FireworkNms {
             public void run() {
                 ((CraftFirework) firework).getHandle().expectedLifespan = 0;
             }
-        }.runTaskLater(api, 1);
+        }.runTaskLater(orbitMines, 1);
     }
 }

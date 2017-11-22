@@ -1,7 +1,7 @@
 package com.orbitmines.spigot.api.nms.pet.silverfish;
 
 import com.orbitmines.spigot.api.Mob;
-import com.orbitmines.spigot.api.OrbitMinesApi;
+import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.nms.npc.NpcNms_1_8_R3;
 import com.orbitmines.spigot.api.nms.pet.Pet_1_8_R3;
 import net.minecraft.server.v1_8_R3.EntityHuman;
@@ -21,7 +21,7 @@ import java.util.List;
 public class SilverfishPet_1_8_R3 implements SilverfishPet {
 
     public SilverfishPet_1_8_R3() {
-        OrbitMinesApi.getApi().getNms().npc().addCustomEntity(CustomNPC.class, "CustomSilverfish", Mob.SILVERFISH.getEggId());
+        OrbitMines.getInstance().getNms().npc().addCustomEntity(CustomNPC.class, "CustomSilverfish", Mob.SILVERFISH.getEggId());
     }
 
     @Override

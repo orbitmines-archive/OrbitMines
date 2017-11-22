@@ -17,4 +17,8 @@ public class TableVotes extends Table {
     public TableVotes() {
         super("Votes", UUID, VOTES, TOTAL_VOTES, CACHED_VOTES, VOTE_TIME_STAMPS);
     }
+
+    public String[] values(String uuid, String votes, String totalVotes, String cachedVotes, String voteTimeStamps) {
+        return new String[] { uuid, votes, totalVotes, cachedVotes, voteTimeStamps };
+    }
 }

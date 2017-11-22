@@ -4,6 +4,8 @@ import com.orbitmines.api.PluginMessage;
 import com.orbitmines.api.ServerList;
 import com.orbitmines.api.utils.uuid.UUIDUtils;
 import com.orbitmines.bungeecord.OrbitMinesBungee;
+import com.orbitmines.bungeecord.handlers.BungeePlayer;
+import com.orbitmines.bungeecord.utils.ConsoleUtils;
 import com.orbitmines.spigot.api.handlers.data.VoteData;
 import com.vexsoftware.votifier.model.Vote;
 import com.vexsoftware.votifier.model.VotifierEvent;
@@ -29,14 +31,17 @@ public class VoteEvent implements Listener {
         UUID uuid = UUIDUtils.getUUIDFromDatabase(vote.getUsername());
 
         if (uuid == null) {/* Player doesn't exist / hasn't been on the server yet */
-            .println("Vote received for unknown player: '" + vote.getUsername() + "'");
+            ConsoleUtils.warn("Vote received for unknown player: '" + vote.getUsername() + "'");
             return;
         }
+//        TODO
+//        if (vote.getUsername().equalsIgnoreCase("O_o_Fadi_o_O"))
+//            return;
 
         ServerList serverList = ServerList.fromDomain(vote.getServiceName());
 
         if (serverList == null) {
-            .println("Unknown server list: " + vote.getServiceName() + ".");
+            ConsoleUtils.warn("Unknown server list: " + vote.getServiceName() + ".");
             return;
         }
 
@@ -46,10 +51,13 @@ public class VoteEvent implements Listener {
 
         data.addVote(serverList, Long.parseLong(vote.getTimeStamp()));
 
-        if (player == null)
-            return;/* Offline */
+        BungeePlayer omp = BungeePlayer.getPlayer(uuid);
+
+        if (omp == null)
+            /* Offline */
+            return;
 
         /* Online so we force a stats update, send a message & handle the vote */
-        plugin.getSpigotUtils().dataTransfer(PluginMessage.CHECK_VOTE_CACHE, omp.getPlayer(), uuid.toString());
+        bungee.getMessageHandler().dataTransfer(PluginMessage.CHECK_VOTE_CACHE, omp.getPlayer(), uuid.toString());
     }
 }

@@ -1,6 +1,6 @@
 package com.orbitmines.spigot.api.nms.npc.chicken;
 
-import com.orbitmines.spigot.api.OrbitMinesApi;
+import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.nms.npc.NpcNms_1_8_R2;
 import com.orbitmines.spigot.api.nms.npc.chicken.custom.EntityChicken_1_8_R2;
 import net.minecraft.server.v1_8_R2.World;
@@ -15,7 +15,7 @@ import org.bukkit.entity.Entity;
 public class ChickenNpc_1_8_R2 implements ChickenNpc {
 
     public ChickenNpc_1_8_R2() {
-        OrbitMinesApi.getApi().getNms().npc().addCustomEntity(EntityChicken_1_8_R2.class, "CustomChicken", Id);
+        OrbitMines.getInstance().getNms().npc().addCustomEntity(EntityChicken_1_8_R2.class, "CustomChicken", Id);
     }
 
     @Override

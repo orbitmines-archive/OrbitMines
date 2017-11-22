@@ -1,6 +1,6 @@
 package com.orbitmines.spigot.api.nms.npc.squid;
 
-import com.orbitmines.spigot.api.OrbitMinesApi;
+import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.nms.npc.NpcNms_1_9_R2;
 import com.orbitmines.spigot.api.nms.npc.squid.custom.EntitySquid_1_9_R2;
 import net.minecraft.server.v1_9_R2.World;
@@ -15,7 +15,7 @@ import org.bukkit.entity.Entity;
 public class SquidNpc_1_9_R2 implements SquidNpc {
 
     public SquidNpc_1_9_R2() {
-        OrbitMinesApi.getApi().getNms().npc().addCustomEntity(EntitySquid_1_9_R2.class, "CustomSquid", Id);
+        OrbitMines.getInstance().getNms().npc().addCustomEntity(EntitySquid_1_9_R2.class, "CustomSquid", Id);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.orbitmines.spigot.api.nms.npc.zombie;
 
-import com.orbitmines.spigot.api.OrbitMinesApi;
+import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.nms.npc.NpcNms_1_9_R2;
 import com.orbitmines.spigot.api.nms.npc.zombie.custom.EntityZombie_1_9_R2;
 import net.minecraft.server.v1_9_R2.World;
@@ -15,7 +15,7 @@ import org.bukkit.entity.Entity;
 public class ZombieNpc_1_9_R2 implements ZombieNpc {
 
     public ZombieNpc_1_9_R2() {
-        OrbitMinesApi.getApi().getNms().npc().addCustomEntity(EntityZombie_1_9_R2.class, "CustomZombie", Id);
+        OrbitMines.getInstance().getNms().npc().addCustomEntity(EntityZombie_1_9_R2.class, "CustomZombie", Id);
     }
 
     @Override

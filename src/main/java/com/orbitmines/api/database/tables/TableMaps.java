@@ -19,4 +19,8 @@ public class TableMaps extends Table {
     public TableMaps() {
         super("Maps", WORLD_NAME, WORLD_GENERATOR, NAME, TYPE, SERVER, ENABLED, AUTHORS);
     }
+
+    public String[] values(String name, String worldName, String worldGenerator, String type, String server, String enabled, String authors) {
+        return new String[] { name, worldName, worldGenerator, type, server, enabled, authors };
+    }
 }

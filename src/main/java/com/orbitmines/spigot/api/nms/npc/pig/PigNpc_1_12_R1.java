@@ -1,6 +1,6 @@
 package com.orbitmines.spigot.api.nms.npc.pig;
 
-import com.orbitmines.spigot.api.OrbitMinesApi;
+import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.nms.npc.NpcNms_1_12_R1;
 import com.orbitmines.spigot.api.nms.npc.pig.custom.EntityPig_1_12_R1;
 import net.minecraft.server.v1_12_R1.World;
@@ -15,7 +15,7 @@ import org.bukkit.entity.Entity;
 public class PigNpc_1_12_R1 implements PigNpc {
 
     public PigNpc_1_12_R1() {
-        OrbitMinesApi.getApi().getNms().npc().addCustomEntity(EntityPig_1_12_R1.class, "CustomPig", Id);
+        OrbitMines.getInstance().getNms().npc().addCustomEntity(EntityPig_1_12_R1.class, "CustomPig", Id);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.orbitmines.spigot.api.nms.npc.cavespider;
 
-import com.orbitmines.spigot.api.OrbitMinesApi;
+import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.nms.npc.NpcNms_1_8_R3;
 import com.orbitmines.spigot.api.nms.npc.cavespider.custom.EntityCaveSpider_1_8_R3;
 import net.minecraft.server.v1_8_R3.World;
@@ -15,7 +15,7 @@ import org.bukkit.entity.Entity;
 public class CaveSpiderNpc_1_8_R3 implements CaveSpiderNpc {
 
     public CaveSpiderNpc_1_8_R3() {
-        OrbitMinesApi.getApi().getNms().npc().addCustomEntity(EntityCaveSpider_1_8_R3.class, "CustomCaveSpider", Id);
+        OrbitMines.getInstance().getNms().npc().addCustomEntity(EntityCaveSpider_1_8_R3.class, "CustomCaveSpider", Id);
     }
 
     @Override

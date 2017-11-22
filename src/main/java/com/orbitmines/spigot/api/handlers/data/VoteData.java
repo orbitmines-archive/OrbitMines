@@ -33,7 +33,7 @@ public class VoteData extends Data {
     @Override
     public void load() {
         if (!Database.get().contains(table, UUID, new Where(UUID, uuid.toString()))) {
-            Database.get().insert(table, table.values(uuid.toString(), votes + "", totalVotes + "", cachedVotes + "", serializeTimeStamps()));
+            Database.get().insert(table, Table.VOTES.values(uuid.toString(), votes + "", totalVotes + "", cachedVotes + "", serializeTimeStamps()));
         } else {
             Map<Column, String> values = Database.get().getValues(table, new Column[] {
                     VOTES,

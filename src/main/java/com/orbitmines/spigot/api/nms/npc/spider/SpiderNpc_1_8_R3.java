@@ -1,6 +1,6 @@
 package com.orbitmines.spigot.api.nms.npc.spider;
 
-import com.orbitmines.spigot.api.OrbitMinesApi;
+import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.nms.npc.NpcNms_1_8_R3;
 import com.orbitmines.spigot.api.nms.npc.spider.custom.EntitySpider_1_8_R3;
 import net.minecraft.server.v1_8_R3.World;
@@ -15,7 +15,7 @@ import org.bukkit.entity.Entity;
 public class SpiderNpc_1_8_R3 implements SpiderNpc {
 
     public SpiderNpc_1_8_R3() {
-        OrbitMinesApi.getApi().getNms().npc().addCustomEntity(EntitySpider_1_8_R3.class, "CustomSpider", Id);
+        OrbitMines.getInstance().getNms().npc().addCustomEntity(EntitySpider_1_8_R3.class, "CustomSpider", Id);
     }
 
     @Override

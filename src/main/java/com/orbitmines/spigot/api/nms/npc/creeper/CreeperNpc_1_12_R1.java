@@ -1,6 +1,6 @@
 package com.orbitmines.spigot.api.nms.npc.creeper;
 
-import com.orbitmines.spigot.api.OrbitMinesApi;
+import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.nms.npc.NpcNms_1_12_R1;
 import com.orbitmines.spigot.api.nms.npc.creeper.custom.EntityCreeper_1_12_R1;
 import net.minecraft.server.v1_12_R1.World;
@@ -15,7 +15,7 @@ import org.bukkit.entity.Entity;
 public class CreeperNpc_1_12_R1 implements CreeperNpc {
 
     public CreeperNpc_1_12_R1() {
-        OrbitMinesApi.getApi().getNms().npc().addCustomEntity(EntityCreeper_1_12_R1.class, "CustomCreeper", Id);
+        OrbitMines.getInstance().getNms().npc().addCustomEntity(EntityCreeper_1_12_R1.class, "CustomCreeper", Id);
     }
 
     @Override

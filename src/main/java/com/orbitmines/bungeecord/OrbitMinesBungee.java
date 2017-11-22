@@ -3,7 +3,20 @@ package com.orbitmines.bungeecord;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
-import com.orbitmines.api.Server;
+import com.orbitmines.api.*;
+import com.orbitmines.api.database.Column;
+import com.orbitmines.api.database.Database;
+import com.orbitmines.api.database.Set;
+import com.orbitmines.api.database.Table;
+import com.orbitmines.api.database.tables.TableIPs;
+import com.orbitmines.api.database.tables.TableServers;
+import com.orbitmines.bungeecord.commands.CommandAnnouncement;
+import com.orbitmines.bungeecord.commands.CommandMotd;
+import com.orbitmines.bungeecord.events.JoinQuitEvents;
+import com.orbitmines.bungeecord.events.PingEvent;
+import com.orbitmines.bungeecord.events.PlayerChatEvent;
+import com.orbitmines.bungeecord.events.TabCompleteEvent;
+import com.orbitmines.bungeecord.handlers.*;
 import com.vexsoftware.votifier.VoteHandler;
 import com.vexsoftware.votifier.VotifierPlugin;
 import com.vexsoftware.votifier.bungee.events.VotifierEvent;
@@ -33,7 +46,9 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
+import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.api.plugin.PluginManager;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
@@ -47,13 +62,11 @@ import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.security.KeyPair;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 /*
@@ -63,18 +76,83 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
 
     private static OrbitMinesBungee bungee;
 
+    private int maxPlayers;
+
+    private MotdHandler motdHandler;
+    private AnnouncementHandler announcementHandler;
+
+    private ConfigHandler configHandler;
+    private PluginMessageHandler messageHandler;
+
+    private final Cooldown LOGIN_COOLDOWN = new Cooldown(TimeUnit.DAYS.toMillis(1));
+    private Map<UUID, Long> lastLogin;
+
     @Override
     public void onEnable() {
         bungee = this;
+
+        /* Setup Config Files */
+        configHandler = new ConfigHandler(this);
+        configHandler.setup("settings");
+
+        /* Setup Database */
+        Configuration settings = configHandler.get("settings");
+
+        Database database = new Database(settings.getString("host"), settings.getInt("port"), settings.getString("database"), settings.getString("user"), settings.getString("password"));
+        database.openConnection();
+        database.setupTables();
+
+        /* Clear IPs */
+        database.update(Table.IPS, new Set(TableIPs.CURRENT_SERVER, "null"));
+        /* Clear Servers */
+        database.update(Table.SERVERS, new Set[] {
+                new Set(TableServers.STATUS, Server.Status.OFFLINE.toString()),
+                new Set(TableServers.PLAYERS, 0)
+        });
+
+        /* Update MaxPlayer count */
+        for (Map<Column, String> entry : Database.get().getEntries(Table.SERVERS, new Column[]{
+                TableServers.SERVER,
+                TableServers.MAX_PLAYERS
+        })) {
+            addServer(Server.valueOf(entry.get(TableServers.SERVER)));
+            maxPlayers += Integer.parseInt(entry.get(TableServers.MAX_PLAYERS));
+        }
+
+        /* Setup MotdHandler */
+        motdHandler = new MotdHandler();
+        /* Setup AnnouncementHandler */
+        announcementHandler = new AnnouncementHandler(this);
+        /* Setup MessageHandler */
+        messageHandler = new PluginMessageHandler();
+
+        /* Last Login */
+        lastLogin = new HashMap<>();
+
+        /* Register */
+        registerCommands();
+        registerEvents(
+                new JoinQuitEvents(),
+                new PingEvent(),
+                new PlayerChatEvent(),
+                new TabCompleteEvent()
+//                new VoteEvent()
+        );
+        registerRunnables();
+        setupVotifier();
     }
 
     @Override
     public void onDisable() {
-
+        disableVotifier();
     }
 
     public static OrbitMinesBungee getBungee() {
         return bungee;
+    }
+
+    public int getMaxPlayers() {
+        return maxPlayers;
     }
 
     public ServerInfo getServer(Server server) {
@@ -93,6 +171,79 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
         }
     }
 
+    public void addServer(Server server) {
+        ServerInfo info = ProxyServer.getInstance().constructServerInfo(server.toString().toLowerCase(), new InetSocketAddress(server.getIp(), server.getPort()), "", false);
+        getProxy().getServers().put(server.toString().toLowerCase(), info);
+    }
+
+    public MotdHandler getMotdHandler() {
+        return motdHandler;
+    }
+
+    public AnnouncementHandler getAnnouncementHandler() {
+        return announcementHandler;
+    }
+
+    public ConfigHandler getConfigHandler() {
+        return configHandler;
+    }
+
+    public PluginMessageHandler getMessageHandler() {
+        return messageHandler;
+    }
+
+    public boolean mustLogin(BungeePlayer mbp) {
+        UUID uuid = mbp.getUUID();
+        return !lastLogin.containsKey(uuid) || !LOGIN_COOLDOWN.onCooldown(lastLogin.get(uuid));
+    }
+
+    public void registerLogin(BungeePlayer mbp) {
+        lastLogin.put(mbp.getUUID(), System.currentTimeMillis());
+    }
+
+
+    private void registerCommands() {
+        new CommandAnnouncement();
+        new CommandMotd();
+    }
+
+    private void registerEvents(Listener... listeners) {
+        PluginManager pluginManager = getProxy().getPluginManager();
+        for (Listener l : listeners) {
+            pluginManager.registerListener(this, l);
+        }
+    }
+
+    private void registerRunnables() {
+
+    }
+
+    public void broadcast(String... messages) {
+        broadcast(null, new Message(messages));
+    }
+
+    public void broadcast(String prefix, Color prefixColor, String... messages) {
+        broadcast(null, new Message(prefix, prefixColor, messages));
+    }
+
+    public void broadcast(Message message) {
+        broadcast(null, message);
+    }
+
+    public void broadcast(StaffRank staffRank, String... messages) {
+        broadcast(staffRank, new Message(messages));
+    }
+
+    public void broadcast(StaffRank staffRank, String prefix, Color prefixColor, String... messages) {
+        broadcast(staffRank, new Message(prefix, prefixColor, messages));
+    }
+
+    public void broadcast(StaffRank staffRank, Message message) {
+        for (BungeePlayer omp : BungeePlayer.getPlayers()) {
+            if (staffRank == null || omp.isEligible(staffRank))
+                omp.sendMessage(message);
+        }
+    }
 
     /*
 

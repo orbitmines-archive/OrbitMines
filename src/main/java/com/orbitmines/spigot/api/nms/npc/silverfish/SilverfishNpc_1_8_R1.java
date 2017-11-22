@@ -1,6 +1,6 @@
 package com.orbitmines.spigot.api.nms.npc.silverfish;
 
-import com.orbitmines.spigot.api.OrbitMinesApi;
+import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.nms.npc.NpcNms_1_8_R1;
 import com.orbitmines.spigot.api.nms.npc.silverfish.custom.EntitySilverfish_1_8_R1;
 import net.minecraft.server.v1_8_R1.World;
@@ -15,7 +15,7 @@ import org.bukkit.entity.Entity;
 public class SilverfishNpc_1_8_R1 implements SilverfishNpc {
 
     public SilverfishNpc_1_8_R1() {
-        OrbitMinesApi.getApi().getNms().npc().addCustomEntity(EntitySilverfish_1_8_R1.class, "CustomSilverfish", Id);
+        OrbitMines.getInstance().getNms().npc().addCustomEntity(EntitySilverfish_1_8_R1.class, "CustomSilverfish", Id);
     }
 
     @Override

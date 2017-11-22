@@ -1,6 +1,6 @@
 package com.orbitmines.spigot.api.nms.npc.skeleton;
 
-import com.orbitmines.spigot.api.OrbitMinesApi;
+import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.nms.npc.NpcNms_1_8_R3;
 import com.orbitmines.spigot.api.nms.npc.skeleton.custom.EntitySkeleton_1_8_R3;
 import net.minecraft.server.v1_8_R3.World;
@@ -15,7 +15,7 @@ import org.bukkit.entity.Entity;
 public class SkeletonNpc_1_8_R3 implements SkeletonNpc {
 
     public SkeletonNpc_1_8_R3() {
-        OrbitMinesApi.getApi().getNms().npc().addCustomEntity(EntitySkeleton_1_8_R3.class, "CustomSkeleton", Id);
+        OrbitMines.getInstance().getNms().npc().addCustomEntity(EntitySkeleton_1_8_R3.class, "CustomSkeleton", Id);
     }
 
     @Override

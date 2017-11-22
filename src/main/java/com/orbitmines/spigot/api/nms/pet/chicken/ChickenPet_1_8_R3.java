@@ -1,7 +1,7 @@
 package com.orbitmines.spigot.api.nms.pet.chicken;
 
 import com.orbitmines.spigot.api.Mob;
-import com.orbitmines.spigot.api.OrbitMinesApi;
+import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.nms.npc.NpcNms_1_8_R3;
 import com.orbitmines.spigot.api.nms.pet.Pet_1_8_R3;
 import net.minecraft.server.v1_8_R3.EntityChicken;
@@ -21,7 +21,7 @@ import java.util.List;
 public class ChickenPet_1_8_R3 implements ChickenPet {
 
     public ChickenPet_1_8_R3() {
-        OrbitMinesApi.getApi().getNms().npc().addCustomEntity(CustomNPC.class, "CustomChicken", Mob.CHICKEN.getEggId());
+        OrbitMines.getInstance().getNms().npc().addCustomEntity(CustomNPC.class, "CustomChicken", Mob.CHICKEN.getEggId());
     }
 
     @Override

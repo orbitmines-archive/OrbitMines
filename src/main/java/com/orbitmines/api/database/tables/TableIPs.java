@@ -17,4 +17,8 @@ public class TableIPs extends Table {
     public TableIPs() {
         super("IPs", UUID, CURRENT_SERVER, LAST_IP, LAST_LOGIN, HISTORY);
     }
+
+    public String[] values(String uuid, String currentServer, String lastIp, String lastLogin, String history) {
+        return new String[] { uuid, currentServer, lastIp, lastLogin, history };
+    }
 }

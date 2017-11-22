@@ -1,6 +1,6 @@
 package com.orbitmines.spigot.api.nms.anvilgui;
 
-import com.orbitmines.spigot.api.OrbitMinesApi;
+import com.orbitmines.spigot.OrbitMines;
 import net.minecraft.server.v1_8_R2.*;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_8_R2.entity.CraftPlayer;
@@ -107,7 +107,7 @@ public class AnvilNms_1_8_R2 implements AnvilNms {
             }
         };
 
-        Bukkit.getPluginManager().registerEvents(listener, OrbitMinesApi.getApi());
+        Bukkit.getPluginManager().registerEvents(listener, OrbitMines.getInstance());
     }
 
     public Player getPlayer() {

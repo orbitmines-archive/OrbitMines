@@ -1,6 +1,6 @@
 package com.orbitmines.spigot.api.nms.npc.horse;
 
-import com.orbitmines.spigot.api.OrbitMinesApi;
+import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.nms.npc.NpcNms_1_8_R3;
 import com.orbitmines.spigot.api.nms.npc.horse.custom.EntityHorse_1_8_R3;
 import net.minecraft.server.v1_8_R3.World;
@@ -15,7 +15,7 @@ import org.bukkit.entity.Entity;
 public class HorseNpc_1_8_R3 implements HorseNpc {
 
     public HorseNpc_1_8_R3() {
-        OrbitMinesApi.getApi().getNms().npc().addCustomEntity(EntityHorse_1_8_R3.class, "CustomHorse", Id);
+        OrbitMines.getInstance().getNms().npc().addCustomEntity(EntityHorse_1_8_R3.class, "CustomHorse", Id);
     }
 
     @Override

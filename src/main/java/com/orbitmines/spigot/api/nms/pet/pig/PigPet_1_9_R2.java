@@ -1,7 +1,7 @@
 package com.orbitmines.spigot.api.nms.pet.pig;
 
 import com.orbitmines.spigot.api.Mob;
-import com.orbitmines.spigot.api.OrbitMinesApi;
+import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.nms.npc.NpcNms_1_9_R2;
 import com.orbitmines.spigot.api.nms.pet.Pet_1_9_R2;
 import net.minecraft.server.v1_9_R2.EntityHuman;
@@ -21,7 +21,7 @@ import java.util.LinkedHashSet;
 public class PigPet_1_9_R2 implements PigPet {
 
     public PigPet_1_9_R2() {
-        OrbitMinesApi.getApi().getNms().npc().addCustomEntity(CustomNPC.class, "CustomPig", Mob.PIG.getEggId());
+        OrbitMines.getInstance().getNms().npc().addCustomEntity(CustomNPC.class, "CustomPig", Mob.PIG.getEggId());
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.orbitmines.spigot.api.handlers.npc;
 
 import com.orbitmines.api.utils.RandomUtils;
-import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.Direction;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.nms.bednpc.BedNpcNms;
@@ -37,7 +36,7 @@ public class BedNpc {
     }
 
     public BedNpc(Player player, Location location, boolean firstPerson, boolean withItemsInHand, boolean withArmor) {
-        nms = OrbitMines.getInstance().getNms().bedNpc();
+//        nms = OrbitMines.getInstance().getNms().bedNpc();
 
         this.player = player;
         this.location = location;

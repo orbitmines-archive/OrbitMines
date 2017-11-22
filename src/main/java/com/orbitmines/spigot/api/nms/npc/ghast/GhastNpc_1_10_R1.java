@@ -1,6 +1,6 @@
 package com.orbitmines.spigot.api.nms.npc.ghast;
 
-import com.orbitmines.spigot.api.OrbitMinesApi;
+import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.nms.npc.NpcNms_1_10_R1;
 import com.orbitmines.spigot.api.nms.npc.ghast.custom.EntityGhast_1_10_R1;
 import net.minecraft.server.v1_10_R1.World;
@@ -15,7 +15,7 @@ import org.bukkit.entity.Entity;
 public class GhastNpc_1_10_R1 implements GhastNpc {
 
     public GhastNpc_1_10_R1() {
-        OrbitMinesApi.getApi().getNms().npc().addCustomEntity(EntityGhast_1_10_R1.class, "CustomGhast", Id);
+        OrbitMines.getInstance().getNms().npc().addCustomEntity(EntityGhast_1_10_R1.class, "CustomGhast", Id);
     }
 
     @Override

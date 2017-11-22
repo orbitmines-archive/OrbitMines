@@ -1,6 +1,6 @@
 package com.orbitmines.spigot.api.nms.npc.witherskeleton;
 
-import com.orbitmines.spigot.api.OrbitMinesApi;
+import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.nms.npc.NpcNms_1_12_R1;
 import com.orbitmines.spigot.api.nms.npc.witherskeleton.custom.EntityWitherSkeleton_1_12_R1;
 import net.minecraft.server.v1_12_R1.World;
@@ -15,7 +15,7 @@ import org.bukkit.entity.Entity;
 public class WitherSkeletonNpc_1_12_R1 implements WitherSkeletonNpc {
 
     public WitherSkeletonNpc_1_12_R1() {
-        OrbitMinesApi.getApi().getNms().npc().addCustomEntity(EntityWitherSkeleton_1_12_R1.class, "CustomWitherSkeleton", Id);
+        OrbitMines.getInstance().getNms().npc().addCustomEntity(EntityWitherSkeleton_1_12_R1.class, "CustomWitherSkeleton", Id);
     }
 
     @Override

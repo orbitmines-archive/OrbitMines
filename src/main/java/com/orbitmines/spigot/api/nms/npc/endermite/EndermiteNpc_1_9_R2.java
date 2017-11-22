@@ -1,6 +1,6 @@
 package com.orbitmines.spigot.api.nms.npc.endermite;
 
-import com.orbitmines.spigot.api.OrbitMinesApi;
+import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.nms.npc.NpcNms_1_9_R2;
 import com.orbitmines.spigot.api.nms.npc.endermite.custom.EntityEndermite_1_9_R2;
 import net.minecraft.server.v1_9_R2.World;
@@ -15,7 +15,7 @@ import org.bukkit.entity.Entity;
 public class EndermiteNpc_1_9_R2 implements EndermiteNpc {
 
     public EndermiteNpc_1_9_R2() {
-        OrbitMinesApi.getApi().getNms().npc().addCustomEntity(EntityEndermite_1_9_R2.class, "CustomEndermite", Id);
+        OrbitMines.getInstance().getNms().npc().addCustomEntity(EntityEndermite_1_9_R2.class, "CustomEndermite", Id);
     }
 
     @Override

@@ -14,4 +14,8 @@ public class Table2FA extends Table {
     public Table2FA() {
         super("2FA", UUID, SECRET);
     }
+
+    public String[] values(String uuid, String secret) {
+        return new String[] { uuid, secret };
+    }
 }

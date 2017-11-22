@@ -1,6 +1,6 @@
 package com.orbitmines.spigot.api.nms.npc.magmacube;
 
-import com.orbitmines.spigot.api.OrbitMinesApi;
+import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.nms.npc.NpcNms_1_8_R2;
 import com.orbitmines.spigot.api.nms.npc.magmacube.custom.EntityMagmaCube_1_8_R2;
 import net.minecraft.server.v1_8_R2.World;
@@ -15,7 +15,7 @@ import org.bukkit.entity.Entity;
 public class MagmaCubeNpc_1_8_R2 implements MagmaCubeNpc {
 
     public MagmaCubeNpc_1_8_R2() {
-        OrbitMinesApi.getApi().getNms().npc().addCustomEntity(EntityMagmaCube_1_8_R2.class, "CustomMagmaCube", Id);
+        OrbitMines.getInstance().getNms().npc().addCustomEntity(EntityMagmaCube_1_8_R2.class, "CustomMagmaCube", Id);
     }
 
     @Override

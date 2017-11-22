@@ -1,6 +1,6 @@
 package com.orbitmines.spigot.api.nms.npc.snowman;
 
-import com.orbitmines.spigot.api.OrbitMinesApi;
+import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.nms.npc.NpcNms_1_9_R2;
 import com.orbitmines.spigot.api.nms.npc.snowman.custom.EntitySnowman_1_9_R2;
 import net.minecraft.server.v1_9_R2.World;
@@ -15,7 +15,7 @@ import org.bukkit.entity.Entity;
 public class SnowmanNpc_1_9_R2 implements SnowmanNpc {
 
     public SnowmanNpc_1_9_R2() {
-        OrbitMinesApi.getApi().getNms().npc().addCustomEntity(EntitySnowman_1_9_R2.class, "CustomSnowman", Id);
+        OrbitMines.getInstance().getNms().npc().addCustomEntity(EntitySnowman_1_9_R2.class, "CustomSnowman", Id);
     }
 
     @Override

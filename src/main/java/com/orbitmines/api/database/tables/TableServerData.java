@@ -15,4 +15,8 @@ public class TableServerData extends Table {
     public TableServerData() {
         super("ServerData", SERVER, TYPE, DATA);
     }
+
+    public String[] values(String gameMode, String type, String data) {
+        return new String[] { gameMode, type, data };
+    }
 }

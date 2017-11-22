@@ -23,10 +23,10 @@
 
         <dependency>
             <groupId>spigotmc.org</groupId>
-            <artifactId>spigot-server-1.12</artifactId>
-            <version>1.12-SNAPSHOT</version>
+            <artifactId>spigot-server-1.12.2</artifactId>
+            <version>1.12.2-SNAPSHOT</version>
             <scope>system</scope>
-            <systemPath>${basedir}/src/spigot-1.12.jar</systemPath>
+            <systemPath>${basedir}/src/spigot-1.12.2.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>spigotmc.org</groupId>

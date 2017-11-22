@@ -1,6 +1,6 @@
 package com.orbitmines.spigot.api.nms.npc.sheep;
 
-import com.orbitmines.spigot.api.OrbitMinesApi;
+import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.nms.npc.NpcNms_1_8_R1;
 import com.orbitmines.spigot.api.nms.npc.sheep.custom.EntitySheep_1_8_R1;
 import net.minecraft.server.v1_8_R1.World;
@@ -15,7 +15,7 @@ import org.bukkit.entity.Entity;
 public class SheepNpc_1_8_R1 implements SheepNpc {
 
     public SheepNpc_1_8_R1() {
-        OrbitMinesApi.getApi().getNms().npc().addCustomEntity(EntitySheep_1_8_R1.class, "CustomSheep", Id);
+        OrbitMines.getInstance().getNms().npc().addCustomEntity(EntitySheep_1_8_R1.class, "CustomSheep", Id);
     }
 
     @Override

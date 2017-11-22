@@ -1,6 +1,6 @@
 package com.orbitmines.spigot.api.nms.npc.wolf;
 
-import com.orbitmines.spigot.api.OrbitMinesApi;
+import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.nms.npc.NpcNms_1_9_R2;
 import com.orbitmines.spigot.api.nms.npc.wolf.custom.EntityWolf_1_9_R2;
 import net.minecraft.server.v1_9_R2.World;
@@ -15,7 +15,7 @@ import org.bukkit.entity.Entity;
 public class WolfNpc_1_9_R2 implements WolfNpc {
 
     public WolfNpc_1_9_R2() {
-        OrbitMinesApi.getApi().getNms().npc().addCustomEntity(EntityWolf_1_9_R2.class, "CustomWolf", Id);
+        OrbitMines.getInstance().getNms().npc().addCustomEntity(EntityWolf_1_9_R2.class, "CustomWolf", Id);
     }
 
     @Override

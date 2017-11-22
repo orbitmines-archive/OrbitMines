@@ -1,6 +1,6 @@
 package com.orbitmines.spigot.api.nms.npc.mushroomcow;
 
-import com.orbitmines.spigot.api.OrbitMinesApi;
+import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.nms.npc.NpcNms_1_8_R2;
 import com.orbitmines.spigot.api.nms.npc.mushroomcow.custom.EntityMushroomCow_1_8_R2;
 import net.minecraft.server.v1_8_R2.World;
@@ -15,7 +15,7 @@ import org.bukkit.entity.Entity;
 public class MushroomCowNpc_1_8_R2 implements MushroomCowNpc {
 
     public MushroomCowNpc_1_8_R2() {
-        OrbitMinesApi.getApi().getNms().npc().addCustomEntity(EntityMushroomCow_1_8_R2.class, "CustomMushroomCow", Id);
+        OrbitMines.getInstance().getNms().npc().addCustomEntity(EntityMushroomCow_1_8_R2.class, "CustomMushroomCow", Id);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.orbitmines.spigot.api.nms.npc.pigzombie;
 
-import com.orbitmines.spigot.api.OrbitMinesApi;
+import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.nms.npc.NpcNms_1_8_R3;
 import com.orbitmines.spigot.api.nms.npc.pigzombie.custom.EntityPigZombie_1_8_R3;
 import net.minecraft.server.v1_8_R3.World;
@@ -15,7 +15,7 @@ import org.bukkit.entity.Entity;
 public class PigZombieNpc_1_8_R3 implements PigZombieNpc {
 
     public PigZombieNpc_1_8_R3() {
-        OrbitMinesApi.getApi().getNms().npc().addCustomEntity(EntityPigZombie_1_8_R3.class, "CustomPigZombie", Id);
+        OrbitMines.getInstance().getNms().npc().addCustomEntity(EntityPigZombie_1_8_R3.class, "CustomPigZombie", Id);
     }
 
     @Override
