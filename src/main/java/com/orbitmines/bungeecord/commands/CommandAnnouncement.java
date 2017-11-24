@@ -5,7 +5,10 @@ import com.orbitmines.api.StaffRank;
 import com.orbitmines.bungeecord.OrbitMinesBungee;
 import com.orbitmines.bungeecord.handlers.AnnouncementHandler;
 import com.orbitmines.bungeecord.handlers.BungeePlayer;
+import com.orbitmines.bungeecord.handlers.chat.ComponentMessage;
 import com.orbitmines.bungeecord.handlers.cmd.StaffCommand;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.event.ChatEvent;
 
 /*
@@ -36,7 +39,7 @@ public class CommandAnnouncement extends StaffCommand {
     @Override
     public void onDispatch(ChatEvent event, BungeePlayer omp, String[] a) {
         if (a.length == 1) {
-            omp.sendMessage("Announcements", Color.ORANGE, "\n§7/announcement list\n§7/announcement delete <index>\n§7/announcement add\n§7/announcement remove <index>\n§7/announcement title <index> <title>\n§7/announcement subtitle <index> <title>");
+            omp.sendMessage("Announcements", Color.BLUE, "\n§7/announcement list\n§7/announcement delete <index>\n§7/announcement add\n§7/announcement remove <index>\n§7/announcement title <index> <title>\n§7/announcement subtitle <index> <title>");
             return;
         }
 
@@ -46,12 +49,19 @@ public class CommandAnnouncement extends StaffCommand {
 
         switch (type) {
             case "list": {
-                omp.sendMessage("Announcements", Color.ORANGE, "§7§lAnnouncements:");
+                omp.sendMessage("Announcements", Color.BLUE, "§7§lAnnouncements:");
                 for (int i = 0; i < handler.getTitles().size(); i++) {
                     AnnouncementHandler.Title title = handler.getTitles().get(i);
-                    omp.sendMessage("Announcements", Color.ORANGE, "§7§l" + (i + 1) + ".");
-                    omp.sendMessage("Announcements", Color.ORANGE, "§7 - §f" + title.getTitle());
-                    omp.sendMessage("Announcements", Color.ORANGE, "§7 - §f" + title.getSubTitle());
+                    omp.sendMessage("Announcements", Color.BLUE, "§7§l" + (i + 1) + ".");
+                    {
+                        ComponentMessage cM = new ComponentMessage();
+                        cM.addPart(omp.lang("Announcements", Color.BLUE, "§7 - §f" + title.getTitle()), ClickEvent.Action.SUGGEST_COMMAND, a[0].toLowerCase() + " title " + (i + 1) + " " + title.getTitle().replace("§", "&"), HoverEvent.Action.SHOW_TEXT, "§7Edit");
+                        cM.send(omp);
+                    } {
+                        ComponentMessage cM = new ComponentMessage();
+                        cM.addPart(omp.lang("Announcements", Color.BLUE, "§7 - §f" + title.getSubTitle()), ClickEvent.Action.SUGGEST_COMMAND, a[0].toLowerCase() + " subtitle " + (i + 1) + " " + title.getSubTitle().replace("§", "&"), HoverEvent.Action.SHOW_TEXT, "§7Edit");
+                        cM.send(omp);
+                    }
                 }
                 break;
             }
@@ -120,7 +130,7 @@ public class CommandAnnouncement extends StaffCommand {
                 break;
             }
             default: {
-                omp.sendMessage("Announcements", Color.ORANGE, "\n§7/announcement list\n§7/announcement delete <index>\n§7/announcement add\n§7/announcement remove <index>\n§7/announcement title <index> <title>\n§7/announcement subtitle <index> <title>");
+                omp.sendMessage("Announcements", Color.BLUE, "\n§7/announcement list\n§7/announcement delete <index>\n§7/announcement add\n§7/announcement remove <index>\n§7/announcement title <index> <title>\n§7/announcement subtitle <index> <title>");
             }
         }
     }

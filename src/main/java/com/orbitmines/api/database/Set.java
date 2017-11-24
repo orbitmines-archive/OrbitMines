@@ -5,8 +5,8 @@ package com.orbitmines.api.database;
 */
 public class Set {
 
-    private final Column column;
-    private final String value;
+    protected final Column column;
+    protected final String value;
 
     public Set(Column column, boolean value) {
         this(column, value ? "1" : "0");

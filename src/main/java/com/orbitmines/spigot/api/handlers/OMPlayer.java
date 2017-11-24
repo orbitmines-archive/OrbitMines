@@ -1,6 +1,8 @@
 package com.orbitmines.spigot.api.handlers;
 
 import com.orbitmines.api.*;
+import com.orbitmines.api.Color;
+import com.orbitmines.api.Server;
 import com.orbitmines.api.database.*;
 import com.orbitmines.api.database.Set;
 import com.orbitmines.api.database.tables.TablePlayers;
@@ -19,10 +21,7 @@ import com.orbitmines.spigot.api.handlers.npc.PlayerFreezer;
 import com.orbitmines.spigot.api.handlers.scoreboard.OMScoreboard;
 import com.orbitmines.spigot.api.handlers.scoreboard.ScoreboardSet;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Sound;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -52,8 +51,8 @@ public abstract class OMPlayer {
     protected VipRank vipRank;
     protected Language language;
     protected boolean silent;
-    protected int points;
-    protected int tokens;
+    protected int solars;
+    protected int prisms;
     protected Date monthlyBonus;
 
     protected String afk;
@@ -80,8 +79,8 @@ public abstract class OMPlayer {
         this.vipRank = VipRank.NONE;
         this.language = Language.ENGLISH;
         this.silent = false;
-        this.points = 0;
-        this.tokens = 0;
+        this.solars = 0;
+        this.prisms = 0;
 
         this.scoreboard = new OMScoreboard(this);
 
@@ -113,18 +112,18 @@ public abstract class OMPlayer {
         players.add(this);
 
         /* Update Players */
-        //set server players
+        orbitMines.getServerHandler().getServer().setPlayers(Bukkit.getOnlinePlayers().size());
 
         if (!Database.get().contains(Table.PLAYERS, TablePlayers.UUID, new Where(TablePlayers.UUID, getUUID().toString()))) {
-            Database.get().insert(Table.PLAYERS, Table.PLAYERS.values(getUUID().toString(), getRealName(), staffRank.toString(), vipRank.toString(), language.toString(), silent ? "1" : "0", points + "", tokens + "", "null"));
+            Database.get().insert(Table.PLAYERS, Table.PLAYERS.values(getUUID().toString(), getRealName(), staffRank.toString(), vipRank.toString(), language.toString(), silent ? "1" : "0", solars + "", prisms + "", "null"));
         } else {
             Map<Column, String> values = Database.get().getValues(Table.PLAYERS, new Column[]{
                     TablePlayers.STAFFRANK,
                     TablePlayers.VIPRANK,
                     TablePlayers.LANGUAGE,
                     TablePlayers.SILENT,
-                    TablePlayers.POINTS,
-                    TablePlayers.TOKENS,
+                    TablePlayers.SOLARS,
+                    TablePlayers.PRISMS,
                     TablePlayers.MONTHLY_BONUS
             }, new Where(TablePlayers.UUID, getUUID().toString()));
 
@@ -132,8 +131,8 @@ public abstract class OMPlayer {
             vipRank = VipRank.valueOf(values.get(TablePlayers.VIPRANK));
             language = Language.valueOf(values.get(TablePlayers.LANGUAGE));
             silent = "1".equals(values.get(TablePlayers.SILENT));
-            points = Integer.parseInt(values.get(TablePlayers.POINTS));
-            tokens = Integer.parseInt(values.get(TablePlayers.TOKENS));
+            solars = Integer.parseInt(values.get(TablePlayers.SOLARS));
+            prisms = Integer.parseInt(values.get(TablePlayers.PRISMS));
 
             String monthlyBonus = values.get(TablePlayers.MONTHLY_BONUS);
             if (!monthlyBonus.equals("null"))
@@ -142,6 +141,9 @@ public abstract class OMPlayer {
 
         /* Set Op */
         player.setOp(false);
+
+        /* PrefixColor to DisplayName */
+        setPrefix(getRankPrefixColor().getChatColor());
 
         /* Default TabList */
         defaultTabList();
@@ -157,6 +159,12 @@ public abstract class OMPlayer {
         /* Initiate server login */
         onLogin();
 
+        /* Join Message */
+        if (silent)
+            orbitMines.broadcast(StaffRank.MODERATOR, " §a» " + getName() + "§a is gejoind. §7§o[Silent]", " §a» " + getName() + "§a joined. §7§o[Silent]");
+        else
+            orbitMines.broadcast(" §a» " + getName() + "§a is gejoind.", " §a» " + getName() + "§a joined.");
+
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -168,6 +176,9 @@ public abstract class OMPlayer {
                 ip.updateCurrentServer();
 
                 ip.setCurrentServer(orbitMines.getServerHandler().getServer());
+
+                if (isLoggedIn())
+                    on2FALogin();
             }
         }.runTaskLater(orbitMines, 10);
     }
@@ -176,7 +187,13 @@ public abstract class OMPlayer {
         /* Initiate server logout */
         onLogout();
 
-        //set players -1
+        /* Quit Message */
+        if (silent)
+            orbitMines.broadcast(StaffRank.MODERATOR, " §c« " + getName() + "§c is weggegaan. §7§o[Silent]", " §c« " + getName() + "§c left. §7§o[Silent]");
+        else
+            orbitMines.broadcast(" §c« " + getName() + "§c is weggegaan.", " §c« " + getName() + "§c left.");
+
+        orbitMines.getServerHandler().getServer().setPlayers(Bukkit.getOnlinePlayers().size() -1);
 
         /* Destroy Leaderboards */
         for (LeaderBoard leaderBoard : LeaderBoard.getLeaderBoards()) {
@@ -193,7 +210,19 @@ public abstract class OMPlayer {
     }
 
     public void defaultTabList() {
-        orbitMines.getNms().tabList().send(player, "§6§lOrbitMines§4§lNetwork\n" + orbitMines.getServerHandler().getServer().getDisplayName(), "§7Website: §6www.orbitmines.com §8| §7Twitter: §b@OrbitMines §8| §7" + lang("Winkel", "Shop") + ": §3shop.orbitmines.com");
+        orbitMines.getNms().tabList().send(player, "§8§lOrbit§7§lMines\n" + orbitMines.getServerHandler().getServer().getDisplayName(), "§7Website: §6www.orbitmines.com\n§7" + lang("Winkel", "Shop") + ": §3shop.orbitmines.com\n§7Twitter: §b@OrbitMines");
+    }
+
+    public void on2FALogin() {
+        sendMessage("§7§m----------------------------------------");
+        sendMessage(" §8§lOrbit§7§lMines §8- " + orbitMines.getServerHandler().getServer().getDisplayName());
+        sendMessage(" ");
+        sendMessage(" §7§lWebsite: §6www.orbitmines.com");
+        sendMessage(" §7§l" + lang("Winkel", "Shop") + ": §3shop.orbitmines.com");
+        sendMessage(" §7§l" + lang("Voten", "Vote") + ": §b/vote");
+        sendMessage(" ");
+
+        sendMessage("§7§m----------------------------------------");
     }
 
     /*
@@ -333,6 +362,9 @@ public abstract class OMPlayer {
 
         staffRank = StaffRank.valueOf(values.get(TablePlayers.STAFFRANK));
         vipRank = VipRank.valueOf(values.get(TablePlayers.VIPRANK));
+
+        /* PrefixColor to DisplayName */
+        setPrefix(getRankPrefixColor().getChatColor());
     }
 
     /*
@@ -378,51 +410,51 @@ public abstract class OMPlayer {
     }
 
     /*
-        Points
+        Solars
      */
 
-    public int getPoints() {
-        return points;
+    public int getSolars() {
+        return solars;
     }
 
-    public void addPoints(int amount) {
-        points += amount;
+    public void addSolars(int amount) {
+        solars += amount;
 
-        updatePoints();
+        updateSolars();
     }
 
-    public void removePoints(int amount) {
-        points -= amount;
+    public void removeSolars(int amount) {
+        solars -= amount;
 
-        updatePoints();
+        updateSolars();
     }
 
-    private void updatePoints() {
-        Database.get().update(Table.PLAYERS, new Set(TablePlayers.POINTS, this.points), new Where(TablePlayers.UUID, getUUID().toString()));
+    private void updateSolars() {
+        Database.get().update(Table.PLAYERS, new Set(TablePlayers.SOLARS, this.solars), new Where(TablePlayers.UUID, getUUID().toString()));
     }
 
     /*
-        Tokens
+        Prisms
      */
 
-    public int getTokens() {
-        return tokens;
+    public int getPrisms() {
+        return prisms;
     }
 
-    public void addTokens(int amount) {
-        tokens += amount;
+    public void addPrisms(int amount) {
+        prisms += amount;
 
-        updateTokens();
+        updatePrisms();
     }
 
-    public void removeTokens(int amount) {
-        tokens -= amount;
+    public void removePrisms(int amount) {
+        prisms -= amount;
 
-        updateTokens();
+        updatePrisms();
     }
 
-    private void updateTokens() {
-        Database.get().update(Table.PLAYERS, new Set(TablePlayers.TOKENS, this.tokens), new Where(TablePlayers.UUID, getUUID().toString()));
+    private void updatePrisms() {
+        Database.get().update(Table.PLAYERS, new Set(TablePlayers.PRISMS, this.prisms), new Where(TablePlayers.UUID, getUUID().toString()));
     }
 
     /*
@@ -470,14 +502,14 @@ public abstract class OMPlayer {
 
         if (afk != null) {
             if (afk.equals("null"))
-                orbitMines.broadcast("Afk", Color.ORANGE, "§7 " + playerName + "§7 is nu §6AFK§7.", "§7 " + playerName + "§7 is now §6AFK§7.");
+                orbitMines.broadcast("Afk", Color.BLUE, "§7 " + playerName + "§7 is nu §6AFK§7.", "§7 " + playerName + "§7 is now §6AFK§7.");
             else
-                orbitMines.broadcast("Afk", Color.ORANGE, "§7 " + playerName + "§7 is nu §6AFK§7. (§7" + afk + "§7)", "§7 " + playerName + "§7 is now §6AFK§7. (§7" + afk + "§7)");
+                orbitMines.broadcast("Afk", Color.BLUE, "§7 " + playerName + "§7 is nu §6AFK§7. (§7" + afk + "§7)", "§7 " + playerName + "§7 is now §6AFK§7. (§7" + afk + "§7)");
         } else {
             if (this.afk.equals("null"))
-                orbitMines.broadcast("Afk", Color.ORANGE, "§7 " + playerName + "§7 is niet meer §6AFK§7.", "§7 " + playerName + "§7 is no longer §6AFK§7.");
+                orbitMines.broadcast("Afk", Color.BLUE, "§7 " + playerName + "§7 is niet meer §6AFK§7.", "§7 " + playerName + "§7 is no longer §6AFK§7.");
             else
-                orbitMines.broadcast("Afk", Color.ORANGE, "§7 " + playerName + "§7 is niet meer §6AFK§7. (§7" + this.afk + "§7)", "§7 " + playerName + "§7 is no longer §6AFK§7. (§7" + this.afk + "§7)");
+                orbitMines.broadcast("Afk", Color.BLUE, "§7 " + playerName + "§7 is niet meer §6AFK§7. (§7" + this.afk + "§7)", "§7 " + playerName + "§7 is no longer §6AFK§7. (§7" + this.afk + "§7)");
         }
         this.afk = afk;
     }
@@ -778,6 +810,30 @@ public abstract class OMPlayer {
     /* Sets Header&Footer in Tablist */
     public void setTabList(String header, String footer) {
         orbitMines.getNms().tabList().send(player, header, footer);
+    }
+
+    public String getRankPrefix() {
+        return staffRank != StaffRank.NONE ? staffRank.getPrefix() : vipRank.getPrefix();
+    }
+
+    public String getRankPrefix(Color color) {
+        return staffRank != StaffRank.NONE ? staffRank.getPrefix(color) : vipRank.getPrefix(color);
+    }
+
+    public String getRankName() {
+        return staffRank != StaffRank.NONE ? staffRank.getName() : vipRank.getName();
+    }
+
+    public String getRankDisplayName() {
+        return staffRank != StaffRank.NONE ? staffRank.getDisplayName() : vipRank.getDisplayName();
+    }
+
+    public Color getRankPrefixColor() {
+        return staffRank != StaffRank.NONE ? staffRank.getPrefixColor() : vipRank.getPrefixColor();
+    }
+
+    public Color getRankChatColor() {
+        return staffRank != StaffRank.NONE ? staffRank.getChatColor() : vipRank.getChatColor();
     }
 
     /*

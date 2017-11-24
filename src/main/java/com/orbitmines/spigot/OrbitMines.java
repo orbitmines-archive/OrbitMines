@@ -45,7 +45,27 @@ public class OrbitMines extends JavaPlugin {
     private WorldLoader worldLoader;
 
     private final ScrollerList<String> scoreboardAnimation = new ScrollerList<>(
-            "§6§lTITLE"
+            "§8§lOrbit§7§lMines",
+            "§7§lO§8§lrbit§7§lMines",
+            "§7§lOr§8§lbit§7§lMines",
+            "§7§lOrb§8§lit§7§lMines",
+            "§7§lOrbi§8§lt§7§lMines",
+            "§7§lOrbit§7§lMines",
+            "§7§lOrbit§8§lM§7§lines",
+            "§7§lOrbit§8§lMi§7§lnes",
+            "§7§lOrbit§8§lMin§7§les",
+            "§7§lOrbit§8§lMine§7§ls",
+            "§7§lOrbit§8§lMines",
+            
+            "§8§lO§7§lrbit§8§lMines",
+            "§8§lOr§7§lbit§8§lMines",
+            "§8§lOrb§7§lit§8§lMines",
+            "§8§lOrbi§7§lt§8§lMines",
+            "§8§lOrbit§8§lMines",
+            "§8§lOrbit§7§lM§8§lines",
+            "§8§lOrbit§7§lMi§8§lnes",
+            "§8§lOrbit§7§lMin§8§les",
+            "§8§lOrbit§7§lMine§8§ls"
     );
 
     @Override
@@ -104,7 +124,7 @@ public class OrbitMines extends JavaPlugin {
         lobbyWorld.setGameRuleValue("doDaylightCycle", "false");
         lobbyWorld.setGameRuleValue("doMobSpawning", "false");
         lobbyWorld.setGameRuleValue("doFireTick", "false");
-        lobbyWorld.setTime(6000);
+        lobbyWorld.setTime(18000);
 
         lobby.setWorld(lobbyWorld);
 //        lobby.setHandler(DataPointHandler.getHandler(gameServer.getGameMode(), OrbitMinesMap.Type.LOBBY));
@@ -112,6 +132,7 @@ public class OrbitMines extends JavaPlugin {
 
         /* Register */
         registerCommands();
+
         registerEvents(
                 new AfkEvents(),
                 new ClickEvent(),
@@ -121,8 +142,8 @@ public class OrbitMines extends JavaPlugin {
                 new JoinQuitEvents(),
                 new NpcEvents(),
                 new PlayerChatEvent(),
+                new PlayerHeadOnMobEvent(),
                 new SpawnLocationEvent(),
-                new VoidDamageEvent(),
                 new WorldAdvancementsFix_1_12()
         );
         registerRunnables();

@@ -69,10 +69,8 @@ public class _2FA {
                 contents.remove(omp);
                 armorContents.remove(omp);
 
-                if (omp.isLoggedIn())
-                    return;
-
-                omp.kick("§6§lTITLE §c§l2FA§r\n§7Timeout\n\n§7IGN: " + omp.getName() + "\n§7UUID: " + omp.getUUID().toString());
+                if (omp.getPlayer().isOnline() && !omp.isLoggedIn())
+                    omp.kick("§8§lOrbit§7§lMines §c§l2FA§r\n§7Timeout\n\n§7IGN: §8" + omp.getName() + "\n§7UUID: §8" + omp.getUUID().toString());
             }
         }.runTaskLater(orbitMines, SpigotRunnable.TimeUnit.MINUTE.getTicks() * 3);
     }
@@ -112,6 +110,8 @@ public class _2FA {
 
         omp.getPlayer().getInventory().setContents(contents.get(omp));
         omp.getPlayer().getInventory().setArmorContents(armorContents.get(omp));
+
+        omp.on2FALogin();
 
         return Result.SUCCESSFUL;
     }

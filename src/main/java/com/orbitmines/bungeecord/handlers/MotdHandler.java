@@ -15,7 +15,7 @@ public class MotdHandler {
         if (Database.get().contains(Table.SERVER_DATA, new Column[]{ TableServerData.SERVER, TableServerData.TYPE }, new Where(TableServerData.SERVER, "BUNGEE"), new Where(TableServerData.TYPE, "MOTD"))) {
             fromDatabase();
         } else {
-            motd = new String[]{"§6§lTITLE", "§7Subtitle"};
+            motd = new String[]{"§8§lOrbit§7§lMines", "§7Subtitle"};
             Database.get().insert(Table.SERVER_DATA, TableServerData.SERVER_DATA.values("BUNGEE", "MOTD", serialize()));
         }
     }

@@ -5,11 +5,11 @@ package com.orbitmines.api;
 */
 public enum VipRank {
 
-    NONE("None", Color.GRAY, Color.SILVER),
-    IRON("Iron", Color.SILVER, Color.SILVER),
-    GOLD("Gold", Color.ORANGE, Color.SILVER),
-    DIAMOND("Diamond", Color.BLUE, Color.SILVER),
-    EMERALD("Emerald", Color.LIME, Color.SILVER);
+    NONE("NONE", Color.GRAY, Color.SILVER),
+    IRON("IRON", Color.SILVER, Color.WHITE),
+    GOLD("GOLD", Color.ORANGE, Color.WHITE),
+    DIAMOND("DIAMOND", Color.BLUE, Color.WHITE),
+    EMERALD("EMERALD", Color.LIME, Color.WHITE);
 
     private final String name;
     private final Color prefixColor;
@@ -38,7 +38,7 @@ public enum VipRank {
     }
 
     public String getPrefix(Color color) {
-        return this == NONE ? color.getChatColor() : prefixColor.getChatColor() + "§l" + name + (color == null ? "" : "§r " + color.getChatColor());
+        return this == NONE ? (color == null ? " " : color.getChatColor()) : prefixColor.getChatColor() + "§l" + name + (color == null ? " " : "§r " + color.getChatColor());
     }
 
     public String getDisplayName() {

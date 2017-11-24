@@ -41,7 +41,7 @@ public class JoinQuitEvents implements Listener {
             return;
         }
 
-        player.disconnect(omp.lang("§6§lTITLE\n§7Kan geen server vinden om mee te verbinden.", "§6§lTITLE\n§7Cannot find a server to fall back to."));
+        player.disconnect(omp.lang("§8§lOrbit§7§lMines\n§7Kan geen server vinden om mee te verbinden.", "§8§lOrbit§7§lMines\n§7Cannot find a server to fall back to."));
     }
 
     @EventHandler

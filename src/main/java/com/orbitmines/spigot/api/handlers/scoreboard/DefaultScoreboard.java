@@ -3,6 +3,7 @@ package com.orbitmines.spigot.api.handlers.scoreboard;
 import com.orbitmines.api.StaffRank;
 import com.orbitmines.api.VipRank;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
+import org.apache.commons.lang.ArrayUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,17 +26,23 @@ public class DefaultScoreboard extends ScoreboardSet {
         staffRankTeams = new HashMap<>();
         vipRankTeams = new HashMap<>();
 
-        for (StaffRank rank : StaffRank.values()) {
+        StaffRank[] staffRanks = StaffRank.values();
+        ArrayUtils.reverse(staffRanks);
+
+        for (StaffRank rank : staffRanks) {
             ScoreboardTeam team = new ScoreboardTeam(rank.toString());
-            team.setPrefix(rank.getPrefix(null));
+            team.setPrefix(rank.getPrefix(rank.getPrefixColor()));
 
             teams.add(team);
             staffRankTeams.put(rank, team);
         }
 
-        for (VipRank rank : VipRank.values()) {
+        VipRank[] vipRanks = VipRank.values();
+        ArrayUtils.reverse(vipRanks);
+
+        for (VipRank rank : vipRanks) {
             ScoreboardTeam team = new ScoreboardTeam(rank.toString());
-            team.setPrefix(rank.getPrefix(null));
+            team.setPrefix(rank.getPrefix(rank.getPrefixColor()));
 
             teams.add(team);
             vipRankTeams.put(rank, team);

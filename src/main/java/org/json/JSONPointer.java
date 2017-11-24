@@ -64,7 +64,7 @@ public class JSONPointer {
         private final List<String> refTokens = new ArrayList<String>();
 
         /**
-         * Creates a {@code JSONPointer} instance using the tokens previously set using the
+         * Creates a {@code JSONPointer} instance using the prisms previously set using the
          * {@link #append(String)} method calls.
          */
         public JSONPointer build() {
@@ -72,7 +72,7 @@ public class JSONPointer {
         }
 
         /**
-         * Adds an arbitrary token to the list of reference tokens. It can be any non-null value.
+         * Adds an arbitrary token to the list of reference prisms. It can be any non-null value.
          * 
          * Unlike in the case of JSON string or URI fragment representation of JSON pointers, the
          * argument of this method MUST NOT be escaped. If you want to query the property called

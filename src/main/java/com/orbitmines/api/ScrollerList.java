@@ -23,14 +23,14 @@ public class ScrollerList<T> implements Cloneable {
     public T next() {
         index++;
 
-        if (list.size() == index + 1)
+        if (list.size() == index)
             index = 0;
 
         return list.get(index);
     }
 
     public boolean hasNext() {
-        return list.size() != index + 2;
+        return list.size() != index + 1;
     }
 
     public T get() {

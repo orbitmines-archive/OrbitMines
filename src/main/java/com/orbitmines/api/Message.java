@@ -15,7 +15,7 @@ public class Message {
         return new Message("Rank", Color.RED, "§7Je moet een " + vipRank.getDisplayName() + " VIP§7 zijn om dit te doen!", "§7You have to be " + (vipRank == VipRank.IRON || vipRank == VipRank.EMERALD ? "an" : "a") + " " + vipRank.getDisplayName() + " VIP§7 to do this!");
     }
 
-    public static final Message ENTER_2FA = new Message("2FA", Color.LIME, "Type je 2FA code in de chat.", "Enter your 2FA code in chat.");
+    public static final Message ENTER_2FA = new Message("2FA", Color.BLUE, "Type je 2FA code in de chat.", "Enter your 2FA code in chat.");
     public static final String PREFIX_2FA = "2FA";
 
     private final String prefix;

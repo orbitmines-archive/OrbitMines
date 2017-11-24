@@ -4,8 +4,11 @@ import com.orbitmines.api.Color;
 import com.orbitmines.api.StaffRank;
 import com.orbitmines.bungeecord.OrbitMinesBungee;
 import com.orbitmines.bungeecord.handlers.BungeePlayer;
+import com.orbitmines.bungeecord.handlers.chat.ComponentMessage;
 import com.orbitmines.bungeecord.handlers.cmd.StaffCommand;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.event.ChatEvent;
 
 /*
@@ -42,9 +45,18 @@ public class CommandMotd extends StaffCommand {
 
         switch (a[1]) {
             case "view": {
-                omp.sendMessage("Motd", Color.ORANGE, "§7§lMessage of the day:");
-                omp.sendMessage("Motd", Color.ORANGE, "§7§l1. §7" + bungee.getMotdHandler().getFirstLine());
-                omp.sendMessage("Motd", Color.ORANGE, "§7§l2. §7" + bungee.getMotdHandler().getSecondLine());
+                omp.sendMessage("Motd", Color.BLUE, "§7§lMessage of the day:");
+
+                {
+                    ComponentMessage cM = new ComponentMessage();
+                    cM.addPart(omp.lang("Motd", Color.BLUE, "§7§l1.§r §7" + bungee.getMotdHandler().getFirstLine()), ClickEvent.Action.SUGGEST_COMMAND, a[0].toLowerCase() + " 1 " + bungee.getMotdHandler().getFirstLine().replace("§", "&"), HoverEvent.Action.SHOW_TEXT, "§7Edit");
+                    cM.send(omp);
+                }
+                {
+                    ComponentMessage cM = new ComponentMessage();
+                    cM.addPart(omp.lang("Motd", Color.BLUE, "§7§l2.§r §7" + bungee.getMotdHandler().getSecondLine()), ClickEvent.Action.SUGGEST_COMMAND, a[0].toLowerCase() + " 2 " + bungee.getMotdHandler().getSecondLine().replace("§", "&"), HoverEvent.Action.SHOW_TEXT, "§7Edit");
+                    cM.send(omp);
+                }
                 break;
             }
             case "1": {

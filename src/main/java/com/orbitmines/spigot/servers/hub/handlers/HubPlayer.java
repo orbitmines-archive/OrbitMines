@@ -1,0 +1,111 @@
+package com.orbitmines.spigot.servers.hub.handlers;
+
+import com.orbitmines.api.Color;
+import com.orbitmines.api.Language;
+import com.orbitmines.spigot.api.handlers.OMPlayer;
+import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
+import com.orbitmines.spigot.servers.hub.Hub;
+import net.firefang.ip2c.IpUtils;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+/*
+* OrbitMines - @author Fadi Shawki - 2017
+*/
+public class HubPlayer extends OMPlayer {
+
+    protected static List<HubPlayer> players = new ArrayList<>();
+
+    private final Hub hub;
+
+    public HubPlayer(Hub hub, Player player) {
+        super(player);
+
+        this.hub = hub;
+    }
+
+    @Override
+    protected void onLogin() {
+        players.add(this);
+
+        setScoreboard(new Hub.Scoreboard(orbitMines, this));
+
+        hub.getLobbyKit(this).setItems(this);
+
+        //TODO COSMETIC HELMET
+        player.getInventory().setHelmet(new ItemBuilder(Material.STAINED_GLASS, 1, 0, "§7Helmet").build());
+
+        if (language != Language.DUTCH)
+            return;
+        
+        String country = IpUtils.getCountry(getPlayer());
+        if (country == null || (!country.equals("Netherlands") && !country.equals("Belgium") && !country.equals("Luxembourg"))) {
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    sendMessage("");
+                    sendMessage("Language", Color.RED, "§c§lIMPORTANT:");
+                    sendMessage("Language", Color.RED, "§7Welcome to OrbitMines, " + getName() + "§7!");
+                    sendMessage("Language", Color.RED, "§7It seems like you're not from the Benelux. We have added an option for players like you to change the language of all messages on our server. Click on the §c§lRedstone Torch§7, then click on the §c§lBanner§7 in order to switch to §c§lEnglish§7.");
+                }
+            }.runTaskLater(orbitMines, 30);
+        }
+    }
+
+    @Override
+    protected void onLogout() {
+
+        players.remove(this);
+    }
+
+    @Override
+    public void onVote(int votes) {
+
+    }
+
+    @Override
+    public boolean canReceiveVelocity() {
+        return false;
+    }
+
+    /*
+
+
+        HubPlayer Getters
+
+
+     */
+
+    public static HubPlayer getPlayer(Player player) {
+        for (HubPlayer omp : players) {
+            if (omp.getPlayer() == player)
+                return omp;
+        }
+        throw new IllegalStateException();
+    }
+
+    public static HubPlayer getPlayer(String name) {
+        for (HubPlayer omp : players) {
+            if (omp.getName(true).equalsIgnoreCase(name))
+                return omp;
+        }
+        throw new IllegalStateException();
+    }
+
+    public static HubPlayer getPlayer(UUID uuid) {
+        for (HubPlayer omp : players) {
+            if (omp.getUUID().toString().equals(uuid.toString()))
+                return omp;
+        }
+        throw new IllegalStateException();
+    }
+
+    public static List<HubPlayer> getHubPlayers() {
+        return players;
+    }
+}

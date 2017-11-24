@@ -14,15 +14,15 @@ public class TablePlayers extends Table {
     public static final Column VIPRANK = new Column("VipRank", Column.Type.VARCHAR, 32);
     public static final Column LANGUAGE = new Column("Language", Column.Type.VARCHAR, 32);
     public static final Column SILENT = new Column("Silent", Column.Type.TINYINT, 1);
-    public static final Column POINTS = new Column("Points", Column.Type.INT);
-    public static final Column TOKENS = new Column("Tokens", Column.Type.INT);
+    public static final Column SOLARS = new Column("Solars", Column.Type.INT);
+    public static final Column PRISMS = new Column("Prisms", Column.Type.INT);
     public static final Column MONTHLY_BONUS = new Column("MonthlyBonus", Column.Type.VARCHAR, 32);
 
     public TablePlayers() {
-        super("Players", UUID, NAME, STAFFRANK, VIPRANK, LANGUAGE, SILENT, POINTS, TOKENS, MONTHLY_BONUS);
+        super("Players", UUID, NAME, STAFFRANK, VIPRANK, LANGUAGE, SILENT, SOLARS, PRISMS, MONTHLY_BONUS);
     }
 
-    public String[] values(String uuid, String name, String staffRank, String vipRank, String language, String silent, String points, String tokens, String monthlyBonus) {
-        return new String[] { uuid, name, staffRank, vipRank, language, silent, points, tokens, monthlyBonus };
+    public String[] values(String uuid, String name, String staffRank, String vipRank, String language, String silent, String solars, String prisms, String monthlyBonus) {
+        return new String[] { uuid, name, staffRank, vipRank, language, silent, solars, prisms, monthlyBonus };
     }
 }

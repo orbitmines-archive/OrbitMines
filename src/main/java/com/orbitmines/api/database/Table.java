@@ -1,6 +1,8 @@
 package com.orbitmines.api.database;
 
 import com.orbitmines.api.database.tables.*;
+import com.orbitmines.api.database.tables.survival.TableSurvivalClaim;
+import com.orbitmines.api.database.tables.survival.TableSurvivalPlayers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +23,9 @@ public class Table {
     public static TableServers SERVERS;
     public static TableMaps MAPS;
 
+    public static TableSurvivalPlayers SURVIVAL_PLAYERS;
+    public static TableSurvivalClaim SURVIVAL_CLAIM;
+
     static {
         PLAYERS = new TablePlayers();
         VOTES = new TableVotes();
@@ -30,6 +35,9 @@ public class Table {
         SERVER_DATA = new TableServerData();
         SERVERS = new TableServers();
         MAPS = new TableMaps();
+
+        SURVIVAL_PLAYERS = new TableSurvivalPlayers();
+        SURVIVAL_CLAIM = new TableSurvivalClaim();
     }
 
     private final String name;

@@ -5,11 +5,11 @@ package com.orbitmines.api;
 */
 public enum StaffRank {
 
-    NONE("None", Color.GRAY, Color.SILVER),
-    BUILDER("Builder", Color.FUCHSIA, Color.SILVER),
-    MODERATOR("Moderator", Color.AQUA, Color.SILVER),
-    DEVELOPER("Developer", Color.RED, Color.SILVER),
-    OWNER("Owner", Color.MAROON, Color.SILVER);
+    NONE("NONE", Color.GRAY, Color.SILVER),
+    BUILDER("BUILDER", Color.FUCHSIA, Color.WHITE),
+    MODERATOR("MOD", Color.AQUA, Color.WHITE),
+    DEVELOPER("DEV", Color.RED, Color.WHITE),
+    OWNER("OWNER", Color.MAROON, Color.WHITE);
 
     private final String name;
     private final Color prefixColor;
@@ -38,7 +38,7 @@ public enum StaffRank {
     }
 
     public String getPrefix(Color color) {
-        return this == NONE ? color.getChatColor() : prefixColor.getChatColor() + "§l" + name + (color == null ? "" : "§r " + color.getChatColor());
+        return this == NONE ? (color == null ? "" : color.getChatColor()) : prefixColor.getChatColor() + "§l" + name + (color == null ? "" : "§r " + color.getChatColor());
     }
 
     public String getDisplayName() {

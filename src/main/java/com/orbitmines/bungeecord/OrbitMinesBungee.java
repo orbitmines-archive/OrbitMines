@@ -342,20 +342,20 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
                 keyPair = RSAIO.load(rsaDirectory);
             }
         } catch (Exception ex) {
-            throw new RuntimeException("Error reading RSA tokens", ex);
+            throw new RuntimeException("Error reading RSA prisms", ex);
         }
 
-        // Load Votifier tokens.
-        Configuration tokenSection = configuration.getSection("tokens");
+        // Load Votifier prisms.
+        Configuration tokenSection = configuration.getSection("prisms");
 
-        if (configuration.get("tokens") != null) {
+        if (configuration.get("prisms") != null) {
             for (String s : tokenSection.getKeys()) {
                 tokens.put(s, KeyCreator.createKeyFrom(tokenSection.getString(s)));
                 getLogger().info("Loaded token for website: " + s);
             }
         } else {
             String token = TokenUtil.newToken();
-            configuration.set("tokens", ImmutableMap.of("default", token));
+            configuration.set("prisms", ImmutableMap.of("default", token));
             tokens.put("default", KeyCreator.createKeyFrom(token));
             try {
                 ConfigurationProvider.getProvider(YamlConfiguration.class).save(configuration, config);
@@ -363,7 +363,7 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
                 throw new RuntimeException("Error generating Votifier token", e);
             }
             getLogger().info("------------------------------------------------------------------------------");
-            getLogger().info("No tokens were found in your configuration, so we've generated one for you.");
+            getLogger().info("No prisms were found in your configuration, so we've generated one for you.");
             getLogger().info("Your default Votifier token is " + token + ".");
             getLogger().info("You will need to provide this token when you submit your server to a voting");
             getLogger().info("list.");

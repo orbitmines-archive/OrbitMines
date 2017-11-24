@@ -3,10 +3,7 @@ package com.orbitmines.spigot.api.handlers.scoreboard;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /*
 * OrbitMines - @author Fadi Shawki - 29-7-2017
@@ -22,7 +19,7 @@ public class ScoreboardTeam {
     private Map<Team.Option, Team.OptionStatus> options;
 
     public ScoreboardTeam(String name, Player... players) {
-        this(name, Arrays.asList(players));
+        this(name, new ArrayList<>(Arrays.asList(players)));
     }
 
     public ScoreboardTeam(String name, List<Player> players) {

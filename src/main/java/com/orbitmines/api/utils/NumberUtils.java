@@ -1,14 +1,16 @@
 package com.orbitmines.api.utils;
 
+import java.text.NumberFormat;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /*
 * OrbitMines - @author Fadi Shawki - 2017
 */
-public class RomanUtils {
+public class NumberUtils {
 
-    public static String parse(int number) {
+    public static String toRoman(int number) {
         if (number <= 0)
             return "" + number;
 
@@ -39,5 +41,9 @@ public class RomanUtils {
             }
         }
         return romanEqui;
+    }
+
+    public static String locale(int integer) {
+        return NumberFormat.getNumberInstance(Locale.US).format(integer);
     }
 }

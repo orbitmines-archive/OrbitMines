@@ -83,6 +83,9 @@ public class BungeePlayer {
 
         }
 
+        /* PrefixColor to DisplayName */
+        setPrefix(getRankPrefixColor().getChatColor());
+
         /* Update IP History */
         IP.update(getUUID(), player.getAddress().getHostString());
 
@@ -249,6 +252,9 @@ public class BungeePlayer {
 
         staffRank = StaffRank.valueOf(values.get(TablePlayers.STAFFRANK));
         vipRank = VipRank.valueOf(values.get(TablePlayers.VIPRANK));
+
+        /* PrefixColor to DisplayName */
+        setPrefix(getRankPrefixColor().getChatColor());
     }
 
     /*
@@ -380,6 +386,30 @@ public class BungeePlayer {
 
     public Server getServer() {
         return bungee.getServer(player.getServer().getInfo());
+    }
+
+    public String getRankPrefix() {
+        return staffRank != StaffRank.NONE ? staffRank.getPrefix() : vipRank.getPrefix();
+    }
+
+    public String getRankPrefix(Color color) {
+        return staffRank != StaffRank.NONE ? staffRank.getPrefix(color) : vipRank.getPrefix(color);
+    }
+
+    public String getRankName() {
+        return staffRank != StaffRank.NONE ? staffRank.getName() : vipRank.getName();
+    }
+
+    public String getRankDisplayName() {
+        return staffRank != StaffRank.NONE ? staffRank.getDisplayName() : vipRank.getDisplayName();
+    }
+
+    public Color getRankPrefixColor() {
+        return staffRank != StaffRank.NONE ? staffRank.getPrefixColor() : vipRank.getPrefixColor();
+    }
+
+    public Color getRankChatColor() {
+        return staffRank != StaffRank.NONE ? staffRank.getChatColor() : vipRank.getChatColor();
     }
 
     /*

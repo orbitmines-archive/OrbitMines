@@ -29,7 +29,7 @@ public class AnnouncementHandler {
         if (Database.get().contains(Table.SERVER_DATA, new Column[]{ TableServerData.SERVER, TableServerData.TYPE }, new Where(TableServerData.SERVER, "BUNGEE"), new Where(TableServerData.TYPE, "TITLES"))) {
             fromDatabase();
         } else {
-            titles.add(new Title("§c§lMad§9§lBlock", "§7Subtitle"));
+            titles.add(new Title("§8§lOrbit§7§lMines", "§7Subtitle"));
             Database.get().insert(Table.SERVER_DATA, TableServerData.SERVER_DATA.values("BUNGEE", "TITLES", serialize()));
         }
     }
@@ -43,7 +43,7 @@ public class AnnouncementHandler {
     }
 
     public void addTitle() {
-        titles.add(new Title("§6§lTITLE", ""));
+        titles.add(new Title("§8§lOrbit§7§lMines", ""));
 
         update();
     }
@@ -52,7 +52,7 @@ public class AnnouncementHandler {
         titles.remove(index);
 
         if (titles.size() == 0)
-            titles.add(new Title("§6§lTITLE", "§7Subtitle"));
+            titles.add(new Title("§8§lOrbit§7§lMines", "§7Subtitle"));
 
         update();
     }

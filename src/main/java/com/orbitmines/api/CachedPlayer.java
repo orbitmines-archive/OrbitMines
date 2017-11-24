@@ -79,6 +79,36 @@ public class CachedPlayer {
             ip = IP.getIp(uuid);
     }
 
+    public String getRankPrefix() {
+        StaffRank staffRank = getStaffRank();
+        return staffRank != StaffRank.NONE ? staffRank.getPrefix() : getVipRank().getPrefix();
+    }
+
+    public String getRankPrefix(Color color) {
+        StaffRank staffRank = getStaffRank();
+        return staffRank != StaffRank.NONE ? staffRank.getPrefix(color) : getVipRank().getPrefix(color);
+    }
+
+    public String getRankName() {
+        StaffRank staffRank = getStaffRank();
+        return staffRank != StaffRank.NONE ? staffRank.getName() : getVipRank().getName();
+    }
+
+    public String getRankDisplayName() {
+        StaffRank staffRank = getStaffRank();
+        return staffRank != StaffRank.NONE ? staffRank.getDisplayName() : getVipRank().getDisplayName();
+    }
+
+    public Color getRankPrefixColor() {
+        StaffRank staffRank = getStaffRank();
+        return staffRank != StaffRank.NONE ? staffRank.getPrefixColor() : getVipRank().getPrefixColor();
+    }
+
+    public Color getRankChatColor() {
+        StaffRank staffRank = getStaffRank();
+        return staffRank != StaffRank.NONE ? staffRank.getChatColor() : getVipRank().getChatColor();
+    }
+
     public static CachedPlayer getPlayer(UUID uuid) {
         if (cached.containsKey(uuid))
             return cached.get(uuid);

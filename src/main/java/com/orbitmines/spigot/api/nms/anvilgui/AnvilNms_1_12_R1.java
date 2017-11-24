@@ -28,7 +28,7 @@ public class AnvilNms_1_12_R1 implements AnvilNms {
         }
 
         @Override
-        public boolean a(EntityHuman entityhuman) {
+        public boolean canUse(EntityHuman entityhuman) {
             return true;
         }
     }
