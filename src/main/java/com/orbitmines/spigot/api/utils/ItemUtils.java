@@ -2,9 +2,12 @@ package com.orbitmines.spigot.api.utils;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /*
 * OrbitMines - @author Fadi Shawki - 2017
@@ -39,4 +42,21 @@ public class ItemUtils {
     public static boolean isFarmMaterial(Material material) {
         return FARM_MATERIALS.contains(material);
     }
+
+    public static final Set<PotionEffectType> POSITIVE_EFFECTS = new HashSet<>(Arrays.asList(
+                    PotionEffectType.ABSORPTION,
+                    PotionEffectType.DAMAGE_RESISTANCE,
+                    PotionEffectType.FAST_DIGGING,
+                    PotionEffectType.FIRE_RESISTANCE,
+                    PotionEffectType.HEAL,
+                    PotionEffectType.HEALTH_BOOST,
+                    PotionEffectType.INCREASE_DAMAGE,
+                    PotionEffectType.INVISIBILITY,
+                    PotionEffectType.JUMP,
+                    PotionEffectType.NIGHT_VISION,
+                    PotionEffectType.REGENERATION,
+                    PotionEffectType.SATURATION,
+                    PotionEffectType.SPEED,
+                    PotionEffectType.WATER_BREATHING
+            ));
 }

@@ -228,6 +228,27 @@ public class Database {
         return integer;
     }
 
+    public long getLong(Table table, Column column, Where... wheres) {
+        long l = 0;
+
+        String query = "SELECT `" + column.toString() + "` FROM `" + table.toString() + "`" + toString(wheres) + ";";
+
+        try {
+            checkConnection();
+
+            ResultSet rs = connection.prepareStatement(query).executeQuery();
+
+            while (rs.next()) {
+                l = rs.getLong(column.toString());
+            }
+
+            rs.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return l;
+    }
+
     public boolean getBoolean(Table table, Column column, Where... wheres) {
         return "1".equals(getString(table, column, wheres));
     }

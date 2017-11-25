@@ -108,8 +108,12 @@ public class Region {
         return null;
     }
 
+    public static boolean isInRegion(Location location) {
+        return isInRegion(null, location);
+    }
+
     public static boolean isInRegion(SurvivalPlayer omp, Location location) {
-        if (omp.isOpMode())
+        if (omp != null && omp.isOpMode())
             return false;
 
         int x = Math.abs(location.getBlockX());
@@ -133,7 +137,7 @@ public class Region {
 
         boolean inRegion = distance <= PROTECTION;
 
-        if (inRegion && !omp.onCooldown(REGION_INTERACT)) {
+        if (omp != null && inRegion && !omp.onCooldown(REGION_INTERACT)) {
             omp.sendMessage("Region", Color.RED, "§7Je kan dat niet zo dichtbij een Region doen!", "§7You cannot do such things that close to a Region!");
 
             omp.resetCooldown(REGION_INTERACT);

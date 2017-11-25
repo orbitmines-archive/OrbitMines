@@ -5,7 +5,7 @@ import com.orbitmines.api.Color;
 import com.orbitmines.api.StaffRank;
 import com.orbitmines.api.utils.DateUtils;
 import com.orbitmines.spigot.api.utils.ItemUtils;
-import com.orbitmines.spigot.servers.survival.griefprevention.DataStore;
+import com.orbitmines.spigot.servers.survival.Survival;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalPlayer;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -19,25 +19,33 @@ import java.util.*;
 */
 public class Claim {
 
+    public static Long NEXT_ID = (long) 0;
+
+    private final Survival survival;
+
     private Long id;
     private final Date createdOn;
+
+    private boolean registered;
 
     private Location[] corners;
 
     private UUID owner;
     private Map<UUID, Permission> members;
 
-    private Map<Settings, Boolean> settings;
+    private Set<Settings> settings;
 
     private Claim parent;
     private List<Claim> children;
 
-    public Claim() {
+    public Claim(Survival survival) {
+        this.survival = survival;
         this.id = null;
         this.createdOn = DateUtils.now();
     }
 
-    public Claim(Long id, Date createdOn, Location corner1, Location corner2, UUID owner, Map<UUID, Permission> members, Map<Settings, Boolean> settings) {
+    public Claim(Survival survival, Long id, Date createdOn, Location corner1, Location corner2, UUID owner, Map<UUID, Permission> members, Set<Settings> settings) {
+        this.survival = survival;
         this.id = id;
         this.createdOn = createdOn;
         this.corners = new Location[] { corner1, corner2 };
@@ -59,7 +67,11 @@ public class Claim {
     }
 
     public boolean isRegistered() {
-        return id != null;
+        return registered;
+    }
+
+    public void setRegistered(boolean registered) {
+        this.registered = registered;
     }
 
     /*
@@ -157,7 +169,7 @@ public class Claim {
         Settings
      */
 
-    public Map<Settings, Boolean> getSettings() {
+    public Set<Settings> getSettings() {
         return settings;
     }
 
@@ -171,6 +183,10 @@ public class Claim {
 
     public Claim getParent() {
         return parent;
+    }
+
+    public void setParent(Claim parent) {
+        this.parent = parent;
     }
 
     /*
@@ -262,7 +278,7 @@ public class Claim {
         Claim Management
      */
 
-    public boolean inClaim(Location location) {
+    public boolean inClaim(Location location, boolean ignoreY, boolean excludeChildren) {
         if (!location.getWorld().equals(getCorner1().getWorld()))
             return false;
 
@@ -279,15 +295,21 @@ public class Claim {
          */
 
         boolean inClaim =
-                (!hasParent() ||    y >= corner1.getY() && y < corner2.getY() + 1)
+                (ignoreY ||        y >= corner1.getY() && y < corner2.getY() + 1)
                                 && x >= corner1.getX() && x < corner2.getX() + 1
                                 && z >= corner1.getZ() && z < corner2.getZ() + 1;
 
         if (!inClaim)
             return false;
 
-        if (hasParent())
-            return parent.inClaim(location);
+        if (hasParent()) {
+            return parent.inClaim(location, ignoreY, false);
+        } else if (excludeChildren) {
+            for (Claim child : children) {
+                if (child.inClaim(location, ignoreY, true))
+                    return false;
+            }
+        }
 
         return true;
     }
@@ -298,16 +320,16 @@ public class Claim {
 
         //TODO 3D Children
 
-        if (claim.inClaim(getCorner1()))
+        if (claim.inClaim(getCorner1(), true, false))
             return true;
-        if (claim.inClaim(getCorner2()))
+        if (claim.inClaim(getCorner2(), true, false))
             return true;
-        if (claim.inClaim(new Location(getCorner1().getWorld(), getCorner1().getBlockX(), 0, getCorner2().getBlockZ())))
+        if (claim.inClaim(new Location(getCorner1().getWorld(), getCorner1().getBlockX(), 0, getCorner2().getBlockZ()), true, false))
             return true;
-        if (claim.inClaim(new Location(getCorner1().getWorld(), getCorner2().getBlockX(), 0, getCorner1().getBlockZ())))
+        if (claim.inClaim(new Location(getCorner1().getWorld(), getCorner2().getBlockX(), 0, getCorner1().getBlockZ()), true, false))
             return true;
 
-        if (inClaim(claim.getCorner1()))
+        if (inClaim(claim.getCorner1(), true, false))
             return true;
 
         if (getCorner1().getBlockZ() <= claim.getCorner2().getBlockZ() &&
@@ -353,8 +375,8 @@ public class Claim {
         return chunks;
     }
 
-    public List<Long> getChunkHashes() {
-        List<Long> hashes = new ArrayList<>();
+    public ArrayList<Long> getChunkHashes() {
+        ArrayList<Long> hashes = new ArrayList<>();
         int smallX = getCorner1().getBlockX() >> 4;
         int smallZ = getCorner1().getBlockZ() >> 4;
         int largeX = getCorner2().getBlockX() >> 4;
@@ -362,7 +384,7 @@ public class Claim {
 
         for (int x = smallX; x <= largeX; x++) {
             for (int z = smallZ; z <= largeZ; z++) {
-                hashes.add(DataStore.getChunkHash(x, z));
+                hashes.add(survival.getClaimHandler().getChunkHash(x, z));
             }
         }
 
@@ -371,7 +393,7 @@ public class Claim {
 
     public enum Permission {
 
-        ACCESS, /* Use Doors, Buttons etc. */
+        ACCESS, /* Use Doors, Buttons, Fly etc. */
         MANAGE, /* Access Chests & Plant Farms */
         BUILD, /* Build & Break Blocks */
         CO_OWNER; /* Manage Claims */
@@ -383,7 +405,7 @@ public class Claim {
 
     public enum Settings {
 
-        EXPLOSIONS(false);
+        ;
 
         private final boolean defaultSetting;
 

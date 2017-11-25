@@ -1,11 +1,13 @@
 package org.json;
 
-import static java.lang.String.format;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import static java.lang.String.format;
 
 /*
 Copyright (c) 2002 JSON.org
@@ -64,7 +66,7 @@ public class JSONPointer {
         private final List<String> refTokens = new ArrayList<String>();
 
         /**
-         * Creates a {@code JSONPointer} instance using the prisms previously set using the
+         * Creates a {@code JSONPointer} instance using the tokens previously set using the
          * {@link #append(String)} method calls.
          */
         public JSONPointer build() {
@@ -72,7 +74,7 @@ public class JSONPointer {
         }
 
         /**
-         * Adds an arbitrary token to the list of reference prisms. It can be any non-null value.
+         * Adds an arbitrary token to the list of reference tokens. It can be any non-null value.
          * 
          * Unlike in the case of JSON string or URI fragment representation of JSON pointers, the
          * argument of this method MUST NOT be escaped. If you want to query the property called

@@ -1,7 +1,15 @@
 package com.orbitmines.spigot.servers.survival.handlers;
 
+import com.orbitmines.api.database.Database;
+import com.orbitmines.api.database.Set;
+import com.orbitmines.api.database.Table;
+import com.orbitmines.api.database.Where;
+import com.orbitmines.api.database.tables.TablePlayers;
+import com.orbitmines.api.database.tables.survival.TableSurvivalPlayers;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.servers.survival.Survival;
+import com.orbitmines.spigot.servers.survival.handlers.claim.Claim;
+import com.orbitmines.spigot.servers.survival.handlers.claim.Visualization;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -18,6 +26,10 @@ public class SurvivalPlayer extends OMPlayer {
     private final Survival survival;
 
     private int earthMoney;
+    private int claimBlocks;
+
+    private Visualization visualization;
+    private Claim lastClaim;
 
     public SurvivalPlayer(Survival survival, Player player) {
         super(player);
@@ -60,7 +72,7 @@ public class SurvivalPlayer extends OMPlayer {
      */
     
     /*
-        Points
+        EarthMoney
      */
 
     public int getEarthMoney() {
@@ -80,9 +92,57 @@ public class SurvivalPlayer extends OMPlayer {
     }
 
     private void updateEarthMoney() {
-        //Database.get().update(Table.PLAYERS, new Set(TablePlayers.SOLARS, this.solars), new Where(TablePlayers.UUID, getUUID().toString()));
-    }//TODO
+        Database.get().update(Table.SURVIVAL_PLAYERS, new Set(TableSurvivalPlayers.EARTH_MONEY, this.earthMoney), new Where(TablePlayers.UUID, getUUID().toString()));
+    }
     
+    /*
+        ClaimBlocks
+     */
+
+    public int getClaimBlocks() {
+        return claimBlocks;
+    }
+
+    public void addClaimBlocks(int amount) {
+        claimBlocks += amount;
+
+        updateClaimBlocks();
+    }
+
+    public void removeClaimBlocks(int amount) {
+        claimBlocks -= amount;
+
+        updateClaimBlocks();
+    }
+
+    private void updateClaimBlocks() {
+        Database.get().update(Table.SURVIVAL_PLAYERS, new Set(TableSurvivalPlayers.CLAIM_BLOCKS, this.claimBlocks), new Where(TablePlayers.UUID, getUUID().toString()));
+    }
+
+    /*
+        Visualisation
+     */
+
+    public Visualization getVisualization() {
+        return visualization;
+    }
+
+    public void setVisualization(Visualization visualization) {
+        this.visualization = visualization;
+    }
+
+    /*
+        LastClaim
+     */
+
+    public Claim getLastClaim() {
+        return lastClaim;
+    }
+
+    public void setLastClaim(Claim lastClaim) {
+        this.lastClaim = lastClaim;
+    }
+
     /*
 
 

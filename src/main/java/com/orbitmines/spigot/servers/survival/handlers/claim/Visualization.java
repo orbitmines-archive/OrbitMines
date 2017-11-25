@@ -11,16 +11,12 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /*
 * OrbitMines - @author Fadi Shawki - 2017
 */
 public class Visualization {
-
-    private static Map<SurvivalPlayer, Visualization> visualizations = new HashMap<>();
 
     private List<Element> elements;
 
@@ -66,7 +62,7 @@ public class Visualization {
     }
 
     public static void show(SurvivalPlayer omp, Visualization visualization) {
-        if (visualizations.containsKey(omp))
+        if (omp.getVisualization() != null)
             revert(omp);
 
         if (omp.getPlayer().isOnline() && visualization.elements.size() > 0 && visualization.elements.get(0).location.getWorld().equals(omp.getWorld())) {
@@ -82,12 +78,12 @@ public class Visualization {
                         omp.getPlayer().sendBlockChange(element.location, element.visualizedMaterial, element.visualizedData);
                     }
 
-                    visualizations.put(omp, visualization);
+                    omp.setVisualization(visualization);
 
                     new BukkitRunnable() {
                         @Override
                         public void run() {
-                            if (visualizations.get(omp) == visualization)
+                            if (omp.getVisualization() == visualization)
                                 revert(omp);
                         }
                     }.runTaskLater(OrbitMines.getInstance(), 60 * 20);
@@ -98,11 +94,11 @@ public class Visualization {
 
     public static void revert(SurvivalPlayer omp) {
         if (!omp.getPlayer().isOnline()) {
-            visualizations.remove(omp);
+            omp.setVisualization(null);
             return;
         }
 
-        Visualization visualization = visualizations.get(omp);
+        Visualization visualization = omp.getVisualization();
 
         if (visualization == null)
             return;
@@ -125,7 +121,7 @@ public class Visualization {
             omp.getPlayer().sendBlockChange(element.location, element.realMaterial, element.realData);
         }
 
-        visualizations.remove(omp);
+        omp.setVisualization(null);
     }
 
     private void addClaimElements(Claim claim, int height, Type type, Location location) {
@@ -191,7 +187,7 @@ public class Visualization {
 
         for (int i = 0; i < newElements.size(); i++) {
             Element element = newElements.get(i);
-            if (!claim.inClaim(element.location)) {
+            if (!claim.inClaim(element.location, true, false)) {
                 newElements.remove(i--);
             }
         }

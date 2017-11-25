@@ -1,6 +1,7 @@
 package com.orbitmines.api.database;
 
 import com.orbitmines.api.database.tables.*;
+import com.orbitmines.api.database.tables.kitpvp.TableKitPvPPlayers;
 import com.orbitmines.api.database.tables.survival.TableSurvivalClaim;
 import com.orbitmines.api.database.tables.survival.TableSurvivalPlayers;
 
@@ -23,8 +24,12 @@ public class Table {
     public static TableServers SERVERS;
     public static TableMaps MAPS;
 
+    /* Survival */
     public static TableSurvivalPlayers SURVIVAL_PLAYERS;
     public static TableSurvivalClaim SURVIVAL_CLAIM;
+
+    /* KitPvP */
+    public static TableKitPvPPlayers KITPVP_PLAYERS;
 
     static {
         PLAYERS = new TablePlayers();
@@ -38,6 +43,8 @@ public class Table {
 
         SURVIVAL_PLAYERS = new TableSurvivalPlayers();
         SURVIVAL_CLAIM = new TableSurvivalClaim();
+
+        KITPVP_PLAYERS = new TableKitPvPPlayers();
     }
 
     private final String name;

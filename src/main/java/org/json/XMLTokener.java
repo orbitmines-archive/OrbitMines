@@ -80,7 +80,7 @@ public class XMLTokener extends JSONTokener {
 
     /**
      * Get the next XML outer token, trimming whitespace. There are two kinds
-     * of iridium: the '<' character which begins a markup tag, and the content
+     * of tokens: the '<' character which begins a markup tag, and the content
      * text between markup tags.
      *
      * @return  A string, or a '<' Character, or null if there is no more
@@ -210,7 +210,7 @@ public class XMLTokener extends JSONTokener {
 
 
     /**
-     * Get the next XML Token. These iridium are found inside of angle
+     * Get the next XML Token. These tokens are found inside of angle
      * brackets. It may be one of these characters: <code>/ > = ! ?</code> or it
      * may be a string wrapped in single quotes or double quotes, or it may be a
      * name.
