@@ -10,9 +10,11 @@ import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.servers.survival.Survival;
 import com.orbitmines.spigot.servers.survival.handlers.claim.Claim;
 import com.orbitmines.spigot.servers.survival.handlers.claim.Visualization;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,8 +30,13 @@ public class SurvivalPlayer extends OMPlayer {
     private int earthMoney;
     private int claimBlocks;
 
+    private java.util.Set<Survival.Settings> settings;
+
+    private Claim.ToolType claimToolType;
     private Visualization visualization;
     private Claim lastClaim;
+    private Claim resizingClaim;
+    private Location lastClaimToolLocation;
 
     public SurvivalPlayer(Survival survival, Player player) {
         super(player);
@@ -37,6 +44,11 @@ public class SurvivalPlayer extends OMPlayer {
         this.survival = survival;
 
         this.earthMoney = 0;
+        this.claimBlocks = 250;
+
+        this.settings = new HashSet<>();
+
+        this.claimToolType = Claim.ToolType.NORMAL;
     }
 
     @Override
@@ -115,8 +127,45 @@ public class SurvivalPlayer extends OMPlayer {
         updateClaimBlocks();
     }
 
+    public int getRemainingClaimBlocks() {
+        return survival.getClaimHandler().getRemaining(getUUID(), claimBlocks);
+    }
+
     private void updateClaimBlocks() {
         Database.get().update(Table.SURVIVAL_PLAYERS, new Set(TableSurvivalPlayers.CLAIM_BLOCKS, this.claimBlocks), new Where(TablePlayers.UUID, getUUID().toString()));
+    }
+
+    /*
+        Settings
+     */
+
+    public java.util.Set<Survival.Settings> getSettings() {
+        return settings;
+    }
+
+    public boolean hasEnabled(Survival.Settings settings) {
+        return this.settings.contains(settings);
+    }
+
+    public void toggle(Survival.Settings settings, boolean enable) {
+        if (enable)
+            this.settings.add(settings);
+        else
+            this.settings.remove(settings);
+
+        //TODO UPDATE
+    }
+
+    /*
+        Claim.ToolType
+     */
+
+    public Claim.ToolType getClaimToolType() {
+        return claimToolType;
+    }
+
+    public void setClaimToolType(Claim.ToolType claimToolType) {
+        this.claimToolType = claimToolType;
     }
 
     /*
@@ -141,6 +190,30 @@ public class SurvivalPlayer extends OMPlayer {
 
     public void setLastClaim(Claim lastClaim) {
         this.lastClaim = lastClaim;
+    }
+
+    /*
+        Resizing Claim
+     */
+
+    public Claim getResizingClaim() {
+        return resizingClaim;
+    }
+
+    public void setResizingClaim(Claim resizingClaim) {
+        this.resizingClaim = resizingClaim;
+    }
+
+    /*
+        ClaimTool
+     */
+
+    public Location getLastClaimToolLocation() {
+        return lastClaimToolLocation;
+    }
+
+    public void setLastClaimToolLocation(Location lastClaimToolLocation) {
+        this.lastClaimToolLocation = lastClaimToolLocation;
     }
 
     /*

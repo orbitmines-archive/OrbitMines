@@ -190,6 +190,14 @@ public class ItemBuilder {
         return itemStack;
     }
 
+    public boolean equals(ItemStack itemStack) {
+        if (itemStack == null)
+            return material == null;
+
+        ItemMeta meta = itemStack.getItemMeta();
+        return itemStack.getType() == material && (durability == -1 || itemStack.getDurability() == durability) && (displayName == null || meta != null && meta.getDisplayName() != null && meta.getDisplayName().equals(displayName)) && (lore == null || lore.size() == 0 || meta != null && meta.getLore() != null && meta.getLore().equals(lore));
+    }
+
     public ItemBuilder clone() {
         return new ItemBuilder(this);
     }

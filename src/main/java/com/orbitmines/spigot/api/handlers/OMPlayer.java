@@ -14,6 +14,7 @@ import com.orbitmines.spigot.api.Freezer;
 import com.orbitmines.spigot.api.handlers.chat.Title;
 import com.orbitmines.spigot.api.handlers.data.VoteData;
 import com.orbitmines.spigot.api.handlers.itembuilders.PotionBuilder;
+import com.orbitmines.spigot.api.handlers.itemhandlers.ItemHover;
 import com.orbitmines.spigot.api.handlers.kit.KitInteractive;
 import com.orbitmines.spigot.api.handlers.leaderboard.LeaderBoard;
 import com.orbitmines.spigot.api.handlers.leaderboard.PlayerLeaderBoard;
@@ -25,6 +26,7 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -60,6 +62,7 @@ public abstract class OMPlayer {
     protected OMScoreboard scoreboard;
     protected GUI lastInventory;
     protected KitInteractive lastInteractiveKit;
+    protected ItemHover currentHover;
 
     protected Map<Cooldown, Long> cooldowns;
     protected Map<Data.Type, Data> data;
@@ -205,6 +208,10 @@ public abstract class OMPlayer {
         PlayerFreezer freezer = PlayerFreezer.getFreezer(player);
         if (freezer != null)
             freezer.delete();
+
+        /* Leave Hover */
+        if (currentHover != null)
+            currentHover.leave(this);
 
         players.remove(this);
     }
@@ -563,6 +570,18 @@ public abstract class OMPlayer {
     }
 
     /*
+        ItemHover
+     */
+
+    public ItemHover getCurrentHover() {
+        return currentHover;
+    }
+
+    public void setCurrentHover(ItemHover currentHover) {
+        this.currentHover = currentHover;
+    }
+
+    /*
         Cooldowns
      */
 
@@ -749,8 +768,16 @@ public abstract class OMPlayer {
         return player.getGameMode();
     }
 
-    public ItemStack getCursor() {
-        return player.getItemOnCursor();
+    public PlayerInventory getInventory() {
+        return player.getInventory();
+    }
+
+    public ItemStack getItemInMainHand() {
+        return player.getInventory().getItemInMainHand();
+    }
+
+    public ItemStack getItemInOffHand() {
+        return player.getInventory().getItemInOffHand();
     }
 
     /* Clear inventory & Armor Contents */

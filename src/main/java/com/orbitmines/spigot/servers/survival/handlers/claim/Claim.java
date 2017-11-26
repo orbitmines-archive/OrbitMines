@@ -4,6 +4,7 @@ import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.api.Color;
 import com.orbitmines.api.StaffRank;
 import com.orbitmines.api.utils.DateUtils;
+import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.api.utils.ItemUtils;
 import com.orbitmines.spigot.servers.survival.Survival;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalPlayer;
@@ -21,6 +22,22 @@ public class Claim {
 
     public static Long NEXT_ID = (long) 0;
 
+    public static int MIN_WIDTH = 3;
+    public static int MIN_AREA = MIN_WIDTH * MIN_WIDTH;
+    public static ItemBuilder CLAIMING_TOOL = new ItemBuilder(Material.STONE_HOE, 1, 0, "§a§lClaiming Tool").unbreakable(true);
+//        "",
+//        "§6§lRIGHT CLICK",
+//        "§7Create claims by selecting",
+//        "§7two opposite corners.",
+//        "",
+//        "§6§lLEFT CLICK",
+//        "§7View claim information of",
+//        "§7the claim you are currently",
+//        "§7in.",
+//        "",
+//        "§6§lSHIFT + LEFT CLICK",
+//        "§7View all nearby claims."
+
     private final Survival survival;
 
     private Long id;
@@ -33,7 +50,7 @@ public class Claim {
     private UUID owner;
     private Map<UUID, Permission> members;
 
-    private Set<Settings> settings;
+    private Map<Settings, Permission> settings;
 
     private Claim parent;
     private List<Claim> children;
@@ -44,7 +61,7 @@ public class Claim {
         this.createdOn = DateUtils.now();
     }
 
-    public Claim(Survival survival, Long id, Date createdOn, Location corner1, Location corner2, UUID owner, Map<UUID, Permission> members, Set<Settings> settings) {
+    public Claim(Survival survival, Long id, Date createdOn, Location corner1, Location corner2, UUID owner, Map<UUID, Permission> members, Map<Settings, Permission> settings) {
         this.survival = survival;
         this.id = id;
         this.createdOn = createdOn;
@@ -102,20 +119,12 @@ public class Claim {
         return getCorner2().getBlockX() - getCorner1().getBlockX() + 1;
     }
 
-    public int getDepth() {
+    public int getHeight() {
         return getCorner2().getBlockZ() - getCorner1().getBlockZ() + 1;
     }
 
-    public int getHeight() {
-        return getCorner2().getBlockY() - getCorner1().getBlockY() + 1;
-    }
-
     public int getArea() {
-        return getWidth() * getDepth();
-    }
-
-    public int getVolume() {
-        return getArea() * getHeight();
+        return getWidth() * getHeight();
     }
 
     /*
@@ -124,6 +133,10 @@ public class Claim {
 
     public UUID getOwner() {
         return hasParent() ? parent.getOwner() : owner;
+    }
+
+    public void setOwner(UUID owner) {
+        this.owner = owner;
     }
 
     public boolean hasOwner() {
@@ -153,6 +166,10 @@ public class Claim {
         return members;
     }
 
+    public void setMembers(Map<UUID, Permission> members) {
+        this.members = members;
+    }
+
     public boolean hasPermission(UUID member, Permission permission) {
         return hasParent() && parent.hasPermission(member, permission) || members.containsKey(member) && members.get(member).hasPerms(permission);
     }
@@ -169,8 +186,31 @@ public class Claim {
         Settings
      */
 
-    public Set<Settings> getSettings() {
+    public Map<Settings, Permission> getSettings() {
         return settings;
+    }
+
+    public void setSettings(Map<Settings, Permission> settings) {
+        this.settings = settings;
+    }
+
+    public Permission getPermission(Settings settings) {
+        return this.settings.getOrDefault(settings, settings.defaultPermission);
+    }
+
+    public boolean hasPermission(SurvivalPlayer omp, Settings settings) {
+        if (omp.isOpMode())
+            return true;
+
+        if (isOwner(omp.getUUID()))
+            return true;
+
+        Permission permission = getPermission(settings);
+
+        if (permission == null)
+            return true;
+
+        return hasPermission(omp.getUUID(), permission);
     }
 
     /*
@@ -201,6 +241,10 @@ public class Claim {
         return children;
     }
 
+    public void setChildren(List<Claim> children) {
+        this.children = children;
+    }
+
     /*
         Edit Permissions
      */
@@ -215,7 +259,8 @@ public class Claim {
         if (hasPermission(omp.getUUID(), Permission.CO_OWNER))
             return true;
 
-        omp.sendMessage("Claims", Color.RED, "§7Alleen " + getOwnerName() + "§7 kan deze claim wijzigen.", "§7Only " + getOwnerName() + "§7 can modify this claim.");
+        String name = getOwnerName();
+        omp.sendMessage("Claims", Color.RED, "§7Alleen " + name + "§7 kan deze claim wijzigen.", "§7Only " + name + "§7 can modify this claim.");
 
         return false;
     }
@@ -230,7 +275,8 @@ public class Claim {
         if (hasPermission(omp.getUUID(), Permission.MANAGE))
             return true;
 
-        omp.sendMessage("Claims", Color.RED, getOwnerName() + " §7heeft je geen toegang gegeven om dat hier te gebruiken.", getOwnerName() + " §7didn't give you permission to use that here.");
+        String name = getOwnerName();
+        omp.sendMessage("Claims", Color.RED, name + " §7heeft je geen toegang gegeven om dat hier te gebruiken.", name + " §7didn't give you permission to use that here.");
 
         return false;
     }
@@ -249,12 +295,14 @@ public class Claim {
             if (hasPermission(omp.getUUID(), Permission.MANAGE))
                 return true;
 
-            omp.sendMessage("Claims", Color.RED, getOwnerName() + " §7heeft je geen toegang gegeven om hier te farmen.", getOwnerName() + " §7didn't give you permission to farm here.");
+            String name = getOwnerName();
+            omp.sendMessage("Claims", Color.RED, name + " §7heeft je geen toegang gegeven om hier te farmen.", name + " §7didn't give you permission to farm here.");
 
             return false;
         }
 
-        omp.sendMessage("Claims", Color.RED, getOwnerName() + " §7heeft je geen toegang gegeven om hier te bouwen.", getOwnerName() + " §7didn't give you permission to build here.");
+        String name = getOwnerName();
+        omp.sendMessage("Claims", Color.RED, name + " §7heeft je geen toegang gegeven om hier te bouwen.", name + " §7didn't give you permission to build here.");
 
         return false;
     }
@@ -269,7 +317,8 @@ public class Claim {
         if (hasPermission(omp.getUUID(), Permission.ACCESS))
             return true;
 
-        omp.sendMessage("Claims", Color.RED, getOwnerName() + " §7heeft je geen toegang gegeven om dat hier te gebruiken.", getOwnerName() + " §7didn't give you permission to use that here.");
+        String name = getOwnerName();
+        omp.sendMessage("Claims", Color.RED, name + " §7heeft je geen toegang gegeven om dat hier te gebruiken.", name + " §7didn't give you permission to use that here.");
 
         return false;
     }
@@ -405,16 +454,46 @@ public class Claim {
 
     public enum Settings {
 
-        ;
+        ENDER_PEARL(Permission.ACCESS);
 
-        private final boolean defaultSetting;
+        private final Permission defaultPermission;
 
-        Settings(boolean defaultSetting) {
-            this.defaultSetting = defaultSetting;
+        Settings(Permission defaultPermission) {
+            this.defaultPermission = defaultPermission;
         }
 
-        public boolean defaultSetting() {
-            return defaultSetting;
+        public Permission defaultPermission() {
+            return defaultPermission;
+        }
+    }
+
+    public enum ToolType {
+
+        NORMAL,
+        CHILD,
+        WITHOUT_OWNER;
+
+    }
+
+    public static class CreateResult {
+
+        private  Claim claim;
+        private boolean succeeded;
+
+        public Claim getClaim() {
+            return claim;
+        }
+
+        public void setClaim(Claim claim) {
+            this.claim = claim;
+        }
+
+        public boolean isSucceeded() {
+            return succeeded;
+        }
+
+        public void setSucceeded(boolean succeeded) {
+            this.succeeded = succeeded;
         }
     }
 }

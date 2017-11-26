@@ -201,6 +201,7 @@ public class WorldLoader {
         if (path.exists()) {
             File files[] = path.listFiles();
             assert files != null;
+
             for (int i = 0; i < files.length; i++) {
                 if (files[i].isDirectory()) {
                     deleteDirectory(files[i]);

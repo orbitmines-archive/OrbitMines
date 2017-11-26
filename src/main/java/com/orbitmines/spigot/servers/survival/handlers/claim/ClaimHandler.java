@@ -1,20 +1,23 @@
 package com.orbitmines.spigot.servers.survival.handlers.claim;
 
+import com.orbitmines.api.Color;
 import com.orbitmines.api.database.Database;
 import com.orbitmines.api.database.Set;
 import com.orbitmines.api.database.Table;
 import com.orbitmines.api.database.Where;
 import com.orbitmines.api.database.tables.TableServerData;
 import com.orbitmines.api.database.tables.survival.TableSurvivalClaim;
+import com.orbitmines.api.database.tables.survival.TableSurvivalPlayers;
 import com.orbitmines.api.utils.DateUtils;
 import com.orbitmines.spigot.api.utils.Serializer;
 import com.orbitmines.spigot.servers.survival.Survival;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalPlayer;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 
-import java.util.ArrayList;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /*
@@ -32,10 +35,6 @@ public class ClaimHandler {
 
         claims = new ArrayList<>();
         chunkClaims = new ConcurrentHashMap<>();
-    }
-
-    public ArrayList<Claim> getClaims() {
-        return claims;
     }
 
     public boolean canBuild(SurvivalPlayer omp, Location location) {
@@ -107,12 +106,221 @@ public class ClaimHandler {
         return null;
     }
 
+    public Claim getClaim(long id) {
+        for (Claim claim : claims) {
+            if (claim.isRegistered() && claim.getId() == id)
+                return claim;
+        }
+        return null;
+    }
+
+    public Collection<Claim> getClaims() {
+        return Collections.unmodifiableCollection(this.claims);
+    }
+
+    public Collection<Claim> getClaims(long x, long z) {
+        ArrayList<Claim> chunkClaims = this.chunkClaims.get(getChunkHash(x, z));
+
+        if (chunkClaims != null)
+            return Collections.unmodifiableCollection(chunkClaims);
+
+        return Collections.unmodifiableCollection(new ArrayList<>());
+    }
+    
+    public java.util.Set<Claim> getNearbyClaims(Location location) {
+        java.util.Set<Claim> claims = new HashSet<>();
+
+        Chunk chunk1 = location.getWorld().getChunkAt(location.subtract(150, 0, 150));
+        Chunk chunk2 = location.getWorld().getChunkAt(location.add(300, 0, 300));
+
+        for (int chunk_x = chunk1.getX(); chunk_x <= chunk2.getX(); chunk_x++) {
+            for (int chunk_z = chunk1.getZ(); chunk_z <= chunk2.getZ(); chunk_z++) {
+                
+                Chunk chunk = location.getWorld().getChunkAt(chunk_x, chunk_z);
+                Long chunkID = getChunkHash(chunk.getBlock(0, 0, 0).getLocation());
+                ArrayList<Claim> claimsInChunk = chunkClaims.get(chunkID);
+                
+                if (claimsInChunk != null) {
+                    for (Claim claim : claimsInChunk) {
+                        if (claim.isRegistered() && claim.getCorner1().getWorld().equals(location.getWorld()))
+                            claims.add(claim);
+
+                    }
+                }
+            }
+        }
+
+        return claims;
+    }
+
     public Long getChunkHash(long x, long z) {
         return (z ^ (x << 32));
     }
 
     public Long getChunkHash(Location location) {
         return getChunkHash(location.getBlockX() >> 4, location.getBlockZ() >> 4);
+    }
+
+    public int getRemaining(UUID owner, int claimBlocks) {
+        int remaining = claimBlocks;
+
+        for (Claim claim : survival.getClaimHandler().getClaims()) {
+            if (claim.isRegistered() && owner.equals(claim.getOwner()))
+                remaining -= claim.getArea();
+        }
+
+        return remaining;
+    }
+
+    public Claim.CreateResult createClaim(World world, SurvivalPlayer omp, UUID owner, Claim parent, Long id, int x1, int x2, int y1, int y2, int z1, int z2) {
+        /* Parent 2D, Children 3D */
+        if (parent == null) {
+            y1 = 0;
+            y2 = world.getMaxHeight();
+        }
+
+        int smallX, bigX, smallY, bigY, smallZ, bigZ;
+
+        /* Small/Big */
+        if (x1 < x2) {
+            smallX = x1;
+            bigX = x2;
+        } else {
+            smallX = x2;
+            bigX = x1;
+        }
+
+        if (y1 < y2) {
+            smallY = y1;
+            bigY = y2;
+        } else {
+            smallY = y2;
+            bigY = y1;
+        }
+
+        if (z1 < z2) {
+            smallZ = z1;
+            bigZ = z2;
+        } else {
+            smallZ = z2;
+            bigZ = z1;
+        }
+
+        Claim claim = new Claim(survival, id, DateUtils.now(), new Location(world, smallX, smallY, smallZ), new Location(world, bigX, bigY, bigZ), owner, new HashMap<>(), new HashMap<>());
+        claim.setParent(parent);
+
+        Claim.CreateResult result = new Claim.CreateResult();
+
+        List<Claim> toCheck;
+        if (claim.hasParent()) {
+            toCheck = claim.getParent().getChildren();
+        } else {
+            toCheck = this.claims;
+        }
+
+        for (Claim check : toCheck) {
+            if (check.getId() != claim.getId() && check.isRegistered() && check.overlaps(claim)) {
+                result.setSucceeded(false);
+                result.setClaim(claim);
+                return result;
+            }
+        }
+
+        addClaim(claim, true);
+
+        result.setSucceeded(true);
+        result.setClaim(claim);
+        return result;
+    }
+
+    public Claim.CreateResult resizeClaim(Claim claim, SurvivalPlayer omp, int newX1, int newX2, int newY1, int newY2, int newZ1, int newZ2) {
+        Claim.CreateResult result = createClaim(claim.getCorner1().getWorld(), omp, claim.getOwner(), claim.getParent(), claim.getId(), newX1, newX2, newY1, newY2, newZ1, newZ2);
+
+        if (!result.isSucceeded())
+            return result;
+
+        result.getClaim().setMembers(new HashMap<>(claim.getMembers()));
+        result.getClaim().setSettings(new HashMap<>(claim.getSettings()));
+
+        for (Claim child : claim.getChildren()) {
+            child.setParent(result.getClaim());
+            result.getClaim().getChildren().add(child);
+        }
+
+        saveClaim(result.getClaim());
+
+        claim.setRegistered(false);
+        
+        return result;
+    }
+
+    public void resizeClaimWithChecks(SurvivalPlayer omp, int newX1, int newX2, int newY1, int newY2, int newZ1, int newZ2) {
+        Claim claim = omp.getResizingClaim();
+
+        if (!claim.hasParent()) {
+            int newWidth = (Math.abs(newX1 - newX2) + 1);
+            int newHeight = (Math.abs(newZ1 - newZ2) + 1);
+            int newArea = newWidth * newHeight;
+
+            boolean smaller = newWidth < claim.getWidth() || newHeight < claim.getHeight();
+
+            if (smaller && !claim.hasOwner()) {
+                if (newWidth < Claim.MIN_WIDTH || newHeight < Claim.MIN_WIDTH) {
+                    omp.sendMessage("Claims", Color.RED, "§7Een claim moet minimaal 3x3 zijn.", "§7A claim must at least be 3x3.");
+                    return;
+                }
+
+                if (newArea < Claim.MIN_AREA) {
+                    omp.sendMessage("Claims", Color.RED, "§7Een claim moet minimaal 3x3 zijn.", "§7A claim must at least be 3x3.");
+                    return;
+                }
+            }
+
+            if (!claim.hasOwner() && omp.getUUID().equals(claim.getOwner())) {
+                int remaining = omp.getRemainingClaimBlocks() + claim.getArea() - newArea;
+
+                if (remaining < 0) {
+                    omp.sendMessage("Claims", Color.RED, "§7Je hebt nog " + Math.abs(remaining) + " claimblocks nodig om dit te claimen.", "§7You need " + Math.abs(remaining) + " claimblocks in order to claim this.");
+                    return;
+                }
+            }
+        }
+
+        Claim.CreateResult result = resizeClaim(claim, omp, newX1, newX2, newY1, newY2, newZ1, newZ2);
+
+        if (result.isSucceeded()) {
+            int remaining = 0;
+            if (claim.hasOwner()) {
+                UUID owner = claim.getOwner();
+
+                if (omp.getUUID().equals(owner)) {
+                    remaining = omp.getRemainingClaimBlocks();
+                } else {
+                    //TODO MAYBE SHARE CLAIMBLOCKS?
+                    SurvivalPlayer ownerPlayer = SurvivalPlayer.getPlayer(owner);
+
+                    if (ownerPlayer != null)
+                        remaining = ownerPlayer.getRemainingClaimBlocks();
+                    else
+                        remaining = getRemaining(owner, Database.get().getInt(Table.SURVIVAL_PLAYERS, TableSurvivalPlayers.CLAIM_BLOCKS, new Where(TableSurvivalPlayers.UUID, owner.toString())));
+                }
+            }
+
+            omp.sendMessage("Claims", Color.LIME, "§7Claim grootte geweizigd. Claimblocks over: " + remaining + ".", "§7Claim resized. Available claimblocks: " + remaining + ".");
+
+            Visualization.show(omp, claim, omp.getPlayer().getEyeLocation().getBlockY(), Visualization.Type.CLAIM, omp.getLocation());
+
+            omp.setResizingClaim(null);
+            omp.setLastClaimToolLocation(null);
+            return;
+        }
+
+        omp.sendMessage("Claims", Color.RED, "§7Jouw claim overlapt een andere claim!", "§7Your claim overlaps another claim!");
+
+        if (result.getClaim() == null)
+            return;
+
+        Visualization.show(omp, result.getClaim(), omp.getPlayer().getEyeLocation().getBlockY(), Visualization.Type.INVALID, omp.getLocation());
     }
 
     public void saveClaim(Claim claim) {
@@ -124,6 +332,79 @@ public class ClaimHandler {
         }
 
         write(claim);
+    }
+
+    public void deleteClaim(Claim claim) {
+        for (Claim child : new ArrayList<>(claim.getChildren())) {
+            deleteClaim(child);
+        }
+
+        if (claim.hasParent()) {
+            Claim parent = claim.getParent();
+            parent.getChildren().remove(claim);
+
+            saveClaim(parent);
+        }
+
+        claim.setRegistered(false);
+
+        for (Claim cl : new ArrayList<>(this.claims)) {
+            if (cl.getId().equals(claim.getId()))
+                this.claims.remove(cl);
+        }
+
+        for (Long chunkHash : claim.getChunkHashes()) {
+            ArrayList<Claim> claimsInChunk = chunkClaims.get(chunkHash);
+
+            if (claimsInChunk != null) {
+                for (Claim cl : new ArrayList<>(claimsInChunk)) {
+                    if (cl.getId().equals(claim.getId()))
+                        claimsInChunk.remove(cl);
+                }
+            }
+        }
+
+        delete(claim);
+    }
+
+    public void deleteClaims(UUID owner) {
+        for (Claim claim : new ArrayList<>(this.claims)) {
+            if (owner.equals(claim.getOwner()))
+                deleteClaim(claim);
+        }
+    }
+
+    public void deleteClaims(World world) {
+        for (Claim claim : new ArrayList<>(this.claims)) {
+            if (claim.getCorner1().getWorld().equals(world))
+                deleteClaim(claim);
+        }
+    }
+
+    public void switchOwner(Claim claim, UUID newOwner) {
+        if (claim.hasParent())
+            throw new IllegalStateException();
+
+        claim.setOwner(newOwner);
+        saveClaim(claim);
+    }
+
+    public void abandonClaim(SurvivalPlayer omp, boolean deleteParent) {
+        Claim claim = getClaimAt(omp.getLocation(), true, null);
+
+        if (claim == null) {
+            omp.sendMessage("Claims", Color.RED, "§7Je bent niet in een claim!", "§7You are not standing in a claim!");
+        } else if (!claim.canModify(omp)) {
+            omp.sendMessage("Claims", Color.RED, "§7Dit is niet jouw claim!", "§7This is not your claim!");
+        } else if (claim.getChildren().size() > 0 && !deleteParent) {
+            omp.sendMessage("Claims", Color.RED, "§7Je bent niet in een hoofd claim!", "§7You are not in a top level claim!");
+        } else {
+            deleteClaim(claim);
+
+            omp.sendMessage("Claims", Color.LIME, "§7Deze claim is verwijders, je claimblocks: ", "§7This claim has been abaondoned, your claimblocks: ");
+
+            Visualization.revert(omp);
+        }
     }
 
     public void write(Claim claim) {
@@ -181,11 +462,11 @@ public class ClaimHandler {
 
         StringBuilder stringBuilder = new StringBuilder();
         int i = 0;
-        for (Claim.Settings setting : claim.getSettings()) {
+        for (Claim.Settings settings : claim.getSettings().keySet()) {
             if (i != 0)
                 stringBuilder.append("|");
 
-            stringBuilder.append(setting.toString());
+            stringBuilder.append(settings.toString()).append(";").append(claim.getSettings().get(settings).toString());
 
             i++;
         }

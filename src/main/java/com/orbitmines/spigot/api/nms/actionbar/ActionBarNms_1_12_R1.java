@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 public class ActionBarNms_1_12_R1 implements ActionBarNms {
 
     public void send(Player player, ActionBar actionBar) {
-        IChatBaseComponent a = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + actionBar.getMessage() + "\"}");
+        IChatBaseComponent a = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + actionBar.getMessage().getString() + "\"}");
         PacketPlayOutChat actionBarPacket = new PacketPlayOutChat(a, ChatMessageType.GAME_INFO);
 
         PlayerConnection c = ((CraftPlayer) player).getHandle().playerConnection;

@@ -2,6 +2,7 @@ package com.orbitmines.spigot.api.handlers.chat;
 
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
+import com.orbitmines.spigot.api.handlers.scoreboard.ScoreboardString;
 import com.orbitmines.spigot.api.handlers.timer.Timer;
 import com.orbitmines.spigot.api.runnables.SpigotRunnable;
 
@@ -16,18 +17,20 @@ public class ActionBar {
     private Map<OMPlayer, ActionBar> actionBars = new HashMap<>();
 
     private OrbitMines orbitMines;
-    private String message;
+    private final ScoreboardString message;
     private OMPlayer player;
     private long stay;
 
-    public ActionBar(OMPlayer player, String message, long stay) {
+    private Timer timer;
+
+    public ActionBar(OMPlayer player, ScoreboardString message, long stay) {
         this.orbitMines = OrbitMines.getInstance();
         this.player = player;
         this.message = message;
         this.stay = stay;
     }
 
-    public String getMessage() {
+    public ScoreboardString getMessage() {
         return message;
     }
 
@@ -41,10 +44,6 @@ public class ActionBar {
 
     public void setStay(int stay) {
         this.stay = stay;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
     }
 
     public void send() {
@@ -65,10 +64,20 @@ public class ActionBar {
     private void start() {
         actionBars.put(player, this);
 
-        new Timer(new SpigotRunnable.Time(SpigotRunnable.TimeUnit.TICK, (int) stay), new SpigotRunnable.Time(SpigotRunnable.TimeUnit.TICK, 1)) {
+        timer = new Timer(new SpigotRunnable.Time(SpigotRunnable.TimeUnit.TICK, (int) stay), new SpigotRunnable.Time(SpigotRunnable.TimeUnit.TICK, 1)) {
 
             @Override
             public void onInterval() {
+                if (!player.getPlayer().isOnline()) {
+                    stop();
+                    return;
+                }
+
+                /* If another actionbar stopped */
+                if (!actionBars.containsKey(player))
+                    actionBars.put(player, ActionBar.this);
+
+                /* Check if most recent actionbar is this actionbar */
                 if (actionBars.get(player) == ActionBar.this)
                     orbitMines.getNms().actionBar().send(player.getPlayer(), ActionBar.this);
             }
@@ -83,5 +92,14 @@ public class ActionBar {
     public void stop() {
         if (actionBars.get(player) == this)
             actionBars.remove(player);
+
+        if (timer != null)
+            timer.cancel();
+    }
+
+    public void forceStop() {
+        stop();
+
+        orbitMines.getNms().actionBar().send(player.getPlayer(), new ActionBar(player, () -> "", 1));
     }
 }

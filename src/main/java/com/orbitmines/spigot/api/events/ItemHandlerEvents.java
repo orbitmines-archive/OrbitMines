@@ -1,18 +1,24 @@
 package com.orbitmines.spigot.api.events;
 
-import com.orbitmines.spigot.api.handlers.ItemInteraction;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
+import com.orbitmines.spigot.api.handlers.itemhandlers.ItemHover;
+import com.orbitmines.spigot.api.handlers.itemhandlers.ItemInteraction;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
 
 /*
 * OrbitMines - @author Fadi Shawki - 29-7-2017
 */
-public class InteractEvent implements Listener {
+public class ItemHandlerEvents implements Listener {
+
+    /*
+        ItemInteraction
+     */
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onInteract(PlayerInteractEvent event) {
@@ -24,7 +30,7 @@ public class InteractEvent implements Listener {
             return;
 
         for (ItemInteraction interaction : ItemInteraction.getItemInteractions()) {
-            if (!interaction.equals(item))
+            if (!interaction.getItemBuilder().equals(item))
                 continue;
 
             event.setCancelled(true);
@@ -43,6 +49,38 @@ public class InteractEvent implements Listener {
                     break;
             }
             break;
+        }
+    }
+
+    /*
+        ItemHover
+     */
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onHover(PlayerItemHeldEvent event) {
+        OMPlayer omp = OMPlayer.getPlayer(event.getPlayer());
+
+        /* Cancel previous hover */
+        ItemStack previous = omp.getInventory().getItem(event.getPreviousSlot());
+        if (previous != null) {
+            for (ItemHover hover : ItemHover.getItemHovers()) {
+                if (!hover.getItemBuilder().equals(previous))
+                    continue;
+
+                hover.leave(omp);
+                break;
+            }
+        }
+
+        /* Start next hover */
+        ItemStack next = omp.getInventory().getItem(event.getNewSlot());
+        if (next != null) {
+            for (ItemHover hover : ItemHover.getItemHovers()) {
+                if (!hover.getItemBuilder().equals(next))
+                    continue;
+
+                hover.enter(omp);
+                break;
+            }
         }
     }
 }

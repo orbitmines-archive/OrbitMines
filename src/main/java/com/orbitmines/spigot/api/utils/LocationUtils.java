@@ -21,6 +21,10 @@ public class LocationUtils {
         return l1.getWorld().getName().equals(l2.getWorld().getName()) && l1.getBlockX() == l2.getBlockX() && l1.getBlockY() == l2.getBlockY() && l1.getBlockZ() == l2.getBlockZ();
     }
 
+    public static String friendlyString(Location location) {
+        return "x: " + location.getBlockX() + ", y: " + location.getBlockY() + ", z: " + location.getBlockZ();
+    }
+
     public static BlockFace getFacingDirectionAt(Location location) {
         Direction[] values = Direction.values();
 

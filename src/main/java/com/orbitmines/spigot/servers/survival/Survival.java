@@ -16,18 +16,28 @@ import com.orbitmines.spigot.OrbitMinesServer;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.PluginMessageHandler;
 import com.orbitmines.spigot.api.handlers.PreventionSet;
+import com.orbitmines.spigot.api.handlers.chat.ActionBar;
+import com.orbitmines.spigot.api.handlers.itemhandlers.ItemHoverActionBar;
+import com.orbitmines.spigot.api.handlers.itemhandlers.ItemInteraction;
 import com.orbitmines.spigot.api.handlers.scoreboard.DefaultScoreboard;
 import com.orbitmines.spigot.api.utils.ConsoleUtils;
+import com.orbitmines.spigot.api.utils.LocationUtils;
+import com.orbitmines.spigot.api.utils.PlayerUtils;
 import com.orbitmines.spigot.api.utils.Serializer;
+import com.orbitmines.spigot.servers.survival.events.ClaimEvents;
+import com.orbitmines.spigot.servers.survival.events.SignEvent;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalPlayer;
 import com.orbitmines.spigot.servers.survival.handlers.claim.Claim;
 import com.orbitmines.spigot.servers.survival.handlers.claim.ClaimHandler;
+import com.orbitmines.spigot.servers.survival.handlers.claim.Visualization;
 import com.orbitmines.spigot.servers.survival.handlers.region.Region;
 import com.orbitmines.spigot.servers.survival.handlers.region.RegionBuilder;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
@@ -64,10 +74,11 @@ public class Survival extends OrbitMinesServer {
                 PreventionSet.Prevention.PVP
         );
 
-        claimHandler = new ClaimHandler();
+        claimHandler = new ClaimHandler(this);
 
         setupRegions();
         setupClaims();
+        setupClaimTool();
     }
 
     @Override
@@ -97,7 +108,10 @@ public class Survival extends OrbitMinesServer {
 
     @Override
     protected void registerEvents() {
-
+        registerEvents(
+                new ClaimEvents(this),
+                new SignEvent()
+        );
     }
 
     @Override
@@ -166,10 +180,12 @@ public class Survival extends OrbitMinesServer {
                 }
             }
 
-            Set<Claim.Settings> settings = new HashSet<>();
+            Map<Claim.Settings, Claim.Permission> settings = new HashMap<>();
             if (!entry.get(TableSurvivalClaim.SETTINGS).equals("")) {
-                for (String setting : entry.get(TableSurvivalClaim.SETTINGS).split("\\|")) {
-                    settings.add(Claim.Settings.valueOf(setting));
+                for (String data : entry.get(TableSurvivalClaim.SETTINGS).split("\\|")) {
+                    String[] settingData = data.split(";");
+
+                    settings.put(Claim.Settings.valueOf(settingData[0]), Claim.Permission.valueOf(settingData[1]));
                 }
             }
 
@@ -204,6 +220,153 @@ public class Survival extends OrbitMinesServer {
         ConsoleUtils.success(claimHandler.getClaims().size() + " Claims loaded.");
     }
 
+    private void setupClaimTool() {
+        new ItemInteraction(Claim.CLAIMING_TOOL) {
+            @Override
+            public void onInteract(OMPlayer omp, PlayerInteractEvent event, ItemStack itemStack) {
+                event.setCancelled(true);
+            }
+
+            @Override
+            public void onLeftClick(OMPlayer player, PlayerInteractEvent event, ItemStack itemStack) {
+                if (!player.getWorld().getName().equals(Survival.this.getWorld().getName()))
+                    return;
+
+                SurvivalPlayer omp = (SurvivalPlayer) player;
+
+                if (omp.getPlayer().isSneaking()) {
+                    /* Show all claims nearby */
+                    Set<Claim> claims = claimHandler.getNearbyClaims(omp.getLocation());
+
+                    Visualization.show(omp, claims, omp.getPlayer().getEyeLocation().getBlockY(), Visualization.Type.CLAIM, omp.getLocation());
+
+                    new ActionBar(omp, () -> "§9§l" + claims.size() + " " + (claims.size() == 1 ? "Claim" : "Claims") + " " + omp.lang("in de buurt.", "nearby."), 60).send();
+                } else {
+                    /* Show current claim information */
+                    Block block = event.getClickedBlock();
+                    if (event.getAction() == Action.LEFT_CLICK_AIR)
+                        block = PlayerUtils.getTargetBlock(omp.getPlayer(), 100);
+
+                    if (block == null)
+                        return;
+
+                    if (block.getType() == Material.AIR) {
+                        new ActionBar(omp, () -> omp.lang("§c§lDat is te ver weg!", "§c§lThat is too far away!"), 60).send();
+
+                        Visualization.revert(omp);
+                        return;
+                    }
+
+                    Claim claim = claimHandler.getClaimAt(block.getLocation(), false, omp.getLastClaim());
+
+                    if (claim == null) {
+                        new ActionBar(omp, () -> omp.lang("§c§lDat block is niet geclaimed!", "§c§lThat block has not been claimed!"), 60).send();
+
+                        Visualization.revert(omp);
+                    } else {
+                        omp.setLastClaim(claim);
+
+                        String name = claim.getOwnerName();
+                        new ActionBar(omp, () -> omp.lang("§a§lDit is geclaimed door " + name + "§a§l.", "§a§lThis has been claimed by " + name + "§a§l."), 60).send();
+
+                        Visualization.show(omp, claim, omp.getPlayer().getEyeLocation().getBlockY(), Visualization.Type.CLAIM, omp.getLocation());
+                    }
+                }
+            }
+
+            @Override
+            public void onRightClick(OMPlayer player, PlayerInteractEvent event, ItemStack itemStack) {
+                if (!player.getWorld().getName().equals(Survival.this.getWorld().getName()))
+                    return;
+
+                SurvivalPlayer omp = (SurvivalPlayer) player;
+
+                Block block = event.getClickedBlock();
+                if (event.getAction() == Action.RIGHT_CLICK_BLOCK)
+                    block = PlayerUtils.getTargetBlock(omp.getPlayer(), 100);
+
+                if (block == null)
+                    return;
+
+                if (block.getType() == Material.AIR) {
+                    new ActionBar(omp, () -> omp.lang("§c§lDat is te ver weg!", "§c§lThat is too far away!"), 60).send();
+                    return;
+                }
+
+                if (omp.getResizingClaim() != null && omp.getResizingClaim().isRegistered()) {
+                    /* Already resizing exisiting claim */
+
+                    if (LocationUtils.equals(block, omp.getLastClaimToolLocation().getBlock()))
+                        return;
+                    
+                    int newX1, newX2, newZ1, newZ2, newY1, newY2;
+                    
+                    if (omp.getLastClaimToolLocation().getBlockX() == omp.getResizingClaim().getCorner1().getBlockX())
+                        newX1 = block.getX();
+                    else
+                        newX1 = omp.getResizingClaim().getCorner1().getBlockX();
+
+                    if (omp.getLastClaimToolLocation().getBlockX() == omp.getResizingClaim().getCorner2().getBlockX())
+                        newX2 = block.getX();
+                    else
+                        newX2 = omp.getResizingClaim().getCorner2().getBlockX();
+
+                    if (omp.getLastClaimToolLocation().getBlockZ() == omp.getResizingClaim().getCorner1().getBlockZ())
+                        newZ1 = block.getZ();
+                    else
+                        newZ1 = omp.getResizingClaim().getCorner1().getBlockZ();
+
+                    if (omp.getLastClaimToolLocation().getBlockZ() == omp.getResizingClaim().getCorner2().getBlockZ())
+                        newZ2 = block.getZ();
+                    else
+                        newZ2 = omp.getResizingClaim().getCorner2().getBlockZ();
+
+                    newY1 = omp.getResizingClaim().getCorner1().getBlockY();
+                    newY2 = block.getY();
+
+                    claimHandler.resizeClaimWithChecks(omp, newX1, newX2, newY1, newY2, newZ1, newZ2);
+                    return;
+                }
+
+                Claim claim = claimHandler.getClaimAt(block.getLocation(), true, omp.getLastClaim());
+
+                if (claim != null) {
+                    /* Not creating a new claim */
+
+                    if (claim.canModify(omp)) {
+                        if ((block.getX() == claim.getCorner1().getBlockX() || block.getX() == claim.getCorner2().getBlockX()) && (block.getZ() == claim.getCorner1().getBlockZ() || block.getZ() == claim.getCorner2().getBlockZ())) {
+                            /* Click on a corner -> resize */
+                            omp.setResizingClaim(claim);
+                            omp.setLastClaimToolLocation(block.getLocation());
+                            omp.playSound(Sound.UI_BUTTON_CLICK);
+                        }
+                    } else if (omp.getClaimToolType() == Claim.ToolType.CHILD) {
+                        /* Create Child? */
+
+                    } else {
+                        /* Can't create claim here */
+                    }
+                }
+            }
+        };
+
+        new ItemHoverActionBar(Claim.CLAIMING_TOOL, true) {
+            @Override
+            public String getMessage(OMPlayer omp) {
+                if (!omp.getWorld().getName().equals(Survival.this.getWorld().getName()))
+                    return omp.lang("§c§lJe kan hier niet claimen.", "§c§lClaiming is disabled here.");
+
+                return null;
+            }
+
+            @Override
+            public void onEnter(OMPlayer omp) {
+                super.onEnter(omp);
+                omp.playSound(Sound.ENTITY_ARROW_HIT_PLAYER);
+            }
+        };
+    }
+
     public static class Scoreboard extends DefaultScoreboard {
 
         public Scoreboard(OrbitMines orbitMines, SurvivalPlayer omp) {
@@ -216,5 +379,11 @@ public class Survival extends OrbitMinesServer {
                     () -> "   "
             );
         }
+    }
+
+    public enum Settings {
+
+        DROPS_UNLOCKED;
+
     }
 }

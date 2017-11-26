@@ -138,7 +138,7 @@ public class OrbitMines extends JavaPlugin {
                 new ClickEvent(),
                 new CommandPreprocessEvent(),
                 new FreezeEvent(),
-                new InteractEvent(),
+                new ItemHandlerEvents(),
                 new JoinQuitEvents(),
                 new NpcEvents(),
                 new PlayerChatEvent(),
