@@ -1,6 +1,6 @@
 package com.orbitmines.spigot.servers.survival.handlers.region;
 
-import com.orbitmines.bungeecord.utils.ConsoleUtils;
+import com.orbitmines.spigot.api.utils.ConsoleUtils;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -398,13 +398,22 @@ public class RegionBuilder {
         setBlock(x + 3, y + 4, z + 2, Material.AIR, 0);
 
         for (Block block : new Block[] { setBlock(x - 1, y + 3, z, Material.WALL_SIGN, 4), setBlock(x, y + 3, z - 1, Material.WALL_SIGN, 2), setBlock(x, y + 3, z + 1, Material.WALL_SIGN, 3), setBlock(x + 1, y + 3, z, Material.WALL_SIGN, 5) }) {
+            if (!(block.getState() instanceof Sign)) {
+                ConsoleUtils.warn("");
+                ConsoleUtils.warn("");
+                ConsoleUtils.warn("CANNOT CREATE SIGN");
+                ConsoleUtils.warn("");
+                ConsoleUtils.warn("");
+                continue;
+            }
+
             Sign sign = (Sign) block.getState();
             sign.setLine(1, "§0§lRegion");
             sign.setLine(2, "§0§l[" + (id + 1) + "]");
             sign.update();
         }
 
-        ConsoleUtils.succes("Successfully created Region.");
+        ConsoleUtils.success("Successfully created Region.");
     }
 
     private Block setBlock(int x, int y, int z, Material material, int data) {

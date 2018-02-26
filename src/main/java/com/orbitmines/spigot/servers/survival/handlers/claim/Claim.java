@@ -59,6 +59,10 @@ public class Claim {
         this.survival = survival;
         this.id = null;
         this.createdOn = DateUtils.now();
+
+        this.members = new HashMap<>();
+        this.settings = new HashMap<>();
+        this.children = new ArrayList<>();
     }
 
     public Claim(Survival survival, Long id, Date createdOn, Location corner1, Location corner2, UUID owner, Map<UUID, Permission> members, Map<Settings, Permission> settings) {
@@ -69,6 +73,7 @@ public class Claim {
         this.owner = owner;
         this.members = members;
         this.settings = settings;
+        this.children = new ArrayList<>();
     }
 
     /*

@@ -69,6 +69,9 @@ public class PlayerHeadOnMobEvent implements Listener {
     private void addHead(LivingEntity entity, VipRank vipRank) {
         List<Map<Column, String>> entries = Database.get().getEntries(Table.PLAYERS, TablePlayers.UUID, new Where(TablePlayers.VIPRANK, vipRank.toString()));
 
+        if (entries.size() == 0)
+            return;
+
         String name = UUIDUtils.getName(UUID.fromString(RandomUtils.randomFrom(entries).get(TablePlayers.UUID)));
 
         EntityEquipment ee = entity.getEquipment();

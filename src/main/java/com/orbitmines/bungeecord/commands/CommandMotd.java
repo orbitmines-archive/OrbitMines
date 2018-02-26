@@ -49,12 +49,12 @@ public class CommandMotd extends StaffCommand {
 
                 {
                     ComponentMessage cM = new ComponentMessage();
-                    cM.addPart(omp.lang("Motd", Color.BLUE, "§7§l1.§r §7" + bungee.getMotdHandler().getFirstLine()), ClickEvent.Action.SUGGEST_COMMAND, a[0].toLowerCase() + " 1 " + bungee.getMotdHandler().getFirstLine().replace("§", "&"), HoverEvent.Action.SHOW_TEXT, "§7Edit");
+                    cM.add(omp.lang("Motd", Color.BLUE, "§7§l1.§r §7" + bungee.getMotdHandler().getFirstLine()), ClickEvent.Action.SUGGEST_COMMAND, a[0].toLowerCase() + " 1 " + bungee.getMotdHandler().getFirstLine().replace("§", "&"), HoverEvent.Action.SHOW_TEXT, "§7Edit");
                     cM.send(omp);
                 }
                 {
                     ComponentMessage cM = new ComponentMessage();
-                    cM.addPart(omp.lang("Motd", Color.BLUE, "§7§l2.§r §7" + bungee.getMotdHandler().getSecondLine()), ClickEvent.Action.SUGGEST_COMMAND, a[0].toLowerCase() + " 2 " + bungee.getMotdHandler().getSecondLine().replace("§", "&"), HoverEvent.Action.SHOW_TEXT, "§7Edit");
+                    cM.add(omp.lang("Motd", Color.BLUE, "§7§l2.§r §7" + bungee.getMotdHandler().getSecondLine()), ClickEvent.Action.SUGGEST_COMMAND, a[0].toLowerCase() + " 2 " + bungee.getMotdHandler().getSecondLine().replace("§", "&"), HoverEvent.Action.SHOW_TEXT, "§7Edit");
                     cM.send(omp);
                 }
                 break;

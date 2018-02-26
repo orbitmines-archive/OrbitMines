@@ -55,11 +55,11 @@ public class CommandAnnouncement extends StaffCommand {
                     omp.sendMessage("Announcements", Color.BLUE, "§7§l" + (i + 1) + ".");
                     {
                         ComponentMessage cM = new ComponentMessage();
-                        cM.addPart(omp.lang("Announcements", Color.BLUE, "§7 - §f" + title.getTitle()), ClickEvent.Action.SUGGEST_COMMAND, a[0].toLowerCase() + " title " + (i + 1) + " " + title.getTitle().replace("§", "&"), HoverEvent.Action.SHOW_TEXT, "§7Edit");
+                        cM.add(omp.lang("Announcements", Color.BLUE, "§7 - §f" + title.getTitle()), ClickEvent.Action.SUGGEST_COMMAND, a[0].toLowerCase() + " title " + (i + 1) + " " + title.getTitle().replace("§", "&"), HoverEvent.Action.SHOW_TEXT, "§7Edit");
                         cM.send(omp);
                     } {
                         ComponentMessage cM = new ComponentMessage();
-                        cM.addPart(omp.lang("Announcements", Color.BLUE, "§7 - §f" + title.getSubTitle()), ClickEvent.Action.SUGGEST_COMMAND, a[0].toLowerCase() + " subtitle " + (i + 1) + " " + title.getSubTitle().replace("§", "&"), HoverEvent.Action.SHOW_TEXT, "§7Edit");
+                        cM.add(omp.lang("Announcements", Color.BLUE, "§7 - §f" + title.getSubTitle()), ClickEvent.Action.SUGGEST_COMMAND, a[0].toLowerCase() + " subtitle " + (i + 1) + " " + title.getSubTitle().replace("§", "&"), HoverEvent.Action.SHOW_TEXT, "§7Edit");
                         cM.send(omp);
                     }
                 }

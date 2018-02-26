@@ -47,7 +47,7 @@ public enum Server {
     }
 
     public int getPlayers() {
-        return Database.get().getInt(Table.SERVERS, TableServers.PLAYERS, new Where(TableServers.SERVER, toString()));
+        return Database.get().contains(Table.SERVERS, TableServers.SERVER, new Where(TableServers.SERVER, toString())) ? Database.get().getInt(Table.SERVERS, TableServers.PLAYERS, new Where(TableServers.SERVER, toString())) : 0;
     }
 
     public void setPlayers(int players) {
@@ -55,7 +55,7 @@ public enum Server {
     }
 
     public int getMaxPlayers() {
-        return Database.get().getInt(Table.SERVERS, TableServers.MAX_PLAYERS, new Where(TableServers.SERVER, toString()));
+        return Database.get().contains(Table.SERVERS, TableServers.SERVER, new Where(TableServers.SERVER, toString())) ? Database.get().getInt(Table.SERVERS, TableServers.MAX_PLAYERS, new Where(TableServers.SERVER, toString())) : 0;
     }
 
     public void setMaxPlayers(int maxPlayers) {
@@ -63,7 +63,7 @@ public enum Server {
     }
 
     public Status getStatus() {
-        return Status.valueOf(Database.get().getString(Table.SERVERS, TableServers.STATUS, new Where(TableServers.SERVER, toString())));
+        return Database.get().contains(Table.SERVERS, TableServers.SERVER, new Where(TableServers.SERVER, toString())) ? Status.valueOf(Database.get().getString(Table.SERVERS, TableServers.STATUS, new Where(TableServers.SERVER, toString()))) : Status.OFFLINE;
     }
 
     public void setStatus(Status status) {
@@ -71,11 +71,11 @@ public enum Server {
     }
 
     public String getIp() {
-        return Database.get().getString(Table.SERVERS, TableServers.IP, new Where(TableServers.SERVER, toString()));
+        return Database.get().contains(Table.SERVERS, TableServers.SERVER, new Where(TableServers.SERVER, toString())) ? Database.get().getString(Table.SERVERS, TableServers.IP, new Where(TableServers.SERVER, toString())) : null;
     }
 
     public int getPort() {
-        return Database.get().getInt(Table.SERVERS, TableServers.PORT, new Where(TableServers.SERVER, toString()));
+        return Database.get().contains(Table.SERVERS, TableServers.SERVER, new Where(TableServers.SERVER, toString())) ? Database.get().getInt(Table.SERVERS, TableServers.PORT, new Where(TableServers.SERVER, toString())) : -1;
     }
 
     public enum Status {

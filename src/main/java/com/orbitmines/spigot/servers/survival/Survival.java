@@ -240,7 +240,7 @@ public class Survival extends OrbitMinesServer {
 
                     Visualization.show(omp, claims, omp.getPlayer().getEyeLocation().getBlockY(), Visualization.Type.CLAIM, omp.getLocation());
 
-                    new ActionBar(omp, () -> "§9§l" + claims.size() + " " + (claims.size() == 1 ? "Claim" : "Claims") + " " + omp.lang("in de buurt.", "nearby."), 60).send();
+                    new ActionBar(omp, () -> "§a§l" + claims.size() + " " + (claims.size() == 1 ? "Claim" : "Claims") + " " + omp.lang("in de buurt.", "nearby."), 60).send();
                 } else {
                     /* Show current claim information */
                     Block block = event.getClickedBlock();
@@ -339,12 +339,154 @@ public class Survival extends OrbitMinesServer {
                             omp.setResizingClaim(claim);
                             omp.setLastClaimToolLocation(block.getLocation());
                             omp.playSound(Sound.UI_BUTTON_CLICK);
+                        } else if (omp.getClaimToolType() == Claim.ToolType.CHILD) {
+                            /* Create Child? */
+                            //                        //if it's the first click, he's trying to start a new subdivision
+                            //                        if (playerData.lastShovelLocation == null) {
+                            //                            //if the clicked claim was a subdivision, tell him he can't start a new subdivision here
+                            //                            if (claim.parent != null) {
+                            //                                instance.sendMessage(player, TextMode.Err, Messages.ResizeFailOverlapSubdivision);
+                            //                            }
+                            //
+                            //                            //otherwise start a new subdivision
+                            //                            else {
+                            //                                instance.sendMessage(player, TextMode.Instr, Messages.SubdivisionStart);
+                            //                                playerData.lastShovelLocation = clickedBlock.getLocation();
+                            //                                playerData.claimSubdividing = claim;
+                            //                            }
+                            //                        }
+                            //
+                            //                        //otherwise, he's trying to finish creating a subdivision by setting the other boundary corner
+                            //                        else {
+                            //                            //if last shovel location was in a different world, assume the player is starting the create-claim workflow over
+                            //                            if (!playerData.lastShovelLocation.getWorld().equals(clickedBlock.getWorld())) {
+                            //                                playerData.lastShovelLocation = null;
+                            //                                this.onPlayerInteract(event);
+                            //                                return;
+                            //                            }
+                            //
+                            //                            //try to create a new claim (will return null if this subdivision overlaps another)
+                            //                            CreateClaimResult result = this.dataStore.createClaim(
+                            //                                    player.getWorld(),
+                            //                                    playerData.lastShovelLocation.getBlockX(), clickedBlock.getX(),
+                            //                                    playerData.lastShovelLocation.getBlockY() - instance.config_claims_claimsExtendIntoGroundDistance, clickedBlock.getY() - instance.config_claims_claimsExtendIntoGroundDistance,
+                            //                                    playerData.lastShovelLocation.getBlockZ(), clickedBlock.getZ(),
+                            //                                    null,  //owner is not used for subdivisions
+                            //                                    playerData.claimSubdividing,
+                            //                                    null, player);
+                            //
+                            //                            //if it didn't succeed, tell the player why
+                            //                            if (!result.succeeded) {
+                            //                                instance.sendMessage(player, TextMode.Err, Messages.CreateSubdivisionOverlap);
+                            //
+                            //                                Visualization visualization = Visualization.FromClaim(result.claim, clickedBlock.getY(), VisualizationType.ErrorClaim, player.getLocation());
+                            //
+                            //                                // alert plugins of a visualization
+                            //                                Bukkit.getPluginManager().callEvent(new VisualizationEvent(player, result.claim));
+                            //
+                            //                                Visualization.Apply(player, visualization);
+                            //
+                            //                                return;
+                            //                            }
+                            //
+                            //                            //otherwise, advise him on the /trust command and show him his new subdivision
+                            //                            else {
+                            //                                instance.sendMessage(player, TextMode.Success, Messages.SubdivisionSuccess);
+                            //                                Visualization visualization = Visualization.FromClaim(result.claim, clickedBlock.getY(), VisualizationType.Claim, player.getLocation());
+                            //
+                            //                                // alert plugins of a visualization
+                            //                                Bukkit.getPluginManager().callEvent(new VisualizationEvent(player, result.claim));
+                            //
+                            //                                Visualization.Apply(player, visualization);
+                            //                                playerData.lastShovelLocation = null;
+                            //                                playerData.claimSubdividing = null;
+                            //                            }
+                            //                        }
+                        } else {
+                            /* Can't create claim here */
+                            //TODO message
+                            //						instance.sendMessage(player, TextMode.Err, Messages.CreateClaimFailOverlap);
+                            Visualization.show(omp, claim, block.getY(), Visualization.Type.CLAIM, player.getLocation());
                         }
-                    } else if (omp.getClaimToolType() == Claim.ToolType.CHILD) {
-                        /* Create Child? */
-
                     } else {
-                        /* Can't create claim here */
+                        /* In someone else's claim */
+                        //TODO message instance.sendMessage(player, TextMode.Err, Messages.CreateClaimFailOverlapOtherPlayer, claim.getOwnerName());
+
+                        Visualization.show(omp, claim, block.getY(), Visualization.Type.INVALID, player.getLocation());
+                    }
+
+                    return;
+                }
+
+                /* Not in an existing claim */
+                if (omp.getLastClaimToolLocation() == null) {
+                    /* First point not selected */
+
+                    if (!omp.getWorld().getName().equals(Survival.this.getWorld().getName())) {
+                        new ActionBar(omp, () -> omp.lang("§c§lJe kan hier niet claimen.", "§c§lClaiming is disabled here."), 40).send();
+                        return;
+                    }
+
+                    /* Start claiming */
+                    omp.setLastClaimToolLocation(block.getLocation());
+
+                    Claim newClaim = new Claim(Survival.this, null, null, block.getLocation(), block.getLocation(), null, new HashMap<>(), new HashMap<>());
+                    Visualization.show(omp, newClaim, block.getY(), Visualization.Type.DISPLAY, player.getLocation());
+                } else {
+                    /* Finishing claim */
+
+                    /* New event if switched worlds */
+                    if (!omp.getWorld().getName().equals(Survival.this.getWorld().getName())) {
+                        omp.setLastClaimToolLocation(null);
+                        onRightClick(omp, event, itemStack);
+                        return;
+                    }
+
+                    int newWidth = Math.abs(omp.getLastClaimToolLocation().getBlockX() - block.getX()) + 1;
+                    int newHeight = Math.abs(omp.getLastClaimToolLocation().getBlockZ() - block.getZ()) + 1;
+
+                    UUID owner = omp.getUUID();
+
+                    if (omp.getClaimToolType() != Claim.ToolType.WITHOUT_OWNER) {
+                        if (newWidth < Claim.MIN_WIDTH || newHeight < Claim.MIN_WIDTH) {
+                            /* If event fired twice */
+//                            if (newWidth != 1 && newHeight != 1) TODO
+//                                instance.sendMessage(player, TextMode.Err, Messages.NewClaimTooNarrow, String.valueOf(instance.config_claims_minWidth));
+
+                            return;
+                        }
+
+                        int newArea = newWidth * newHeight;
+                        if (newArea < Claim.MIN_AREA) {
+//                            if (newArea != 1) TODO
+//                                instance.sendMessage(player, TextMode.Err, Messages.ResizeClaimInsufficientArea, String.valueOf(instance.config_claims_minArea));
+
+                            return;
+                        }
+
+                        if (newArea > omp.getRemainingClaimBlocks()) {
+//                            instance.sendMessage(player, TextMode.Err, Messages.CreateClaimInsufficientBlocks, String.valueOf(newClaimArea - remainingBlocks));
+                            return;
+                        }
+                    } else {
+                        owner = null;
+                    }
+
+                    Claim.CreateResult result = claimHandler.createClaim(omp.getWorld(), omp, owner, null, null, omp.getLastClaimToolLocation().getBlockX(), block.getX(), omp.getLastClaimToolLocation().getBlockY(), block.getY(), omp.getLastClaimToolLocation().getBlockZ(), block.getZ());
+
+                    if (!result.isSucceeded()) {
+                        if (result.getClaim() != null) {
+//                            instance.sendMessage(player, TextMode.Err, Messages.CreateClaimFailOverlapShort);
+                            Visualization.show(omp, result.getClaim(), block.getY(), Visualization.Type.INVALID, player.getLocation());
+                        } else {
+//                            instance.sendMessage(player, TextMode.Err, Messages.CreateClaimFailOverlapRegion);
+                        }
+                        return;
+                    } else {
+//                        instance.sendMessage(player, TextMode.Success, Messages.CreateClaimSuccess);
+                        Visualization.show(omp, result.getClaim(), block.getY(), Visualization.Type.CLAIM, player.getLocation());
+
+                        omp.setLastClaimToolLocation(null);
                     }
                 }
             }
@@ -352,17 +494,28 @@ public class Survival extends OrbitMinesServer {
 
         new ItemHoverActionBar(Claim.CLAIMING_TOOL, true) {
             @Override
-            public String getMessage(OMPlayer omp) {
+            public String getMessage(OMPlayer player) {
+                SurvivalPlayer omp = (SurvivalPlayer) player;
+
                 if (!omp.getWorld().getName().equals(Survival.this.getWorld().getName()))
                     return omp.lang("§c§lJe kan hier niet claimen.", "§c§lClaiming is disabled here.");
 
-                return null;
+                if (omp.getLastClaimToolLocation() == null)
+                    return omp.lang("§6§lLINKER MUISKLIK §7| §a§lClaim Informatie        §6§lRECHTER MUISKLIK §7| §a§lClaimen", "§6§lLEFT CLICK §7| §a§lClaim Information        §6§lRIGHT CLICK §7| §a§lClaim");
+
+                return omp.lang("§a§lClaimen...        §c§lPos 1: §6§l" + LocationUtils.friendlyString(omp.getLastClaimToolLocation()) + "        §c§lPos 2: §6§lGEEN", "§a§lClaiming...        §c§lPos 1: §6§l" + LocationUtils.friendlyString(omp.getLastClaimToolLocation()) + "        §c§lPos 2: §6§lNONE");
             }
 
             @Override
             public void onEnter(OMPlayer omp) {
                 super.onEnter(omp);
-                omp.playSound(Sound.ENTITY_ARROW_HIT_PLAYER);
+                omp.playSound(Sound.UI_BUTTON_CLICK);
+            }
+
+            @Override
+            public void onLeave(OMPlayer omp) {
+                super.onLeave(omp);
+                ((SurvivalPlayer) omp).setLastClaimToolLocation(null);
             }
         };
     }

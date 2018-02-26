@@ -11,7 +11,7 @@ import java.util.List;
 /*
 * OrbitMines - @author Fadi Shawki - 29-7-2017
 */
-public class PlayerFreezer extends NpcArmorStand {
+public class PlayerFreezer extends ArmorStandNpc {
 
     private static List<PlayerFreezer> freezers = new ArrayList<>();
 

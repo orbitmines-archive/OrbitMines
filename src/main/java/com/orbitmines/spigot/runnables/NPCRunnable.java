@@ -22,9 +22,9 @@ public class NPCRunnable extends SpigotRunnable {
             }
         }
         /* Destroy hidden ArmorStands */
-        for (NpcArmorStand npcArmorStand : NpcArmorStand.getNpcArmorStands()) {
-            if (npcArmorStand.hideOnJoin())
-                npcArmorStand.createForWatchers();
+        for (ArmorStandNpc armorStandNpc : ArmorStandNpc.getArmorStandNpcs()) {
+            if (armorStandNpc.hideOnJoin())
+                armorStandNpc.createForWatchers();
         }
         /* Destroy hidden Hologram */
         for (Hologram hologram : Hologram.getHolograms()) {
@@ -32,39 +32,39 @@ public class NPCRunnable extends SpigotRunnable {
                 hologram.createForWatchers();
         }
 
-        /* Moving Npcs */
+        /* MovingNpc Npcs */
         for (NPC npc : NPC.getNpcs()) {
-            if (!(npc instanceof NPCMoving))
+            if (!(npc instanceof MovingNpc))
                 continue;
 
-            NPCMoving npcMoving = (NPCMoving) npc;
+            MovingNpc movingNpc = (MovingNpc) npc;
 
-            if (npcMoving.getMoveLocations().size() > 0) {
-                if (npcMoving.getMovingTo() != null) {
-                    if (npcMoving.isAtLocation(npcMoving.getMovingTo())) {
-                        int index = npcMoving.getMovingToIndex();
-                        npcMoving.setSecondsToStay(npcMoving.getSecondsToStay() - 1);
+            if (movingNpc.getMoveLocations().size() > 0) {
+                if (movingNpc.getMovingTo() != null) {
+                    if (movingNpc.isAtLocation(movingNpc.getMovingTo())) {
+                        int index = movingNpc.getMovingToIndex();
+                        movingNpc.setSecondsToStay(movingNpc.getSecondsToStay() - 1);
 
-                        if (npcMoving.getSecondsToStay() == 0) {
-                            npcMoving.setMovingTo(npcMoving.nextLocation());
-                            npcMoving.setSecondsToStay(npcMoving.getSecondsToStay(npcMoving.getMovingTo()));
+                        if (movingNpc.getSecondsToStay() == 0) {
+                            movingNpc.setMovingTo(movingNpc.nextLocation());
+                            movingNpc.setSecondsToStay(movingNpc.getSecondsToStay(movingNpc.getMovingTo()));
 
-                            if (npcMoving.getSecondsToStay() == 0) {
-                                npcMoving.setMovingTo(npcMoving.nextLocation());
-                                npcMoving.setSecondsToStay(npcMoving.getSecondsToStay(npcMoving.getMovingTo()));
+                            if (movingNpc.getSecondsToStay() == 0) {
+                                movingNpc.setMovingTo(movingNpc.nextLocation());
+                                movingNpc.setSecondsToStay(movingNpc.getSecondsToStay(movingNpc.getMovingTo()));
                             }
                         } else {
-                            int seconds = npcMoving.getSecondsToStay();
+                            int seconds = movingNpc.getSecondsToStay();
 
-                            npcMoving.arrive(index, seconds);
+                            movingNpc.arrive(index, seconds);
                         }
                     }
                 } else {
-                    npcMoving.setMovingTo(npcMoving.nextLocation());
+                    movingNpc.setMovingTo(movingNpc.nextLocation());
                 }
             }
 
-            npcMoving.moveToLocation(npcMoving.getMovingTo());
+            movingNpc.moveToLocation(movingNpc.getMovingTo());
         }
     }
 }

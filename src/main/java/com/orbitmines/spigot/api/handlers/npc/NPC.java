@@ -35,7 +35,7 @@ public class NPC {
 
     protected SpigotRunnable runnable;
 
-    protected NpcArmorStand nameTag;
+    protected ArmorStandNpc nameTag;
 
     protected InteractAction interactAction;
 
@@ -84,11 +84,11 @@ public class NPC {
             return;
 
         if (nameTag == null) {
-            NpcArmorStand.ClickAction action;
+            ArmorStandNpc.ClickAction action;
             if (interactAction != null)
-                action = new NpcArmorStand.ClickAction() {
+                action = new ArmorStandNpc.ClickAction() {
                     @Override
-                    public void click(PlayerInteractAtEntityEvent event, OMPlayer player, NpcArmorStand item) {
+                    public void click(PlayerInteractAtEntityEvent event, OMPlayer player, ArmorStandNpc item) {
                         interactAction.click(player, NPC.this);
                     }
                 };
@@ -96,7 +96,7 @@ public class NPC {
                 action = null;
 
             /* TODO: Add Offset for smaller entities, (1.8 Fix) */
-            nameTag = new NpcArmorStand(location, false, action);
+            nameTag = new ArmorStandNpc(location, false, action);
             nameTag.setVisible(false);
             nameTag.setGravity(false);
 
@@ -132,7 +132,7 @@ public class NPC {
     public void spawn() {
         remove();
 
-        if (this instanceof NPCMoving)
+        if (this instanceof MovingNpc)
             this.entity = mob.spawnMoving(getFixedLocation(), displayName);
         else
             this.entity = mob.spawn(getFixedLocation(), displayName);

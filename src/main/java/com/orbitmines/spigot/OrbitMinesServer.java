@@ -4,6 +4,7 @@ import com.orbitmines.api.Server;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.PluginMessageHandler;
 import com.orbitmines.spigot.api.handlers.PreventionSet;
+import com.orbitmines.spigot.api.runnables.SpigotRunnable;
 import com.orbitmines.spigot.servers.hub.Hub;
 import com.orbitmines.spigot.servers.survival.Survival;
 import org.bukkit.Location;
@@ -33,6 +34,14 @@ public abstract class OrbitMinesServer {
         registerEvents();
         registerCommands();
         registerRunnables();
+
+        new SpigotRunnable(SpigotRunnable.TimeUnit.SECOND, 10) {
+            @Override
+            public void run() {
+                if (server.getStatus() == Server.Status.OFFLINE)
+                    server.setStatus(Server.Status.ONLINE);
+            }
+        };
     }
 
     public abstract void onEnable();

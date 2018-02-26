@@ -112,13 +112,13 @@ public class NpcEvents implements Listener {
             return;
         }
 
-        NpcArmorStand npcArmorStand = NpcArmorStand.getNpcArmorStand(armorStand);
+        ArmorStandNpc armorStandNpc = ArmorStandNpc.getNpcArmorStand(armorStand);
 
-        if (npcArmorStand != null) {
+        if (armorStandNpc != null) {
             event.setCancelled(true);
 
-            if (npcArmorStand.canClick())
-                npcArmorStand.click(event, OMPlayer.getPlayer(player));
+            if (armorStandNpc.canClick())
+                armorStandNpc.click(event, OMPlayer.getPlayer(player));
 
             PlayerUtils.updateInventory(player);
             return;
@@ -142,9 +142,9 @@ public class NpcEvents implements Listener {
             if (npc.getLocation().getWorld().getName().equals(worldName))
                 npc.delete();
         }
-        for (NpcArmorStand npcArmorStand : new ArrayList<>(NpcArmorStand.getNpcArmorStands())) {
-            if (npcArmorStand.getLocation().getWorld().getName().equals(worldName))
-                npcArmorStand.delete();
+        for (ArmorStandNpc armorStandNpc : new ArrayList<>(ArmorStandNpc.getArmorStandNpcs())) {
+            if (armorStandNpc.getLocation().getWorld().getName().equals(worldName))
+                armorStandNpc.delete();
         }
         for (Hologram hologram : new ArrayList<>(Hologram.getHolograms())) {
             if (hologram.getLocation().getWorld().getName().equals(worldName))

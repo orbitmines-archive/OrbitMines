@@ -133,9 +133,9 @@ public class _2FA {
 
         if (qrMap == null) {
             ComponentMessage cM = new ComponentMessage();
-            cM.addPart(Message.FORMAT(Message.PREFIX_2FA, Color.RED, "§r§7n error occurred, please "));
-            cM.addPart("§6click here", ClickEvent.Action.OPEN_URL, "https://www.google.com/chart?chs=250x250&cht=qr&chl=" + otpAuth(omp, secret), HoverEvent.Action.SHOW_TEXT, "§7Open QR Code in browser.");
-            cM.addPart("§7.");
+            cM.add(Message.FORMAT(Message.PREFIX_2FA, Color.RED, "§r§7n error occurred, please "));
+            cM.add("§6click here", ClickEvent.Action.OPEN_URL, "https://www.google.com/chart?chs=250x250&cht=qr&chl=" + otpAuth(omp, secret), HoverEvent.Action.SHOW_TEXT, "§7Open QR Code in browser.");
+            cM.add("§7.");
 
             cM.send(omp);
         } else {

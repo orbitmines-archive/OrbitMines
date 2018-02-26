@@ -2,12 +2,19 @@ package com.orbitmines.spigot.servers.hub.handlers;
 
 import com.orbitmines.api.Color;
 import com.orbitmines.api.Language;
+import com.orbitmines.spigot.api.Freezer;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
+import com.orbitmines.spigot.api.handlers.chat.AdvancementMessage;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
+import com.orbitmines.spigot.api.handlers.npc.ArmorStandNpc;
+import com.orbitmines.spigot.api.handlers.npc.FloatingHeadBlock;
+import com.orbitmines.spigot.api.handlers.npc.Hologram;
 import com.orbitmines.spigot.servers.hub.Hub;
 import net.firefang.ip2c.IpUtils;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
@@ -37,12 +44,100 @@ public class HubPlayer extends OMPlayer {
 
         hub.getLobbyKit(this).setItems(this);
 
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                AdvancementMessage a = new AdvancementMessage("redstone_block", "§7§lOrbit§8§lMines §7Advancement Message :D");
+                a.send(HubPlayer.this);
+            }
+        }.runTaskLater(orbitMines, 40);
+
         //TODO COSMETIC HELMET
         player.getInventory().setHelmet(new ItemBuilder(Material.STAINED_GLASS, 1, 0, "§7Helmet").build());
 
+        {
+            Location location = new Location(hub.getVoidWorld(), 0, 70, 0);
+
+            player.teleport(location);
+            freeze(Freezer.ARMORSTAND_RIDE, location.clone());
+
+//            {
+//                FloatingHeadBlock block = new FloatingHeadBlock(0, 90, new ItemBuilder(Material.STAINED_CLAY, 1, 14), location.clone().add(-2, 1, -2), true, new ArmorStandNpc.ClickAction() {
+//                    @Override
+//                    public void click(PlayerInteractAtEntityEvent event, OMPlayer player, ArmorStandNpc item) {
+//
+//                    }
+//                });
+//                block.setCustomName("§7§lNederlands");
+//                block.setCustomNameVisible(true);
+//                block.spawn(player);
+//            }
+//            {
+//                FloatingHeadBlock block = new FloatingHeadBlock(0, 90, new ItemBuilder(Material.STAINED_CLAY, 1, 11), location.clone().add(2, 1, -2), true, new ArmorStandNpc.ClickAction() {
+//                    @Override
+//                    public void click(PlayerInteractAtEntityEvent event, OMPlayer player, ArmorStandNpc item) {
+//
+//                    }
+//                });
+//                block.setCustomName("§7§lEnglish");
+//                block.setCustomNameVisible(true);
+//                block.spawn(player);
+//            }
+            {
+                FloatingHeadBlock block = new FloatingHeadBlock(0, 90, new ItemBuilder(Material.STAINED_CLAY, 1, 4), location.clone().add(-2, 1, -2), true, new ArmorStandNpc.ClickAction() {
+                    @Override
+                    public void click(PlayerInteractAtEntityEvent event, OMPlayer player, ArmorStandNpc item) {
+
+                    }
+                });
+                block.setCustomName("§e§lAlpha");
+                block.setCustomNameVisible(true);
+                block.spawn(player);
+            }
+            {
+                FloatingHeadBlock block = new FloatingHeadBlock(0, 90, new ItemBuilder(Material.STAINED_CLAY, 1, 11), location.clone().add(2, 1, -2), true, new ArmorStandNpc.ClickAction() {
+                    @Override
+                    public void click(PlayerInteractAtEntityEvent event, OMPlayer player, ArmorStandNpc item) {
+
+                    }
+                });
+                block.setCustomName("§9§lBeta");
+                block.setCustomNameVisible(true);
+                block.spawn(player);
+            }
+            {
+                FloatingHeadBlock block = new FloatingHeadBlock(0, 90, new ItemBuilder(Material.STAINED_CLAY, 1, 14), location.clone().add(0, 1, -3), true, new ArmorStandNpc.ClickAction() {
+                    @Override
+                    public void click(PlayerInteractAtEntityEvent event, OMPlayer player, ArmorStandNpc item) {
+
+                    }
+                });
+                block.setCustomName("§c§lOmega");
+                block.setCustomNameVisible(true);
+                block.spawn(player);
+//                new SpigotRunnable(SpigotRunnable.TimeUnit.TICK, 1) {
+//                    @Override
+//                    public void run() {
+//                        block.setLocation(block.getLocation().add(0, 0, 0.1));
+//                        block.getArmorStand().teleport(block.getLocation());
+//                    }
+//                };
+            }
+            {
+                Hologram hologram = new Hologram(location.clone().add(0, 3, -5), true);
+
+                hologram.addLine("§8§lOrbit§7§lMines §6§lFirst Login");
+                hologram.addLine("§7§o2/3 - Race Selection");
+                hologram.addLine("§7");
+                hologram.addLine("§7§lPlease select one of the following races");
+
+                hologram.create(player);
+            }
+        }
+
         if (language != Language.DUTCH)
             return;
-        
+
         String country = IpUtils.getCountry(getPlayer());
         if (country == null || (!country.equals("Netherlands") && !country.equals("Belgium") && !country.equals("Luxembourg"))) {
             new BukkitRunnable() {

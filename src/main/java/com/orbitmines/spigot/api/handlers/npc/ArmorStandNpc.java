@@ -15,9 +15,9 @@ import java.util.*;
 /*
 * OrbitMines - @author Fadi Shawki - 29-7-2017
 */
-public class NpcArmorStand {
+public class ArmorStandNpc {
 
-    private static ArrayList<NpcArmorStand> npcArmorStands = new ArrayList<>();
+    private static ArrayList<ArmorStandNpc> armorStandNpcs = new ArrayList<>();
 
     private OrbitMines orbitMines;
 
@@ -49,12 +49,12 @@ public class NpcArmorStand {
 
     private ClickAction clickAction;
 
-    public NpcArmorStand(Location location, boolean hideOnJoin) {
+    public ArmorStandNpc(Location location, boolean hideOnJoin) {
         this(location, hideOnJoin, null);
     }
 
-    public NpcArmorStand(Location location, boolean hideOnJoin, ClickAction clickAction) {
-        npcArmorStands.add(this);
+    public ArmorStandNpc(Location location, boolean hideOnJoin, ClickAction clickAction) {
+        armorStandNpcs.add(this);
 
         orbitMines = OrbitMines.getInstance();
 
@@ -350,29 +350,29 @@ public class NpcArmorStand {
 
     public void delete() {
         clear();
-        npcArmorStands.remove(this);
+        armorStandNpcs.remove(this);
     }
 
     public void click(PlayerInteractAtEntityEvent event, OMPlayer player) {
         clickAction.click(event, player, this);
     }
 
-    public static NpcArmorStand getNpcArmorStand(ArmorStand armorStand) {
-        for (NpcArmorStand npcArmorStand : npcArmorStands) {
-            if (npcArmorStand.getArmorStand().getEntityId() == armorStand.getEntityId())
-                return npcArmorStand;
+    public static ArmorStandNpc getNpcArmorStand(ArmorStand armorStand) {
+        for (ArmorStandNpc armorStandNpc : armorStandNpcs) {
+            if (armorStandNpc.getArmorStand().getEntityId() == armorStand.getEntityId())
+                return armorStandNpc;
         }
 
         return null;
     }
 
-    public static ArrayList<NpcArmorStand> getNpcArmorStands() {
-        return npcArmorStands;
+    public static ArrayList<ArmorStandNpc> getArmorStandNpcs() {
+        return armorStandNpcs;
     }
 
     public static abstract class ClickAction {
 
-        public abstract void click(PlayerInteractAtEntityEvent event, OMPlayer player, NpcArmorStand item);
+        public abstract void click(PlayerInteractAtEntityEvent event, OMPlayer player, ArmorStandNpc item);
 
     }
 }

@@ -25,6 +25,24 @@ public class LocationUtils {
         return "x: " + location.getBlockX() + ", y: " + location.getBlockY() + ", z: " + location.getBlockZ();
     }
 
+    /* Yaw -180/Degree 0 is facing north */
+    public static float yawToDegree(float yaw) {
+        return yaw + 180;
+    }
+
+    public static float degreeToYaw(float degree) {
+        return degree - 180;
+    }
+
+    /* 0-180 */
+    public static float pitchToDegree(float pitch) {
+        return pitch + 90;
+    }
+
+    public static float degreeToPitch(float degree) {
+        return degree - 90;
+    }
+
     public static BlockFace getFacingDirectionAt(Location location) {
         Direction[] values = Direction.values();
 

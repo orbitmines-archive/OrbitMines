@@ -1,10 +1,7 @@
 package com.orbitmines.spigot.servers.survival.handlers;
 
-import com.orbitmines.api.database.Database;
+import com.orbitmines.api.database.*;
 import com.orbitmines.api.database.Set;
-import com.orbitmines.api.database.Table;
-import com.orbitmines.api.database.Where;
-import com.orbitmines.api.database.tables.TablePlayers;
 import com.orbitmines.api.database.tables.survival.TableSurvivalPlayers;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.servers.survival.Survival;
@@ -13,10 +10,7 @@ import com.orbitmines.spigot.servers.survival.handlers.claim.Visualization;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /*
 * OrbitMines - @author Fadi Shawki - 2017
@@ -44,7 +38,7 @@ public class SurvivalPlayer extends OMPlayer {
         this.survival = survival;
 
         this.earthMoney = 0;
-        this.claimBlocks = 250;
+        this.claimBlocks = 250 /* TODO */* 10;
 
         this.settings = new HashSet<>();
 
@@ -55,8 +49,22 @@ public class SurvivalPlayer extends OMPlayer {
     protected void onLogin() {
         players.add(this);
 
+        if (!Database.get().contains(Table.SURVIVAL_PLAYERS, TableSurvivalPlayers.UUID, new Where(TableSurvivalPlayers.UUID, getUUID().toString()))) {
+            Database.get().insert(Table.SURVIVAL_PLAYERS, Table.SURVIVAL_PLAYERS.values(getUUID().toString(), earthMoney + "", claimBlocks + ""));
+        } else {
+            Map<Column, String> values = Database.get().getValues(Table.SURVIVAL_PLAYERS, new Column[]{
+                    TableSurvivalPlayers.EARTH_MONEY,
+                    TableSurvivalPlayers.CLAIM_BLOCKS,
+            }, new Where(TableSurvivalPlayers.UUID, getUUID().toString()));
+
+            earthMoney = Integer.parseInt(values.get(TableSurvivalPlayers.EARTH_MONEY));
+            claimBlocks = Integer.parseInt(values.get(TableSurvivalPlayers.CLAIM_BLOCKS));
+        }
+
         setScoreboard(new Survival.Scoreboard(orbitMines, this));
 
+        //TODO remove
+        player.getInventory().setItem(0, Claim.CLAIMING_TOOL.build());
     }
 
     @Override
@@ -104,7 +112,7 @@ public class SurvivalPlayer extends OMPlayer {
     }
 
     private void updateEarthMoney() {
-        Database.get().update(Table.SURVIVAL_PLAYERS, new Set(TableSurvivalPlayers.EARTH_MONEY, this.earthMoney), new Where(TablePlayers.UUID, getUUID().toString()));
+        Database.get().update(Table.SURVIVAL_PLAYERS, new Set(TableSurvivalPlayers.EARTH_MONEY, this.earthMoney), new Where(TableSurvivalPlayers.UUID, getUUID().toString()));
     }
     
     /*
@@ -132,7 +140,7 @@ public class SurvivalPlayer extends OMPlayer {
     }
 
     private void updateClaimBlocks() {
-        Database.get().update(Table.SURVIVAL_PLAYERS, new Set(TableSurvivalPlayers.CLAIM_BLOCKS, this.claimBlocks), new Where(TablePlayers.UUID, getUUID().toString()));
+        Database.get().update(Table.SURVIVAL_PLAYERS, new Set(TableSurvivalPlayers.CLAIM_BLOCKS, this.claimBlocks), new Where(TableSurvivalPlayers.UUID, getUUID().toString()));
     }
 
     /*

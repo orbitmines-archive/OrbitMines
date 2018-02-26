@@ -17,10 +17,12 @@ import com.orbitmines.spigot.api.handlers.itembuilders.WrittenBookBuilder;
 import com.orbitmines.spigot.api.handlers.kit.Kit;
 import com.orbitmines.spigot.api.handlers.kit.KitInteractive;
 import com.orbitmines.spigot.api.handlers.scoreboard.DefaultScoreboard;
+import com.orbitmines.spigot.api.handlers.worlds.WorldLoader;
 import com.orbitmines.spigot.servers.hub.handlers.HubPlayer;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 
@@ -31,6 +33,8 @@ import java.util.Map;
 * OrbitMines - @author Fadi Shawki - 2017
 */
 public class Hub extends OrbitMinesServer {
+
+    private World voidWorld;
 
     private Map<Language, Kit> lobbyKit;
 
@@ -59,6 +63,24 @@ public class Hub extends OrbitMinesServer {
                 PreventionSet.Prevention.SWAP_HAND_ITEMS,
                 PreventionSet.Prevention.WEATHER_CHANGE
         );
+
+        voidWorld = orbitMines.getWorldLoader().loadWorld("VoidWorld", true, WorldLoader.Type.VOID);
+        preventionSet.prevent(voidWorld,
+                PreventionSet.Prevention.BLOCK_BREAK,
+                PreventionSet.Prevention.BLOCK_INTERACTING,
+                PreventionSet.Prevention.BLOCK_PLACE,
+                PreventionSet.Prevention.CHUNK_UNLOAD,
+                PreventionSet.Prevention.CLICK_PLAYER_INVENTORY,
+                PreventionSet.Prevention.ENTITY_INTERACTING,
+                PreventionSet.Prevention.FOOD_CHANGE,
+                PreventionSet.Prevention.ITEM_DROP,
+                PreventionSet.Prevention.LEAF_DECAY,
+                PreventionSet.Prevention.PLAYER_DAMAGE,
+                PreventionSet.Prevention.ITEM_PICKUP,
+                PreventionSet.Prevention.SWAP_HAND_ITEMS,
+                PreventionSet.Prevention.WEATHER_CHANGE
+        );
+        voidWorld.setTime(18000);
 
         registerKits();
     }
@@ -108,6 +130,10 @@ public class Hub extends OrbitMinesServer {
     @Override
     protected void registerRunnables() {
 
+    }
+
+    public World getVoidWorld() {
+        return voidWorld;
     }
 
     private void registerKits() {

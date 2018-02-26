@@ -19,19 +19,19 @@ public class ComponentMessage {
         tcs = new ArrayList<>();
     }
 
-    public void addPart(String part) {
-        addPart(part, null, null, null, null);
+    public void add(String part) {
+        add(part, null, null, null, null);
     }
 
-    public void addPart(String part, ClickEvent.Action clickAction, String clickEvent) {
-        addPart(part, clickAction, clickEvent, null, null);
+    public void add(String part, ClickEvent.Action clickAction, String clickEvent) {
+        add(part, clickAction, clickEvent, null, null);
     }
 
-    public void addPart(String part, HoverEvent.Action hoverAction, String hoverEvent) {
-        addPart(part, null, null, hoverAction, hoverEvent);
+    public void add(String part, HoverEvent.Action hoverAction, String hoverEvent) {
+        add(part, null, null, hoverAction, hoverEvent);
     }
 
-    public void addPart(String part, ClickEvent.Action clickAction, String clickEvent, HoverEvent.Action hoverAction, String hoverEvent) {
+    public void add(String part, ClickEvent.Action clickAction, String clickEvent, HoverEvent.Action hoverAction, String hoverEvent) {
         TextComponent tc = new TextComponent(part);
         if (clickAction != null)
             tc.setClickEvent(new ClickEvent(clickAction, clickEvent));

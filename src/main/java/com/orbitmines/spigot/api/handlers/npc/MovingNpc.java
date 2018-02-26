@@ -13,7 +13,7 @@ import java.util.Map;
 /*
 * OrbitMines - @author Fadi Shawki - 2017
 */
-public class NPCMoving extends NPC {
+public class MovingNpc extends NPC {
 
     private final OrbitMines orbitMines;
 
@@ -23,11 +23,11 @@ public class NPCMoving extends NPC {
     private int secondsToStay;
     private ArriveAction arriveAction;
 
-    public NPCMoving(Mob mob, Location location, String displayName, ArriveAction arriveAction) {
+    public MovingNpc(Mob mob, Location location, String displayName, ArriveAction arriveAction) {
         this(mob, location, displayName, null, arriveAction);
     }
 
-    public NPCMoving(Mob mob, Location location, String displayName, InteractAction interactAction, ArriveAction arriveAction) {
+    public MovingNpc(Mob mob, Location location, String displayName, InteractAction interactAction, ArriveAction arriveAction) {
         super(mob, location, displayName, interactAction);
 
         this.moveLocations = new ArrayList<>();
@@ -120,7 +120,7 @@ public class NPCMoving extends NPC {
 
     public static abstract class ArriveAction {
 
-        public abstract void arrive(NPCMoving npc, int index, int seconds);
+        public abstract void arrive(MovingNpc npc, int index, int seconds);
 
     }
 }

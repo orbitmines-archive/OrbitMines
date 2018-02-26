@@ -17,6 +17,7 @@ import com.orbitmines.bungeecord.events.PingEvent;
 import com.orbitmines.bungeecord.events.PlayerChatEvent;
 import com.orbitmines.bungeecord.events.TabCompleteEvent;
 import com.orbitmines.bungeecord.handlers.*;
+import com.orbitmines.bungeecord.runnables.BungeeRunnable;
 import com.vexsoftware.votifier.VoteHandler;
 import com.vexsoftware.votifier.VotifierPlugin;
 import com.vexsoftware.votifier.bungee.events.VotifierEvent;
@@ -215,7 +216,16 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
     }
 
     private void registerRunnables() {
-
+        Server[] values = Server.values();
+        new BungeeRunnable(BungeeRunnable.TimeUnit.SECOND, 10) {
+            @Override
+            public void run() {
+                for (Server server : values) {
+                    if (server.getStatus() != Server.Status.OFFLINE && getServer(server) == null)
+                        addServer(server);
+                }
+            }
+        };
     }
 
     public void broadcast(String... messages) {
