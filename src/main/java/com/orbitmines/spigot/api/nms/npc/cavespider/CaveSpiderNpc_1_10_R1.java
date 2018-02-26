@@ -24,8 +24,12 @@ public class CaveSpiderNpc_1_10_R1 implements CaveSpiderNpc {
         EntityCaveSpider_1_10_R1 e = new EntityCaveSpider_1_10_R1(nmsWorld, moving, noAttack);
         e.setPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
         nmsWorld.addEntity(e);
-        e.setCustomName(displayName);
-        e.setCustomNameVisible(true);
+
+        if (displayName != null) {
+            e.setCustomName(displayName);
+            e.setCustomNameVisible(true);
+        }
+
         ((CraftCaveSpider) e.getBukkitEntity()).setRemoveWhenFarAway(false);
 
         if (!moving) {

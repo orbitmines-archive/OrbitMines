@@ -24,8 +24,12 @@ public class HorseNpc_1_8_R1 implements HorseNpc {
         EntityHorse_1_8_R1 e = new EntityHorse_1_8_R1(nmsWorld, moving, noAttack);
         e.setPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
         nmsWorld.addEntity(e);
-        e.setCustomName(displayName);
-        e.setCustomNameVisible(true);
+
+        if (displayName != null) {
+            e.setCustomName(displayName);
+            e.setCustomNameVisible(true);
+        }
+
         ((CraftHorse) e.getBukkitEntity()).setRemoveWhenFarAway(false);
 
         if (!moving)

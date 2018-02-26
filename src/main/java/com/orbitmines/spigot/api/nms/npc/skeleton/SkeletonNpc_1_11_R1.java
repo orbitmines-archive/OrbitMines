@@ -24,8 +24,11 @@ public class SkeletonNpc_1_11_R1 implements SkeletonNpc {
         EntitySkeleton_1_11_R1 e = new EntitySkeleton_1_11_R1(location, moving, noAttack);
         e.setPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
         nmsWorld.addEntity(e);
-        e.setCustomName(displayName);
-        e.setCustomNameVisible(true);
+
+        if (displayName != null) {
+            e.setCustomName(displayName);
+            e.setCustomNameVisible(true);
+        }
 
         ((CraftSkeleton) e.getBukkitEntity()).setRemoveWhenFarAway(false);
 

@@ -24,8 +24,12 @@ public class ZombieHorseNpc_1_11_R1 implements ZombieHorseNpc {
         EntityZombieHorse_1_11_R1 e = new EntityZombieHorse_1_11_R1(nmsWorld, moving, noAttack);
         e.setPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
         nmsWorld.addEntity(e);
-        e.setCustomName(displayName);
-        e.setCustomNameVisible(true);
+
+        if (displayName != null) {
+            e.setCustomName(displayName);
+            e.setCustomNameVisible(true);
+        }
+
         ((CraftZombieHorse) e.getBukkitEntity()).setRemoveWhenFarAway(false);
 
         if (!moving) {

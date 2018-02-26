@@ -201,6 +201,11 @@ public class ArmorStandNpc {
 
     public void setCustomName(String customName) {
         this.customName = customName;
+
+        if (armorStand == null)
+            return;
+
+        armorStand.setCustomName(customName);
     }
 
     public boolean isCustomNameVisible() {

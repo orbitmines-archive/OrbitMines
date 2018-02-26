@@ -24,8 +24,12 @@ public class GuardianNpc_1_8_R3 implements GuardianNpc {
         EntityGuardian_1_8_R3 e = new EntityGuardian_1_8_R3(nmsWorld, moving, noAttack);
         e.setPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
         nmsWorld.addEntity(e);
-        e.setCustomName(displayName);
-        e.setCustomNameVisible(true);
+
+        if (displayName != null) {
+            e.setCustomName(displayName);
+            e.setCustomNameVisible(true);
+        }
+
         ((CraftGuardian) e.getBukkitEntity()).setRemoveWhenFarAway(false);
 
         if (!moving)

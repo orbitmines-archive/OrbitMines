@@ -24,8 +24,12 @@ public class SkeletonHorseNpc_1_12_R1 implements SkeletonHorseNpc {
         EntitySkeletonHorse_1_12_R1 e = new EntitySkeletonHorse_1_12_R1(nmsWorld, moving, noAttack);
         e.setPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
         nmsWorld.addEntity(e);
-        e.setCustomName(displayName);
-        e.setCustomNameVisible(true);
+
+        if (displayName != null) {
+            e.setCustomName(displayName);
+            e.setCustomNameVisible(true);
+        }
+
         ((CraftSkeletonHorse) e.getBukkitEntity()).setRemoveWhenFarAway(false);
 
         if (!moving) {

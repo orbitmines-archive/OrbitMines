@@ -24,8 +24,12 @@ public class WolfNpc_1_8_R1 implements WolfNpc {
         EntityWolf_1_8_R1 e = new EntityWolf_1_8_R1(nmsWorld, moving, noAttack);
         e.setPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
         nmsWorld.addEntity(e);
-        e.setCustomName(displayName);
-        e.setCustomNameVisible(true);
+
+        if (displayName != null) {
+            e.setCustomName(displayName);
+            e.setCustomNameVisible(true);
+        }
+
         ((CraftWolf) e.getBukkitEntity()).setRemoveWhenFarAway(false);
 
         if (!moving)

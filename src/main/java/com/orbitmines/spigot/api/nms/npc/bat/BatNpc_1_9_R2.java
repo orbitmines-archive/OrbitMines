@@ -24,8 +24,12 @@ public class BatNpc_1_9_R2 implements BatNpc {
         EntityBat_1_9_R2 e = new EntityBat_1_9_R2(nmsWorld, moving, noAttack);
         e.setPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
         nmsWorld.addEntity(e);
-        e.setCustomName(displayName);
-        e.setCustomNameVisible(true);
+
+        if (displayName != null) {
+            e.setCustomName(displayName);
+            e.setCustomNameVisible(true);
+        }
+
         ((CraftBat) e.getBukkitEntity()).setRemoveWhenFarAway(false);
 
         if (!moving)

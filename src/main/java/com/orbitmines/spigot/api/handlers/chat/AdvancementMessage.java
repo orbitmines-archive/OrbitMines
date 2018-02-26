@@ -58,7 +58,7 @@ public class AdvancementMessage {
     public void send(Collection<? extends OMPlayer> players) {
         try {
             Bukkit.getUnsafe().loadAdvancement(id, serialize());
-            ConsoleUtils.success("Advancement " + id + " created!");
+            //DEBUG ConsoleUtils.success("Advancement " + id + " created!");
         } catch (IllegalArgumentException ex) {
             /* Already exists */
             ConsoleUtils.warn("Advancement " + id + " already exists!");

@@ -24,8 +24,12 @@ public class VindicatorNpc_1_11_R1 implements VindicatorNpc {
         EntityVindicator_1_11_R1 e = new EntityVindicator_1_11_R1(nmsWorld, moving, noAttack);
         e.setPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
         nmsWorld.addEntity(e);
-        e.setCustomName(displayName);
-        e.setCustomNameVisible(true);
+
+        if (displayName != null) {
+            e.setCustomName(displayName);
+            e.setCustomNameVisible(true);
+        }
+
         ((CraftVindicator) e.getBukkitEntity()).setRemoveWhenFarAway(false);
 
         if (!moving) {

@@ -25,8 +25,12 @@ public class SlimeNpc_1_10_R1 implements SlimeNpc {
         e.setSize(2);
         e.setPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
         nmsWorld.addEntity(e);
-        e.setCustomName(displayName);
-        e.setCustomNameVisible(true);
+
+        if (displayName != null) {
+            e.setCustomName(displayName);
+            e.setCustomNameVisible(true);
+        }
+
         ((CraftSlime) e.getBukkitEntity()).setRemoveWhenFarAway(false);
 
         if (!moving) {

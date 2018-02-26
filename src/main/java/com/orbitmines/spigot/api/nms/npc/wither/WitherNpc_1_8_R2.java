@@ -24,8 +24,12 @@ public class WitherNpc_1_8_R2 implements WitherNpc {
         EntityWither_1_8_R2 e = new EntityWither_1_8_R2(nmsWorld, moving, noAttack);
         e.setPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
         nmsWorld.addEntity(e);
-        e.setCustomName(displayName);
-        e.setCustomNameVisible(true);
+
+        if (displayName != null) {
+            e.setCustomName(displayName);
+            e.setCustomNameVisible(true);
+        }
+
         ((CraftWither) e.getBukkitEntity()).setRemoveWhenFarAway(false);
 
         if (!moving)

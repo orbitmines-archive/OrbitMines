@@ -25,8 +25,12 @@ public class MagmaCubeNpc_1_8_R1 implements MagmaCubeNpc {
         e.setSize(2);
         e.setPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
         nmsWorld.addEntity(e);
-        e.setCustomName(displayName);
-        e.setCustomNameVisible(true);
+
+        if (displayName != null) {
+            e.setCustomName(displayName);
+            e.setCustomNameVisible(true);
+        }
+
         ((CraftMagmaCube) e.getBukkitEntity()).setRemoveWhenFarAway(false);
 
         if (!moving)

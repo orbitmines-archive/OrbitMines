@@ -62,6 +62,8 @@ public abstract class OrbitMinesServer {
 
     protected abstract void registerRunnables();
 
+    public abstract void setupNpc(String npcName, Location location);
+
     public void format(AsyncPlayerChatEvent event, OMPlayer omp) {
         event.setFormat(omp.getRankPrefix() + omp.getName() + "§7 » " + omp.getRankChatColor().getChatColor() + "%2$s");
     }

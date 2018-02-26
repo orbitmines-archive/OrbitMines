@@ -24,8 +24,12 @@ public class EndermiteNpc_1_8_R3 implements EndermiteNpc {
         EntityEndermite_1_8_R3 e = new EntityEndermite_1_8_R3(nmsWorld, moving, noAttack);
         e.setPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
         nmsWorld.addEntity(e);
-        e.setCustomName(displayName);
-        e.setCustomNameVisible(true);
+
+        if (displayName != null) {
+            e.setCustomName(displayName);
+            e.setCustomNameVisible(true);
+        }
+
         ((CraftEndermite) e.getBukkitEntity()).setRemoveWhenFarAway(false);
 
         if (!moving)

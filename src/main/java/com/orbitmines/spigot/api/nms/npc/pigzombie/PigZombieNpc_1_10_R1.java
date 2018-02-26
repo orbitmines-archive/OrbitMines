@@ -24,8 +24,12 @@ public class PigZombieNpc_1_10_R1 implements PigZombieNpc {
         EntityPigZombie_1_10_R1 e = new EntityPigZombie_1_10_R1(nmsWorld, moving, noAttack);
         e.setPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
         nmsWorld.addEntity(e);
-        e.setCustomName(displayName);
-        e.setCustomNameVisible(true);
+
+        if (displayName != null) {
+            e.setCustomName(displayName);
+            e.setCustomNameVisible(true);
+        }
+
         ((CraftPigZombie) e.getBukkitEntity()).setRemoveWhenFarAway(false);
 
         if (!moving) {

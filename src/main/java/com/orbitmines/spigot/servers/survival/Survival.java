@@ -9,6 +9,7 @@ import com.orbitmines.api.database.Table;
 import com.orbitmines.api.database.Where;
 import com.orbitmines.api.database.tables.TableServerData;
 import com.orbitmines.api.database.tables.survival.TableSurvivalClaim;
+import com.orbitmines.api.database.tables.survival.TableSurvivalPlayers;
 import com.orbitmines.api.utils.DateUtils;
 import com.orbitmines.api.utils.NumberUtils;
 import com.orbitmines.spigot.OrbitMines;
@@ -19,6 +20,8 @@ import com.orbitmines.spigot.api.handlers.PreventionSet;
 import com.orbitmines.spigot.api.handlers.chat.ActionBar;
 import com.orbitmines.spigot.api.handlers.itemhandlers.ItemHoverActionBar;
 import com.orbitmines.spigot.api.handlers.itemhandlers.ItemInteraction;
+import com.orbitmines.spigot.api.handlers.leaderboard.DefaultLeaderBoard;
+import com.orbitmines.spigot.api.handlers.leaderboard.LeaderBoard;
 import com.orbitmines.spigot.api.handlers.scoreboard.DefaultScoreboard;
 import com.orbitmines.spigot.api.utils.ConsoleUtils;
 import com.orbitmines.spigot.api.utils.LocationUtils;
@@ -49,6 +52,21 @@ public class Survival extends OrbitMinesServer {
     private World world;
 
     private ClaimHandler claimHandler;
+
+    static {
+        new LeaderBoard.Instantiator("EARTH_MONEY") {
+            @Override
+            public LeaderBoard instantiate(Server server, Location location, String[] data) {
+                return new DefaultLeaderBoard(location, "§7§lRichest Players", 10, Table.SURVIVAL_PLAYERS, TableSurvivalPlayers.UUID, TableSurvivalPlayers.EARTH_MONEY);
+            }
+        };
+        new LeaderBoard.Instantiator("CLAIM_BLOCKS") {
+            @Override
+            public LeaderBoard instantiate(Server server, Location location, String[] data) {
+                return new DefaultLeaderBoard(location, "§7§lTop ClaimBlocks", 10, Table.SURVIVAL_PLAYERS, TableSurvivalPlayers.UUID, TableSurvivalPlayers.CLAIM_BLOCKS);
+            }
+        };
+    }
 
     public Survival(OrbitMines orbitMines) {
         super(orbitMines, Server.SURVIVAL, new PluginMessageHandler() {
@@ -121,6 +139,11 @@ public class Survival extends OrbitMinesServer {
 
     @Override
     protected void registerRunnables() {
+
+    }
+
+    @Override
+    public void setupNpc(String npcName, Location location) {
 
     }
 

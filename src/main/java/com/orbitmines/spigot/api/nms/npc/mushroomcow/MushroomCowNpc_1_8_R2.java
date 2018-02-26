@@ -24,8 +24,12 @@ public class MushroomCowNpc_1_8_R2 implements MushroomCowNpc {
         EntityMushroomCow_1_8_R2 e = new EntityMushroomCow_1_8_R2(nmsWorld, moving, noAttack);
         e.setPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
         nmsWorld.addEntity(e);
-        e.setCustomName(displayName);
-        e.setCustomNameVisible(true);
+
+        if (displayName != null) {
+            e.setCustomName(displayName);
+            e.setCustomNameVisible(true);
+        }
+
         ((CraftMushroomCow) e.getBukkitEntity()).setRemoveWhenFarAway(false);
 
         if (!moving)

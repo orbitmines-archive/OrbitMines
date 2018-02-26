@@ -24,8 +24,12 @@ public class LlamaNpc_1_11_R1 implements LlamaNpc {
         EntityLlama_1_11_R1 e = new EntityLlama_1_11_R1(nmsWorld, moving, noAttack);
         e.setPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
         nmsWorld.addEntity(e);
-        e.setCustomName(displayName);
-        e.setCustomNameVisible(true);
+
+        if (displayName != null) {
+            e.setCustomName(displayName);
+            e.setCustomNameVisible(true);
+        }
+
         ((CraftLlama) e.getBukkitEntity()).setRemoveWhenFarAway(false);
 
         if (!moving) {

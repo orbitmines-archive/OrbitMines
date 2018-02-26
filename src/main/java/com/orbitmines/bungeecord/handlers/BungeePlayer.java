@@ -151,6 +151,9 @@ public class BungeePlayer {
         } else if (server.getMaxPlayers() - serverInfo.getPlayers().size() < 1) {
             sendMessage("Server", Color.RED, "§7Die server is vol!", "§7That server is full!");
             return;
+        } else if (server.getStatus() == Server.Status.OFFLINE) {
+            sendMessage("Server", Color.RED, "§7Die server is " + Server.Status.OFFLINE.getColor().getChatColor() + Server.Status.OFFLINE.getName() + "§7!", "§7That server is " + Server.Status.OFFLINE.getColor().getChatColor() + Server.Status.OFFLINE.getName() + "§7!");
+            return;
         } else if (!isEligible(StaffRank.DEVELOPER) && server.getStatus() == Server.Status.MAINTENANCE) {
             sendMessage("Server", Color.FUCHSIA, "§7Er word momenteel aan die server gewerkt.", "§7That server is currently under maintenance.");
             return;

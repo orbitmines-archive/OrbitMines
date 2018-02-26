@@ -5,18 +5,24 @@ import com.orbitmines.api.database.Column;
 import com.orbitmines.api.database.Database;
 import com.orbitmines.api.database.Table;
 import com.orbitmines.api.database.Where;
+import com.orbitmines.api.database.tables.TablePlayers;
 import com.orbitmines.api.database.tables.TableServers;
+import com.orbitmines.api.database.tables.TableVotes;
 import com.orbitmines.spigot.api._2fa._2FA;
+import com.orbitmines.spigot.api.datapoints.DataPointHandler;
 import com.orbitmines.spigot.api.events.*;
 import com.orbitmines.spigot.api.handlers.ConfigHandler;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.OrbitMinesMap;
+import com.orbitmines.spigot.api.handlers.leaderboard.DefaultLeaderBoard;
+import com.orbitmines.spigot.api.handlers.leaderboard.LeaderBoard;
 import com.orbitmines.spigot.api.handlers.worlds.WorldLoader;
 import com.orbitmines.spigot.api.nms.Nms;
 import com.orbitmines.spigot.api.utils.ReflectionUtils;
 import com.orbitmines.spigot.runnables.LeaderBoardRunnable;
 import com.orbitmines.spigot.runnables.NPCRunnable;
 import com.orbitmines.spigot.runnables.ScoreboardRunnable;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;
@@ -67,6 +73,35 @@ public class OrbitMines extends JavaPlugin {
             "§8§lOrbit§7§lMin§8§les",
             "§8§lOrbit§7§lMine§8§ls"
     );
+
+    static {
+        new LeaderBoard.Instantiator("SOLARS") {
+            @Override
+            public LeaderBoard instantiate(Server server, Location location, String[] data) {
+                return new DefaultLeaderBoard(location, "§7§lTop Solars", 10, Table.PLAYERS, TablePlayers.UUID, TablePlayers.SOLARS);
+            }
+        };
+        new LeaderBoard.Instantiator("PRISMS") {
+            @Override
+            public LeaderBoard instantiate(Server server, Location location, String[] data) {
+                return new DefaultLeaderBoard(location, "§7§lTop Prisms", 10, Table.PLAYERS, TablePlayers.UUID, TablePlayers.PRISMS);
+            }
+        };
+
+        new LeaderBoard.Instantiator("TOP_VOTERS") {
+            @Override
+            public LeaderBoard instantiate(Server server, Location location, String[] data) {
+                return new DefaultLeaderBoard(location.clone().subtract(0, 1.5, 0), "§7§lTop Voters", 5, Table.VOTES, TableVotes.UUID, TableVotes.VOTES);
+            }
+        };
+
+        new LeaderBoard.Instantiator("TOTAL_VOTES") {
+            @Override
+            public LeaderBoard instantiate(Server server, Location location, String[] data) {
+                return new DefaultLeaderBoard(location, "§7§lTop Total Votes", 10, Table.VOTES, TableVotes.UUID, TableVotes.TOTAL_VOTES);
+            }
+        };
+    }
 
     @Override
     public void onEnable() {
@@ -127,8 +162,6 @@ public class OrbitMines extends JavaPlugin {
         lobbyWorld.setTime(18000);
 
         lobby.setWorld(lobbyWorld);
-//        lobby.setHandler(DataPointHandler.getHandler(gameServer.getGameMode(), OrbitMinesMap.Type.LOBBY));
-//        lobby.setupDataPoints();
 
         /* Register */
         registerCommands();
@@ -148,8 +181,14 @@ public class OrbitMines extends JavaPlugin {
         );
         registerRunnables();
 
-        /* Setup Server */
+        /* Prepare Server */
         serverHandler = OrbitMinesServer.getServer(this, server);
+
+        /* Setup Lobby DataPoints */
+        lobby.setHandler(DataPointHandler.getHandler(serverHandler.getServer(), OrbitMinesMap.Type.LOBBY));
+        lobby.setupDataPoints();
+
+        /* Setup Server */
         serverHandler.onEnable();
     }
 

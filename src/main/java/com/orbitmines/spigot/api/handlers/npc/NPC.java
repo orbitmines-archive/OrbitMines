@@ -83,6 +83,8 @@ public class NPC {
         if (entity == null)
             return;
 
+        entity.setCustomNameVisible(false);
+
         if (nameTag == null) {
             ArmorStandNpc.ClickAction action;
             if (interactAction != null)
@@ -102,11 +104,10 @@ public class NPC {
 
             nameTag.setCustomName(displayName);
             nameTag.setCustomNameVisible(true);
+            nameTag.spawn();
         } else {
             nameTag.setCustomName(displayName);
         }
-
-        nameTag.spawn();
     }
 
     public Entity getEntity() {
@@ -133,9 +134,9 @@ public class NPC {
         remove();
 
         if (this instanceof MovingNpc)
-            this.entity = mob.spawnMoving(getFixedLocation(), displayName);
+            this.entity = mob.spawnMoving(getFixedLocation());
         else
-            this.entity = mob.spawn(getFixedLocation(), displayName);
+            this.entity = mob.spawn(getFixedLocation());
 
         setDisplayName(displayName);
 

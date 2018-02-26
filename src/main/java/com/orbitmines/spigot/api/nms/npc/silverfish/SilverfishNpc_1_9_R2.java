@@ -24,8 +24,12 @@ public class SilverfishNpc_1_9_R2 implements SilverfishNpc {
         EntitySilverfish_1_9_R2 e = new EntitySilverfish_1_9_R2(nmsWorld, moving, noAttack);
         e.setPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
         nmsWorld.addEntity(e);
-        e.setCustomName(displayName);
-        e.setCustomNameVisible(true);
+
+        if (displayName != null) {
+            e.setCustomName(displayName);
+            e.setCustomNameVisible(true);
+        }
+
         ((CraftSilverfish) e.getBukkitEntity()).setRemoveWhenFarAway(false);
 
         if (!moving)

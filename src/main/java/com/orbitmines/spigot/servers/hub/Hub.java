@@ -6,6 +6,7 @@ import com.orbitmines.api.Message;
 import com.orbitmines.api.PluginMessage;
 import com.orbitmines.api.Server;
 import com.orbitmines.api.utils.NumberUtils;
+import com.orbitmines.api.utils.RandomUtils;
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.OrbitMinesServer;
 import com.orbitmines.spigot.api.events.VoidDamageEvent;
@@ -18,6 +19,8 @@ import com.orbitmines.spigot.api.handlers.kit.Kit;
 import com.orbitmines.spigot.api.handlers.kit.KitInteractive;
 import com.orbitmines.spigot.api.handlers.scoreboard.DefaultScoreboard;
 import com.orbitmines.spigot.api.handlers.worlds.WorldLoader;
+import com.orbitmines.spigot.servers.hub.datapoints.HubDataPointSpawnpoint;
+import com.orbitmines.spigot.servers.hub.handlers.HubDataPointHandler;
 import com.orbitmines.spigot.servers.hub.handlers.HubPlayer;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -27,6 +30,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /*
@@ -38,6 +42,8 @@ public class Hub extends OrbitMinesServer {
 
     private Map<Language, Kit> lobbyKit;
 
+    private List<Location> spawnLocations;
+
     public Hub(OrbitMines orbitMines) {
         super(orbitMines, Server.HUB, new PluginMessageHandler() {
             @Override
@@ -45,7 +51,10 @@ public class Hub extends OrbitMinesServer {
 
             }
         });
+    }
 
+    @Override
+    public void onEnable() {
         lobbyKit = new HashMap<>();
 
         preventionSet.prevent(orbitMines.getLobby().getWorld(),
@@ -83,11 +92,9 @@ public class Hub extends OrbitMinesServer {
         voidWorld.setTime(18000);
 
         registerKits();
-    }
 
-    @Override
-    public void onEnable() {
-
+        /* DataPoints */
+        spawnLocations = ((HubDataPointSpawnpoint) (orbitMines.getLobby().getHandler().getDataPoint(HubDataPointHandler.Type.SPAWNPOINT))).getSpawns();
     }
 
     @Override
@@ -107,7 +114,7 @@ public class Hub extends OrbitMinesServer {
 
     @Override
     public Location getSpawnLocation(Player player) {
-        return orbitMines.getLobby().getWorld().getSpawnLocation().add(0, 60, 0);
+        return RandomUtils.randomFrom(spawnLocations);
     }
 
     @Override
@@ -129,6 +136,11 @@ public class Hub extends OrbitMinesServer {
 
     @Override
     protected void registerRunnables() {
+
+    }
+
+    @Override
+    public void setupNpc(String npcName, Location location) {
 
     }
 

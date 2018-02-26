@@ -22,7 +22,7 @@ public class UUIDUtils {
         return uuid.toString().replaceAll("-", "");
     }
 
-    public static UUID parse(String trimmed) {
+    public static UUID parse(String trimmed) throws IndexOutOfBoundsException {
         return UUID.fromString(trimmed.substring(0, 8) + "-" + trimmed.substring(8, 12) + "-" + trimmed.substring(12, 16) + "-" + trimmed.substring(16, 20) + "-" + trimmed.substring(20, 32));
     }
 

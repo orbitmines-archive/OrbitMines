@@ -24,8 +24,12 @@ public class EndermanNpc_1_8_R3 implements EndermanNpc {
         EntityEnderman_1_8_R3 e = new EntityEnderman_1_8_R3(nmsWorld, moving, noAttack);
         e.setPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
         nmsWorld.addEntity(e);
-        e.setCustomName(displayName);
-        e.setCustomNameVisible(true);
+
+        if (displayName != null) {
+            e.setCustomName(displayName);
+            e.setCustomNameVisible(true);
+        }
+
         ((CraftEnderman) e.getBukkitEntity()).setRemoveWhenFarAway(false);
 
         if (!moving)

@@ -5,6 +5,8 @@ import com.orbitmines.api.database.*;
 import com.orbitmines.api.database.tables.TableMaps;
 import com.orbitmines.api.database.tables.TableServers;
 import com.orbitmines.api.utils.RandomUtils;
+import com.orbitmines.spigot.api.datapoints.DataPointHandler;
+import com.orbitmines.spigot.api.datapoints.DataPointLoader;
 import com.orbitmines.spigot.api.handlers.worlds.WorldLoader;
 import org.bukkit.World;
 
@@ -26,7 +28,7 @@ public class OrbitMinesMap {
     private String authors;
 
     private World world;
-//    private DataPointHandler handler;
+    private DataPointHandler handler;
 
     public OrbitMinesMap(String worldName, WorldLoader.Type worldGenerator, String name, Type type, Server server, boolean enabled, String authors) {
         this.worldName = worldName;
@@ -104,23 +106,23 @@ public class OrbitMinesMap {
         this.world = world;
     }
 
-//    public DataPointHandler getHandler() {
-//        return handler;
-//    }
-//
-//    public void setHandler(DataPointHandler handler) {
-//        this.handler = handler;
-//    }
-//
-//    public void setupDataPoints() {
-//        /* Clear previous setups */
-//        handler.clearDataPoints();
-//
-//        DataPointLoader loader = new DataPointLoader(world, handler.getAsMap());
-//        loader.load();
-//
-//        handler.setup();
-//    }
+    public DataPointHandler getHandler() {
+        return handler;
+    }
+
+    public void setHandler(DataPointHandler handler) {
+        this.handler = handler;
+    }
+
+    public void setupDataPoints() {
+        /* Clear previous setups */
+        handler.clearDataPoints();
+
+        DataPointLoader loader = new DataPointLoader(world, handler.getAsMap());
+        loader.load();
+
+        handler.setup();
+    }
 
     public void updateToDatabase() {
         Database.get().update(TableServers.MAPS, new Set[] {

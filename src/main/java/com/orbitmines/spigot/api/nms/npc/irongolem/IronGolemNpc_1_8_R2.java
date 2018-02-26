@@ -24,8 +24,12 @@ public class IronGolemNpc_1_8_R2 implements IronGolemNpc {
         EntityIronGolem_1_8_R2 e = new EntityIronGolem_1_8_R2(nmsWorld, moving, noAttack);
         e.setPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
         nmsWorld.addEntity(e);
-        e.setCustomName(displayName);
-        e.setCustomNameVisible(true);
+
+        if (displayName != null) {
+            e.setCustomName(displayName);
+            e.setCustomNameVisible(true);
+        }
+
         ((CraftIronGolem) e.getBukkitEntity()).setRemoveWhenFarAway(false);
 
         if (!moving)

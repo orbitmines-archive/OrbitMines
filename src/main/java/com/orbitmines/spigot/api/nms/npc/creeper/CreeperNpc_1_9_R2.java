@@ -24,8 +24,12 @@ public class CreeperNpc_1_9_R2 implements CreeperNpc {
         EntityCreeper_1_9_R2 e = new EntityCreeper_1_9_R2(nmsWorld, moving, noAttack);
         e.setPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
         nmsWorld.addEntity(e);
-        e.setCustomName(displayName);
-        e.setCustomNameVisible(true);
+
+        if (displayName != null) {
+            e.setCustomName(displayName);
+            e.setCustomNameVisible(true);
+        }
+
         ((CraftCreeper) e.getBukkitEntity()).setRemoveWhenFarAway(false);
 
         NpcNms_1_9_R2.setNoAI(e.getBukkitEntity());
