@@ -18,7 +18,8 @@ public enum Server {
     SURVIVAL("Survival", Color.LIME, false),
     SKYBLOCK("SkyBlock", Color.PURPLE, false),
     FOG("FoG", Color.YELLOW, false),
-    MINIGAMES("MiniGames", Color.WHITE, true);
+    MINIGAMES("MiniGames", Color.WHITE, true),
+    UHSURVIVAL("UHSurvival", Color.GREEN, false);
 
     private final String name;
     private final Color color;
