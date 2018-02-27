@@ -154,7 +154,7 @@ public class DataPointNpc extends DataPointSign {
                     case ONLINE:
                         int players = server.getPlayers();
                         int maxPlayers = server.getMaxPlayers();
-                        npc.setDisplayName(server.getDisplayName() + "§r §8- " + server.getColor().getChatColor() + players + "§7/" + maxPlayers);
+                        npc.setDisplayName(server.getDisplayName() + "§r §8- " + server.getColor().getChatColor() + "§l" + players + "§7§l/" + maxPlayers);
                         break;
                     case OFFLINE:
                     case MAINTENANCE:

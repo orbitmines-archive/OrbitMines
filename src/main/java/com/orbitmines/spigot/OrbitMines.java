@@ -20,15 +20,20 @@ import com.orbitmines.spigot.api.handlers.leaderboard.custom.LeaderBoardDonation
 import com.orbitmines.spigot.api.handlers.worlds.WorldLoader;
 import com.orbitmines.spigot.api.nms.Nms;
 import com.orbitmines.spigot.api.utils.ReflectionUtils;
+import com.orbitmines.spigot.gui.ServerSelectorGUI;
 import com.orbitmines.spigot.runnables.LeaderBoardRunnable;
 import com.orbitmines.spigot.runnables.NPCRunnable;
 import com.orbitmines.spigot.runnables.ScoreboardRunnable;
+import com.orbitmines.spigot.runnables.ServerSelectorRunnable;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /*
 * OrbitMines - @author Fadi Shawki - 2017
@@ -50,6 +55,8 @@ public class OrbitMines extends JavaPlugin {
 
     private ConfigHandler configHandler;
     private WorldLoader worldLoader;
+
+    private Map<Language, ServerSelectorGUI> serverSelectors;
 
     private final ScrollerList<String> scoreboardAnimation = new ScrollerList<>(
             "§8§lOrbit§7§lMines",
@@ -115,6 +122,7 @@ public class OrbitMines extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
+        serverSelectors = new HashMap<>();
 
         /* Setup Config Files */
         configHandler = new ConfigHandler(this);
@@ -193,6 +201,11 @@ public class OrbitMines extends JavaPlugin {
         lobby.setHandler(DataPointHandler.getHandler(serverHandler.getServer(), OrbitMinesMap.Type.LOBBY));
         lobby.setupDataPoints();
 
+        /* Setup Server Selector */
+        for (Language language : Language.values()) {
+            serverSelectors.put(language, new ServerSelectorGUI(language));
+        }
+
         /* Setup Server */
         serverHandler.onEnable();
 
@@ -254,6 +267,10 @@ public class OrbitMines extends JavaPlugin {
         return scoreboardAnimation;
     }
 
+    public Map<Language, ServerSelectorGUI> getServerSelectors() {
+        return serverSelectors;
+    }
+
     private void registerCommands() {
 
     }
@@ -269,6 +286,7 @@ public class OrbitMines extends JavaPlugin {
         new LeaderBoardRunnable();
         new NPCRunnable();
         new ScoreboardRunnable();
+        new ServerSelectorRunnable();
     }
 
     public void broadcast(String... messages) {

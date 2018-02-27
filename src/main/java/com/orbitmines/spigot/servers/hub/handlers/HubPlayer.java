@@ -6,6 +6,7 @@ import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.servers.hub.Hub;
 import net.firefang.ip2c.IpUtils;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -36,6 +37,8 @@ public class HubPlayer extends OMPlayer {
         setScoreboard(new Hub.Scoreboard(orbitMines, this));
 
         hub.getLobbyKit(this).setItems(this);
+
+        player.setGameMode(GameMode.ADVENTURE);
 
 //        new BukkitRunnable() {
 //            @Override
