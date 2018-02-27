@@ -95,7 +95,7 @@ public class Tool {
     }
 
     /* LEVEL METHODS */
-    private void setLevel(int level) {
+    public void setLevel(int level) {
         this.level = MathUtils.clamp(level, 1, MAX_LEVEL);
     }
 
@@ -173,5 +173,9 @@ public class Tool {
 
     public ToolType.Type getType() {
         return type;
+    }
+
+    public ItemStack getItem() {
+        return item;
     }
 }

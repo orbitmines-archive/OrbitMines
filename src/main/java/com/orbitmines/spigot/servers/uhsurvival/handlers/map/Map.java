@@ -69,6 +69,10 @@ public class Map {
         return world;
     }
 
+    public List<MapSection> getMapSections() {
+        return mapSections;
+    }
+
     /* WIDTH & HEIGHT METHODS */
     public void setWidthHeight(int width, int height) {
         this.MAX_WIDTH = width;

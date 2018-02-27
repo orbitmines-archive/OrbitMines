@@ -26,4 +26,8 @@ public class MathUtils {
         int r = random.nextInt(max);
         return min <= x && x <= r;
     }
+
+    public static int randomInteger(int i) {
+        return random.nextInt(i);
+    }
 }

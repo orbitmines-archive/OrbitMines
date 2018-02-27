@@ -1,9 +1,12 @@
 package com.orbitmines.spigot.servers.uhsurvival.handlers.map.mapsection;
 
 import com.orbitmines.spigot.servers.uhsurvival.handlers.UHPlayer;
+import com.orbitmines.spigot.servers.uhsurvival.handlers.dungeon.Dungeon;
 import org.bukkit.World;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -23,7 +26,9 @@ public class MapSection {
     private int z;
 
     private boolean pvp;
+    private boolean dungeon;
 
+    private List<Dungeon> dungeons;
     private HashMap<UUID, UHPlayer> players;
 
     public MapSection(World world, int minX, int maxX, int minZ, int maxZ, int x, int z){
@@ -38,6 +43,7 @@ public class MapSection {
         this.pvp = false;
 
         this.players = new HashMap<>();
+        this.dungeons = new ArrayList<>();
     }
 
     public World getWorld() {
@@ -86,5 +92,13 @@ public class MapSection {
 
     public HashMap<UUID, UHPlayer> getPlayers() {
         return players;
+    }
+
+    public void addDungeon(Dungeon dungeon) {
+        this.dungeons.add(dungeon);
+    }
+
+    public List<Dungeon> getDungeons() {
+        return dungeons;
     }
 }
