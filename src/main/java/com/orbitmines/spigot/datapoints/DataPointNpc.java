@@ -115,35 +115,27 @@ public class DataPointNpc extends DataPointSign {
                 break;
             }
             case "FOG":
-                break;
             case "UHSURVIVAL":
-                break;
             case "SKYBLOCK":
-                break;
             case "CREATIVE":
-                break;
             case "KITPVP":
-                break;
             case "PRISON":
+            case "EMPTY_SLOT": {
+                NPC npc = new NPC(Mob.WITHER_SKELETON, location, "§8§lComing Soon");
+                npc.spawn();
                 break;
-
-            case "EMPTY_SLOT":
-                break;
-
+            }
             case "MG_SW":
-                break;
             case "MG_UHC":
-                break;
             case "MG_SG":
-                break;
             case "MG_CB":
-                break;
             case "MG_SC":
-                break;
             case "MG_GA":
+            case "MG_SP": {
+                NPC npc = new NPC(Mob.WITHER_SKELETON, location, "§8§lComing Soon");
+                npc.spawn();
                 break;
-            case "MG_SP":
-                break;
+            }
             default:
                 /* Otherwise pass it on to the ServerHandler */
                 OrbitMines.getInstance().getServerHandler().setupNpc(string, location);
@@ -152,7 +144,7 @@ public class DataPointNpc extends DataPointSign {
     }
 
     private void registerServerNpc(Server server, NPC npc) {
-        new SpigotRunnable(SpigotRunnable.TimeUnit.SECOND, 5) {
+        new SpigotRunnable(SpigotRunnable.TimeUnit.SECOND, 2) {
             @Override
             public void run() {
                 Server.Status status = server.getStatus();
@@ -162,11 +154,11 @@ public class DataPointNpc extends DataPointSign {
                     case ONLINE:
                         int players = server.getPlayers();
                         int maxPlayers = server.getMaxPlayers();
-                        npc.setDisplayName(server.getDisplayName() + " §8- " + server.getColor().getChatColor() + players + "§7/" + maxPlayers);
+                        npc.setDisplayName(server.getDisplayName() + "§r §8- " + server.getColor().getChatColor() + players + "§7/" + maxPlayers);
                         break;
                     case OFFLINE:
                     case MAINTENANCE:
-                        npc.setDisplayName(server.getDisplayName() + " §8- " + status.getColor().getChatColor() + "§l" + status.getName());
+                        npc.setDisplayName(server.getDisplayName() + "§r §8- " + status.getColor().getChatColor() + "§l" + status.getName());
                         break;
                 }
             }

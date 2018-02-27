@@ -2,6 +2,7 @@ package com.orbitmines.spigot.servers.survival.events;
 
 import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.api.Color;
+import com.orbitmines.spigot.api.handlers.chat.ActionBar;
 import com.orbitmines.spigot.servers.survival.Survival;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalPlayer;
 import com.orbitmines.spigot.servers.survival.handlers.claim.Claim;
@@ -71,7 +72,7 @@ public class ClaimEvents implements Listener {
 
         if (claim != null && !claim.hasPermission(omp, Claim.Settings.ENDER_PEARL)) {
             String name = claim.getOwnerName();
-            omp.sendMessage("Claims", Color.RED, name + " §7heeft je geen toegang gegeven om dat hier te gebruiken.", name + " §7didn't give you permission to use that here.");
+            new ActionBar(omp, () -> omp.lang(name + " §c§lheeft je geen toegang gegeven om dat hier te gebruiken.", name + " §c§ldidn't give you permission to use that here."), 60).send();
             event.setCancelled(true);
 
             switch (event.getCause()) {
@@ -116,7 +117,7 @@ public class ClaimEvents implements Listener {
 
         if (Region.isInRegion(to)) {
             event.setCancelled(true);
-            omp.sendMessage("Region", Color.RED, "§7Je kan deze portal niet gebruiken omdat hij in een region komt.", "§7You can't use this portal as it ends up in a region.");
+            new ActionBar(omp, () -> omp.lang("§c§lJe kan deze portal niet gebruiken omdat hij in een region komt.", "§c§lYou can't use this portal as it ends up in a region."), 60).send();
             return;
         }
 
@@ -124,8 +125,8 @@ public class ClaimEvents implements Listener {
 
         if (claim != null && !claim.canBuild(omp, Material.PORTAL)) {
             event.setCancelled(true);
-            omp.sendMessage("Region", Color.RED, "§7Je kan deze portal niet gebruiken omdat hij in een claim komt.", "§7You can't use this portal as it ends up in a claim.");
-        }
+            new ActionBar(omp, () -> omp.lang("§c§lJe kan deze portal niet gebruiken omdat hij in een claim komt.", "§c§lYou can't use this portal as it ends up in a claim."), 60).send();
+       }
     }
 
     @EventHandler
@@ -163,7 +164,7 @@ public class ClaimEvents implements Listener {
                 CachedPlayer ownerPlayer = CachedPlayer.getPlayer(owner);
                 String name = ownerPlayer.getRankPrefixColor().getChatColor() + ownerPlayer.getPlayerName();
 
-                omp.sendMessage("Claims", Color.RED, "§7Dat is van " + name + "§7!", "§7That belongs to " + name + "§7!");
+                new ActionBar(omp, () -> omp.lang("§c§lDat is van " + name + "§c§l!", "§c§lThat belongs to " + name + "§c§l!"), 60).send();
 
                 event.setCancelled(true);
                 return;
@@ -942,7 +943,7 @@ public class ClaimEvents implements Listener {
                     CachedPlayer ownerPlayer = CachedPlayer.getPlayer(owner);
                     String name = ownerPlayer.getRankPrefixColor().getChatColor() + ownerPlayer.getPlayerName();
 
-                    omp.sendMessage("Claims", Color.RED, "§7Dat is van " + name + "§7!", "§7That belongs to " + name + "§7!");
+                    new ActionBar(omp, () -> omp.lang("§c§lDat is van " + name + "§c§l!", "§c§lThat belongs to " + name + "§c§l!"), 60).send();
 
                     event.setCancelled(true);
                     return;
@@ -961,9 +962,7 @@ public class ClaimEvents implements Listener {
                     && !(damager instanceof ExplosiveMinecart))
                 return;
 
-            SurvivalPlayer omp = null;
-            if (attacker != null)
-                omp = SurvivalPlayer.getPlayer(attacker);
+            SurvivalPlayer omp = attacker == null ? null : SurvivalPlayer.getPlayer(attacker);
 
             Claim claim = survival.getClaimHandler().getClaimAt(event.getEntity().getLocation(), false, omp == null ? null : omp.getLastClaim());
 
@@ -989,7 +988,7 @@ public class ClaimEvents implements Listener {
                     CachedPlayer ownerPlayer = CachedPlayer.getPlayer(claim.getOwner());
                     String name = ownerPlayer.getRankPrefixColor().getChatColor() + ownerPlayer.getPlayerName();
 
-                    omp.sendMessage("Claims", Color.RED, "§7Dat is van " + name + "§7!", "§7That belongs to " + name + "§7!");
+                    new ActionBar(omp, () -> omp.lang("§c§lDat is van " + name + "§c§l!", "§c§lThat belongs to " + name + "§c§l!"), 60).send();
                 }
 
                 omp.setLastClaim(claim);
@@ -1042,9 +1041,7 @@ public class ClaimEvents implements Listener {
         if (attacker == null && damagerType != EntityType.CREEPER && damagerType != EntityType.WITHER && damagerType != EntityType.PRIMED_TNT)
             return;
 
-        SurvivalPlayer omp = null;
-        if (attacker != null)
-            omp = SurvivalPlayer.getPlayer(attacker);
+        SurvivalPlayer omp = attacker == null ? null : SurvivalPlayer.getPlayer(attacker);
 
         Claim claim = survival.getClaimHandler().getClaimAt(event.getVehicle().getLocation(), false, omp == null ? null : omp.getLastClaim());
 
@@ -1060,7 +1057,7 @@ public class ClaimEvents implements Listener {
                 CachedPlayer ownerPlayer = CachedPlayer.getPlayer(claim.getOwner());
                 String name = ownerPlayer.getRankPrefixColor().getChatColor() + ownerPlayer.getPlayerName();
 
-                omp.sendMessage("Claims", Color.RED, "§7Dat is van " + name + "§7!", "§7That belongs to " + name + "§7!");
+                new ActionBar(omp, () -> omp.lang("§c§lDat is van " + name + "§c§l!", "§c§lThat belongs to " + name + "§c§l!"), 60).send();
             }
 
             omp.setLastClaim(claim);
@@ -1075,9 +1072,7 @@ public class ClaimEvents implements Listener {
         if (projectileSource == null)
             return;
 
-        SurvivalPlayer thrower = null;
-        if (projectileSource instanceof Player)
-            thrower = SurvivalPlayer.getPlayer((Player) projectileSource);
+        SurvivalPlayer thrower = !(projectileSource instanceof Player) ? null : SurvivalPlayer.getPlayer((Player) projectileSource);
 
         for (PotionEffect effect : potion.getEffects()) {
             PotionEffectType effectType = effect.getType();
@@ -1096,10 +1091,12 @@ public class ClaimEvents implements Listener {
                             if (thrower == null || !claim.canInteract(thrower)) {
                                 event.setIntensity(effected, 0);
 
-                                CachedPlayer ownerPlayer = CachedPlayer.getPlayer(claim.getOwner());
-                                String name = ownerPlayer.getRankPrefixColor().getChatColor() + ownerPlayer.getPlayerName();
+                                if (thrower != null) {
+                                    CachedPlayer ownerPlayer = CachedPlayer.getPlayer(claim.getOwner());
+                                    String name = ownerPlayer.getRankPrefixColor().getChatColor() + ownerPlayer.getPlayerName();
 
-                                thrower.sendMessage("Claims", Color.RED, "§7Dat is van " + name + "§7!", "§7That belongs to " + name + "§7!");
+                                    new ActionBar(thrower, () -> thrower.lang("§c§lDat is van " + name + "§c§l!", "§c§lThat belongs to " + name + "§c§l!"), 60).send();
+                                }
                             }
                         }
                     }

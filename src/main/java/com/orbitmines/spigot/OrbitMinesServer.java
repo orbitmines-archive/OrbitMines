@@ -35,11 +35,10 @@ public abstract class OrbitMinesServer {
         registerCommands();
         registerRunnables();
 
-        new SpigotRunnable(SpigotRunnable.TimeUnit.SECOND, 10) {
+        new SpigotRunnable(SpigotRunnable.TimeUnit.SECOND, 2) {
             @Override
             public void run() {
-                if (server.getStatus() == Server.Status.OFFLINE)
-                    server.setStatus(Server.Status.ONLINE);
+                server.setStatus(Server.Status.ONLINE);
             }
         };
     }

@@ -19,6 +19,7 @@ public class Table {
     public static TableVotes VOTES;
     public static TableIPs IPS;
     public static Table2FA _2FA;
+    public static TableDonations DONATIONS;
 
     public static TableServerData SERVER_DATA;
     public static TableServers SERVERS;
@@ -36,6 +37,7 @@ public class Table {
         VOTES = new TableVotes();
         IPS = new TableIPs();
         _2FA = new Table2FA();
+        DONATIONS = new TableDonations();
 
         SERVER_DATA = new TableServerData();
         SERVERS = new TableServers();

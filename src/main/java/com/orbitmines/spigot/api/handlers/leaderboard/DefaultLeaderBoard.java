@@ -16,12 +16,12 @@ import java.util.*;
 */
 public class DefaultLeaderBoard extends LeaderBoard {
 
-    private final String name;
-    private final int size;
+    protected final String name;
+    protected final int size;
 
-    private final Table table;
-    private final Column[] columnArray;
-    private final Where[] wheres;
+    protected final Table table;
+    protected final Column[] columnArray;
+    protected final Where[] wheres;
 
     public DefaultLeaderBoard(Location location, String name, int size, Table table, Column uuidColumn, Column column, Where... wheres) {
         super(location);

@@ -1,8 +1,8 @@
 package com.orbitmines.spigot.servers.survival.handlers.region;
 
-import com.orbitmines.api.Color;
 import com.orbitmines.api.Cooldown;
 import com.orbitmines.api.utils.RandomUtils;
+import com.orbitmines.spigot.api.handlers.chat.ActionBar;
 import com.orbitmines.spigot.api.handlers.chat.Title;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalPlayer;
@@ -30,17 +30,18 @@ public class Region {
         3x3
 
         ...
-        30x30 (900 regions, this will make the regions range from (30 - 1) * 1500 = 43,500 -> -21,750 <-> 21,750)
+        30x30 (900 regions, this will make the regions range from 30 * 1500 = 45,000 -> -22,500 <-> 22,500)
      */
     public static final int REGION_SIZE = 30;
     public static final int START_X = 0;
     public static final int START_Z = 0;
     public static final int OFFSET = 1500;
-    /* Blocks away from Region */
+    /* Blocks away from Region (diameter) */
     public static final int PROTECTION = 8;
 
     public static final int REGION_COUNT = REGION_SIZE * REGION_SIZE;
-    public static final int LAST_REGION_DISTANCE = ((REGION_SIZE -1) / 2) * OFFSET;
+    public static final int LAST_REGION_DISTANCE = (REGION_SIZE / 2) * OFFSET;
+    public static final int WORLD_BORDER = REGION_SIZE * OFFSET + 10000; /* Additional 5k blocks surrounding the regions, *outer space* */
     public static int TELEPORTABLE = 100;
 
     private static List<Region> regions = new ArrayList<>();
@@ -138,7 +139,7 @@ public class Region {
         boolean inRegion = distance <= PROTECTION;
 
         if (omp != null && inRegion && !omp.onCooldown(REGION_INTERACT)) {
-            omp.sendMessage("Region", Color.RED, "§7Je kan dat niet zo dichtbij een Region doen!", "§7You cannot do such things that close to a Region!");
+            new ActionBar(omp, () -> omp.lang("§c§lJe kan dat niet zo dichtbij een Region doen!", "§c§lYou cannot do such things that close to a Region!"), 60).send();
 
             omp.resetCooldown(REGION_INTERACT);
         }

@@ -1,6 +1,5 @@
 package com.orbitmines.spigot.servers.survival.handlers.claim;
 
-import com.orbitmines.api.Color;
 import com.orbitmines.api.database.Database;
 import com.orbitmines.api.database.Set;
 import com.orbitmines.api.database.Table;
@@ -9,6 +8,7 @@ import com.orbitmines.api.database.tables.TableServerData;
 import com.orbitmines.api.database.tables.survival.TableSurvivalClaim;
 import com.orbitmines.api.database.tables.survival.TableSurvivalPlayers;
 import com.orbitmines.api.utils.DateUtils;
+import com.orbitmines.spigot.api.handlers.chat.ActionBar;
 import com.orbitmines.spigot.api.utils.Serializer;
 import com.orbitmines.spigot.servers.survival.Survival;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalPlayer;
@@ -266,12 +266,12 @@ public class ClaimHandler {
 
             if (smaller && !claim.hasOwner()) {
                 if (newWidth < Claim.MIN_WIDTH || newHeight < Claim.MIN_WIDTH) {
-                    omp.sendMessage("Claims", Color.RED, "§7Een claim moet minimaal 3x3 zijn.", "§7A claim must at least be 3x3.");
+                    new ActionBar(omp, () -> omp.lang("§c§lEen claim moet minimaal 3x3 zijn.", "§c§lA claim must at least be 3x3."), 60).send();
                     return;
                 }
 
                 if (newArea < Claim.MIN_AREA) {
-                    omp.sendMessage("Claims", Color.RED, "§7Een claim moet minimaal 3x3 zijn.", "§7A claim must at least be 3x3.");
+                    new ActionBar(omp, () -> omp.lang("§c§lEen claim moet minimaal 3x3 zijn.", "§c§lA claim must at least be 3x3."), 60).send();
                     return;
                 }
             }
@@ -280,7 +280,7 @@ public class ClaimHandler {
                 int remaining = omp.getRemainingClaimBlocks() + claim.getArea() - newArea;
 
                 if (remaining < 0) {
-                    omp.sendMessage("Claims", Color.RED, "§7Je hebt nog " + Math.abs(remaining) + " claimblocks nodig om dit te claimen.", "§7You need " + Math.abs(remaining) + " claimblocks in order to claim this.");
+                    new ActionBar(omp, () -> omp.lang("§c§lJe hebt nog §6§l" + Math.abs(remaining) + " Claimblocks§c§l nodig om dit te claimen.", "§c§lYou need §6§l" + Math.abs(remaining) + " Claimblocks§c§l in order to claim this."), 60).send();
                     return;
                 }
             }
@@ -306,7 +306,8 @@ public class ClaimHandler {
                 }
             }
 
-            omp.sendMessage("Claims", Color.LIME, "§7Claim grootte geweizigd. Claimblocks over: " + remaining + ".", "§7Claim resized. Available claimblocks: " + remaining + ".");
+            int fRemaining = remaining;
+            new ActionBar(omp, () -> omp.lang("§a§lClaim grootte gewijzigd. Claimblocks over: §6§l" + fRemaining + "§a§l.", "§a§lClaim resized. Available claimblocks: §6§l" + fRemaining + "§a§l."), 60).send();
 
             Visualization.show(omp, claim, omp.getPlayer().getEyeLocation().getBlockY(), Visualization.Type.CLAIM, omp.getLocation());
 
@@ -315,7 +316,7 @@ public class ClaimHandler {
             return;
         }
 
-        omp.sendMessage("Claims", Color.RED, "§7Jouw claim overlapt een andere claim!", "§7Your claim overlaps another claim!");
+        new ActionBar(omp, () -> omp.lang("§c§lJouw claim overlapt een andere claim!", "§c§lYour claim overlaps another claim!"), 60).send();
 
         if (result.getClaim() == null)
             return;
@@ -393,15 +394,15 @@ public class ClaimHandler {
         Claim claim = getClaimAt(omp.getLocation(), true, null);
 
         if (claim == null) {
-            omp.sendMessage("Claims", Color.RED, "§7Je bent niet in een claim!", "§7You are not standing in a claim!");
+            new ActionBar(omp, () -> omp.lang("§c§lJe bent niet in een claim!", "§c§lYou are not standing in a claim!"), 60).send();
         } else if (!claim.canModify(omp)) {
-            omp.sendMessage("Claims", Color.RED, "§7Dit is niet jouw claim!", "§7This is not your claim!");
+            new ActionBar(omp, () -> omp.lang("§c§lDit is niet jouw claim!", "§c§lThis is not your claim!"), 60).send();
         } else if (claim.getChildren().size() > 0 && !deleteParent) {
-            omp.sendMessage("Claims", Color.RED, "§7Je bent niet in een hoofd claim!", "§7You are not in a top level claim!");
+            new ActionBar(omp, () -> omp.lang("§c§lJe bent niet in een hoofd claim!", "§c§lYou are not in a top level claim!"), 60).send();
         } else {
             deleteClaim(claim);
 
-            omp.sendMessage("Claims", Color.LIME, "§7Deze claim is verwijders, je claimblocks: ", "§7This claim has been abaondoned, your claimblocks: ");
+            new ActionBar(omp, () -> omp.lang("§a§lDeze claim is verwijderd. Jouw claimblocks: §6§l" + omp.getRemainingClaimBlocks() + "§a§l.", "§a§lThis claim has been abandoned. Your claimblocks: §6§l" + omp.getRemainingClaimBlocks() + "§a§l."), 60).send();
 
             Visualization.revert(omp);
         }

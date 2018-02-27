@@ -1,9 +1,9 @@
 package com.orbitmines.spigot.servers.survival.handlers.claim;
 
 import com.orbitmines.api.CachedPlayer;
-import com.orbitmines.api.Color;
 import com.orbitmines.api.StaffRank;
 import com.orbitmines.api.utils.DateUtils;
+import com.orbitmines.spigot.api.handlers.chat.ActionBar;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.api.utils.ItemUtils;
 import com.orbitmines.spigot.servers.survival.Survival;
@@ -265,7 +265,7 @@ public class Claim {
             return true;
 
         String name = getOwnerName();
-        omp.sendMessage("Claims", Color.RED, "§7Alleen " + name + "§7 kan deze claim wijzigen.", "§7Only " + name + "§7 can modify this claim.");
+        new ActionBar(omp, () -> omp.lang("§c§lAlleen " + name + "§c§l kan deze claim wijzigen.", "§c§lOnly " + name + "§c§l can modify this claim."), 60).send();
 
         return false;
     }
@@ -281,7 +281,7 @@ public class Claim {
             return true;
 
         String name = getOwnerName();
-        omp.sendMessage("Claims", Color.RED, name + " §7heeft je geen toegang gegeven om dat hier te gebruiken.", name + " §7didn't give you permission to use that here.");
+        new ActionBar(omp, () -> omp.lang(name + " §c§lheeft je geen toegang gegeven om dat hier te gebruiken.", name + " §c§ldidn't give you permission to use that here."), 60).send();
 
         return false;
     }
@@ -301,13 +301,13 @@ public class Claim {
                 return true;
 
             String name = getOwnerName();
-            omp.sendMessage("Claims", Color.RED, name + " §7heeft je geen toegang gegeven om hier te farmen.", name + " §7didn't give you permission to farm here.");
+            new ActionBar(omp, () -> omp.lang(name + " §c§lheeft je geen toegang gegeven om hier te farmen.", name + " §c§ldidn't give you permission to farm here."), 60).send();
 
             return false;
         }
 
         String name = getOwnerName();
-        omp.sendMessage("Claims", Color.RED, name + " §7heeft je geen toegang gegeven om hier te bouwen.", name + " §7didn't give you permission to build here.");
+        new ActionBar(omp, () -> omp.lang(name + " §c§lheeft je geen toegang gegeven om hier te bouwen.", name + " §c§ldidn't give you permission to build here."), 60).send();
 
         return false;
     }
@@ -323,7 +323,7 @@ public class Claim {
             return true;
 
         String name = getOwnerName();
-        omp.sendMessage("Claims", Color.RED, name + " §7heeft je geen toegang gegeven om dat hier te gebruiken.", name + " §7didn't give you permission to use that here.");
+        new ActionBar(omp, () -> omp.lang(name + " §c§lheeft je geen toegang gegeven om dat hier te gebruiken.", name + " §c§ldidn't give you permission to use that here."), 60).send();
 
         return false;
     }

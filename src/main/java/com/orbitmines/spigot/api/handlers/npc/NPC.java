@@ -97,7 +97,14 @@ public class NPC {
             else
                 action = null;
 
-            /* TODO: Add Offset for smaller entities, (1.8 Fix) */
+            /* TODO: Add Offset for smaller&larger entities, (1.8 Fix) */
+            Location location = this.location.clone();
+            switch (mob) {
+                case WITHER_SKELETON:
+                    location.add(0, 0.35, 0);
+                    break;
+            }
+
             nameTag = new ArmorStandNpc(location, false, action);
             nameTag.setVisible(false);
             nameTag.setGravity(false);

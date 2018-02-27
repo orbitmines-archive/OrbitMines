@@ -16,6 +16,7 @@ import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.OrbitMinesMap;
 import com.orbitmines.spigot.api.handlers.leaderboard.DefaultLeaderBoard;
 import com.orbitmines.spigot.api.handlers.leaderboard.LeaderBoard;
+import com.orbitmines.spigot.api.handlers.leaderboard.custom.LeaderBoardDonations;
 import com.orbitmines.spigot.api.handlers.worlds.WorldLoader;
 import com.orbitmines.spigot.api.nms.Nms;
 import com.orbitmines.spigot.api.utils.ReflectionUtils;
@@ -101,6 +102,13 @@ public class OrbitMines extends JavaPlugin {
                 return new DefaultLeaderBoard(location, "§7§lTop Total Votes", 10, Table.VOTES, TableVotes.UUID, TableVotes.TOTAL_VOTES);
             }
         };
+
+        new LeaderBoard.Instantiator("DONATIONS") {
+            @Override
+            public LeaderBoard instantiate(Server server, Location location, String[] data) {
+                return new LeaderBoardDonations(location.clone().subtract(0, 1.5, 0), "§7§lRecent Donations", 3);
+            }
+        };
     }
 
     @Override
@@ -143,9 +151,6 @@ public class OrbitMines extends JavaPlugin {
             getServer().shutdown();
             return;
         }
-
-        server.setStatus(Server.Status.ONLINE);
-        server.setPlayers(0);
 
         ReflectionUtils.setMaxCapacity(server.getMaxPlayers());
 
@@ -190,6 +195,10 @@ public class OrbitMines extends JavaPlugin {
 
         /* Setup Server */
         serverHandler.onEnable();
+
+        /* Set Server Online */
+        server.setPlayers(0);
+        server.setStatus(Server.Status.ONLINE);
     }
 
     @Override

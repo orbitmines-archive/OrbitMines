@@ -301,7 +301,7 @@ public class Visualization {
 
         CLAIM(new ItemBuilder(Material.SEA_LANTERN), new ItemBuilder(Material.STAINED_CLAY, 1, 4)),
         CHILDREN(new ItemBuilder(Material.SEA_LANTERN), new ItemBuilder(Material.STAINED_CLAY, 1, 3)),
-        DISPLAY(new ItemBuilder(Material.SEA_LANTERN), new ItemBuilder(Material.STAINED_CLAY, 1, 2)),
+        DISPLAY(new ItemBuilder(Material.GLOWSTONE), new ItemBuilder(Material.STAINED_CLAY, 1, 2)),
         NONE(new ItemBuilder(Material.SEA_LANTERN), new ItemBuilder(Material.STAINED_CLAY, 1, 15)),
         INVALID(new ItemBuilder(Material.SEA_LANTERN), new ItemBuilder(Material.STAINED_CLAY, 1, 14));
 

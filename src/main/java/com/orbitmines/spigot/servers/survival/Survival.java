@@ -101,7 +101,8 @@ public class Survival extends OrbitMinesServer {
 
     @Override
     public void onEnable() {
-
+        world.getWorldBorder().setCenter(0.5, 0.5);
+        world.getWorldBorder().setSize(Region.WORLD_BORDER);
     }
 
     @Override
@@ -427,14 +428,13 @@ public class Survival extends OrbitMinesServer {
                             //                        }
                         } else {
                             /* Can't create claim here */
-                            //TODO message
-                            //						instance.sendMessage(player, TextMode.Err, Messages.CreateClaimFailOverlap);
-                            Visualization.show(omp, claim, block.getY(), Visualization.Type.CLAIM, player.getLocation());
+                            new ActionBar(omp, () -> omp.lang("§c§lDat zal je eigen claim overlappen.", "§c§lThat will overlap your own claim."), 60).send();
+                            Visualization.show(omp, claim, block.getY(), Visualization.Type.INVALID, player.getLocation());
                         }
                     } else {
                         /* In someone else's claim */
-                        //TODO message instance.sendMessage(player, TextMode.Err, Messages.CreateClaimFailOverlapOtherPlayer, claim.getOwnerName());
-
+                        String name = claim.getOwnerName();
+                        new ActionBar(omp, () -> omp.lang("§c§lDat zal " + name + "§c§l's claim overlappen.", "§c§lThat will overlap " + name + "§c§l's claim."), 60).send();
                         Visualization.show(omp, claim, block.getY(), Visualization.Type.INVALID, player.getLocation());
                     }
 
@@ -526,7 +526,7 @@ public class Survival extends OrbitMinesServer {
                 if (omp.getLastClaimToolLocation() == null)
                     return omp.lang("§6§lLINKER MUISKLIK §7| §a§lClaim Informatie        §6§lRECHTER MUISKLIK §7| §a§lClaimen", "§6§lLEFT CLICK §7| §a§lClaim Information        §6§lRIGHT CLICK §7| §a§lClaim");
 
-                return omp.lang("§a§lClaimen...        §c§lPos 1: §6§l" + LocationUtils.friendlyString(omp.getLastClaimToolLocation()) + "        §c§lPos 2: §6§lGEEN", "§a§lClaiming...        §c§lPos 1: §6§l" + LocationUtils.friendlyString(omp.getLastClaimToolLocation()) + "        §c§lPos 2: §6§lNONE");
+                return omp.lang("§a§l" + (omp.getResizingClaim() == null ? "Claimen" : "Claim aanpassen") + "...        §c§lPos 1: §6§l" + LocationUtils.friendlyString(omp.getLastClaimToolLocation()) + "        §c§lPos 2: §6§lGEEN", "§a§l" + (omp.getResizingClaim() == null ? "Claiming" : "Resizing Claim") + "...        §c§lPos 1: §6§l" + LocationUtils.friendlyString(omp.getLastClaimToolLocation()) + "        §c§lPos 2: §6§lNONE");
             }
 
             @Override
@@ -536,9 +536,11 @@ public class Survival extends OrbitMinesServer {
             }
 
             @Override
-            public void onLeave(OMPlayer omp) {
-                super.onLeave(omp);
-                ((SurvivalPlayer) omp).setLastClaimToolLocation(null);
+            public void onLeave(OMPlayer player) {
+                super.onLeave(player);
+                SurvivalPlayer omp = (SurvivalPlayer) player;
+                omp.setLastClaimToolLocation(null);
+                omp.setResizingClaim(null);
             }
         };
     }
@@ -552,7 +554,11 @@ public class Survival extends OrbitMinesServer {
                     () -> "",
                     () -> "§2§lEarth Money",
                     () -> " " + NumberUtils.locale(omp.getEarthMoney()),
-                    () -> "   "
+                    () -> " ",
+                    () -> "",
+                    () -> "§9§lClaimblocks",
+                    () -> " " + omp.getRemainingClaimBlocks(),
+                    () -> "  "
             );
         }
     }

@@ -226,6 +226,16 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
                 }
             }
         };
+        new BungeeRunnable(BungeeRunnable.TimeUnit.SECOND, 2) {
+            @Override
+            public void run() {
+                /* If server crashed, we want it to display 'offline' to all players */
+                for (Server server : values) {
+                    if (server.getStatus() == Server.Status.ONLINE && (System.currentTimeMillis() - server.getLastUpdate()) > 5000)
+                        server.setStatus(Server.Status.OFFLINE);
+                }
+            }
+        };
     }
 
     public void broadcast(String... messages) {

@@ -67,7 +67,10 @@ public enum Server {
     }
 
     public void setStatus(Status status) {
-        Database.get().update(Table.SERVERS, new Set(TableServers.STATUS, status.toString()), new Where(TableServers.SERVER, toString()));
+        Database.get().update(Table.SERVERS, new Set[] {
+                new Set(TableServers.STATUS, status.toString()),
+                new Set(TableServers.LAST_UPDATE, System.currentTimeMillis())
+        }, new Where(TableServers.SERVER, toString()));
     }
 
     public String getIp() {
@@ -76,6 +79,10 @@ public enum Server {
 
     public int getPort() {
         return Database.get().contains(Table.SERVERS, TableServers.SERVER, new Where(TableServers.SERVER, toString())) ? Database.get().getInt(Table.SERVERS, TableServers.PORT, new Where(TableServers.SERVER, toString())) : -1;
+    }
+
+    public long getLastUpdate() {
+        return Database.get().contains(Table.SERVERS, TableServers.SERVER, new Where(TableServers.SERVER, toString())) ? Database.get().getLong(Table.SERVERS, TableServers.LAST_UPDATE, new Where(TableServers.SERVER, toString())) : -1;
     }
 
     public enum Status {
