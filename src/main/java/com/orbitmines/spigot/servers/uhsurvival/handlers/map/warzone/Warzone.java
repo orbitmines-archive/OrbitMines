@@ -18,6 +18,7 @@ public class Warzone extends MapSection {
         super(world, minX, maxX, minZ, maxZ, x, z);
         this.editors = new ArrayList<>();
         setPvP(true);
+        canSpawnDungeon(false);
     }
 
     public void addEditor(UUID id){

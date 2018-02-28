@@ -55,8 +55,8 @@ class Enchantments {
             if(event instanceof EntityDamageByEntityEvent){
                 Tool tool = null;
                 Entity entity = ((EntityDamageByEntityEvent) event).getDamager();
-               /* if(UHPlayer.getPlayer(entity.getUniqueId()) != null){
-                    tool = UHPlayer.getPlayer(entity.getUniqueId()).getToolInventory().getMainHand();
+                /*if(UHPlayer.getPlayer(entity.getUniqueId()) != null){
+                    tool = UHPlayer.getUHPlayer(entity.getUniqueId()).getUHInventory().getMainHand();
                 } else if(uhSurvival.getMobManager().getMob(entity.getLocation(), entity.getUniqueId()) != null){
                     tool = uhSurvival.getMobManager().getMob(entity.getLocation(), entity.getUniqueId()).getInventory().getMainHand();
                 }

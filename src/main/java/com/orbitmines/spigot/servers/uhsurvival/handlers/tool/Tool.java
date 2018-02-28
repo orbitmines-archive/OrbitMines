@@ -46,6 +46,7 @@ public class Tool {
         updateTool();
     }
 
+    /* LORE METHODS */
     public void updateTool() {
         try {
             if (lore.get(2).equals(" Maxed Out ")) {
@@ -92,6 +93,15 @@ public class Tool {
         item.setItemMeta(meta);
 
 
+    }
+
+    /* GETTERS */
+    public ToolType.Type getType() {
+        return type;
+    }
+
+    public ItemStack getItem() {
+        return item;
     }
 
     /* LEVEL METHODS */
@@ -169,13 +179,5 @@ public class Tool {
         } else {
             return null;
         }
-    }
-
-    public ToolType.Type getType() {
-        return type;
-    }
-
-    public ItemStack getItem() {
-        return item;
     }
 }

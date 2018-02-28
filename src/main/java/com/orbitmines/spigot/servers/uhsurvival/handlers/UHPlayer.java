@@ -37,6 +37,7 @@ public class UHPlayer extends OMPlayer {
         if(world != null && world.getMap() != null) {
             this.section = world.getMap().getMapSection(getLocation());
         }
+        this.inventory = new ToolInventory(this.getInventory());
     }
 
     @Override

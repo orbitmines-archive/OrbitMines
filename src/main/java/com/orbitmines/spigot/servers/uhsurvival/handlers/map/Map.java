@@ -1,7 +1,9 @@
 package com.orbitmines.spigot.servers.uhsurvival.handlers.map;
 
+import com.orbitmines.spigot.servers.uhsurvival.handlers.dungeon.DungeonManager;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.map.mapsection.MapSection;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.map.warzone.Warzone;
+import com.orbitmines.spigot.servers.uhsurvival.handlers.mob.MobManager;
 import org.bukkit.Location;
 import org.bukkit.World;
 
@@ -27,12 +29,17 @@ public class Map {
     private int MAX_HEIGHT_SECTION;
     private int MAX_WIDTH_SECTION;
 
+    private DungeonManager dungeons;
+    private MobManager mobManager;
+
     private List<MapSection> mapSections;
 
     private Warzone warzone;
 
     public Map(World world) {
         this.world = world;
+        this.dungeons = new DungeonManager(this);
+        this.mobManager = new MobManager(this);
 
         this.MAX_WIDTH = STANDARD_WIDTH;
         this.MAX_HEIGHT = STANDARD_HEIGHT;
@@ -71,6 +78,14 @@ public class Map {
 
     public List<MapSection> getMapSections() {
         return mapSections;
+    }
+
+    public Warzone getWarzone() {
+        return warzone;
+    }
+
+    public DungeonManager getDungeons() {
+        return dungeons;
     }
 
     /* WIDTH & HEIGHT METHODS */

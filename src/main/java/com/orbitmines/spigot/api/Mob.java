@@ -11,7 +11,7 @@ import org.bukkit.entity.EntityType;
 */
 public enum Mob {
 
-    /* Mob-ish */
+    /* MobType-ish */
     ARMOR_STAND(EntityType.ARMOR_STAND, "ArmorStand", "ArmorStand"),
 
     BAT(EntityType.BAT, "Bat", "Bat"),

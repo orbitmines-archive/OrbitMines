@@ -5,6 +5,7 @@ import com.orbitmines.spigot.api.utils.MathUtils;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.dungeon.block.FileBlock;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.dungeon.block.ReplacedBlock;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.dungeon.loottable.LootTableManager;
+import com.orbitmines.spigot.servers.uhsurvival.handlers.map.Map;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.map.mapsection.MapSection;
 import com.orbitmines.spigot.servers.uhsurvival.utils.FileBuilder;
 
@@ -26,13 +27,13 @@ public class DungeonManager {
 
     private static LootTableManager lootTableManager = LootTableManager.get();
 
-    private World map;
+    private Map map;
 
     private HashMap<DungeonFile, FileBuilder> files;
     private HashMap<DungeonFile, Integer> dungeonCount;
 
     /* CONSTRUCTOR */
-    public DungeonManager(World map){
+    public DungeonManager(Map map){
         this.map = map;
         this.files = new HashMap<>();
         this.dungeonCount = new HashMap<>();
@@ -51,31 +52,33 @@ public class DungeonManager {
         this.dungeonCount.put(dungeonFile, 1);
     }
 
-    public void buildDungeon(Location loc, DungeonFile file){
-        MapSection mapsection = map.getMap().getMapSection(loc);
-        int maxX = 0, maxY = 0, maxZ = 0;
-        int minX = 0, minY = 0, minZ = 0;
-        List<ReplacedBlock> replacedBlocks = new ArrayList<>();
-        for(FileBlock block : file.getBlocks()) {
-            Location l = loc.add(block.getAddedX(), block.getY(), block.getAddedZ());
-            block.setBlock(l);
-            maxX = Math.max(block.getAddedX(), maxX);
-            minX = Math.min(block.getAddedX(), minX);
-            maxY = Math.max(block.getY(), maxY);
-            minY = Math.min(block.getY(), minY);
-            maxZ = Math.max(block.getAddedZ(), maxZ);
-            minZ = Math.min(block.getAddedZ(), minZ);
-            replacedBlocks.add(new ReplacedBlock(l));
-            loc = loc.subtract(block.getAddedX(), block.getY(), block.getAddedZ());
+    public void buildDungeon(Location loc, DungeonFile file)    {
+        MapSection mapsection = map.getMapSection(loc);
+        if(mapsection.canSpawnDungeon()) {
+            int maxX = 0, maxY = 0, maxZ = 0;
+            int minX = 0, minY = 0, minZ = 0;
+            List<ReplacedBlock> replacedBlocks = new ArrayList<>();
+            for (FileBlock block : file.getBlocks()) {
+                Location l = loc.add(block.getAddedX(), block.getY(), block.getAddedZ());
+                block.setBlock(l);
+                maxX = Math.max(block.getAddedX(), maxX);
+                minX = Math.min(block.getAddedX(), minX);
+                maxY = Math.max(block.getY(), maxY);
+                minY = Math.min(block.getY(), minY);
+                maxZ = Math.max(block.getAddedZ(), maxZ);
+                minZ = Math.min(block.getAddedZ(), minZ);
+                replacedBlocks.add(new ReplacedBlock(l));
+                loc = loc.subtract(block.getAddedX(), block.getY(), block.getAddedZ());
+            }
+            Location l1 = new Location(loc.getWorld(), minX, minY, minZ);
+            Location l2 = new Location(loc.getWorld(), maxX, maxY, maxZ);
+            int index = dungeonCount.get(file);
+            Dungeon dungeon = new Dungeon(index, file.getName(), new Location[]{l1, l2});
+            dungeon.setReplacedBlocks(replacedBlocks);
+            mapsection.addDungeon(dungeon);
+            dungeonCount.put(file, index++);
+            file.resetBlocks();
         }
-        Location l1 = new Location(loc.getWorld(), minX, minY, minZ);
-        Location l2 = new Location(loc.getWorld(), maxX, maxY, maxZ);
-        int index = dungeonCount.get(file);
-        Dungeon dungeon = new Dungeon(index, file.getName(), new Location[]{l1, l2});
-        dungeon.setReplacedBlocks(replacedBlocks);
-        mapsection.addDungeon(dungeon);
-        dungeonCount.put(file, index++);
-        file.resetBlocks();
     }
 
     public void buildRandomDungeon(Chunk chunk, int degrees){
@@ -126,7 +129,7 @@ public class DungeonManager {
         for(DungeonFile dungeon : files.keySet()){
             dungeon.serialize(files.get(dungeon));
         }
-        for(MapSection mapSection : map.getMap().getMapSections()){
+        for(MapSection mapSection : map.getMapSections()){
             if(mapSection != null){
                 for(Dungeon d : mapSection.getDungeons()){
                     if(d != null){
@@ -140,7 +143,7 @@ public class DungeonManager {
 
     public void deserialize() {
         {
-            File[] files = new File(map.getMap().getWorld().getWorldFolder(), "/dungeonfiles").listFiles();
+            File[] files = new File(map.getWorld().getWorldFolder(), "/dungeonfiles").listFiles();
             if (files != null) {
                 for (File f : files) {
                     if (f != null && f.getName().startsWith("dungeonfile_")) {
@@ -152,20 +155,20 @@ public class DungeonManager {
             }
         }
         {
-            File[] files = new File(map.getMap().getWorld().getWorldFolder(), "/dungeons").listFiles();
+            File[] files = new File(map.getWorld().getWorldFolder(), "/dungeons").listFiles();
             if (files != null) {
                 for (File f : files) {
                     if (f != null && f.getName().startsWith("dungeon_")) {
                         FileBuilder fb = new FileBuilder(f);
                         Dungeon dungeon = new Dungeon(fb);
-                        MapSection mapSection = map.getMap().getMapSection(dungeon.getFirstLocation());
+                        MapSection mapSection = map.getMapSection(dungeon.getFirstLocation());
                         mapSection.addDungeon(dungeon);
                         this.dungeonCount.put(getDungeonFile(dungeon.getType()), dungeonCount.get(getDungeonFile(dungeon.getType())) + 1);
                     }
                 }
             }
         }
-        lootTableManager.deserialize(new File(map.getMap().getWorld().getWorldFolder(), "/dungeons/loottables"));
+        lootTableManager.deserialize(new File(map.getWorld().getWorldFolder(), "/dungeons/loottables"));
     }
 
     /* STATIC METHODS (getLootTableManager) */
