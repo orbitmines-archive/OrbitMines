@@ -7,7 +7,13 @@ import com.orbitmines.spigot.api.Mob;
  */
 public enum EntityType {
 
-    ;
+    ZOMBIE(Mob.ZOMBIE, true, true),
+    HUSK(Mob.HUSK, true, true),
+    SKELETON(Mob.SKELETON, true, true),
+    STRAY(Mob.STRAY, true, true),
+    CREEPER(Mob.CREEPER, false, false),
+    SPIDER(Mob.SPIDER, false, false),
+    CAVE_SPIDER(Mob.CAVE_SPIDER, false, false);
 
     private Mob mob;
 
@@ -20,6 +26,15 @@ public enum EntityType {
         this.canWearArmor = canWearArmor;
     }
 
+    public static EntityType getEntityTypeByType(org.bukkit.entity.EntityType type){
+        for(EntityType t : EntityType.values()){
+            if(t.getMob().getType() == type){
+                return t;
+            }
+        }
+        return null;
+    }
+
     public Mob getMob() {
         return mob;
     }
@@ -30,14 +45,5 @@ public enum EntityType {
 
     public boolean canWearArmor(){
         return canWearArmor;
-    }
-
-    public static EntityType getEntityTypeByType(org.bukkit.entity.EntityType type){
-        for(EntityType t : EntityType.values()){
-            if(t.getMob().getType() == type){
-                return t;
-            }
-        }
-        return null;
     }
 }

@@ -15,17 +15,13 @@ import java.util.List;
  */
 public class Map {
 
-    private World world;
-
     private static final int STANDARD_WIDTH = 27000;
     private static final int STANDARD_HEIGHT = 27000;
-
-    private int MAX_WIDTH;
-    private int MAX_HEIGHT;
-
     private static final int STANDARD_WIDTH_SECTION = 3000;
     private static final int STANDARD_HEIGHT_SECTION = 3000;
-
+    private World world;
+    private int MAX_WIDTH;
+    private int MAX_HEIGHT;
     private int MAX_HEIGHT_SECTION;
     private int MAX_WIDTH_SECTION;
 
@@ -86,6 +82,10 @@ public class Map {
 
     public DungeonManager getDungeons() {
         return dungeons;
+    }
+
+    public MobManager getMobManager() {
+        return mobManager;
     }
 
     /* WIDTH & HEIGHT METHODS */

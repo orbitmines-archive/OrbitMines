@@ -3,6 +3,7 @@ package com.orbitmines.spigot.servers.uhsurvival.handlers;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.servers.uhsurvival.UHSurvival;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.map.mapsection.MapSection;
+import com.orbitmines.spigot.servers.uhsurvival.handlers.profile.PlayerProfile;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.tool.ToolInventory;
 import com.orbitmines.spigot.servers.uhsurvival.utils.enums.World;
 import org.bukkit.entity.Player;
@@ -15,19 +16,32 @@ import java.util.UUID;
  */
 public class UHPlayer extends OMPlayer {
 
-    private UHSurvival uhSurvival;
-
     private static HashMap<UUID, UHPlayer> players = new HashMap<>();
-
+    private UHSurvival uhSurvival;
     private World world;
     private MapSection section;
 
     private ToolInventory inventory;
 
+    private PlayerProfile playerProfile;
+
     public UHPlayer(UHSurvival uhSurvival, Player player) {
         super(player);
         this.uhSurvival = uhSurvival;
+        this.playerProfile = new PlayerProfile(this.getUUID());
+    }
 
+    /* STATIC METHODS */
+    public static HashMap<UUID, UHPlayer> getUHPlayers() {
+        return players;
+    }
+
+    public static UHPlayer getUHPlayer(UUID id){
+        return players.get(id);
+    }
+
+    public static UHPlayer getUHPlayer(Player p){
+        return getUHPlayer(p.getUniqueId());
     }
 
     @Override
@@ -55,6 +69,11 @@ public class UHPlayer extends OMPlayer {
         return false;
     }
 
+    /* PROFILE METHODS */
+    public PlayerProfile getProfile() {
+        return playerProfile;
+    }
+
     /* TOOL METHODS */
     public ToolInventory getUHInventory() {
         return inventory;
@@ -67,18 +86,5 @@ public class UHPlayer extends OMPlayer {
 
     public World getUHWorld() {
         return world;
-    }
-
-    /* STATIC METHODS */
-    public static HashMap<UUID, UHPlayer> getUHPlayers() {
-        return players;
-    }
-
-    public static UHPlayer getUHPlayer(UUID id){
-        return players.get(id);
-    }
-
-    public static UHPlayer getUHPlayer(Player p){
-        return getUHPlayer(p.getUniqueId());
     }
 }

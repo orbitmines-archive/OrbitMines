@@ -46,6 +46,15 @@ public class Tool {
         updateTool();
     }
 
+    /* STATIC METHODS */
+    public static Tool getTool(ItemStack item, boolean created) {
+        if (item != null) {
+            return new Tool(item, created);
+        } else {
+            return null;
+        }
+    }
+
     /* LORE METHODS */
     public void updateTool() {
         try {
@@ -119,7 +128,7 @@ public class Tool {
         levelUp();
     }
 
-    private void addExp(int exp) {
+    public void addExp(int exp) {
         setExp(this.exp + exp);
     }
 
@@ -139,7 +148,7 @@ public class Tool {
         return maxedOut || level >= MAX_LEVEL;
     }
 
-    public void setMaxedOut() {
+    private void setMaxedOut() {
         this.maxedOut = true;
         this.level = MAX_LEVEL;
         this.exp = 0;
@@ -169,15 +178,5 @@ public class Tool {
 
     public HashMap<Enchantment, Integer> getEnchantments() {
         return enchantments;
-    }
-
-
-    /* STATIC METHODS */
-    public static Tool getTool(ItemStack item, boolean created) {
-        if (item != null) {
-            return new Tool(item, created);
-        } else {
-            return null;
-        }
     }
 }

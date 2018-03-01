@@ -10,6 +10,8 @@ import org.bukkit.entity.LivingEntity;
  */
 public class Mob {
 
+    private int level;
+
     private MobType type;
 
     private Entity entity;
@@ -19,9 +21,10 @@ public class Mob {
     private UHPlayer target;
     private UHPlayer killer;
 
-    public Mob(MobType type, Entity entity){
+    public Mob(MobType type, Entity entity, int level){
         this.type = type;
         this.entity = entity;
+        this.level = level;
         if(type.getType().canHoldItems() || type.getType().canWearArmor()) {
             this.inv = new ToolInventory(((LivingEntity)entity).getEquipment());
         }
@@ -57,5 +60,9 @@ public class Mob {
     /* SETTERS */
     public void setKiller(UHPlayer killer) {
         this.killer = killer;
+    }
+
+    public int getLevel() {
+        return level;
     }
 }
