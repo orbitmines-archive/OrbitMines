@@ -47,10 +47,6 @@ public enum ToolType {
             this.actions = Arrays.asList(actions);
         }
 
-        public ToolType getType() {
-            return type;
-        }
-
         public static Type getType(ItemStack item) {
             return getType(item.getType());
         }
@@ -62,6 +58,10 @@ public enum ToolType {
                 }
             }
             return null;
+        }
+
+        public ToolType getType() {
+            return type;
         }
 
         public List<Action> getActions() {
@@ -113,6 +113,21 @@ public enum ToolType {
             this.fortune = fortune;
         }
 
+        public static Block getBlockByMaterial(Material m, byte data){
+            for(Block block : Block.values()){
+                if(block.getMaterial() == m){
+                    if(block.getData() != -1){
+                        if(block.getData() == data){
+                            return block;
+                        }
+                    }else {
+                        return block;
+                    }
+                }
+            }
+            return null;
+        }
+
         public Material getMaterial() {
             return m;
         }
@@ -132,21 +147,26 @@ public enum ToolType {
         public byte getData() {
             return data;
         }
+    }
 
-        public static Block getBlockByMaterial(Material m, byte data){
-            for(Block block : Block.values()){
-                if(block.getMaterial() == m){
-                    if(block.getData() != -1){
-                        if(block.getData() == data){
-                            return block;
-                        }
-                    }else {
-                        return block;
-                    }
+
+    public static enum ToolLevel {
+
+        WOOD,
+        STONE,
+        GOLD,
+        IRON,
+        DIAMOND;
+
+        public static ToolLevel getToolLevelByType(Material m){
+            for(ToolLevel toolLevel : ToolLevel.values()){
+                if(m.name().startsWith(toolLevel.name())){
+                    return toolLevel;
                 }
             }
             return null;
         }
+
     }
 
 }

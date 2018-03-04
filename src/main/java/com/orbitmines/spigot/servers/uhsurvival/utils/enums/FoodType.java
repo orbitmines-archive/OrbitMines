@@ -10,7 +10,9 @@ public enum FoodType {
     FRUIT,
     VEGETABLES,
     SWEET,
-    WATER;
+    WATER,
+    MALICIOUS,
+    SOUPS;
 
 
 

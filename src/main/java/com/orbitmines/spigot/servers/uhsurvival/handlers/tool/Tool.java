@@ -20,6 +20,8 @@ public class Tool {
     private ItemStack item;
     private ToolType.Type type;
 
+    private ToolType.ToolLevel toolLevel;
+
     private int level;
     private int exp;
     private int maxExp;
@@ -44,6 +46,9 @@ public class Tool {
             deserialize();
         }
         updateTool();
+        if(type.getType() == ToolType.WEAPON || type.getType() == ToolType.TOOL){
+            toolLevel = ToolType.ToolLevel.getToolLevelByType(item.getType());
+        }
     }
 
     /* STATIC METHODS */
@@ -113,9 +118,8 @@ public class Tool {
         return item;
     }
 
-    /* LEVEL METHODS */
-    public void setLevel(int level) {
-        this.level = MathUtils.clamp(level, 1, MAX_LEVEL);
+    public ToolType.ToolLevel getToolLevel() {
+        return toolLevel;
     }
 
     private void addLevel(int level) {
@@ -153,6 +157,15 @@ public class Tool {
         this.level = MAX_LEVEL;
         this.exp = 0;
         this.maxExp = 0;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    /* LEVEL METHODS */
+    public void setLevel(int level) {
+        this.level = MathUtils.clamp(level, 1, MAX_LEVEL);
     }
 
     //ENCHANTMENT METHODS (add, getters, isEnchanted)

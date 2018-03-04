@@ -1,9 +1,17 @@
 package com.orbitmines.spigot.servers.uhsurvival.handlers.profile;
 
+import com.orbitmines.api.database.Database;
+import com.orbitmines.api.database.Set;
+import com.orbitmines.api.database.Table;
+import com.orbitmines.api.database.Where;
+import com.orbitmines.api.database.tables.uhsurvival.TableUHPlayers;
 import com.orbitmines.spigot.api.utils.MathUtils;
+import com.orbitmines.spigot.servers.uhsurvival.handlers.profile.food.FoodManager;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.profile.food.water.Water;
 import com.orbitmines.spigot.servers.uhsurvival.utils.enums.FoodType;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -27,6 +35,30 @@ public class PlayerProfile {
         this.foods = new HashMap<>();
         this.water = Water.MAXIMUM_WATER;
         this.bannedDate = null;
+        if(!Database.get().contains(Table.UHS_PLAYERS, TableUHPlayers.UUID, new Where(TableUHPlayers.UUID, id.toString()))){
+            Database.get().insert(Table.UHS_PLAYERS, Table.UHS_PLAYERS.values(id.toString(), water, foodToString(), bannedDate));
+        } else {
+            this.water = Database.get().getInt(Table.UHS_PLAYERS, TableUHPlayers.WATER, new Where(TableUHPlayers.UUID, id.toString()));
+            String date = Database.get().getString(Table.UHS_PLAYERS, TableUHPlayers.BANNED_DATE, new Where(TableUHPlayers.UUID, id.toString()));
+            String foods = Database.get().getString(Table.UHS_PLAYERS, TableUHPlayers.FOOD, new Where(TableUHPlayers.UUID, id.toString()));
+            String[] s = foods.split("\\|");
+            for(String str : s){
+                String[] s1 = str.split(":");
+                FoodType type = FoodType.valueOf(s1[0]);
+                int amount = MathUtils.getInteger(s1[1]);
+                this.foods.put(type, amount);
+            }
+            SimpleDateFormat sf = new SimpleDateFormat("yyyy:MM:dd-HH:mm:ss");
+            try {
+                this.bannedDate = sf.parse(date);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void removeWater(int water){
+        this.setWater(this.water -  water);
     }
 
     public void addWater(int water){
@@ -40,10 +72,6 @@ public class PlayerProfile {
     /* WATER METHODS */
     public void setWater(int water){
         this.water = MathUtils.clamp(water, 0, Water.MAXIMUM_WATER);
-    }
-
-    public void removeWater(int water){
-        this.setWater(this.water -  water);
     }
 
     public boolean isBanned(){
@@ -68,10 +96,10 @@ public class PlayerProfile {
     /* FOOD METHODS */
     public void consumeFood(FoodType type, int amount){
         if(foods.containsKey(type)){
-            int newAmount = MathUtils.clamp(foods.get(type) + amount, 0, 10);
+            int newAmount = MathUtils.clamp(foods.get(type) + amount, 0, FoodManager.MAX_FOOD_AMOUNT);
             foods.put(type, newAmount);
         } else {
-            foods.put(type, MathUtils.clamp(amount, 0, 10));
+            foods.put(type, MathUtils.clamp(amount, 0, FoodManager.MAX_FOOD_AMOUNT));
         }
     }
 
@@ -81,8 +109,57 @@ public class PlayerProfile {
 
     public void removeFood(FoodType type, int amount){
         if(foods.containsKey(type)){
-            int newAmount = MathUtils.clamp(foods.get(type) - amount, 0, 10);
+            int newAmount = MathUtils.clamp(foods.get(type) - amount, 0, FoodManager.MAX_FOOD_AMOUNT);
             foods.put(type, newAmount);
         }
+    }
+
+    /* DATABASE METHODS */
+    public void update(boolean allColumns, SaveType type){
+        if(allColumns){
+            Database.get().update(Table.UHS_PLAYERS, new Set[]{
+                    new Set(TableUHPlayers.WATER, water),
+                    new Set(TableUHPlayers.FOOD, foodToString()),
+                    new Set(TableUHPlayers.BANNED_DATE, dateToString())},
+                    new Where(TableUHPlayers.UUID, id.toString()));
+            return;
+        }
+        switch(type){
+            case WATER:
+                Database.get().update(Table.UHS_PLAYERS, new Set(TableUHPlayers.WATER, water), new Where(TableUHPlayers.UUID, id.toString()));
+                break;
+            case FOOD:
+                Database.get().update(Table.UHS_PLAYERS, new Set(TableUHPlayers.FOOD, foodToString()), new Where(TableUHPlayers.UUID, id.toString()));
+                break;
+            case BANNED_DATE:
+                Database.get().update(Table.UHS_PLAYERS, new Set(TableUHPlayers.BANNED_DATE, dateToString()), new Where(TableUHPlayers.UUID, id.toString()));
+                break;
+        }
+    }
+
+    private String foodToString(){
+        StringBuilder s = new StringBuilder();
+        for(FoodType type : foods.keySet()){
+            int amount = foods.get(type);
+            s.append(type.name() + ":" + amount + "|");
+        }
+        return s.substring(0, s.length() - 1);
+    }
+
+    private String dateToString(){
+        SimpleDateFormat sf = new SimpleDateFormat("yyyy:MM:dd-HH:mm:ss");
+        if(bannedDate != null) {
+            return sf.format(bannedDate);
+        } else {
+            return "null";
+        }
+    }
+
+    public enum SaveType {
+
+        WATER,
+        FOOD,
+        BANNED_DATE;
+
     }
 }

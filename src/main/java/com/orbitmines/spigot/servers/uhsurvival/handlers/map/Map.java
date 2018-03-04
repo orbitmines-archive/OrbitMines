@@ -1,6 +1,7 @@
 package com.orbitmines.spigot.servers.uhsurvival.handlers.map;
 
 import com.orbitmines.spigot.servers.uhsurvival.handlers.dungeon.DungeonManager;
+import com.orbitmines.spigot.servers.uhsurvival.handlers.map.block.BlockManager;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.map.mapsection.MapSection;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.map.warzone.Warzone;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.mob.MobManager;
@@ -17,16 +18,21 @@ public class Map {
 
     private static final int STANDARD_WIDTH = 27000;
     private static final int STANDARD_HEIGHT = 27000;
+
     private static final int STANDARD_WIDTH_SECTION = 3000;
     private static final int STANDARD_HEIGHT_SECTION = 3000;
+
     private World world;
+
     private int MAX_WIDTH;
     private int MAX_HEIGHT;
+
     private int MAX_HEIGHT_SECTION;
     private int MAX_WIDTH_SECTION;
 
     private DungeonManager dungeons;
     private MobManager mobManager;
+    private BlockManager blockManager;
 
     private List<MapSection> mapSections;
 
@@ -44,6 +50,7 @@ public class Map {
         this.MAX_HEIGHT_SECTION = STANDARD_HEIGHT_SECTION;
 
         this.mapSections = new ArrayList<>();
+        this.blockManager = new BlockManager();
         setupMapSections();
     }
 
@@ -84,8 +91,12 @@ public class Map {
         return dungeons;
     }
 
-    public MobManager getMobManager() {
+    public MobManager getMobs() {
         return mobManager;
+    }
+
+    public BlockManager getBlocks() {
+        return blockManager;
     }
 
     /* WIDTH & HEIGHT METHODS */

@@ -19,8 +19,8 @@ public class Water extends FoodManager.Food {
     private int MINIMUM_WATER_BOTTLE = 20;
     private int MAXIMUM_WATER_BOTTLE = 35;
 
-    public Water(FoodType type, Material m, byte data) {
-        super(type, m, data);
+    public Water() {
+        super(FoodType.WATER, Material.POTION, (byte) 0, 2, 2.0F);
         this.outputs = new ArrayList<>();
     }
 

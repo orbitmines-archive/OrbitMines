@@ -8,14 +8,16 @@ import com.orbitmines.spigot.OrbitMinesServer;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.PluginMessageHandler;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.UHPlayer;
+import com.orbitmines.spigot.servers.uhsurvival.handlers.profile.food.FoodManager;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 /*
 * OrbitMines - @author Playwarrior - 2017
 */
 public class UHSurvival extends OrbitMinesServer {
+
+    private FoodManager foodManager;
 
     public UHSurvival(OrbitMines orbitMines) {
         super(orbitMines, Server.UHSURVIVAL, new PluginMessageHandler() {
@@ -28,7 +30,7 @@ public class UHSurvival extends OrbitMinesServer {
 
     @Override
     public void onEnable() {
-
+        this.foodManager = new FoodManager(this);
     }
 
     @Override
@@ -69,5 +71,9 @@ public class UHSurvival extends OrbitMinesServer {
     @Override
     public void setupNpc(String npcName, Location location) {
 
+    }
+
+    public FoodManager getFoodManager() {
+        return foodManager;
     }
 }
