@@ -30,10 +30,9 @@ public class FoodManager {
     public void consume(UHPlayer uhPlayer, Material m, byte b) {
         for (Food food : foods) {
             if (food.getMaterial() == m && food.getData() == b) {
-                int addedFoodLevel = food.getFoodLevel(uhPlayer);
-                float saturation = food.getSaturation(uhPlayer);
                 food.consume(uhPlayer);
                 uhPlayer.getProfile().consumeFood(food.getType(), 1);
+                uhPlayer.getProfile().setLastFood(food);
             }
         }
     }

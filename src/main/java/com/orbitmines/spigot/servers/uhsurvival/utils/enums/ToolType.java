@@ -69,7 +69,7 @@ public enum ToolType {
         }
     }
 
-    //TODO: MOVE BLOCK.JAVA TO ANOTHER CLASS
+    //TODO: REMOVE!
     public enum Block {
 
         STONE(Material.STONE, 0, 1.5, true, false),
@@ -149,8 +149,7 @@ public enum ToolType {
         }
     }
 
-
-    public static enum ToolLevel {
+    public enum ToolMaterial {
 
         WOOD,
         STONE,
@@ -158,10 +157,10 @@ public enum ToolType {
         IRON,
         DIAMOND;
 
-        public static ToolLevel getToolLevelByType(Material m){
-            for(ToolLevel toolLevel : ToolLevel.values()){
-                if(m.name().startsWith(toolLevel.name())){
-                    return toolLevel;
+        public static ToolMaterial getToolLevelByType(Material m){
+            for(ToolMaterial toolMaterial : ToolMaterial.values()){
+                if(m.name().startsWith(toolMaterial.name())){
+                    return toolMaterial;
                 }
             }
             return null;

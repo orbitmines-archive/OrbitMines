@@ -4,7 +4,6 @@ import com.orbitmines.spigot.api.utils.MathUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 
 /**
  * Created by Robin on 1/14/2018.
@@ -18,8 +17,7 @@ public class ReplacedBlock {
     private int z;
 
     public ReplacedBlock(Location location){
-        Block b = location.getBlock();
-        new ReplacedBlock(b.getType(), b.getData(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
+        this(location.getBlock().getType(), location.getBlock().getData(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
     }
 
     public ReplacedBlock(Material m, byte data, int x, int y, int z){

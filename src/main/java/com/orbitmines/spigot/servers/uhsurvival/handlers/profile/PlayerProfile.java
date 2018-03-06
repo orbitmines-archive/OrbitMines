@@ -24,6 +24,8 @@ public class PlayerProfile {
 
     private HashMap<FoodType, Integer> foods;
 
+    private FoodManager.Food lastFood;
+
     private int water;
 
     private UUID id;
@@ -57,6 +59,7 @@ public class PlayerProfile {
         }
     }
 
+    /* WATER METHODS */
     public void removeWater(int water){
         this.setWater(this.water -  water);
     }
@@ -69,14 +72,9 @@ public class PlayerProfile {
         return water;
     }
 
-    /* WATER METHODS */
+
     public void setWater(int water){
         this.water = MathUtils.clamp(water, 0, Water.MAXIMUM_WATER);
-    }
-
-    public boolean isBanned(){
-        Date now = new Date(System.currentTimeMillis());
-        return (bannedDate != null) && (now.compareTo(bannedDate) < 0);
     }
 
     /* BANNED METHODS */
@@ -89,6 +87,11 @@ public class PlayerProfile {
             calendar.add(Calendar.HOUR, 2);
             this.bannedDate = calendar.getTime();
         }
+    }
+
+    public boolean isBanned(){
+        Date now = new Date(System.currentTimeMillis());
+        return (bannedDate != null) && (now.compareTo(bannedDate) < 0);
     }
 
     /* TEMPERATURE METHODS */
@@ -114,17 +117,21 @@ public class PlayerProfile {
         }
     }
 
+    public void setLastFood(FoodManager.Food food){
+        this.lastFood = food;
+    }
+
+    public FoodManager.Food getLastEatenFood(){
+        return lastFood;
+    }
+
+    public boolean hasLastEatenFood(){
+        return lastFood != null;
+    }
+
     /* DATABASE METHODS */
-    public void update(boolean allColumns, SaveType type){
-        if(allColumns){
-            Database.get().update(Table.UHS_PLAYERS, new Set[]{
-                    new Set(TableUHPlayers.WATER, water),
-                    new Set(TableUHPlayers.FOOD, foodToString()),
-                    new Set(TableUHPlayers.BANNED_DATE, dateToString())},
-                    new Where(TableUHPlayers.UUID, id.toString()));
-            return;
-        }
-        switch(type){
+    public void update(SaveType type) {
+        switch (type) {
             case WATER:
                 Database.get().update(Table.UHS_PLAYERS, new Set(TableUHPlayers.WATER, water), new Where(TableUHPlayers.UUID, id.toString()));
                 break;
@@ -133,6 +140,13 @@ public class PlayerProfile {
                 break;
             case BANNED_DATE:
                 Database.get().update(Table.UHS_PLAYERS, new Set(TableUHPlayers.BANNED_DATE, dateToString()), new Where(TableUHPlayers.UUID, id.toString()));
+                break;
+            case ALL:
+                Database.get().update(Table.UHS_PLAYERS, new Set[]{
+                                new Set(TableUHPlayers.WATER, water),
+                                new Set(TableUHPlayers.FOOD, foodToString()),
+                                new Set(TableUHPlayers.BANNED_DATE, dateToString())},
+                                new Where(TableUHPlayers.UUID, id.toString()));
                 break;
         }
     }
@@ -159,7 +173,8 @@ public class PlayerProfile {
 
         WATER,
         FOOD,
-        BANNED_DATE;
+        BANNED_DATE,
+        ALL;
 
     }
 }

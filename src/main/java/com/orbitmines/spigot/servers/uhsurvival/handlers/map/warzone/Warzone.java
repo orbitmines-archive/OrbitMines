@@ -12,6 +12,7 @@ import java.util.UUID;
  */
 public class Warzone extends MapSection {
 
+    //TODO: ADD PVP-TAGGED & ADD LOOT-CHESTS
     private List<UUID> editors;
 
     public Warzone(World world, int minX, int maxX, int minZ, int maxZ, int x, int z) {

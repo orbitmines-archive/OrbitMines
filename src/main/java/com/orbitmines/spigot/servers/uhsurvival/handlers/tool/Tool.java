@@ -19,8 +19,7 @@ public class Tool {
 
     private ItemStack item;
     private ToolType.Type type;
-
-    private ToolType.ToolLevel toolLevel;
+    private ToolType.ToolMaterial toolMaterial;
 
     private int level;
     private int exp;
@@ -47,7 +46,7 @@ public class Tool {
         }
         updateTool();
         if(type.getType() == ToolType.WEAPON || type.getType() == ToolType.TOOL){
-            toolLevel = ToolType.ToolLevel.getToolLevelByType(item.getType());
+            toolMaterial = ToolType.ToolMaterial.getToolLevelByType(item.getType());
         }
     }
 
@@ -118,10 +117,11 @@ public class Tool {
         return item;
     }
 
-    public ToolType.ToolLevel getToolLevel() {
-        return toolLevel;
+    public ToolType.ToolMaterial getToolMaterial() {
+        return toolMaterial;
     }
 
+    /* LEVEL METHODS */
     private void addLevel(int level) {
         setLevel(this.level + level);
 
@@ -163,12 +163,11 @@ public class Tool {
         return level;
     }
 
-    /* LEVEL METHODS */
     public void setLevel(int level) {
         this.level = MathUtils.clamp(level, 1, MAX_LEVEL);
     }
 
-    //ENCHANTMENT METHODS (add, getters, isEnchanted)
+    /* ENCHANTMENT METHODS (add, getters, isEnchanted) */
     public void addEnchantment(Enchantment enchantment, int level) {
         enchantments.put(enchantment, level);
         updateTool();
@@ -191,5 +190,32 @@ public class Tool {
 
     public HashMap<Enchantment, Integer> getEnchantments() {
         return enchantments;
+    }
+
+    /* EQUALS */
+    public boolean equals(ItemStack item){
+        if(item.getType() == this.item.getType()) {
+            if (item.hasItemMeta() && this.item.hasItemMeta()) {
+                if (item.getItemMeta().getLore() == this.item.getItemMeta().getLore()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean equals(Tool tool){
+        if(tool.getType() == type){
+            if(tool.getLevel() == tool.getLevel()){
+                if(tool.getToolMaterial() == tool.getToolMaterial()){
+                    if(tool.isEnchanted() && isEnchanted()){
+                        return equals(tool.getItem());
+                    }
+                }
+            }
+        }
+
+
+        return false;
     }
 }

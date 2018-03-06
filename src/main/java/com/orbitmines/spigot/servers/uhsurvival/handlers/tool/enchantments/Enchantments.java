@@ -1,6 +1,5 @@
 package com.orbitmines.spigot.servers.uhsurvival.handlers.tool.enchantments;
 
-import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.servers.uhsurvival.UHSurvival;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.UHPlayer;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.tool.Tool;
@@ -14,7 +13,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -38,7 +36,6 @@ class Enchantments {
         e.registerOutput(new Exploding());
         e.registerOutput(new Stun());
         e.registerOutput(new Ender());
-        e.registerOutput(new AutoSmelt());
         e.registerOutput(new ExplosiveDeath());
         e.registerOutput(new Reflect());
         e.registerOutput(new EnderLeggings());
@@ -193,76 +190,6 @@ class Enchantments {
                         ((Entity) a.getShooter()).teleport(e.getEntity().getLocation());
                     }
                 }
-            }
-        }
-    }
-
-    private class AutoSmelt extends EnchantmentManager.EnchantmentOutput {
-
-        public AutoSmelt() {
-            super(Enchantment.AUTO_SMELT, false, 100);
-        }
-
-        @Override
-        public void output(Event event, int level) {
-            if(event instanceof BlockBreakEvent){
-                BlockBreakEvent e = (BlockBreakEvent) event;
-                if(!e.isCancelled()){
-                    ItemBuilder item = getSmeltedItem(((BlockBreakEvent) event).getBlock().getType());
-                    if(item != null) {
-                        e.setDropItems(false);
-                        //TODO: ADD FORTUNE!
-                        e.getBlock().getLocation().getWorld().dropItem(e.getBlock().getLocation(), item.build());
-                    }
-                }
-            }
-        }
-
-        private ItemBuilder getSmeltedItem(Material m){
-            Material newM;
-            byte data = 0;
-            switch (m){
-                case COBBLESTONE:
-                    newM = Material.STONE;
-                    break;
-                case GOLD_ORE:
-                    newM = Material.GOLD_INGOT;
-                    break;
-                case IRON_ORE:
-                    newM = Material.IRON_INGOT;
-                    break;
-                case SPONGE:
-                    newM = Material.SPONGE;
-                    break;
-                case STONE:
-                    newM = Material.STONE;
-                    break;
-                case CLAY:
-                    newM = Material.STAINED_CLAY;
-                    break;
-                case SAND:
-                    newM = Material.GLASS;
-                    break;
-                case CACTUS:
-                    newM = Material.INK_SACK;
-                    data = 2;
-                case LOG:
-                    newM = Material.COAL;
-                    data = 1;
-                    break;
-                case LOG_2:
-                    newM = Material.COAL;
-                    data = 1;
-                    break;
-
-                default:
-                    newM = null;
-                    break;
-            }
-            if(newM != null){
-                return new ItemBuilder(newM,data);
-            } else {
-                return null;
             }
         }
     }

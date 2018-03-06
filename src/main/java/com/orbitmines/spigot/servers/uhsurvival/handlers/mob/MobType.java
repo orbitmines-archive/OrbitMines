@@ -1,9 +1,9 @@
 package com.orbitmines.spigot.servers.uhsurvival.handlers.mob;
 
-import com.orbitmines.spigot.servers.uhsurvival.events.UHEvents.MobAttackEvent;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.dungeon.DungeonManager;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.dungeon.loottable.LootTable;
 import com.orbitmines.spigot.servers.uhsurvival.utils.enums.EntityType;
+import org.bukkit.event.Event;
 
 /**
  * Created by Robin on 2/28/2018.
@@ -35,7 +35,7 @@ public abstract class MobType {
     }
 
     /* ABSTRACT METHODS */
-    public abstract void attack(MobAttackEvent event);
+    public abstract void attack(Event event);
 
     public abstract void death(Mob mob);
 

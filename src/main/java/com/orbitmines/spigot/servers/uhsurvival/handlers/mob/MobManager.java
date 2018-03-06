@@ -1,11 +1,14 @@
 package com.orbitmines.spigot.servers.uhsurvival.handlers.mob;
 
-import com.orbitmines.spigot.servers.uhsurvival.events.UHEvents.MobAttackEvent;
+import com.orbitmines.spigot.servers.uhsurvival.UHSurvival;
+import com.orbitmines.spigot.servers.uhsurvival.handlers.UHPlayer;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.map.Map;
-import com.orbitmines.spigot.servers.uhsurvival.handlers.tool.Tool;
-import com.orbitmines.spigot.servers.uhsurvival.handlers.tool.ToolInventory;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityShootBowEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,6 +31,7 @@ public class MobManager {
         this.mobs = new HashMap<>();
     }
 
+    /* MOB METHODS */
     public void spawn(Entity entity){
         MobType type = getMobType(entity);
         if(type != null) {
@@ -38,17 +42,26 @@ public class MobManager {
         }
     }
 
-    public void attack(MobAttackEvent event) {
-        MobType type = getMobType(event.getMob().getEntity());
-        if (type != null) {
-            type.attack(event);
-            if (!event.isCancelled()) {
-                if (event.getPlayer() != null) {
-                    ToolInventory tool = event.getPlayer().getUHInventory();
-                    for (Tool t : tool.getArmor()) {
-                        t.addExp(type.getArmorExp());
+    public void attack(UHSurvival uhSurvival, Entity entity, Event event){
+        Mob mob = map.getMapSection(entity.getLocation()).getMob(entity);
+        if(mob != null) {
+            if (event instanceof EntityDamageByEntityEvent) {
+                EntityDamageByEntityEvent ev = (EntityDamageByEntityEvent) event;
+                Entity e = ev.getEntity();
+                if (e instanceof Player) {
+                    UHPlayer.getUHPlayer(e.getUniqueId()).protect(entity, event);
+                } else {
+                    Mob m = mobs.get(e.getUniqueId());
+                    if (m != null) {
+                        m.protect(uhSurvival, event);
                     }
                 }
+                if (!ev.isCancelled()) {
+                    mob.getType().attack(event);
+                }
+            }
+            if (mob.getType().getType().canHoldItems() && event instanceof EntityShootBowEvent) {
+                mob.shoot(uhSurvival, ((EntityShootBowEvent)event));
             }
         }
     }
@@ -61,6 +74,7 @@ public class MobManager {
        }
     }
 
+    /* GETTERS */
     public HashMap<UUID, Mob> getMobs() {
         return mobs;
     }

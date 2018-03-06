@@ -20,12 +20,7 @@ public class FileBlock {
 
     /* CONSTRUCTORS */
     public FileBlock(Location original, Location newLocation){
-        Material m = newLocation.getBlock().getType();
-        byte b = newLocation.getBlock().getData();
-        int x = newLocation.getBlockX() - original.getBlockX();
-        int y = newLocation.getBlockY() - original.getBlockY();
-        int z = newLocation.getBlockZ() - original.getBlockZ();
-        new FileBlock(m, b, x,y,z);
+        this(newLocation.getBlock().getType(), newLocation.getBlock().getData(), newLocation.getBlockX() - original.getBlockX(), newLocation.getBlockY() - original.getBlockY(), newLocation.getBlockZ() - original.getBlockZ());
     }
 
     public FileBlock(Material m, byte data, int addedX, int addedY, int addedZ) {
