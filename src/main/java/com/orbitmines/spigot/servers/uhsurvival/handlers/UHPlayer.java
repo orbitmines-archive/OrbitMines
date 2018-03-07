@@ -40,7 +40,7 @@ public class UHPlayer extends OMPlayer {
         super(player);
         this.uhSurvival = uhSurvival;
         this.playerProfile = new PlayerProfile(this.getUUID());
-        if(playerProfile.isBanned()){
+        if (playerProfile.isBanned()) {
             player.kickPlayer("//TODO: KICK PLAYER MESSAGE!");
         }
     }
@@ -50,11 +50,11 @@ public class UHPlayer extends OMPlayer {
         return players;
     }
 
-    public static UHPlayer getUHPlayer(UUID id){
+    public static UHPlayer getUHPlayer(UUID id) {
         return players.get(id);
     }
 
-    public static UHPlayer getUHPlayer(Player p){
+    public static UHPlayer getUHPlayer(Player p) {
         return getUHPlayer(p.getUniqueId());
     }
 
@@ -62,7 +62,7 @@ public class UHPlayer extends OMPlayer {
     protected void onLogin() {
         players.put(getUUID(), this);
         this.world = World.getWorldByEnvironment(getWorld().getEnvironment());
-        if(world != null && world.getMap() != null) {
+        if (world != null && world.getMap() != null) {
             this.section = world.getMap().getMapSection(getLocation());
         }
         this.inventory = new ToolInventory(this.getInventory());
@@ -71,7 +71,7 @@ public class UHPlayer extends OMPlayer {
     @Override
     protected void onLogout() {
         players.remove(getUUID(), this);
-        if(section != null){
+        if (section != null) {
             section.removePlayer(this.getUUID());
         }
         playerProfile.update(PlayerProfile.SaveType.ALL);
@@ -98,7 +98,7 @@ public class UHPlayer extends OMPlayer {
     }
 
     /* MAP METHODS */
-    public MapSection getSection(){
+    public MapSection getSection() {
         return section;
     }
 
@@ -111,9 +111,13 @@ public class UHPlayer extends OMPlayer {
         Tool tool = inventory.getMainHand();
         if (entity instanceof Player) {
             UHPlayer defender = getUHPlayer(entity.getUniqueId());
-            event.setCancelled(defender.protect(this.getPlayer(), event));
-            if (!event.isCancelled()) {
-                uhSurvival.getEnchantmentManager().output(tool.getEnchantments(), Action.HIT, event, false);
+            if (this.section.canPvP() && defender.getSection().canPvP()) {
+                event.setCancelled(defender.protect(this.getPlayer(), event));
+                if (!event.isCancelled()) {
+                    uhSurvival.getEnchantmentManager().output(tool.getEnchantments(), Action.HIT, event, false);
+                }
+            } else {
+                event.setCancelled(true);
             }
         } else {
             Mob mob = world.getMap().getMapSection(entity.getLocation()).getMob(entity);
@@ -127,23 +131,23 @@ public class UHPlayer extends OMPlayer {
         }
     }
 
-    public boolean protect(Entity entity, Event event){
+    public boolean protect(Entity entity, Event event) {
         Tool[] armor = inventory.getArmor();
         int addedExp = 0;
-        if(entity instanceof Player){
+        if (entity instanceof Player) {
             addedExp = 120;
         } else {
             Mob mob = world.getMap().getMapSection(entity.getLocation()).getMob(entity);
-            if(mob != null){
+            if (mob != null) {
                 addedExp = mob.getType().getArmorExp();
             }
         }
         HashMap<Enchantment, Integer> enchantment = new HashMap<>();
-        for(Tool piece : armor){
-            if(piece != null){
+        for (Tool piece : armor) {
+            if (piece != null) {
                 piece.addExp(addedExp);
-                for(Enchantment e : piece.getEnchantments().keySet()){
-                    if(!enchantment.containsKey(e)) {
+                for (Enchantment e : piece.getEnchantments().keySet()) {
+                    if (!enchantment.containsKey(e)) {
                         enchantment.put(e, piece.getEnchantment(e));
                     } else {
                         int level = piece.getEnchantment(e) > enchantment.get(e) ? piece.getEnchantment(e) : enchantment.get(e);
@@ -156,7 +160,7 @@ public class UHPlayer extends OMPlayer {
         return false;
     }
 
-    public void shoot(EntityShootBowEvent event){
+    public void shoot(EntityShootBowEvent event) {
         Tool bow = null;
         ItemStack b = event.getBow();
         if (inventory.getMainHand().equals(b)) {
@@ -168,5 +172,4 @@ public class UHPlayer extends OMPlayer {
             uhSurvival.getEnchantmentManager().output(bow.getEnchantments(), Action.SHOOT, event, true);
         }
     }
-
 }

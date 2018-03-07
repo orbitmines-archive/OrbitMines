@@ -130,8 +130,10 @@ public class Map {
                 int minZ = height - MAX_HEIGHT_SECTION;
 
                 if (x == midWidthSection && z == midHeightSection) {
-                    this.warzone = new Warzone(world, minX, maxX, minZ, maxZ, x, z);
-                    this.mapSections.add(warzone);
+                    if(world == com.orbitmines.spigot.servers.uhsurvival.utils.enums.World.WORLD.getMap().getWorld()) {
+                        this.warzone = new Warzone(world, minX, maxX, minZ, maxZ, x, z);
+                        this.mapSections.add(warzone);
+                    }
                 } else {
                     this.mapSections.add(new MapSection(world, minX, maxX, minZ, maxZ, x, z));
                 }

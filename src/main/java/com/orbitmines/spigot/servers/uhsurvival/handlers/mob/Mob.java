@@ -50,6 +50,14 @@ public class Mob {
     /* STANDARD METHODS */
     public void death(){
         this.type.death(this);
+        if(entity instanceof LivingEntity){
+            if(((LivingEntity) entity).getKiller() != null){
+                UHPlayer p = UHPlayer.getUHPlayer(((LivingEntity) entity).getKiller().getUniqueId());
+                if(p != null){
+                    setKiller(p);
+                }
+            }
+        }
     }
 
     public void spawn(){
@@ -111,6 +119,10 @@ public class Mob {
 
     public int getLevel() {
         return level;
+    }
+
+    public MapSection getSection() {
+        return section;
     }
 
     /* SETTERS */
