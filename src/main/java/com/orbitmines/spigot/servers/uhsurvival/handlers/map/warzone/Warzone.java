@@ -23,9 +23,10 @@ public class Warzone extends MapSection {
     public Warzone(World world, int minX, int maxX, int minZ, int maxZ, int x, int z) {
         super(world, minX, maxX, minZ, maxZ, x, z);
         this.editors = new ArrayList<>();
+        this.chests = new ArrayList<>();
         setPvP(true);
         canSpawnDungeon(false);
-        this.chests = new ArrayList<>();
+
     }
     /* LOOT CHESTS METHODS */
     public void addChest(ChestRarity chestRarity){

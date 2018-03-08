@@ -45,9 +45,7 @@ public class Tool {
             deserialize();
         }
         updateTool();
-        if(type.getType() == ToolType.WEAPON || type.getType() == ToolType.TOOL){
-            toolMaterial = ToolType.ToolMaterial.getToolLevelByType(item.getType());
-        }
+        toolMaterial = ToolType.ToolMaterial.getToolLevelByType(item.getType());
     }
 
     /* STATIC METHODS */

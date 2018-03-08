@@ -50,7 +50,7 @@ public class Map {
         this.MAX_HEIGHT_SECTION = STANDARD_HEIGHT_SECTION;
 
         this.mapSections = new ArrayList<>();
-        this.blockManager = new BlockManager();
+        //TODO: this.blockManager = new BlockManager();
         setupMapSections();
     }
 

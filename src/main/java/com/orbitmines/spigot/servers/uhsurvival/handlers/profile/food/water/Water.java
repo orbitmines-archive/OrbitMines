@@ -32,14 +32,6 @@ public class Water extends FoodManager.Food {
         return outputs;
     }
 
-    public int getMinimumWaterBottle() {
-        return MINIMUM_WATER_BOTTLE;
-    }
-
-    public int getMaximumWaterBottle(){
-        return MAXIMUM_WATER_BOTTLE;
-    }
-
     @Override
     public void consume(UHPlayer uhPlayer) {
         uhPlayer.getProfile().addWater(MathUtils.randomInteger(MAXIMUM_WATER_BOTTLE -  MINIMUM_WATER_BOTTLE) + MINIMUM_WATER_BOTTLE);

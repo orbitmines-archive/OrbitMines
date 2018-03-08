@@ -78,11 +78,11 @@ public class FoodManager {
             return m;
         }
 
-        private int getFoodLevel(UHPlayer player) {
+        public int getFoodLevel(UHPlayer player) {
             return MathUtils.clamp(max_food_level - ((max_food_level / MAX_FOOD_AMOUNT) * player.getProfile().getAmount(type)), 0, max_food_level);
         }
 
-        private float getSaturation(UHPlayer player) {
+        public float getSaturation(UHPlayer player) {
             return max_saturation - ((max_saturation / MAX_FOOD_AMOUNT) * player.getProfile().getAmount(type));
         }
     }

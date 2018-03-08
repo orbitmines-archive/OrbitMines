@@ -106,6 +106,24 @@ public class UHPlayer extends OMPlayer {
         return world;
     }
 
+    public boolean isCloseToEdge(){
+        if(section != null){
+            int x = getLocation().getBlockX();
+            int z = getLocation().getBlockZ();
+            if (section.getMaxX() / x == 1 && section.getMaxX() % x == 5) {
+                return true;
+            } else if (section.getMinX() / x == 0 && x % section.getMinX() == 5) {
+                return true;
+            } else if (section.getMaxZ() / z == 1 && section.getMaxZ() % z == 5) {
+                return true;
+            } else if (section.getMinZ() / z == 0 && z % section.getMinZ() == 5) {
+                return true;
+            }
+            return false;
+        }
+        return false;
+    }
+
     /*  UH-PLAYERS METHODS  */
     public void attack(Entity entity, EntityDamageByEntityEvent event) {
         Tool tool = inventory.getMainHand();

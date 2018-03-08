@@ -2,10 +2,12 @@ package com.orbitmines.spigot.servers.uhsurvival.handlers.map.block;
 
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.api.utils.MathUtils;
+import com.orbitmines.spigot.servers.uhsurvival.UHSurvival;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.UHPlayer;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.tool.Tool;
 import com.orbitmines.spigot.servers.uhsurvival.utils.enums.Enchantment;
 import com.orbitmines.spigot.servers.uhsurvival.utils.enums.ToolType;
+import com.orbitmines.spigot.servers.uhsurvival.utils.enums.World;
 import org.bukkit.Location;
 import org.bukkit.Material;
 
@@ -16,10 +18,14 @@ import java.util.HashMap;
  */
 public class BlockManager {
 
+    private World world;
+
     private HashMap<Material, Block> blocks;
 
-    public BlockManager(){
+    public BlockManager(UHSurvival uhSurvival, World world){
         this.blocks = new HashMap<>();
+        this.world = world;
+        new Blocks(this, uhSurvival);
     }
 
     public boolean breakBlock(UHPlayer player, Location block){
@@ -51,7 +57,13 @@ public class BlockManager {
         this.blocks.put(block.getMaterial(), block);
     }
 
+    public World getWorld() {
+        return world;
+    }
+
     public static abstract class Block {
+
+        private World world;
 
         private Material material;
         private byte data;
@@ -73,7 +85,8 @@ public class BlockManager {
 
         private double outputChance;
 
-        public Block(Material m, byte data, ToolType.Type acceptableTool){
+        public Block(World world, Material m, byte data, ToolType.Type acceptableTool){
+            this.world = world;
             this.material = m;
             this.data = data;
             this.acceptableTool = acceptableTool;
@@ -88,7 +101,8 @@ public class BlockManager {
             this.outputChance = 100;
         }
 
-        public Block(Material material, byte data, ToolType.Type acceptableTool, ToolType.ToolMaterial minimumToolLevel, int minimumLevel, Enchantment requiredEnchantment, boolean smeltable, Material smeltedItem, byte smeltedByte, boolean appliedFortune, double brokeExp, double outputChance) {
+        public Block(World world, Material material, byte data, ToolType.Type acceptableTool, ToolType.ToolMaterial minimumToolLevel, int minimumLevel, Enchantment requiredEnchantment, boolean smeltable, Material smeltedItem, byte smeltedByte, boolean appliedFortune, double brokeExp, double outputChance) {
+            this.world = world;
             this.material = material;
             this.data = data;
             this.acceptableTool = acceptableTool;
@@ -106,8 +120,12 @@ public class BlockManager {
         public boolean canBreakBlock(Tool tool){
             if(tool.getType() == acceptableTool){
                 if(tool.getToolMaterial() == minimumToolLevel){
-                    if(tool.getLevel() == minimumLevel){
-                        if(requiredEnchantment != null && tool.isEnchanted(requiredEnchantment)){
+                    if(tool.getLevel() >= minimumLevel){
+                        if(requiredEnchantment != null){
+                            if(tool.isEnchanted(requiredEnchantment)){
+                                return true;
+                            }
+                        } else {
                             return true;
                         }
                     }

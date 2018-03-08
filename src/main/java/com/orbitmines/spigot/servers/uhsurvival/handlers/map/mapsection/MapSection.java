@@ -34,6 +34,12 @@ public class MapSection {
     private HashMap<UUID, UHPlayer> players;
     private HashMap<UUID, Mob> mobs;
 
+    private String title;
+    private String subTitle;
+
+    private String leavingTitle;
+    private String leavingSubTitle;
+
     public MapSection(World world, int minX, int maxX, int minZ, int maxZ, int x, int z){
         this.world = world;
         this.minX = minX;
@@ -100,6 +106,37 @@ public class MapSection {
         return players;
     }
 
+    public void setEnteringMessage(String title, String subTitle){
+        this.title = title;
+        this.subTitle = subTitle;
+    }
+
+    public void setLeavingMessage(String title, String subTitle){
+        this.title = title;
+        this.subTitle = subTitle;
+    }
+
+    public void enter(UHPlayer player){
+        addPlayer(player);
+        if(hasEnteringMessage()) {
+            //TODO: FIGURE OUT HOW TO SEND TITLES! xD
+        }
+    }
+
+    public void leave(UHPlayer player){
+        removePlayer(player.getUUID());
+        if(hasLeavingMessage()) {
+            //TODO: FIGURE OUT HOW TO SEND TITLES!
+        }
+    }
+
+    public boolean hasLeavingMessage(){
+        return leavingTitle != null && leavingSubTitle != null;
+    }
+
+    public boolean hasEnteringMessage(){
+        return title != null && subTitle != null;
+    }
     /* DUNGEON METHODS */
     public void addDungeon(Dungeon dungeon) {
         this.dungeons.add(dungeon);
