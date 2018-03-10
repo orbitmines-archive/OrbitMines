@@ -7,14 +7,13 @@ import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.OrbitMinesServer;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.PluginMessageHandler;
-import com.orbitmines.spigot.servers.uhsurvival.events.BreakBlockEvent;
-import com.orbitmines.spigot.servers.uhsurvival.events.EntityDamageEvent;
-import com.orbitmines.spigot.servers.uhsurvival.events.LoadChunkEvent;
-import com.orbitmines.spigot.servers.uhsurvival.events.MobEvent;
+import com.orbitmines.spigot.servers.uhsurvival.events.*;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.UHPlayer;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.map.Map;
+import com.orbitmines.spigot.servers.uhsurvival.handlers.map.block.BlockManager;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.profile.food.FoodManager;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.tool.enchantments.EnchantmentManager;
+import com.orbitmines.spigot.servers.uhsurvival.runnables.LootChestRunnable;
 import com.orbitmines.spigot.servers.uhsurvival.utils.enums.World;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -26,6 +25,7 @@ public class UHSurvival extends OrbitMinesServer {
 
     private FoodManager foodManager;
     private EnchantmentManager enchantmentManager;
+    private BlockManager blockManager;
 
     public UHSurvival(OrbitMines orbitMines) {
         super(orbitMines, Server.UHSURVIVAL, new PluginMessageHandler() {
@@ -40,6 +40,7 @@ public class UHSurvival extends OrbitMinesServer {
     public void onEnable() {
         this.foodManager = new FoodManager(this);
         this.enchantmentManager = new EnchantmentManager(this);
+        this.blockManager = new BlockManager(this);
         for(World world : World.values()){
             Map map = world.getMap();
             if(map != null){
@@ -75,10 +76,12 @@ public class UHSurvival extends OrbitMinesServer {
 
     @Override
     public void registerEvents() {
-        registerEvents(new BreakBlockEvent(),
+        registerEvents(new BreakBlockEvent(this),
                         new EntityDamageEvent(this),
                         new LoadChunkEvent(),
-                        new MobEvent());
+                        new MobEvent(),
+                        new ProfileEvents(this),
+                        new MapEvents());
     }
 
     @Override
@@ -88,7 +91,7 @@ public class UHSurvival extends OrbitMinesServer {
 
     @Override
     public void registerRunnables() {
-
+        new LootChestRunnable(World.WORLD.getMap().getWarzone());
     }
 
     @Override
@@ -102,5 +105,9 @@ public class UHSurvival extends OrbitMinesServer {
 
     public EnchantmentManager getEnchantmentManager() {
         return enchantmentManager;
+    }
+
+    public BlockManager getBlockManager() {
+        return blockManager;
     }
 }

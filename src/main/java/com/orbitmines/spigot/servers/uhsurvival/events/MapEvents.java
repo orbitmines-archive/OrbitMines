@@ -15,11 +15,8 @@ public class MapEvents implements Listener {
         UHPlayer uhPlayer = UHPlayer.getUHPlayer(event.getPlayer());
         if(uhPlayer != null){
             if(uhPlayer.isCloseToEdge()){
-
+                uhPlayer.updateMap();
             }
         }
     }
-
-
-
 }

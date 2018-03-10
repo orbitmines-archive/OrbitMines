@@ -24,6 +24,10 @@ public enum World {
         return map;
     }
 
+    public boolean isLobby(){
+        return this == LOBBY;
+    }
+
     public static World getWorldByEnvironment(Environment environment){
         for(World world : World.values()){
             if(world.getMap().getWorld().getEnvironment() == environment){

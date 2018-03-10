@@ -1,8 +1,7 @@
 package com.orbitmines.spigot.servers.uhsurvival.events;
 
+import com.orbitmines.spigot.servers.uhsurvival.UHSurvival;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.UHPlayer;
-import com.orbitmines.spigot.servers.uhsurvival.handlers.map.Map;
-import com.orbitmines.spigot.servers.uhsurvival.utils.enums.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -12,14 +11,17 @@ import org.bukkit.event.block.BlockBreakEvent;
  */
 public class BreakBlockEvent implements Listener {
 
+    private UHSurvival uhSurvival;
+
+    public BreakBlockEvent(UHSurvival uhSurvival){
+        this.uhSurvival = uhSurvival;
+    }
+
     @EventHandler
-    public void blockBreakEvent(BlockBreakEvent event){
-        Map map = World.getWorldByEnvironment(event.getBlock().getWorld().getEnvironment()).getMap();
-        if(map != null){
-            UHPlayer p = UHPlayer.getUHPlayer(event.getPlayer());
-            if(p != null){
-                event.setCancelled(map.getBlocks().breakBlock(p, event.getBlock().getLocation()));
-            }
+    public void blockBreakEvent(BlockBreakEvent event) {
+        UHPlayer p = UHPlayer.getUHPlayer(event.getPlayer());
+        if (p != null) {
+            event.setCancelled(uhSurvival.getBlockManager().breakBlock(p, event.getBlock().getLocation()));
         }
     }
 }

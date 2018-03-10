@@ -8,36 +8,37 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
 
 /**
  * Created by Robin on 3/8/2018.
  */
-public class FoodEvents implements Listener {
+public class ProfileEvents implements Listener {
 
     private UHSurvival uhSurvival;
 
-    public FoodEvents(UHSurvival uhSurvival){
+    public ProfileEvents(UHSurvival uhSurvival) {
         this.uhSurvival = uhSurvival;
     }
 
     @EventHandler
-    public void onFoodEat(PlayerItemConsumeEvent event){
+    public void onFoodEat(PlayerItemConsumeEvent event) {
         UHPlayer uhPlayer = UHPlayer.getUHPlayer(event.getPlayer());
-        if(uhPlayer != null){
+        if (uhPlayer != null) {
             ItemStack item = event.getItem();
             uhSurvival.getFoodManager().consume(uhPlayer, item.getType(), item.getData().getData());
         }
     }
 
     @EventHandler
-    public void onFoodChangeLevel(FoodLevelChangeEvent event){
-        if(event.getEntity() instanceof Player){
+    public void onFoodChangeLevel(FoodLevelChangeEvent event) {
+        if (event.getEntity() instanceof Player) {
             UHPlayer p = UHPlayer.getUHPlayer(event.getEntity().getUniqueId());
-            if(p != null){
+            if (p != null) {
                 FoodManager.Food food = p.getProfile().getLastEatenFood();
-                if(food != null){
+                if (food != null) {
                     float newSaturation = p.getPlayer().getSaturation() + food.getSaturation(p);
                     int newFoodLevel = MathUtils.clamp(p.getPlayer().getFoodLevel() + food.getFoodLevel(p), 0, 20);
                     p.getPlayer().setSaturation(newSaturation);
@@ -46,6 +47,15 @@ public class FoodEvents implements Listener {
                     event.setCancelled(true);
                 }
             }
+        }
+    }
+
+    @EventHandler
+    public void onDeath(PlayerDeathEvent event) {
+        UHPlayer player = UHPlayer.getUHPlayer(event.getEntity());
+        if (player != null) {
+            player.getProfile().setBanned(true);
+            player.kick("TODO: ADD BAN MESSAGE!");
         }
     }
 }

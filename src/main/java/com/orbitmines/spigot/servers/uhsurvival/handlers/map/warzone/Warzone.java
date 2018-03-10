@@ -26,6 +26,8 @@ public class Warzone extends MapSection {
         this.chests = new ArrayList<>();
         setPvP(true);
         canSpawnDungeon(false);
+        setEnteringMessage("", "");
+        setLeavingMessage("", "");
 
     }
     /* LOOT CHESTS METHODS */

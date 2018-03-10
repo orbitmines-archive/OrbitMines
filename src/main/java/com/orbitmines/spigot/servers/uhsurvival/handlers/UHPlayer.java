@@ -102,10 +102,6 @@ public class UHPlayer extends OMPlayer {
         return section;
     }
 
-    public World getUHWorld() {
-        return world;
-    }
-
     public boolean isCloseToEdge(){
         if(section != null){
             int x = getLocation().getBlockX();
@@ -122,6 +118,27 @@ public class UHPlayer extends OMPlayer {
             return false;
         }
         return false;
+    }
+
+    public void updateMap() {
+        World world = World.getWorldByEnvironment(this.getWorld().getEnvironment());
+        if (world != this.world) {
+            this.world = world;
+            if (!this.world.isLobby()) {
+                MapSection s = this.section;
+                section = this.world.getMap().getMapSection(this.getLocation());
+                s.leave(this);
+                section.enter(this);
+            }
+        } else {
+            MapSection section = this.world.getMap().getMapSection(this.getLocation());
+            if (section != this.section) {
+                MapSection s = this.section;
+                this.section = section;
+                s.leave(this);
+                this.section.enter(this);
+            }
+        }
     }
 
     /*  UH-PLAYERS METHODS  */

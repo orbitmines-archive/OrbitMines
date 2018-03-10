@@ -18,13 +18,10 @@ import java.util.HashMap;
  */
 public class BlockManager {
 
-    private World world;
-
     private HashMap<Material, Block> blocks;
 
-    public BlockManager(UHSurvival uhSurvival, World world){
+    public BlockManager(UHSurvival uhSurvival){
         this.blocks = new HashMap<>();
-        this.world = world;
         new Blocks(this, uhSurvival);
     }
 
@@ -55,10 +52,6 @@ public class BlockManager {
 
     public void registerBlock(Block block){
         this.blocks.put(block.getMaterial(), block);
-    }
-
-    public World getWorld() {
-        return world;
     }
 
     public static abstract class Block {

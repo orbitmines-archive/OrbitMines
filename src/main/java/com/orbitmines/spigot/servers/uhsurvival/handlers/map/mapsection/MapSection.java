@@ -112,8 +112,8 @@ public class MapSection {
     }
 
     public void setLeavingMessage(String title, String subTitle){
-        this.title = title;
-        this.subTitle = subTitle;
+        this.leavingTitle = title;
+        this.leavingSubTitle = subTitle;
     }
 
     public void enter(UHPlayer player){
@@ -125,8 +125,10 @@ public class MapSection {
 
     public void leave(UHPlayer player){
         removePlayer(player.getUUID());
-        if(hasLeavingMessage()) {
-            //TODO: FIGURE OUT HOW TO SEND TITLES!
+        if(!player.getSection().hasEnteringMessage()) {
+            if (hasLeavingMessage()) {
+                //TODO: FIGURE OUT HOW TO SEND TITLES!
+            }
         }
     }
 

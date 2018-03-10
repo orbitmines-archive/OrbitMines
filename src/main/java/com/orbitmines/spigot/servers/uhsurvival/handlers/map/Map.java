@@ -1,7 +1,6 @@
 package com.orbitmines.spigot.servers.uhsurvival.handlers.map;
 
 import com.orbitmines.spigot.servers.uhsurvival.handlers.dungeon.DungeonManager;
-import com.orbitmines.spigot.servers.uhsurvival.handlers.map.block.BlockManager;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.map.mapsection.MapSection;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.map.warzone.Warzone;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.mob.MobManager;
@@ -12,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Robin on 2/27/2018.
+ * Created by Robin & Marvin on 1/8/2018.
  */
 public class Map {
 
@@ -32,7 +31,6 @@ public class Map {
 
     private DungeonManager dungeons;
     private MobManager mobManager;
-    private BlockManager blockManager;
 
     private List<MapSection> mapSections;
 
@@ -50,7 +48,6 @@ public class Map {
         this.MAX_HEIGHT_SECTION = STANDARD_HEIGHT_SECTION;
 
         this.mapSections = new ArrayList<>();
-        //TODO: this.blockManager = new BlockManager();
         setupMapSections();
     }
 
@@ -61,15 +58,6 @@ public class Map {
                 if (mapSection.getMinZ() <= location.getZ() && location.getZ() <= mapSection.getMaxZ()) {
                     return mapSection;
                 }
-            }
-        }
-        return null;
-    }
-
-    public MapSection getMapSection(int x, int z) {
-        for (MapSection mapSection : mapSections) {
-            if (mapSection.getX() == x && mapSection.getZ() == z) {
-                return mapSection;
             }
         }
         return null;
@@ -93,10 +81,6 @@ public class Map {
 
     public MobManager getMobs() {
         return mobManager;
-    }
-
-    public BlockManager getBlocks() {
-        return blockManager;
     }
 
     /* WIDTH & HEIGHT METHODS */

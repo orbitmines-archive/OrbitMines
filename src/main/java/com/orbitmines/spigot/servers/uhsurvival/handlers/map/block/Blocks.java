@@ -14,22 +14,13 @@ class Blocks {
 
     private UHSurvival uhSurvival;
 
-    Blocks(BlockManager blockManager, UHSurvival uhSurvival){
+    Blocks(BlockManager blockManager, UHSurvival uhSurvival) {
         this.uhSurvival = uhSurvival;
-        switch (blockManager.getWorld()){
-            case WORLD:
-                blockManager.registerBlock(new BlockStone());
-                blockManager.registerBlock(new BlockCoalOre());
-                blockManager.registerBlock(new BlockIronOre());
-                break;
-            case NETHER:
-
-                break;
-            case END:
-
-                break;
-        }
+        blockManager.registerBlock(new BlockStone());
+        blockManager.registerBlock(new BlockCoalOre());
+        blockManager.registerBlock(new BlockIronOre());
     }
+
     /* OVER-WORLD BLOCKS */
     private class BlockStone extends BlockManager.Block {
 

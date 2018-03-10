@@ -8,6 +8,8 @@ import com.orbitmines.spigot.servers.uhsurvival.handlers.tool.ToolInventory;
 import com.orbitmines.spigot.servers.uhsurvival.utils.enums.Action;
 import com.orbitmines.spigot.servers.uhsurvival.utils.enums.Enchantment;
 import com.orbitmines.spigot.servers.uhsurvival.utils.enums.World;
+import org.bukkit.Location;
+import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
@@ -79,6 +81,7 @@ public class Mob {
                 }
             }
         }
+        this.updateMap();
         uhSurvival.getEnchantmentManager().output(enchantment, Action.PROTECT, event, false);
         return false;
     }
@@ -94,6 +97,7 @@ public class Mob {
         if (bow != null) {
             uhSurvival.getEnchantmentManager().output(bow.getEnchantments(), Action.SHOOT, event, true);
         }
+        updateMap();
     }
 
     /* GETTERS */
@@ -125,7 +129,38 @@ public class Mob {
         return section;
     }
 
+    public boolean isInRange(Location location){
+        int x = location.getBlockX();
+        int z = location.getBlockZ();
+        int y = location.getBlockY() - entity.getLocation().getBlockY();
+        int middleX = entity.getLocation().getBlockX();
+        int middleZ = entity.getLocation().getBlockZ();
+        double radius = Math.sqrt((x-middleX)^2 + (z-middleZ)^2);
+        if(radius <= this.type.getRadius()){
+            if(y <= radius && y >= -radius){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void updateMap(){
+        MapSection newSection = world.getMap().getMapSection(entity.getLocation());
+        if(newSection != null && newSection != section){
+            section.removeMob(this.entity);
+            newSection.addMob(this);
+            section = newSection;
+        }
+    }
+
     /* SETTERS */
+    public void setTarget(UHPlayer target) {
+        this.target = target;
+        if(entity instanceof Creature){
+            ((Creature) entity).setTarget(target.getPlayer());
+        }
+    }
+
     public void setKiller(UHPlayer killer) {
         this.killer = killer;
     }

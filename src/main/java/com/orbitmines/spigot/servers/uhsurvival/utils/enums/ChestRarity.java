@@ -5,14 +5,20 @@ package com.orbitmines.spigot.servers.uhsurvival.utils.enums;
  */
 public enum ChestRarity {
 
-    NORMAL(50),
-    RARE(30),
-    LEGENDARY(10);
+    NORMAL(50, 10 * 60),
+    RARE(30, 5 * 60),
+    LEGENDARY(10, 3 * 60);
 
     private int chance;
+    private int time;
 
-    ChestRarity(int chance){
+    ChestRarity(int chance, int time){
         this.chance = chance;
+        this.time = time;
+    }
+
+    public int getTime() {
+        return time;
     }
 
     public int getChance() {
