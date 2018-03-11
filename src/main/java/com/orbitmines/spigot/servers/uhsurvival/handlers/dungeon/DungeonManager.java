@@ -8,8 +8,6 @@ import com.orbitmines.spigot.servers.uhsurvival.handlers.dungeon.loottable.LootT
 import com.orbitmines.spigot.servers.uhsurvival.handlers.map.Map;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.map.mapsection.MapSection;
 import com.orbitmines.spigot.servers.uhsurvival.utils.FileBuilder;
-
-import com.orbitmines.spigot.servers.uhsurvival.utils.enums.World;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -72,11 +70,11 @@ public class DungeonManager {
             }
             Location l1 = new Location(loc.getWorld(), minX, minY, minZ);
             Location l2 = new Location(loc.getWorld(), maxX, maxY, maxZ);
-            int index = dungeonCount.get(file);
+            int index = dungeonCount.get(file) + 1;
             Dungeon dungeon = new Dungeon(index, file.getName(), new Location[]{l1, l2});
             dungeon.setReplacedBlocks(replacedBlocks);
             mapsection.addDungeon(dungeon);
-            dungeonCount.put(file, index++);
+            dungeonCount.put(file, index);
             file.resetBlocks();
         }
     }
@@ -101,16 +99,6 @@ public class DungeonManager {
         }
     }
 
-    public boolean deleteDungeon(String name){
-        for(DungeonFile file : files.keySet()){
-            if(file.getName().equalsIgnoreCase(name)){
-                files.remove(file);
-                return true;
-            }
-        }
-        return false;
-    }
-
     public Set<DungeonFile> getDungeonFiles(){
         return files.keySet();
     }
@@ -122,6 +110,25 @@ public class DungeonManager {
             }
         }
         return null;
+    }
+
+    public boolean deleteDungeon(String name){
+        for(DungeonFile file : files.keySet()){
+            if(file.getName().equalsIgnoreCase(name)){
+                files.remove(file);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /* PSYCHICAL DUNGEONS */
+    public void removeDungeon(Dungeon dungeon){
+        for(DungeonFile file : dungeonCount.keySet()){
+            if(file.getName().equals(dungeon.getType())){
+                dungeonCount.put(file, dungeonCount.get(file) - 1);
+            }
+        }
     }
 
     /* FILE METHODS (serialize, deserialize) */

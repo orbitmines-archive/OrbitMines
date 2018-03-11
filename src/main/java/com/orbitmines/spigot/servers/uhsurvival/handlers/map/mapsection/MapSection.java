@@ -3,6 +3,7 @@ package com.orbitmines.spigot.servers.uhsurvival.handlers.map.mapsection;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.UHPlayer;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.dungeon.Dungeon;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.mob.Mob;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 
@@ -146,6 +147,29 @@ public class MapSection {
 
     public List<Dungeon> getDungeons() {
         return dungeons;
+    }
+
+    public Dungeon getDungeon(Location location){
+        for(Dungeon dungeon : dungeons){
+            int minX = dungeon.getFirstLocation().getBlockX();
+            int minY = dungeon.getFirstLocation().getBlockY();
+            int minZ = dungeon.getFirstLocation().getBlockZ();
+            int maxX = dungeon.getSecondLocation().getBlockX();
+            int maxY = dungeon.getSecondLocation().getBlockY();
+            int maxZ = dungeon.getSecondLocation().getBlockZ();
+            if(minX < location.getX() && location.getX() < maxX){
+                if(minY < location.getY() && location.getY() < maxY){
+                    if(minZ < location.getZ() && location.getZ() < maxZ){
+                        return dungeon;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    public void removeDungeon(Dungeon dungeon){
+        this.dungeons.remove(dungeon);
     }
 
     public void canSpawnDungeon(boolean canSpawnDungeon){

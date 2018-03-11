@@ -102,6 +102,10 @@ public class UHPlayer extends OMPlayer {
         return section;
     }
 
+    public World getUHWorld(){
+        return world;
+    }
+
     public boolean isCloseToEdge(){
         if(section != null){
             int x = getLocation().getBlockX();
@@ -203,8 +207,9 @@ public class UHPlayer extends OMPlayer {
         } else if (inventory.getOffHand().equals(b)) {
             bow = inventory.getOffHand();
         }
-        if (bow != null) {
+        if (bow != null && !event.isCancelled()) {
             uhSurvival.getEnchantmentManager().output(bow.getEnchantments(), Action.SHOOT, event, true);
+            bow.addExp((int) event.getForce() * 30);
         }
     }
 }

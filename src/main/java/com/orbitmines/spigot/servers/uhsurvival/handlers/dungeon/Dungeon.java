@@ -44,6 +44,12 @@ public class Dungeon {
         this.index = (int) f.get("index");
     }
 
+    public void reverse(){
+        for(ReplacedBlock block : replacedBlocks){
+            block.replace(firstLocation.getWorld());
+        }
+    }
+
     /* GETTERS & SETTERS */
     public String getType() {
         return type;
@@ -63,6 +69,10 @@ public class Dungeon {
 
     public Location getSecondLocation() {
         return secondLocation;
+    }
+
+    public int getIndex() {
+        return index;
     }
 
     /* FILE METHODS (serialize) */

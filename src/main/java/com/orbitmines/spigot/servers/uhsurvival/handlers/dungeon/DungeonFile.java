@@ -124,6 +124,10 @@ public class DungeonFile {
         return lootTable;
     }
 
+    public void setLootTable(String lootTable) {
+        this.lootTable = DungeonManager.getLootTableManager().getLootTable(lootTable);
+    }
+
     public boolean isSurface(){
         return surface;
     }

@@ -4,6 +4,7 @@ import com.orbitmines.spigot.servers.uhsurvival.utils.FileBuilder;
 import org.bukkit.World;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.HashMap;
 
 /**
@@ -13,15 +14,15 @@ public class LootTableManager {
 
     private static LootTableManager lootTableManager = new LootTableManager();
 
-    protected HashMap<String, LootTable> lootTables;
+    private HashMap<String, LootTable> lootTables;
     protected HashMap<LootTable, FileBuilder> files;
 
-    LootTableManager() {
+    private LootTableManager() {
         this.lootTables = new HashMap<>();
         this.files = new HashMap<>();
     }
 
-    public LootTable createLootTable(World world, String name, LootItem... lootItems) {
+    public void createLootTable(World world, String name, LootItem... lootItems) {
         LootTable lootTable = new LootTable(name);
         FileBuilder fb = new FileBuilder("loottable_" + name, world.getWorldFolder().getPath() + "/dungeons/loottables");
         for (LootItem item : lootItems) {
@@ -29,15 +30,28 @@ public class LootTableManager {
         }
         this.files.put(lootTable, fb);
         this.lootTables.put(name, lootTable);
-        return lootTable;
     }
 
     public LootTable getLootTable(String name) {
-        return lootTables.get(name);
+        if (isLootTable(name)) {
+            return lootTables.get(name);
+        } else {
+            return null;
+        }
     }
 
-    public boolean isLootTable(String name) {
+    private boolean isLootTable(String name) {
         return lootTables.get(name) != null;
+    }
+
+    public void removeLootTable(String name) {
+        if (isLootTable(name)) {
+            files.remove(lootTables.remove(name)).deleteFile();
+        }
+    }
+
+    public Collection<LootTable> getLootTables() {
+        return lootTables.values();
     }
 
     /* REGISTER */
@@ -71,7 +85,7 @@ public class LootTableManager {
         }
     }
 
-    public static LootTableManager get(){
+    public static LootTableManager get() {
         return lootTableManager;
     }
 }

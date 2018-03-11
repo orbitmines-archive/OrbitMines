@@ -28,7 +28,7 @@ public class FileBuilder {
         this.yaml = YamlConfiguration.loadConfiguration(file);
     }
 
-    public void createFile(){
+    private void createFile(){
         if(!directory.exists()){
             directory.mkdir();
         }
@@ -39,6 +39,10 @@ public class FileBuilder {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void deleteFile(){
+        file.delete();
     }
 
     public YamlConfiguration getYaml() {

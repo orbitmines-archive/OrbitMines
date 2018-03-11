@@ -3,10 +3,13 @@ package com.orbitmines.spigot.servers.uhsurvival;
 import com.google.common.io.ByteArrayDataInput;
 import com.orbitmines.api.PluginMessage;
 import com.orbitmines.api.Server;
+import com.orbitmines.api.StaffRank;
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.OrbitMinesServer;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.PluginMessageHandler;
+import com.orbitmines.spigot.servers.uhsurvival.command.DungeonCommand;
+import com.orbitmines.spigot.servers.uhsurvival.command.LootTableCommand;
 import com.orbitmines.spigot.servers.uhsurvival.events.*;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.UHPlayer;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.map.Map;
@@ -86,7 +89,8 @@ public class UHSurvival extends OrbitMinesServer {
 
     @Override
     public void registerCommands() {
-
+        new DungeonCommand(StaffRank.MODERATOR);
+        new LootTableCommand(StaffRank.DEVELOPER);
     }
 
     @Override

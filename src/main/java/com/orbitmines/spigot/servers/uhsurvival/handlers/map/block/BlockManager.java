@@ -50,7 +50,7 @@ public class BlockManager {
         return true;
     }
 
-    public void registerBlock(Block block){
+    void registerBlock(Block block){
         this.blocks.put(block.getMaterial(), block);
     }
 
