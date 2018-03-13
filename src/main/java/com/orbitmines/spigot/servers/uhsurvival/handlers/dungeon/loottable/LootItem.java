@@ -4,9 +4,8 @@ import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.api.utils.MathUtils;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.tool.Tool;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.tool.enchantments.EnchantmentManager;
-import com.orbitmines.spigot.servers.uhsurvival.utils.enums.ToolType;
 import com.orbitmines.spigot.servers.uhsurvival.utils.enums.Enchantment;
-
+import com.orbitmines.spigot.servers.uhsurvival.utils.enums.ToolType;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -122,5 +121,51 @@ public class LootItem {
     public LootItem addEnchantment(Enchantment enchantment, int level) {
         this.enchantments.put(enchantment, level);
         return this;
+    }
+
+    public LootItem setAmount(int maxAmount){
+        this.maxAmount = maxAmount;
+        return this;
+    }
+
+    public LootItem setChance(double chance){
+        this.chance = chance;
+        return this;
+    }
+
+    /* TO METHODS */
+    public ItemStack toItem(){
+        item.setDisplayName("LootItem: " + item.getMaterial() + ":" + item.getDurability());
+        item.addLore("Chance: " + chance);
+        item.addLore("MaxAmount: " + maxAmount);
+        if(isTool){
+            item.addLore("Level: " + level);
+            item.addLore("Enchantments: ");
+            for(Enchantment enchantment : enchantments.keySet()){
+                int level = enchantments.get(enchantment);
+                item.addLore("  -" + enchantment.getName() + ":" + level);
+            }
+        }
+        return item.build();
+    }
+
+    public static LootItem toLoot(ItemStack item){
+        double chance = MathUtils.getInteger(item.getItemMeta().getLore().get(0).split(" ")[1]);
+        int maxAmount = MathUtils.getInteger(item.getItemMeta().getLore().get(1).split(" ")[1]);
+        LootItem i = new LootItem(item.getType(), item.getData().getData(), maxAmount, chance);
+        if(i.isTool){
+            int level = MathUtils.getInteger(item.getItemMeta().getLore().get(2).split(" ")[2]);
+            i.setLevel(level);
+            for(int y = 3; y < item.getItemMeta().getLore().size(); y++){
+                String e = item.getItemMeta().getLore().get(y).substring(3);
+                String[] ench = e.split(":");
+                Enchantment en = Enchantment.getEnchantment(ench[0]);
+                if(en != null){
+                    int l = MathUtils.getInteger(ench[1]);
+                    i.addEnchantment(en, l);
+                }
+            }
+        }
+        return i;
     }
 }

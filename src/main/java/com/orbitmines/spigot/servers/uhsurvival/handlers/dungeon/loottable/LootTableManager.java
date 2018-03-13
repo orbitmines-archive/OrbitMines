@@ -2,6 +2,7 @@ package com.orbitmines.spigot.servers.uhsurvival.handlers.dungeon.loottable;
 
 import com.orbitmines.spigot.servers.uhsurvival.utils.FileBuilder;
 import org.bukkit.World;
+import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.util.Collection;
@@ -22,6 +23,7 @@ public class LootTableManager {
         this.files = new HashMap<>();
     }
 
+    /* LOOT-TABLE METHODS */
     public void createLootTable(World world, String name, LootItem... lootItems) {
         LootTable lootTable = new LootTable(name);
         FileBuilder fb = new FileBuilder("loottable_" + name, world.getWorldFolder().getPath() + "/dungeons/loottables");
@@ -54,10 +56,16 @@ public class LootTableManager {
         return lootTables.values();
     }
 
-    /* REGISTER */
-    public void registerLootTable(World world, LootTable lootTable) {
-        this.lootTables.put(lootTable.getName(), lootTable);
-        this.files.put(lootTable, new FileBuilder("loottable_" + lootTable.getName(), world.getWorldFolder().getPath() + "/dungeons/loottables"));
+    /* LOOT-ITEM METHODS */
+    public boolean isLootItem(ItemStack item){
+        if(item.getItemMeta() != null) {
+            if (item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().equals("LootItem: " + item.getType().toString().toLowerCase() + ":" + item.getData().getData())) {
+                if(item.getItemMeta().hasLore()){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /* DESERIALIZE & SERIALIZE */
