@@ -56,6 +56,10 @@ public class LootTableManager {
         return lootTables.values();
     }
 
+    public void registerLootTable(LootTable lootTable, World world){
+        this.createLootTable(world, lootTable.getName(), (LootItem[]) lootTable.getLootItems().toArray());
+    }
+
     /* LOOT-ITEM METHODS */
     public boolean isLootItem(ItemStack item){
         if(item.getItemMeta() != null) {

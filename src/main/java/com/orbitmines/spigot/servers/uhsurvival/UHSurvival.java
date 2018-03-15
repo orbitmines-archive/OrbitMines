@@ -8,15 +8,15 @@ import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.OrbitMinesServer;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.PluginMessageHandler;
-import com.orbitmines.spigot.servers.uhsurvival.command.DungeonCommand;
-import com.orbitmines.spigot.servers.uhsurvival.command.LootTableCommand;
+import com.orbitmines.spigot.servers.uhsurvival.command.*;
 import com.orbitmines.spigot.servers.uhsurvival.events.*;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.UHPlayer;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.map.Map;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.map.block.BlockManager;
+import com.orbitmines.spigot.servers.uhsurvival.handlers.profile.PlayerProfile;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.profile.food.FoodManager;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.tool.enchantments.EnchantmentManager;
-import com.orbitmines.spigot.servers.uhsurvival.runnables.LootChestRunnable;
+import com.orbitmines.spigot.servers.uhsurvival.runnables.GameRunnable;
 import com.orbitmines.spigot.servers.uhsurvival.utils.enums.World;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -50,6 +50,7 @@ public class UHSurvival extends OrbitMinesServer {
                 map.getDungeons().deserialize();
             }
         }
+        PlayerProfile.setUpProfiles();
     }
 
     @Override
@@ -60,6 +61,7 @@ public class UHSurvival extends OrbitMinesServer {
                 map.getDungeons().serialize();
             }
         }
+        PlayerProfile.saveProfiles();
     }
 
     @Override
@@ -91,11 +93,14 @@ public class UHSurvival extends OrbitMinesServer {
     public void registerCommands() {
         new DungeonCommand(StaffRank.MODERATOR);
         new LootTableCommand(StaffRank.DEVELOPER);
+        new EnchantmentCommand(StaffRank.MODERATOR);
+        new ProfileCommands();
+        new MapCommand(StaffRank.MODERATOR);
     }
 
     @Override
     public void registerRunnables() {
-        new LootChestRunnable(World.WORLD.getMap().getWarzone());
+        new GameRunnable(this);
     }
 
     @Override

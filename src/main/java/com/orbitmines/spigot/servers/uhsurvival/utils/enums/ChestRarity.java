@@ -24,4 +24,13 @@ public enum ChestRarity {
     public int getChance() {
         return chance;
     }
+
+    public static ChestRarity getRarity(String name){
+        for(ChestRarity chestRarity : ChestRarity.values()){
+            if(chestRarity.name().toLowerCase().equals(name)){
+                return chestRarity;
+            }
+        }
+        return null;
+    }
 }

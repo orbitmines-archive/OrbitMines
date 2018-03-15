@@ -10,7 +10,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.metadata.MetadataValue;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -52,7 +51,7 @@ public class EnchantmentManager {
     }
 
     /* GETTERS (getEnchantments) */
-    public HashMap<Enchantment, Integer> getEnchantments(Entity entity){
+    /*public HashMap<Enchantment, Integer> getEnchantments(Entity entity){
         HashMap<Enchantment, Integer> enchantments = new HashMap<>();
         for(MetadataValue metadataValue : entity.getMetadata("customEnchantment")){
             String[] ench = metadataValue.asString().split(" ");
@@ -65,7 +64,7 @@ public class EnchantmentManager {
             }
         }
         return enchantments;
-    }
+    }*/
 
     /* STATIC METHODS (enchant) */
     public static boolean enchant(Tool tool, int level) {

@@ -45,7 +45,7 @@ public class DungeonCommand extends StaffCommand {
                     int minDungeon = (8 * page);
                     int maxDungeon = (8 * (page + 1));
 
-                    switch (a[1]) {
+                    switch (a[1].toLowerCase()) {
                         case "spawnList":
                             for(int i = minDungeon; i < maxDungeon; i++){
                                 Dungeon d = mapSection.getDungeons().get(i);

@@ -1,8 +1,10 @@
 package com.orbitmines.spigot.servers.uhsurvival.handlers.map.warzone.lootchest;
 
+import com.orbitmines.spigot.servers.uhsurvival.handlers.dungeon.DungeonManager;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.dungeon.loottable.LootItem;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.dungeon.loottable.LootTable;
 import com.orbitmines.spigot.servers.uhsurvival.utils.enums.ChestRarity;
+import com.orbitmines.spigot.servers.uhsurvival.utils.enums.World;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -14,9 +16,9 @@ import org.bukkit.block.Chest;
  */
 public class LootChest {
 
-    private static LootTable normalLoottable = new NormalLootTable();
-    private static LootTable rareLoottable = new RareLootTable();
-    private static LootTable legendaryLoottable = new LegendaryLootTable();
+    private static LootTable normalLoottable = DungeonManager.getLootTableManager().getLootTable("NormalLootChest") != null ? DungeonManager.getLootTableManager().getLootTable("NormalLootChest") : new NormalLootTable();
+    private static LootTable rareLoottable = DungeonManager.getLootTableManager().getLootTable("RareLootChest") != null ? DungeonManager.getLootTableManager().getLootTable("RareLootChest") : new RareLootTable();
+    private static LootTable legendaryLoottable = DungeonManager.getLootTableManager().getLootTable("LegendaryLootChest") != null ? DungeonManager.getLootTableManager().getLootTable("LegendaryLootChest") : new LegendaryLootTable();
 
     private ChestRarity chestRarity;
     private Location location;
@@ -63,19 +65,19 @@ public class LootChest {
     }
 
     public boolean hasTimeLeft(){
-        return timeLeft <= 0;
+        return timeLeft >= 0;
     }
 
     public void tick(int times){
         timeLeft -= times;
     }
 
-    //TODO: POPULATE LOOT-TABLES
     private static class NormalLootTable extends LootTable {
 
         private NormalLootTable() {
             super("NormalLootChest");
             setupItems();
+            DungeonManager.getLootTableManager().registerLootTable(this, World.WORLD.getMap().getWorld());
         }
 
         private void setupItems(){
@@ -101,6 +103,7 @@ public class LootChest {
         private RareLootTable() {
             super("RareLootChest");
             setupItems();
+            DungeonManager.getLootTableManager().registerLootTable(this, World.WORLD.getMap().getWorld());
         }
 
         private void setupItems() {
@@ -124,6 +127,7 @@ public class LootChest {
         private LegendaryLootTable() {
             super("LegendaryLootChest");
             setupItems();
+            DungeonManager.getLootTableManager().registerLootTable(this, World.WORLD.getMap().getWorld());
         }
 
         private void setupItems(){
@@ -134,9 +138,6 @@ public class LootChest {
             this.addLootItem(new LootItem(Material.IRON_HELMET, (byte) 0, 1, 4.5));
             this.addLootItem(new LootItem(Material.IRON_CHESTPLATE, (byte) 0, 1, 4.5));
             this.addLootItem(new LootItem(Material.IRON_LEGGINGS, (byte) 0, 1, 4.5));
-
-
-
         }
     }
 }

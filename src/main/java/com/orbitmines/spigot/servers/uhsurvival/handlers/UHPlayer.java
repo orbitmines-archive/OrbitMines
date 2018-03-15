@@ -39,7 +39,7 @@ public class UHPlayer extends OMPlayer {
     public UHPlayer(UHSurvival uhSurvival, Player player) {
         super(player);
         this.uhSurvival = uhSurvival;
-        this.playerProfile = new PlayerProfile(this.getUUID());
+        this.playerProfile = PlayerProfile.getProfile(this.getUUID());
         if (playerProfile.isBanned()) {
             player.kickPlayer("//TODO: KICK PLAYER MESSAGE!");
         }

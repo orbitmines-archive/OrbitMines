@@ -134,14 +134,11 @@ public class Mob {
         int z = location.getBlockZ();
         int y = location.getBlockY() - entity.getLocation().getBlockY();
         int middleX = entity.getLocation().getBlockX();
+        int middleY = entity.getLocation().getBlockY();
         int middleZ = entity.getLocation().getBlockZ();
-        double radius = Math.sqrt((x-middleX)^2 + (z-middleZ)^2);
-        if(radius <= this.type.getRadius()){
-            if(y <= radius && y >= -radius){
-                return true;
-            }
-        }
-        return false;
+        double radiusZ = Math.sqrt((x-middleX)^2 + (z-middleZ)^2);
+        double radiusY = Math.sqrt((x-middleX)^2 + (y-middleY)^2);
+        return (radiusZ <= this.type.getRadius()) && (radiusY <= this.getType().getRadius());
     }
 
     public void updateMap(){

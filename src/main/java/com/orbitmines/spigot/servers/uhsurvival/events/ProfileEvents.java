@@ -37,8 +37,8 @@ public class ProfileEvents implements Listener {
         if (event.getEntity() instanceof Player) {
             UHPlayer p = UHPlayer.getUHPlayer(event.getEntity().getUniqueId());
             if (p != null) {
-                FoodManager.Food food = p.getProfile().getLastEatenFood();
-                if (food != null) {
+                if (p.getProfile().hasLastEatenFood()) {
+                    FoodManager.Food food = p.getProfile().getLastEatenFood();
                     float newSaturation = p.getPlayer().getSaturation() + food.getSaturation(p);
                     int newFoodLevel = MathUtils.clamp(p.getPlayer().getFoodLevel() + food.getFoodLevel(p), 0, 20);
                     p.getPlayer().setSaturation(newSaturation);

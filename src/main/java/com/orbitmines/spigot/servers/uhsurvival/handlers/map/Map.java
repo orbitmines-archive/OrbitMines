@@ -21,6 +21,8 @@ public class Map {
     private static final int STANDARD_WIDTH_SECTION = 3000;
     private static final int STANDARD_HEIGHT_SECTION = 3000;
 
+    //TODO: SAVE WIDTH AND HEIGHT IN DATABASE!
+
     private World world;
 
     private int MAX_WIDTH;
@@ -73,6 +75,10 @@ public class Map {
 
     public Warzone getWarzone() {
         return warzone;
+    }
+
+    public boolean hasWarzone(){
+        return warzone != null;
     }
 
     public DungeonManager getDungeons() {

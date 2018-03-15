@@ -43,7 +43,7 @@ public class LootTableCommand extends StaffCommand {
         UHPlayer player = UHPlayer.getUHPlayer(omp.getUUID());
         if (a[1] != null) {
             String name = a[2];
-            switch (a[1]) {
+            switch (a[1].toLowerCase()) {
                 case "create":
                     if(name != null){
                         lootTableManager.createLootTable(omp.getWorld(), name);

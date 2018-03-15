@@ -9,6 +9,8 @@ import com.orbitmines.spigot.api.utils.MathUtils;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.profile.food.FoodManager;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.profile.food.water.Water;
 import com.orbitmines.spigot.servers.uhsurvival.utils.enums.FoodType;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -22,6 +24,8 @@ import java.util.UUID;
  */
 public class PlayerProfile {
 
+    private static HashMap<UUID, PlayerProfile> profiles = new HashMap<>();
+
     private HashMap<FoodType, Integer> foods;
 
     private FoodManager.Food lastFood;
@@ -32,31 +36,40 @@ public class PlayerProfile {
 
     private Date bannedDate;
 
-    public PlayerProfile(UUID id){
-        this.id = id;
-        this.foods = new HashMap<>();
-        this.water = Water.MAXIMUM_WATER;
-        this.bannedDate = null;
-        if(!Database.get().contains(Table.UHS_PLAYERS, TableUHPlayers.UUID, new Where(TableUHPlayers.UUID, id.toString()))){
-            Database.get().insert(Table.UHS_PLAYERS, Table.UHS_PLAYERS.values(id.toString(), water, foodToString(), bannedDate));
+    private PlayerProfile(UUID id){
+        if(!profiles.containsKey(id)) {
+            this.id = id;
+            this.foods = new HashMap<>();
+            this.water = Water.MAXIMUM_WATER;
+            this.bannedDate = null;
+            if (!Database.get().contains(Table.UHS_PLAYERS, TableUHPlayers.UUID, new Where(TableUHPlayers.UUID, id.toString()))) {
+                Database.get().insert(Table.UHS_PLAYERS, Table.UHS_PLAYERS.values(id.toString(), water, foodToString(), bannedDate));
+            } else {
+                this.water = Database.get().getInt(Table.UHS_PLAYERS, TableUHPlayers.WATER, new Where(TableUHPlayers.UUID, id.toString()));
+                String date = Database.get().getString(Table.UHS_PLAYERS, TableUHPlayers.BANNED_DATE, new Where(TableUHPlayers.UUID, id.toString()));
+                String foods = Database.get().getString(Table.UHS_PLAYERS, TableUHPlayers.FOOD, new Where(TableUHPlayers.UUID, id.toString()));
+                String[] s = foods.split("\\|");
+                for (String str : s) {
+                    String[] s1 = str.split(":");
+                    FoodType type = FoodType.valueOf(s1[0]);
+                    int amount = MathUtils.getInteger(s1[1]);
+                    this.foods.put(type, amount);
+                }
+                SimpleDateFormat sf = new SimpleDateFormat("yyyy:MM:dd-HH:mm:ss");
+                try {
+                    this.bannedDate = sf.parse(date);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+            profiles.put(id, this);
         } else {
-            this.water = Database.get().getInt(Table.UHS_PLAYERS, TableUHPlayers.WATER, new Where(TableUHPlayers.UUID, id.toString()));
-            String date = Database.get().getString(Table.UHS_PLAYERS, TableUHPlayers.BANNED_DATE, new Where(TableUHPlayers.UUID, id.toString()));
-            String foods = Database.get().getString(Table.UHS_PLAYERS, TableUHPlayers.FOOD, new Where(TableUHPlayers.UUID, id.toString()));
-            String[] s = foods.split("\\|");
-            for(String str : s){
-                String[] s1 = str.split(":");
-                FoodType type = FoodType.valueOf(s1[0]);
-                int amount = MathUtils.getInteger(s1[1]);
-                this.foods.put(type, amount);
-            }
-            SimpleDateFormat sf = new SimpleDateFormat("yyyy:MM:dd-HH:mm:ss");
-            try {
-                this.bannedDate = sf.parse(date);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+            throw new IllegalStateException("Profile already exist!");
         }
+    }
+
+    public UUID getID() {
+        return id;
     }
 
     /* WATER METHODS */
@@ -176,5 +189,22 @@ public class PlayerProfile {
         BANNED_DATE,
         ALL;
 
+    }
+
+    /* STATIC METHODS */
+    public static PlayerProfile getProfile(UUID id){
+        return profiles.get(id);
+    }
+
+    public static void saveProfiles(){
+        for(PlayerProfile profile : profiles.values()){
+            profile.update(SaveType.ALL);
+        }
+    }
+
+    public static void setUpProfiles(){
+        for(OfflinePlayer p : Bukkit.getOfflinePlayers()){
+            new PlayerProfile(p.getUniqueId());
+        }
     }
 }

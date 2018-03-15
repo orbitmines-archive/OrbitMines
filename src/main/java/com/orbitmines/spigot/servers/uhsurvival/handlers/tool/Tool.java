@@ -120,7 +120,7 @@ public class Tool {
     }
 
     /* LEVEL METHODS */
-    private void addLevel(int level) {
+    public void addLevel(int level) {
         setLevel(this.level + level);
 
     }

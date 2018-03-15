@@ -32,6 +32,14 @@ public class Water extends FoodManager.Food {
         return outputs;
     }
 
+    public void output(UHPlayer uhPlayer){
+        for(WaterOutput output : outputs){
+            if(output.isBetween(uhPlayer.getProfile().getWater())){
+                output.output(uhPlayer);
+            }
+        }
+    }
+
     @Override
     public void consume(UHPlayer uhPlayer) {
         uhPlayer.getProfile().addWater(MathUtils.randomInteger(MAXIMUM_WATER_BOTTLE -  MINIMUM_WATER_BOTTLE) + MINIMUM_WATER_BOTTLE);
