@@ -1,7 +1,88 @@
 package com.orbitmines.spigot.servers.minigames;
 
-/*
-* OrbitMines - @author Fadi Shawki - 2017
-*/
-public class MiniGames {
+import com.google.common.io.ByteArrayDataInput;
+import com.orbitmines.api.PluginMessage;
+import com.orbitmines.api.Server;
+import com.orbitmines.spigot.OrbitMines;
+import com.orbitmines.spigot.OrbitMinesServer;
+import com.orbitmines.spigot.api.handlers.OMPlayer;
+import com.orbitmines.spigot.api.handlers.PluginMessageHandler;
+import com.orbitmines.spigot.servers.minigames.handlers.MiniGamePlayer;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Created by Robin on 3/18/2018.
+ */
+public class MiniGames extends OrbitMinesServer {
+
+    private List<MiniGame> miniGames;
+    private List<MiniGameType> miniGameTypes;
+
+    public MiniGames(OrbitMines orbitMines) {
+        super(orbitMines, Server.MINIGAMES, new PluginMessageHandler() {
+            @Override
+            public void onReceive(ByteArrayDataInput in, PluginMessage message) {
+
+            }
+        });
+        this.miniGames = new ArrayList<>();
+        this.miniGameTypes = new ArrayList<>();
+    }
+
+    @Override
+    public void onEnable() {
+
+    }
+
+    @Override
+    public void onDisable() {
+
+    }
+
+    @Override
+    public OMPlayer newPlayerInstance(Player player) {
+        return new MiniGamePlayer(player, this);
+    }
+
+    @Override
+    public boolean teleportToSpawn(Player player) {
+        return false;
+    }
+
+    @Override
+    public Location getSpawnLocation(Player player) {
+        return null;
+    }
+
+    @Override
+    protected void registerEvents() {
+
+    }
+
+    @Override
+    protected void registerCommands() {
+
+    }
+
+    @Override
+    protected void registerRunnables() {
+
+    }
+
+    @Override
+    public void setupNpc(String npcName, Location location) {
+
+    }
+
+    public List<MiniGameType> getTypes(){
+        return miniGameTypes;
+    }
+
+    public List<MiniGame> getMiniGames(){
+        return miniGames;
+    }
 }
