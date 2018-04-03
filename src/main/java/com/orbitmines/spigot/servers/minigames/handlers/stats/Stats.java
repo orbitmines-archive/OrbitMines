@@ -1,6 +1,6 @@
 package com.orbitmines.spigot.servers.minigames.handlers.stats;
 
-import com.orbitmines.spigot.servers.minigames.MiniGameType;
+import com.orbitmines.spigot.servers.minigames.handlers.MiniGameType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,42 +8,36 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Created by Robin on 3/20/2018.
+ * Created by Robin on 3/27/2018.
  */
-public abstract class Stats {
+public class Stats {
 
-    private static List<Stats> stats = new ArrayList<>();
+    private static List<Stats> stat = new ArrayList<>();
 
     private MiniGameType type;
 
-    private List<String> stat;
+    private List<String> keys;
 
     public Stats(MiniGameType type){
         this.type = type;
-        stats.add(this);
-    }
-
-    /* SETTERS */
-    public void add(String key){
-        this.stat.add(key);
-    }
-
-    /* BOOLEANS */
-    public boolean isStat(String key){
-        return stat.contains(key);
-    }
-
-    /* GETTERS */
-    public List<String> getStats() {
-        return stat;
+        this.keys = new ArrayList<>();
+        stat.add(this);
     }
 
     public MiniGameType getType() {
         return type;
     }
 
+    public boolean isKey(String key){
+        return keys.contains(key);
+    }
+
+    public List<String> getKeys(){
+        return keys;
+    }
+
     public static Stats getStats(MiniGameType type){
-        for(Stats stats : stats){
+        for(Stats stats : stat){
             if(stats.getType() == type){
                 return stats;
             }
@@ -51,7 +45,6 @@ public abstract class Stats {
         return null;
     }
 
-    /* DATA CLASS */
     public static class Data {
 
         private Stats stats;
@@ -63,23 +56,12 @@ public abstract class Stats {
         private int wins;
         private int loses;
 
-        public Data(UUID id, Stats stats) {
-            this.stats = stats;
-            this.data = new HashMap<>();
+        public Data(MiniGameType type, UUID id){
+            this.stats = Stats.getStats(type);
             this.id = id;
-            this.wins = 0;
             this.loses = 0;
-            for (String statName : stats.getStats()) {
-                data.put(statName, 0);
-            }
-        }
-
-        public void addLose() {
-            this.loses++;
-        }
-
-        public void addWin() {
-            this.wins++;
+            this.wins = 0;
+            this.data = new HashMap<>();
         }
 
         public int getWins() {
@@ -90,16 +72,27 @@ public abstract class Stats {
             return loses;
         }
 
-        public int getCount(String key) {
-            if (stats.isStat(key)) {
-                return data.get(key);
-            }
-            return 0;
+        public void addWin(){
+            this.wins++;
         }
 
-        public void add(String key) {
-            if (stats.isStat(key)) {
+        public void addLose(){
+            this.loses++;
+        }
+
+        public void add(String key){
+            if(stats.isKey(key)){
                 data.put(key, data.get(key) + 1);
+            } else {
+                throw new IllegalStateException("Key is not found!");
+            }
+        }
+
+        public int get(String key){
+            if(stats.isKey(key)) {
+                return data.get(key);
+            } else {
+                throw new IllegalStateException("Key is not found!");
             }
         }
 

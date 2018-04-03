@@ -1,82 +1,106 @@
 package com.orbitmines.spigot.servers.minigames;
 
+import com.orbitmines.api.Server;
 import com.orbitmines.spigot.api.handlers.OrbitMinesMap;
 import com.orbitmines.spigot.api.handlers.kit.Kit;
 import com.orbitmines.spigot.servers.minigames.handlers.MiniGamePlayer;
-import com.orbitmines.spigot.servers.minigames.handlers.Team;
+import com.orbitmines.spigot.servers.minigames.handlers.MiniGameType;
+import com.orbitmines.spigot.servers.minigames.handlers.team.Team;
 import com.orbitmines.spigot.servers.minigames.utils.GameState;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import static com.orbitmines.spigot.servers.minigames.utils.GameState.*;
+
 /**
- * Created by Robin on 3/19/2018.
+ * Created by Robin on 3/27/2018.
  */
 public class MiniGame {
 
-    private Set<Team> teamPlayers;
+    private Kit spectatorKit;
 
+    private Set<Team> teams;
     private Set<MiniGamePlayer> players;
-    private Set<MiniGamePlayer> deadPlayers;
     private Set<MiniGamePlayer> spectators;
 
-    private HashMap<MiniGamePlayer, Kit> selectedKits;
-
-    private OrbitMinesMap currentMap;
-    private OrbitMinesMap currentLobby;
+    private GameState currentState;
 
     private MiniGameType type;
 
-    private GameState gameState;
+    private OrbitMinesMap map;
 
-    private int playercount;
     private int time;
     private int id;
 
-    private boolean first;
+    private boolean stopped;
 
-    public MiniGame(MiniGameType miniGameType, int id){
-        this.type = miniGameType;
-        this.teamPlayers = new HashSet<>();
+    public MiniGame(MiniGameType type, int id){
+        this.type = type;
+        this.teams = new HashSet<>();
         this.players = new HashSet<>();
-        this.deadPlayers = new HashSet<>();
         this.spectators = new HashSet<>();
-        this.selectedKits = new HashMap<>();
+        this.currentState = GameState.RESTARTING;
         this.id = id;
-        this.gameState = GameState.RESTARTING;
-        this.time = type.getTime(gameState);
+        this.stopped = false;
     }
 
-    /* TIME MECHANISM */
-    public void tick(){
+    /** TIME MECHANISM */
+    public void run(){
+        this.type.run(this);
         this.time--;
     }
 
-    public void run(){
-        type.run(this, first);
-        this.first = false;
+    public boolean isChangingState(){
+        return time == 0;
     }
 
     public void reset(){
+        if(currentState != RESTARTING) setState(RESTARTING);
         for(MiniGamePlayer player : players){
             player.leave();
         }
         for(MiniGamePlayer player : spectators){
             player.leave();
         }
+        teams.clear();
+        players.clear();
+        spectators.clear();
+        stopped = false;
+        map = null;
     }
 
-    /* GETTERS */
-    public GameState getState() {
-        return gameState;
+    /** GETTERS */
+    public Set<Team> getTeams() {
+        return teams;
     }
 
-    public OrbitMinesMap getCurrentMap() {
-        return currentMap;
+    public Set<MiniGamePlayer> getPlayers() {
+        return players;
     }
 
-    public int getTime(){
+    public MiniGameType getType() {
+        return type;
+    }
+
+    public GameState getState(){
+        return currentState;
+    }
+
+    public OrbitMinesMap getMap() {
+        return map;
+    }
+
+    public Team getTeam(MiniGamePlayer player){
+        for(Team team : teams){
+            if(team.contains(player)){
+                return team;
+            }
+        }
+        return null;
+    }
+
+    public int getTime() {
         return time;
     }
 
@@ -84,95 +108,80 @@ public class MiniGame {
         return id;
     }
 
-    public OrbitMinesMap getLobby() {
-        return currentLobby;
+    /** SETTERS */
+    public void setState(GameState state){
+        this.currentState = state;
+        this.time = type.getTime(state);
+        this.type.setPhase(this, state);
     }
 
-    public Set<MiniGamePlayer> getDeadPlayers() {
-        return deadPlayers;
+    public void generateMap(){ //TODO!
+        this.map = OrbitMinesMap.getRandomMap(Server.MINIGAMES, map);
     }
 
-    public Set<MiniGamePlayer> getPlayers() {
-        return players;
+    public void stop(){
+        this.stopped = true;
     }
 
-    public Set<MiniGamePlayer> getSpectators() {
-        return spectators;
-    }
-
-    public Set<Team> getTeams() {
-        return teamPlayers;
-    }
-
-    public MiniGameType getType() {
-        return type;
-    }
-
-    public HashMap<MiniGamePlayer, Kit> getSelectedKits() {
-        return selectedKits;
-    }
-
-    public int getPlayercount() {
-        return playercount;
-    }
-
-    /* SETTERS */
-    protected void setLobby(OrbitMinesMap currentLobby) {
-        this.currentLobby = currentLobby;
-    }
-
-    protected void setTime(int time){
-        this.time = time;
-    }
-
-    protected void setState(GameState gameState) {
-        this.gameState = gameState;
-        this.first = true;
-    }
-
-    protected void setMap(OrbitMinesMap map){
-        this.currentMap = map;
-    }
-
-    /* BOOLEANS */
-    public boolean hasLobby(){
-        return currentLobby != null;
-    }
-
-    public boolean hasMap(){
-        return currentMap != null;
-    }
-
+    /** BOOLEANS */
     public boolean isSpectator(MiniGamePlayer player){
         return spectators.contains(player);
     }
 
     public boolean canJoin(){
-        return (gameState == GameState.LOBBY && type.canJoin(playercount)) || gameState == GameState.RUNNING;
+        return (currentState == RUNNING) || (currentState == LOBBY && type.canJoin(players.size()));
     }
 
-    /* PLAYER METHODS */
-    public void leave(MiniGamePlayer player){
-        if(!isSpectator(player)){
-            deadPlayers.add(player);
-        } else {
-            spectators.remove(player);
+    public boolean hasStopped(){
+        return stopped;
+    }
+
+    /** PLAYER METHODS */
+    public void broadcast(String message){
+        for(Team team : teams){
+            for(MiniGamePlayer player : team.getTeamMates()){
+                player.sendMessage(message);
+            }
         }
-        updatePlayerCount();
+    }
+
+    public void say(MiniGamePlayer player, String message){
+        if(isSpectator(player)){
+            for(MiniGamePlayer p : spectators){
+                p.sendMessage(message);
+            }
+        } else {
+            broadcast(message);
+        }
     }
 
     public void join(MiniGamePlayer player){
-        if(gameState == GameState.LOBBY){
-            this.players.add(player);
-        } else if(gameState == GameState.RUNNING){
+        if(currentState == RUNNING){
             this.spectators.add(player);
+        } else if(currentState == LOBBY){
+            this.players.add(player);
         }
-        updatePlayerCount();
-        //TODO: SEND MESSAGE
+        broadcast("JOINING MESSAGE");
     }
 
-    /* PLAYER-COUNT METHODS */
-    private void updatePlayerCount(){
-        this.playercount = players.size();
+    public void leave(MiniGamePlayer player){
+        if(currentState == RUNNING){
+            Team team  = getTeam(player);
+            if(!team.isDead(player)){
+                team.die(player);
+            } else {
+                spectators.remove(player);
+            }
+        } else {
+            players.remove(player);
+        }
+        broadcast("LEAVING MESSAGE");
+    }
+
+    /**  */
+    public void updateSpectators(){
+        for(MiniGamePlayer player : spectators){
+            //TODO
+        }
     }
 }

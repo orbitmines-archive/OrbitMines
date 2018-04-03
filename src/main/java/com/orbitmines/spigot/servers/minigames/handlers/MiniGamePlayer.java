@@ -2,22 +2,17 @@ package com.orbitmines.spigot.servers.minigames.handlers;
 
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.servers.minigames.MiniGame;
-import com.orbitmines.spigot.servers.minigames.MiniGameType;
 import com.orbitmines.spigot.servers.minigames.MiniGames;
 import com.orbitmines.spigot.servers.minigames.handlers.stats.Stats;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 
 /**
- * Created by Robin on 3/18/2018.
+ * Created by Robin on 3/27/2018.
  */
 public class MiniGamePlayer extends OMPlayer {
-
-    private static HashMap<UUID, MiniGamePlayer> players = new HashMap<>();
 
     private MiniGames miniGames;
 
@@ -25,12 +20,13 @@ public class MiniGamePlayer extends OMPlayer {
 
     private List<Stats.Data> stats;
 
-    public MiniGamePlayer(Player player, MiniGames miniGames) {
+    private boolean spectator;
+
+    public MiniGamePlayer(MiniGames miniGames, Player player) {
         super(player);
         this.miniGames = miniGames;
         this.stats = new ArrayList<>();
-        this.setUpStats();
-        players.put(player.getUniqueId(), this);
+        this.spectator = false;
     }
 
     @Override
@@ -40,7 +36,7 @@ public class MiniGamePlayer extends OMPlayer {
 
     @Override
     protected void onLogout() {
-        leave();
+
     }
 
     @Override
@@ -53,34 +49,38 @@ public class MiniGamePlayer extends OMPlayer {
         return false;
     }
 
-    /* MINI-GAME METHODS */
-    public boolean leave(){
-        if(isInGame()) {
-            this.miniGame.leave(this);
-            this.miniGame = null;
-        }
-        return isInGame();
-    }
-
+    /** MINI-GAME METHODS */
     public boolean isInGame(){
         return miniGame != null;
     }
 
     public void join(MiniGame miniGame){
         this.miniGame = miniGame;
-        this.miniGame.join(this);
     }
 
-    /* STATS METHODS*/
-    private void setUpStats(){
-        for(MiniGameType miniGameType : miniGames.getTypes()){
-            stats.add(new Stats.Data(this.getUUID(), Stats.getStats(miniGameType)));
+    public MiniGame getGame() {
+        return miniGame;
+    }
+
+    public void leave(){
+        this.miniGame = null;
+    }
+
+    public boolean isSpectator(){
+        return spectator;
+    }
+
+    public void setSpectator(boolean spectator){
+        this.spectator = spectator;
+        if(spectator){
+
         }
     }
 
-    public Stats.Data getData(MiniGameType miniGameType){
+    /** STATS METHODS */
+    public Stats.Data getData(MiniGameType type){
         for(Stats.Data data : stats){
-            if(data.getStats().getType() == miniGameType){
+            if(data.getStats().getType() == type){
                 return data;
             }
         }
