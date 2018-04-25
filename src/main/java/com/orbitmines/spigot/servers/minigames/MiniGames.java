@@ -8,13 +8,20 @@ import com.orbitmines.spigot.OrbitMinesServer;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.PluginMessageHandler;
 import com.orbitmines.spigot.servers.minigames.handlers.MiniGamePlayer;
+import com.orbitmines.spigot.servers.minigames.handlers.MiniGameType;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by Robin on 3/27/2018.
  */
 public class MiniGames extends OrbitMinesServer {
+
+    private HashMap<MiniGameType, List<MiniGame>> miniGames;
+
 
     public MiniGames(OrbitMines orbitMines) {
         super(orbitMines, Server.MINIGAMES, new PluginMessageHandler() {
@@ -23,6 +30,7 @@ public class MiniGames extends OrbitMinesServer {
 
             }
         });
+        this.miniGames = new HashMap<>();
     }
 
     @Override
@@ -68,5 +76,9 @@ public class MiniGames extends OrbitMinesServer {
     @Override
     public void setupNpc(String npcName, Location location) {
 
+    }
+
+    public List<MiniGame> getMiniGames(MiniGameType type){
+        return miniGames.get(type);
     }
 }

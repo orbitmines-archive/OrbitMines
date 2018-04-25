@@ -111,9 +111,4 @@ public abstract class MiniGamePhase {
     public void prevent(World world, PreventionSet.Prevention... prevent){
         preventionSet.prevent(world, prevent);
     }
-
-    /** SETTERS */
-    public void setDuration(int duration){
-        this.duration = duration;
-    }
 }

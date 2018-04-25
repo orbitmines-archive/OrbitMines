@@ -56,7 +56,7 @@ public class MiniGame {
     }
 
     public void reset(){
-        if(currentState != RESTARTING) setState(RESTARTING);
+        if(currentState != RESTARTING) setState(RESTARTING, true);
         for(MiniGamePlayer player : players){
             player.leave();
         }
@@ -108,11 +108,17 @@ public class MiniGame {
         return id;
     }
 
+    public int getPlayerCount(){
+        return players.size();
+    }
+
     /** SETTERS */
-    public void setState(GameState state){
+    public void setState(GameState state, boolean renewState){
         this.currentState = state;
         this.time = type.getTime(state);
-        this.type.setPhase(this, state);
+        if(renewState) {
+            this.type.setPhase(this, state);
+        }
     }
 
     public void generateMap(){ //TODO!
@@ -160,6 +166,9 @@ public class MiniGame {
             this.spectators.add(player);
         } else if(currentState == LOBBY){
             this.players.add(player);
+        }
+        if(type.hasDefaultKit()){
+            player.selectKit(type.getDefaultKit());
         }
         broadcast("JOINING MESSAGE");
     }

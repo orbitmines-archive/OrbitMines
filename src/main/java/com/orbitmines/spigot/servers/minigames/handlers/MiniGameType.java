@@ -1,8 +1,11 @@
 package com.orbitmines.spigot.servers.minigames.handlers;
 
 import com.orbitmines.spigot.servers.minigames.MiniGame;
+import com.orbitmines.spigot.servers.minigames.handlers.gui.MiniGameGUI;
+import com.orbitmines.spigot.servers.minigames.handlers.gui.SpectatorGUI;
 import com.orbitmines.spigot.servers.minigames.handlers.phase.MiniGamePhase;
 import com.orbitmines.spigot.servers.minigames.handlers.team.Team;
+import com.orbitmines.spigot.servers.minigames.handlers.team.kit.MiniGameKit;
 import com.orbitmines.spigot.servers.minigames.handlers.team.place.Place;
 import com.orbitmines.spigot.servers.minigames.utils.GameState;
 import org.bukkit.Sound;
@@ -19,26 +22,36 @@ public abstract class MiniGameType {
 
     private Map<GameState, MiniGamePhase> phases;
 
+    private List<MiniGameKit> kits;
     private List<Place> places;
 
     private Team.Settings settings;
+    private MiniGameKit defaultKit;
+
+    private MiniGameGUI miniGameGUI;
 
     private int maxPlayers;
     private int minPlayers;
 
     private String name;
+    private String shortName;
 
-    public MiniGameType(String name, Team.Settings settings, int maxPlayers){
+    public MiniGameType(String name, String shortName, Team.Settings settings, int maxPlayers){
         this.name = name;
+        this.shortName = shortName;
         this.phases = new HashMap<>();
+        this.kits = new ArrayList<>();
         this.places = new ArrayList<>();
         this.maxPlayers = maxPlayers;
         this.minPlayers = maxPlayers / 2;
         this.settings = settings;
+        this.miniGameGUI = new MiniGameGUI(this);
     }
 
     /** ABSTRACT METHODS */
     protected abstract GameState getNextState(GameState state);
+
+    public abstract SpectatorGUI getSpectatorGUI(MiniGamePlayer player);
 
     /** RUN METHODS */
     public void run(MiniGame miniGame){
@@ -53,11 +66,16 @@ public abstract class MiniGameType {
                 }
             }
         }
-
+        phases.get(miniGame.getState()).run(miniGame);
         if(miniGame.isChangingState()){
+            if(miniGame.getState() == GameState.LOBBY){
+                if(!canStart(miniGame.getPlayerCount())) {
+                    miniGame.setState(GameState.LOBBY, false);
+                    return;
+                }
+            }
             setPhase(miniGame, getNextState(miniGame.getState()));
         }
-        phases.get(miniGame.getState()).run(miniGame);
     }
 
     /** SETTERS */
@@ -67,7 +85,7 @@ public abstract class MiniGameType {
             phase.onEnd(miniGame);
 
             GameState newState = getNextState(miniGame.getState());
-            miniGame.setState(newState);
+            miniGame.setState(newState, true);
 
             MiniGamePhase newPhase = phases.get(newState);
             newPhase.start(miniGame);
@@ -81,6 +99,17 @@ public abstract class MiniGameType {
 
     public void addPhase(GameState state, MiniGamePhase phase){
         this.phases.put(state, phase);
+    }
+
+    public void addPlace(Place place){
+        this.places.add(place);
+    }
+
+    public void addKit(MiniGameKit kit){
+        this.kits.add(kit);
+        if(kit.isDefault()){
+            this.defaultKit = kit;
+        }
     }
 
     /** GETTERS */
@@ -109,12 +138,40 @@ public abstract class MiniGameType {
         return null;
     }
 
+    public List<MiniGameKit> getKits() {
+        return kits;
+    }
+
+    public MiniGameKit getDefaultKit() {
+        return defaultKit;
+    }
+
+    public int getMaxPlayers() {
+        return maxPlayers;
+    }
+
+    public MiniGameGUI getMiniGameGUI() {
+        return miniGameGUI;
+    }
+
     /** BOOLEANS */
     public boolean canJoin(int playercount){
         return playercount < maxPlayers;
     }
 
-    public boolean canStart(int playercount){
+    private boolean canStart(int playercount){
         return playercount >= minPlayers;
+    }
+
+    public boolean hasDefaultKit(){
+        return defaultKit != null;
+    }
+
+    public boolean hasKits(){
+        return kits.size() > 0;
+    }
+
+    public boolean isMiniGame(String shortName){
+        return this.shortName.equals(shortName);
     }
 }

@@ -36,11 +36,11 @@ public class Team {
         return teamMates;
     }
 
+    /** BOOLEANS */
     public boolean contains(MiniGamePlayer player){
         return teamMates.contains(player);
     }
 
-    /** BOOLEANS */
     public boolean containsAlive(MiniGamePlayer player){
         return contains(player) && !deadTeamMates.contains(player);
     }
@@ -59,7 +59,11 @@ public class Team {
 
     /** TEAM METHODS */
     public void teleport(Location location){
-
+        for(MiniGamePlayer player : teamMates){
+            if(!isDead(player)){
+               player.getPlayer().teleport(location);
+            }
+        }
     }
 
     public void gainReward(Place place){
@@ -81,6 +85,7 @@ public class Team {
         }
     }
 
+    /** STATIC METHODS */
     public static void generateTeams(MiniGame miniGame){
         if(miniGame.getState() == GameState.LOBBY){
             Team team = new Team(miniGame.getType().getSettings());
