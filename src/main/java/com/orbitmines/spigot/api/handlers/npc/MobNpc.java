@@ -17,7 +17,7 @@ import java.util.Collections;
 /*
  * OrbitMines - @author Fadi Shawki - 2018
  */
-public class MobNpc extends NpcD {
+public class MobNpc extends Npc {
 
     private static ArrayList<MobNpc> mobNpcs = new ArrayList<>();
 

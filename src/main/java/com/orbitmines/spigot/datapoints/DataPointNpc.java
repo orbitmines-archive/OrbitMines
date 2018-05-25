@@ -37,7 +37,7 @@ public class DataPointNpc extends DataPointSign {
         if (data.length >= 1) {
             type = data[0];
         } else {
-            failureMessage = "NpcD Type not given.";
+            failureMessage = "Npc Type not given.";
             return false;
         }
 

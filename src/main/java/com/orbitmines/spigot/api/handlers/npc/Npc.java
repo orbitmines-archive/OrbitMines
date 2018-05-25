@@ -13,9 +13,9 @@ import java.util.*;
 /*
  * OrbitMines - @author Fadi Shawki - 2018
  */
-public abstract class NpcD {
+public abstract class Npc {
 
-    private static ArrayList<NpcD> npcs = new ArrayList<>();
+    private static ArrayList<Npc> npcs = new ArrayList<>();
 
     protected final OrbitMines plugin;
     protected final EntityNms nms;
@@ -25,7 +25,7 @@ public abstract class NpcD {
 
     protected Set<Player> watchers;
 
-    public NpcD(Location spawnLocation) {
+    public Npc(Location spawnLocation) {
         npcs.add(this);
         addToList();
 
@@ -35,22 +35,22 @@ public abstract class NpcD {
         this.spawnLocation = spawnLocation;
     }
 
-    /* Spawn the NpcD/Entit(y)(ies) in this method */
+    /* Spawn the Npc/Entit(y)(ies) in this method */
     protected abstract void spawn();
 
-    /* Despawn the NpcD/Entit(y)(ies) in this method */
+    /* Despawn the Npc/Entit(y)(ies) in this method */
     protected abstract void despawn();
 
-    /* Update any change to NpcD/Entit(y)(ies) in this method */
+    /* Update any change to Npc/Entit(y)(ies) in this method */
     public abstract void update();
 
-    /* Return the collection of Npcs/Entit(y)(ies) defined under the 'NpcD' */
+    /* Return the collection of Npcs/Entit(y)(ies) defined under the 'Npc' */
     protected abstract Collection<? extends Entity> getEntities();
 
-    /* Add to NpcD list */
+    /* Add to Npc list */
     protected abstract void addToList();
 
-    /* Remove NpcD from list */
+    /* Remove Npc from list */
     protected abstract void removeFromList();
 
     public Location getSpawnLocation() {
@@ -100,11 +100,11 @@ public abstract class NpcD {
         create(Arrays.asList(createFor));
     }
 
-    /* Create NpcD, If you want to create an NpcD that is visible to no-one; use an empty collection */
+    /* Create Npc, If you want to create an Npc that is visible to no-one; use an empty collection */
     public void create(Collection<? extends Player> createFor) {
         if (createFor != null) {
 
-            /* From now on the NpcD will only be shown to the watchers */
+            /* From now on the Npc will only be shown to the watchers */
             if (watchers == null)
                 watchers = new HashSet<>();
 
@@ -129,7 +129,7 @@ public abstract class NpcD {
         hideFor(hideFor);
     }
 
-    /* Permanently destroy NpcD. */
+    /* Permanently destroy Npc. */
     public void destroy() {
         despawn();
         removeFromList();
@@ -157,12 +157,12 @@ public abstract class NpcD {
             plugin.getNms().entity().destroyEntitiesFor(entities, players);
     }
 
-    public static List<NpcD> getNpcs() {
+    public static List<Npc> getNpcs() {
         return npcs;
     }
 
-    public static NpcD getNpc(Entity entity) {
-        for (NpcD npc : npcs) {
+    public static Npc getNpc(Entity entity) {
+        for (Npc npc : npcs) {
             for (Entity en : npc.getEntities()) {
                 if (en == entity) //TODO, might not work?
                     return npc;

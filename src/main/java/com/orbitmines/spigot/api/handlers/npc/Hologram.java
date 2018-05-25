@@ -12,7 +12,7 @@ import java.util.List;
 /*
  * OrbitMines - @author Fadi Shawki - 2018
  */
-public class Hologram extends NpcD {
+public class Hologram extends Npc {
 
     /* Y-offset between holograms */
     private static final double Y_OFFSET_PER_LINE = 0.25;
@@ -239,7 +239,7 @@ public class Hologram extends NpcD {
             armorStand.setRemoveWhenFarAway(false);
             armorStand.setGravity(false);
 
-            /* Hide for non-watchers, if the line was spawned separately, and not at once with all the other lines through NpcD#create */
+            /* Hide for non-watchers, if the line was spawned separately, and not at once with all the other lines through Npc#create */
             if (updateWatchers)
                 updateWatchers();
 
