@@ -14,7 +14,7 @@ import java.util.Collections;
 /*
  * OrbitMines - @author Fadi Shawki - 2018
  */
-public class ArmorStandNpc extends Npc {
+public class ArmorStandNpc extends NpcD {
 
     private static ArrayList<ArmorStandNpc> armorStandNpcs = new ArrayList<>();
 

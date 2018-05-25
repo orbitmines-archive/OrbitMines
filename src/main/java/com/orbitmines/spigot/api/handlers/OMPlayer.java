@@ -1,23 +1,22 @@
 package com.orbitmines.spigot.api.handlers;
 
-import com.orbitmines.api.*;
 import com.orbitmines.api.Color;
+import com.orbitmines.api.*;
 import com.orbitmines.api.Server;
 import com.orbitmines.api.database.*;
 import com.orbitmines.api.database.Set;
 import com.orbitmines.api.database.tables.TablePlayers;
-import com.orbitmines.api.Cooldown;
-import com.orbitmines.api.IP;
 import com.orbitmines.api.utils.DateUtils;
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.Freezer;
 import com.orbitmines.spigot.api.handlers.chat.Title;
+import com.orbitmines.spigot.api.handlers.data.FriendsData;
 import com.orbitmines.spigot.api.handlers.data.VoteData;
 import com.orbitmines.spigot.api.handlers.itembuilders.PotionBuilder;
 import com.orbitmines.spigot.api.handlers.itemhandlers.ItemHover;
 import com.orbitmines.spigot.api.handlers.kit.KitInteractive;
 import com.orbitmines.spigot.api.handlers.leaderboard.LeaderBoard;
-import com.orbitmines.spigot.api.handlers.leaderboard.PlayerLeaderBoard;
+import com.orbitmines.spigot.api.handlers.leaderboard.hologram.PlayerHologramLeaderBoard;
 import com.orbitmines.spigot.api.handlers.npc.PlayerFreezer;
 import com.orbitmines.spigot.api.handlers.scoreboard.OMScoreboard;
 import com.orbitmines.spigot.api.handlers.scoreboard.ScoreboardSet;
@@ -153,8 +152,8 @@ public abstract class OMPlayer {
 
         /* Spawn Leaderboards */
         for (LeaderBoard leaderBoard : LeaderBoard.getLeaderBoards()) {
-            if (leaderBoard instanceof PlayerLeaderBoard)
-                ((PlayerLeaderBoard) leaderBoard).onLogin(this);
+            if (leaderBoard instanceof PlayerHologramLeaderBoard)
+                ((PlayerHologramLeaderBoard) leaderBoard).onLogin(this);
         }
 
         checkCachedVotes();
@@ -178,6 +177,10 @@ public abstract class OMPlayer {
                 IP ip = IP.getIp(player.getUniqueId());
                 ip.updateCurrentServer();
 
+                /* Just joined the network, send message to all favorite friends. */
+                if (ip.getCurrentServer() == null)
+                    ((FriendsData) getData(Data.Type.FRIENDS)).sendJoinMessage(OMPlayer.this);
+
                 ip.setCurrentServer(orbitMines.getServerHandler().getServer());
 
                 if (isLoggedIn())
@@ -200,14 +203,14 @@ public abstract class OMPlayer {
 
         /* Destroy Leaderboards */
         for (LeaderBoard leaderBoard : LeaderBoard.getLeaderBoards()) {
-            if (leaderBoard instanceof PlayerLeaderBoard)
-                ((PlayerLeaderBoard) leaderBoard).onLogout(this);
+            if (leaderBoard instanceof PlayerHologramLeaderBoard)
+                ((PlayerHologramLeaderBoard) leaderBoard).onLogout(this);
         }
 
         /* Remove PlayerFreezer */
         PlayerFreezer freezer = PlayerFreezer.getFreezer(player);
         if (freezer != null)
-            freezer.delete();
+            freezer.destroy();
 
         /* Leave Hover */
         if (currentHover != null)
@@ -217,7 +220,7 @@ public abstract class OMPlayer {
     }
 
     public void defaultTabList() {
-        orbitMines.getNms().tabList().send(player, "§8§lOrbit§7§lMines\n" + orbitMines.getServerHandler().getServer().getDisplayName(), "§7Website: §6www.orbitmines.com\n§7" + lang("Winkel", "Shop") + ": §3shop.orbitmines.com\n§7Twitter: §b@OrbitMines");
+        orbitMines.getNms().tabList().send(Collections.singletonList(player), "§8§lOrbit§7§lMines\n" + orbitMines.getServerHandler().getServer().getDisplayName(), "§7Website: §6www.orbitmines.com\n§7" + lang("Winkel", "Shop") + ": §3shop.orbitmines.com\n§7Twitter: §b@OrbitMines");
     }
 
     public void on2FALogin() {
@@ -328,7 +331,7 @@ public abstract class OMPlayer {
     }
 
     public void setStaffRank(StaffRank staffRank) {
-        Title t = new Title("", lang("§7Je bent nu een " + staffRank.getDisplayName() + "§7!", "§7You are now " + staffRank.getDisplayName() + " " + (staffRank == StaffRank.OWNER ? "an" : "a") + "§7!"), 20, 80, 20);
+        Title t = new Title(new Message(""), new Message("§7Je bent nu een " + staffRank.getDisplayName() + "§7!", "§7You are now " + staffRank.getDisplayName() + " " + (staffRank == StaffRank.OWNER ? "an" : "a") + "§7!"), 20, 80, 20);
         t.send(this);
 
         Database.get().update(Table.PLAYERS, new Set(TablePlayers.STAFFRANK, staffRank.toString()), new Where(TablePlayers.UUID, getUUID().toString()));
@@ -347,7 +350,7 @@ public abstract class OMPlayer {
     }
 
     public void setVipRank(VipRank vipRank) {
-        Title t = new Title("", lang("§7Je bent nu een " + vipRank.getDisplayName() + "§7!", "§7You are now " + vipRank.getDisplayName() + " " + (vipRank == VipRank.EMERALD || vipRank == VipRank.IRON ? "an" : "a") + "§7!"), 20, 80, 20);
+        Title t = new Title(new Message(""), new Message("§7Je bent nu een " + vipRank.getDisplayName() + "§7!", "§7You are now " + vipRank.getDisplayName() + " " + (vipRank == VipRank.EMERALD || vipRank == VipRank.IRON ? "an" : "a") + "§7!"), 20, 80, 20);
         t.send(this);
 
         Database.get().update(Table.PLAYERS, new Set(TablePlayers.VIPRANK, vipRank.toString()), new Where(TablePlayers.UUID, getUUID().toString()));
@@ -836,7 +839,7 @@ public abstract class OMPlayer {
 
     /* Sets Header&Footer in Tablist */
     public void setTabList(String header, String footer) {
-        orbitMines.getNms().tabList().send(player, header, footer);
+        orbitMines.getNms().tabList().send(Collections.singletonList(player), header, footer);
     }
 
     public String getRankPrefix() {

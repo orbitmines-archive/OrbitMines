@@ -1,6 +1,7 @@
 package com.orbitmines.bungeecord.commands;
 
 import com.orbitmines.api.Color;
+import com.orbitmines.api.Message;
 import com.orbitmines.api.StaffRank;
 import com.orbitmines.bungeecord.OrbitMinesBungee;
 import com.orbitmines.bungeecord.handlers.AnnouncementHandler;
@@ -32,7 +33,7 @@ public class CommandAnnouncement extends StaffCommand {
     }
 
     @Override
-    public String getHelp(BungeePlayer mbp) {
+    public String getHelp(BungeePlayer omp) {
         return "list|delete|add|remove|title|subtitle";
     }
 
@@ -55,11 +56,11 @@ public class CommandAnnouncement extends StaffCommand {
                     omp.sendMessage("Announcements", Color.BLUE, "§7§l" + (i + 1) + ".");
                     {
                         ComponentMessage cM = new ComponentMessage();
-                        cM.add(omp.lang("Announcements", Color.BLUE, "§7 - §f" + title.getTitle()), ClickEvent.Action.SUGGEST_COMMAND, a[0].toLowerCase() + " title " + (i + 1) + " " + title.getTitle().replace("§", "&"), HoverEvent.Action.SHOW_TEXT, "§7Edit");
+                        cM.add(new Message("Announcements", Color.BLUE, "§7 - §f" + title.getTitle()), ClickEvent.Action.SUGGEST_COMMAND, new Message(a[0].toLowerCase() + " title " + (i + 1) + " " + title.getTitle().replace("§", "&")), HoverEvent.Action.SHOW_TEXT, new Message("§7Bewerken", "§7Edit"));
                         cM.send(omp);
                     } {
                         ComponentMessage cM = new ComponentMessage();
-                        cM.add(omp.lang("Announcements", Color.BLUE, "§7 - §f" + title.getSubTitle()), ClickEvent.Action.SUGGEST_COMMAND, a[0].toLowerCase() + " subtitle " + (i + 1) + " " + title.getSubTitle().replace("§", "&"), HoverEvent.Action.SHOW_TEXT, "§7Edit");
+                        cM.add(new Message("Announcements", Color.BLUE, "§7 - §f" + title.getSubTitle()), ClickEvent.Action.SUGGEST_COMMAND, new Message(a[0].toLowerCase() + " subtitle " + (i + 1) + " " + title.getSubTitle().replace("§", "&")), HoverEvent.Action.SHOW_TEXT, new Message("§7Bewerken", "§7Edit"));
                         cM.send(omp);
                     }
                 }

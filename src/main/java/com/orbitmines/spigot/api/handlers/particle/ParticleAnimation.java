@@ -65,7 +65,7 @@ public abstract class ParticleAnimation extends Particle {
     }
 
     public void sendOpposite(Collection<? extends Player> players) {
-        orbitMines.getNms().particle().send(players, particle, longDistance, getOppositeX(), getOppositeY(), getOppositeZ(), xOff, yOff, zOff, speed, amount);
+        orbitMines.getNms().particle().send(players, particle.toString(), longDistance, getOppositeX(), getOppositeY(), getOppositeZ(), xOff, yOff, zOff, speed, amount);
     }
 
     public void sendInvert() {
@@ -77,7 +77,7 @@ public abstract class ParticleAnimation extends Particle {
     }
 
     public void sendInvert(Collection<? extends Player> players) {
-        orbitMines.getNms().particle().send(players, particle, longDistance, getOppositeX(), getY(), getOppositeZ(), xOff, yOff, zOff, speed, amount);
+        orbitMines.getNms().particle().send(players, particle.toString(), longDistance, getOppositeX(), getY(), getOppositeZ(), xOff, yOff, zOff, speed, amount);
     }
 
     public void sendOppositeInvert() {
@@ -89,7 +89,7 @@ public abstract class ParticleAnimation extends Particle {
     }
 
     public void sendOppositeInvert(Collection<? extends Player> players) {
-        orbitMines.getNms().particle().send(players, particle, longDistance, getX(), getOppositeY(), getZ(), xOff, yOff, zOff, speed, amount);
+        orbitMines.getNms().particle().send(players, particle.toString(), longDistance, getX(), getOppositeY(), getZ(), xOff, yOff, zOff, speed, amount);
     }
 
     /* Library methods */

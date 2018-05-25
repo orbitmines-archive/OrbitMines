@@ -1,26 +1,28 @@
 package com.orbitmines.spigot.api.handlers.chat;
 
+import com.orbitmines.api.Language;
+import com.orbitmines.api.Message;
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
+import org.bukkit.entity.Player;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /*
 * OrbitMines - @author Fadi Shawki - 29-7-2017
 */
 public class Title {
 
-    private final OrbitMines orbitMines;
+    private final OrbitMines plugin;
 
-    private String title;
-    private String subTitle;
+    private Message title;
+    private Message subTitle;
     private int fadeIn;
     private int stay;
     private int fadeOut;
 
-    public Title(String title, String subTitle, int fadeIn, int stay, int fadeOut) {
-        orbitMines = OrbitMines.getInstance();
+    public Title(Message title, Message subTitle, int fadeIn, int stay, int fadeOut) {
+        plugin = OrbitMines.getInstance();
 
         this.title = title;
         this.subTitle = subTitle;
@@ -30,41 +32,40 @@ public class Title {
     }
 
     public void send(OMPlayer player) {
-        if (player.isLoggedIn())
-            orbitMines.getNms().title().send(player.getPlayer(), this);
+        send(Collections.singletonList(player));
     }
 
     public void send(OMPlayer... players) {
-        for (OMPlayer player : players) {
-            send(player);
-        }
-    }
-
-    public void send(List<OMPlayer> players) {
-        for (OMPlayer player : players) {
-            send(player);
-        }
+        send(Arrays.asList(players));
     }
 
     public void send(Collection<? extends OMPlayer> players) {
+        Map<Language, List<Player>> perLanguage = new HashMap<>();
         for (OMPlayer player : players) {
-            send(player);
+            if (!perLanguage.containsKey(player.getLanguage()))
+                perLanguage.put(player.getLanguage(), new ArrayList<>());
+
+            perLanguage.get(player.getLanguage()).add(player.getPlayer());
+        }
+
+        for (Language language : perLanguage.keySet()) {
+            plugin.getNms().title().send(perLanguage.get(language), title.lang(language), subTitle.lang(language), fadeIn, stay, fadeOut);
         }
     }
 
-    public String getTitle() {
+    public Message getTitle() {
         return title;
     }
 
-    public void setTitle(String title) {
+    public void setTitle(Message title) {
         this.title = title;
     }
 
-    public String getSubTitle() {
+    public Message getSubTitle() {
         return subTitle;
     }
 
-    public void setSubTitle(String subTitle) {
+    public void setSubTitle(Message subTitle) {
         this.subTitle = subTitle;
     }
 

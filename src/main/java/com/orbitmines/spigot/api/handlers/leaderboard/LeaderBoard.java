@@ -1,8 +1,8 @@
 package com.orbitmines.spigot.api.handlers.leaderboard;
 
-import com.orbitmines.api.Server;
-import com.orbitmines.spigot.OrbitMines;
-import com.orbitmines.spigot.api.handlers.npc.Hologram;
+import com.orbitmines.api.database.Column;
+import com.orbitmines.api.database.Table;
+import com.orbitmines.api.database.Where;
 import org.bukkit.Location;
 
 import java.util.ArrayList;
@@ -11,20 +11,29 @@ import java.util.List;
 import java.util.Map;
 
 /*
-* OrbitMines - @author Fadi Shawki - 29-7-2017
-*/
+ * OrbitMines - @author Fadi Shawki - 2018
+ */
 public abstract class LeaderBoard {
 
     private static List<LeaderBoard> leaderBoards = new ArrayList<>();
 
     protected Location location;
-    protected Hologram hologram;
+
+    protected final Table table;
+    protected final Column[] columnArray;
+    protected final Where[] wheres;
 
     public LeaderBoard(Location location) {
+        this(location, null, null, null);
+    }
+
+    public LeaderBoard(Location location, Table table, Column uuidColumn, Column column, Where... wheres) {
         leaderBoards.add(this);
 
         this.location = location;
-        hologram = new Hologram(location);
+        this.table = table;
+        this.columnArray = new Column[] { uuidColumn, column };
+        this.wheres = wheres;
     }
 
     public abstract void update();
@@ -38,8 +47,6 @@ public abstract class LeaderBoard {
     }
 
     public static void setup(Map<Location, String[]> leaderboardData) {
-        Server server = OrbitMines.getInstance().getServerHandler().getServer();
-
         Map<String, Instantiator> instantiators = Instantiator.getInstantiators();
 
         for (Location location : leaderboardData.keySet()) {
@@ -48,7 +55,7 @@ public abstract class LeaderBoard {
             String name = data[0].toUpperCase();
 
             if (instantiators.containsKey(name))
-                instantiators.get(name).instantiate(server, location, data);
+                instantiators.get(name).instantiate(location, data);
         }
     }
 
@@ -64,7 +71,7 @@ public abstract class LeaderBoard {
             instantiators.put(datapointName, this);
         }
 
-        public abstract LeaderBoard instantiate(Server server, Location location, String[] data);
+        public abstract LeaderBoard instantiate(Location location, String[] data);
 
         public String getDatapointName() {
             return datapointName;
