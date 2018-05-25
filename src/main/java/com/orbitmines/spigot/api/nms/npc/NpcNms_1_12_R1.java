@@ -1,9 +1,12 @@
 package com.orbitmines.spigot.api.nms.npc;
 
+import com.orbitmines.spigot.api.utils.ReflectionUtils;
 import net.minecraft.server.v1_12_R1.*;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftLivingEntity;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Set;
 
@@ -12,45 +15,72 @@ import java.util.Set;
  */
 public class NpcNms_1_12_R1 implements NpcNms {
 
-    public static Object getPrivateField(String fieldName, Class clazz, Object object) {
-        Field field;
-        Object o = null;
-
-        try {
-            field = clazz.getDeclaredField(fieldName);
-            field.setAccessible(true);
-            o = field.get(object);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-
-        return o;
-    }
-
-    public static void setNoAI(CraftEntity e) {
-        Entity nmsEnt = e.getHandle();
-        NBTTagCompound tag = new NBTTagCompound();
-        nmsEnt.c(tag);
-        tag.setInt("NoAI", 1);
-        nmsEnt.f(tag);
-    }
-
-
-    /* Used for 1.8-1.10 */
-    @Override
     public void setClassFields() {
+
     }
 
-    /* Changed for 1.11, again... */
     public void addCustomEntity(Class entityClass, String name, int id) {
         MinecraftKey key = new MinecraftKey(name);
 
         try {
-            ((RegistryMaterials) getPrivateField("b", EntityTypes.class, null)).a(id, key, entityClass);
-            ((Set) getPrivateField("d", EntityTypes.class, null)).add(key);
-            ((List) getPrivateField("g", EntityTypes.class, null)).set(id, name);
+            ((RegistryMaterials) ReflectionUtils.getDeclaredObject("b", EntityTypes.class, null)).a(id, key, entityClass);
+            ((Set) ReflectionUtils.getDeclaredObject("d", EntityTypes.class, null)).add(key);
+            ((List) ReflectionUtils.getDeclaredObject("g", EntityTypes.class, null)).set(id, name);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public void setNoAI(org.bukkit.entity.Entity entity) {
+        net.minecraft.server.v1_12_R1.Entity nmsEntity = ((CraftEntity) entity).getHandle();
+        NBTTagCompound tag = new NBTTagCompound();
+        nmsEntity.c(tag);
+        tag.setInt("NoAI", 1);
+        nmsEntity.f(tag);
+    }
+
+    public float[] handleMovement(org.bukkit.entity.Entity rideable, float speed, float backMultiplier, float sideMultiplier, float walkHeight) {
+        EntityLiving nmsRideable = ((CraftLivingEntity) rideable).getHandle();
+
+        nmsRideable.lastYaw = nmsRideable.yaw = nmsRideable.passengers.get(0).yaw;
+        nmsRideable.pitch = nmsRideable.passengers.get(0).pitch * 0.5F;
+
+        try {
+            ReflectionUtils.getDeclaredMethod(net.minecraft.server.v1_12_R1.Entity.class, "setYawPitch", float.class, float.class).invoke(nmsRideable.yaw, nmsRideable.pitch);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
+
+        nmsRideable.aN = nmsRideable.aL = nmsRideable.yaw;
+
+        nmsRideable.P = walkHeight;
+
+        float sideMot = ((EntityLiving) nmsRideable.passengers.get(0)).be * 0.5F;
+        float highMot = ((EntityLiving) nmsRideable.passengers.get(0)).bf;
+        float forMot = ((EntityLiving) nmsRideable.passengers.get(0)).bg;
+
+        if (forMot <= 0.0F)
+            forMot *= backMultiplier;
+
+        sideMot *= sideMultiplier;
+
+        nmsRideable.k(speed);
+
+        return new float[]{ sideMot, highMot, forMot };
+    }
+
+    public void handleJump(org.bukkit.entity.Entity rideable, float jumpHeight) {
+        EntityLiving nmsRideable = ((CraftLivingEntity) rideable).getHandle();
+
+        if (!nmsRideable.onGround)
+            return;
+
+        Field field = ReflectionUtils.getDeclaredField(EntityLiving.class, "bd");
+
+        try {
+            nmsRideable.motY = field.getBoolean(nmsRideable.passengers.get(0)) ? jumpHeight : 0D;
+        } catch (IllegalAccessException ex) {
+            ex.printStackTrace();
         }
     }
 }

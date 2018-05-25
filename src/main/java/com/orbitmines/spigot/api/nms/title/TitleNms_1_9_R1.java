@@ -1,31 +1,34 @@
 package com.orbitmines.spigot.api.nms.title;
 
-import com.orbitmines.spigot.api.handlers.chat.Title;
 import net.minecraft.server.v1_9_R1.IChatBaseComponent;
 import net.minecraft.server.v1_9_R1.PacketPlayOutTitle;
 import net.minecraft.server.v1_9_R1.PlayerConnection;
 import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
+import java.util.Collection;
+
 /**
  * Created by Fadi on 30-4-2016.
  */
 public class TitleNms_1_9_R1 implements TitleNms {
 
-    public void send(Player player, Title title) {
+    public void send(Collection<? extends Player> players, String title, String subTitle, int fadeIn, int stay, int fadeOut) {
         IChatBaseComponent time = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + "" + "\"}");
-        PacketPlayOutTitle timePacket = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TIMES, time, title.getFadeIn(), title.getStay(), title.getFadeOut());
+        PacketPlayOutTitle timePacket = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TIMES, time, fadeIn, stay, fadeOut);
 
-        IChatBaseComponent t = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + title.getTitle() + "\"}");
+        IChatBaseComponent t = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + title + "\"}");
         PacketPlayOutTitle titlePacket = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, t);
 
-        IChatBaseComponent s = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + title.getSubTitle() + "\"}");
+        IChatBaseComponent s = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + subTitle + "\"}");
         PacketPlayOutTitle subTitlePacket = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.SUBTITLE, s);
 
-        PlayerConnection c = ((CraftPlayer) player).getHandle().playerConnection;
+        for (Player player : players) {
+            PlayerConnection c = ((CraftPlayer) player).getHandle().playerConnection;
 
-        c.sendPacket(timePacket);
-        c.sendPacket(titlePacket);
-        c.sendPacket(subTitlePacket);
+            c.sendPacket(timePacket);
+            c.sendPacket(titlePacket);
+            c.sendPacket(subTitlePacket);
+        }
     }
 }

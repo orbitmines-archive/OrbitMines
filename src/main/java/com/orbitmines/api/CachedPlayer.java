@@ -48,6 +48,10 @@ public class CachedPlayer {
         return VipRank.valueOf(Database.get().getString(Table.PLAYERS, TablePlayers.VIPRANK, new Where(TablePlayers.UUID, getUUID().toString())));
     }
 
+    public Language getLanguage() {
+        return Language.valueOf(Database.get().getString(Table.PLAYERS, TablePlayers.LANGUAGE, new Where(TablePlayers.UUID, getUUID().toString())));
+    }
+
     public String getLastOnline() {
         updateIP();
 

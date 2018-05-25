@@ -97,8 +97,8 @@ public class _2FA {
         if (!authorized) {
             return Result.INVALID_CODE;
         } else if (tempKeys.containsKey(omp)) {
-            omp.sendMessage(Message.PREFIX_2FA, Color.LIME, "Successfully setup your 2FA!");
-            omp.sendMessage(Message.PREFIX_2FA, Color.BLUE, "You will be asked for your 2FA code every 24 hours.");
+            omp.sendMessage(Message.PREFIX_2FA, Color.LIME, "2FA is succesvol ingesteld.", "Successfully setup your 2FA!");
+            omp.sendMessage(Message.PREFIX_2FA, Color.BLUE, "Je zal elke 24 uur gevraagd worden naar je 2FA code.", "You will be asked for your 2FA code every 24 hours.");
 
             tempKeys.remove(omp);
 
@@ -121,7 +121,7 @@ public class _2FA {
 
         tempKeys.put(omp, secret);
 
-        omp.sendMessage(Message.PREFIX_2FA, Color.BLUE, "§r§7Initiating new 2FA. Use the QR code on the map.");
+        omp.sendMessage(Message.PREFIX_2FA, Color.BLUE, "Gebruik de QR code op de kaart om je 2FA code in te stellen.", "§r§7Initiating new 2FA. Use the QR code on the map.");
 
         QRMapRenderer qrMap;
         try {
@@ -133,9 +133,9 @@ public class _2FA {
 
         if (qrMap == null) {
             ComponentMessage cM = new ComponentMessage();
-            cM.add(Message.FORMAT(Message.PREFIX_2FA, Color.RED, "§r§7n error occurred, please "));
-            cM.add("§6click here", ClickEvent.Action.OPEN_URL, "https://www.google.com/chart?chs=250x250&cht=qr&chl=" + otpAuth(omp, secret), HoverEvent.Action.SHOW_TEXT, "§7Open QR Code in browser.");
-            cM.add("§7.");
+            cM.add(new Message(Message.PREFIX_2FA, Color.RED, "§r§7Er is een fout opgetreden, ", "§r§7An error occurred, please "));
+            cM.add(new Message("§6klik hier", "§6click here"), ClickEvent.Action.OPEN_URL, new Message("https://www.google.com/chart?chs=250x250&cht=qr&chl=" + otpAuth(omp, secret)), HoverEvent.Action.SHOW_TEXT, new Message("§7Open de QR Code in je browser.", "§7Open QR Code in browser."));
+            cM.add(new Message("§7."));
 
             cM.send(omp);
         } else {

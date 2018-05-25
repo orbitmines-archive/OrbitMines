@@ -1,6 +1,7 @@
 package com.orbitmines.bungeecord.commands;
 
 import com.orbitmines.api.Color;
+import com.orbitmines.api.Message;
 import com.orbitmines.api.StaffRank;
 import com.orbitmines.bungeecord.OrbitMinesBungee;
 import com.orbitmines.bungeecord.handlers.BungeePlayer;
@@ -32,7 +33,7 @@ public class CommandMotd extends StaffCommand {
     }
 
     @Override
-    public String getHelp(BungeePlayer mbp) {
+    public String getHelp(BungeePlayer omp) {
         return "view|1|2";
     }
 
@@ -49,12 +50,12 @@ public class CommandMotd extends StaffCommand {
 
                 {
                     ComponentMessage cM = new ComponentMessage();
-                    cM.add(omp.lang("Motd", Color.BLUE, "§7§l1.§r §7" + bungee.getMotdHandler().getFirstLine()), ClickEvent.Action.SUGGEST_COMMAND, a[0].toLowerCase() + " 1 " + bungee.getMotdHandler().getFirstLine().replace("§", "&"), HoverEvent.Action.SHOW_TEXT, "§7Edit");
+                    cM.add(new Message("Motd", Color.BLUE, "§7§l1.§r §7" + bungee.getMotdHandler().getFirstLine()), ClickEvent.Action.SUGGEST_COMMAND, new Message(a[0].toLowerCase() + " 1 " + bungee.getMotdHandler().getFirstLine().replace("§", "&")), HoverEvent.Action.SHOW_TEXT, new Message("§7Bewerken", "§7Edit"));
                     cM.send(omp);
                 }
                 {
                     ComponentMessage cM = new ComponentMessage();
-                    cM.add(omp.lang("Motd", Color.BLUE, "§7§l2.§r §7" + bungee.getMotdHandler().getSecondLine()), ClickEvent.Action.SUGGEST_COMMAND, a[0].toLowerCase() + " 2 " + bungee.getMotdHandler().getSecondLine().replace("§", "&"), HoverEvent.Action.SHOW_TEXT, "§7Edit");
+                    cM.add(new Message("Motd", Color.BLUE, "§7§l2.§r §7" + bungee.getMotdHandler().getSecondLine()), ClickEvent.Action.SUGGEST_COMMAND, new Message(a[0].toLowerCase() + " 2 " + bungee.getMotdHandler().getSecondLine().replace("§", "&")), HoverEvent.Action.SHOW_TEXT, new Message("§7Bewerken", "§7Edit"));
                     cM.send(omp);
                 }
                 break;

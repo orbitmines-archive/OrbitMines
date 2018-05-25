@@ -7,6 +7,7 @@ import com.orbitmines.api.Server;
 import com.orbitmines.bungeecord.OrbitMinesBungee;
 import com.orbitmines.bungeecord.runnables.BungeeRunnable;
 import com.orbitmines.bungeecord.utils.ConsoleUtils;
+import com.orbitmines.spigot.api.utils.Serializer;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -105,14 +106,14 @@ public class PluginMessageHandler implements Listener {
                         return;
 
                     if (server.getPlayers() != 0) {
-                        bungee.getMessageHandler().dataTransfer(message, bungee.getServer(server), data.toArray(new String[data.size()]));
+                        dataTransfer(message, bungee.getServer(server), data.toArray(new String[data.size()]));
                     } else {
                         /* No players on the server ? Let's queue it up until there are. */
                         new BungeeRunnable(BungeeRunnable.TimeUnit.SECOND, 2) {
                             @Override
                             public void run() {
                                 if (server.getPlayers() != 0) {
-                                    bungee.getMessageHandler().dataTransfer(message, bungee.getServer(server), data.toArray(new String[data.size()]));
+                                    dataTransfer(message, bungee.getServer(server), data.toArray(new String[data.size()]));
                                     cancel();
                                 }
                             }
@@ -126,62 +127,84 @@ public class PluginMessageHandler implements Listener {
 
             switch (message) {
                 case CONNECT: {
-                    BungeePlayer mbp = BungeePlayer.getPlayer(UUID.fromString(in.readUTF()));
+                    BungeePlayer omp = BungeePlayer.getPlayer(UUID.fromString(in.readUTF()));
 
-                    if (mbp == null)
+                    if (omp == null)
                         break;
 
                     String serverName = in.readUTF();
                     boolean notify = Boolean.parseBoolean(in.readUTF());
 
-                    mbp.connect(bungee.getServer(serverName), notify);
+                    omp.connect(bungee.getServer(serverName), notify);
 
                     break;
                 }
                 case KICK: {
-                    BungeePlayer mbp = BungeePlayer.getPlayer(UUID.fromString(in.readUTF()));
+                    BungeePlayer omp = BungeePlayer.getPlayer(UUID.fromString(in.readUTF()));
 
-                    if (mbp == null)
+                    if (omp == null)
                         break;
 
                     try {
-                        mbp.getPlayer().disconnect(new TextComponent(ChatColor.translateAlternateColorCodes('&', in.readUTF())));
+                        omp.getPlayer().disconnect(new TextComponent(ChatColor.translateAlternateColorCodes('&', in.readUTF())));
                     } catch(IOException ex) {
-                        mbp.getPlayer().disconnect();
+                        omp.getPlayer().disconnect();
                     }
                     break;
                 }
                 case LOGIN_2FA: {
-                    BungeePlayer mbp = BungeePlayer.getPlayer(UUID.fromString(in.readUTF()));
+                    BungeePlayer omp = BungeePlayer.getPlayer(UUID.fromString(in.readUTF()));
 
-                    if (mbp == null)
+                    if (omp == null)
                         break;
 
-                    mbp.setLoggedIn(true);
-                    bungee.registerLogin(mbp);
+                    omp.setLoggedIn(true);
+                    bungee.registerLogin(omp);
+                    break;
+                }
+                case MESSAGE_PLAYER: {
+                    BungeePlayer omp = BungeePlayer.getPlayer(UUID.fromString(in.readUTF()));
+
+                    if (omp != null)
+                        omp.sendMessage(ChatColor.translateAlternateColorCodes('&', in.readUTF()));
+
+                    break;
+                }
+                case FAVORITE_FRIEND_MESSAGE: {
+                    List<UUID> friends = Serializer.parseUUIDList(in.readUTF());
+                    String joinedUuid = in.readUTF();
+                    String joinedName = in.readUTF();
+
+                    for (UUID friend : friends) {
+                        BungeePlayer omp = BungeePlayer.getPlayer(friend);
+
+                        if (omp != null)
+                            dataTransfer(message, omp.getPlayer(), friend.toString(), joinedUuid, joinedName);
+                    }
+
                     break;
                 }
                 case UPDATE_RANKS: {
-                    BungeePlayer mbp = BungeePlayer.getPlayer(UUID.fromString(in.readUTF()));
+                    BungeePlayer omp = BungeePlayer.getPlayer(UUID.fromString(in.readUTF()));
 
-                    if (mbp != null)
-                        mbp.updateRanks();
+                    if (omp != null)
+                        omp.updateRanks();
 
                     break;
                 }
                 case UPDATE_LANGUAGE: {
-                    BungeePlayer mbp = BungeePlayer.getPlayer(UUID.fromString(in.readUTF()));
+                    BungeePlayer omp = BungeePlayer.getPlayer(UUID.fromString(in.readUTF()));
 
-                    if (mbp != null)
-                        mbp.updateLanguage();
+                    if (omp != null)
+                        omp.updateLanguage();
 
                     break;
                 }
                 case UPDATE_SILENT: {
-                    BungeePlayer mbp = BungeePlayer.getPlayer(UUID.fromString(in.readUTF()));
+                    BungeePlayer omp = BungeePlayer.getPlayer(UUID.fromString(in.readUTF()));
 
-                    if (mbp != null)
-                        mbp.updateSilent();
+                    if (omp != null)
+                        omp.updateSilent();
 
                     break;
                 }

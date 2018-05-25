@@ -14,9 +14,9 @@ import com.orbitmines.spigot.api.events.*;
 import com.orbitmines.spigot.api.handlers.ConfigHandler;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.OrbitMinesMap;
-import com.orbitmines.spigot.api.handlers.leaderboard.DefaultLeaderBoard;
+import com.orbitmines.spigot.api.handlers.leaderboard.hologram.DefaultHologramLeaderBoard;
 import com.orbitmines.spigot.api.handlers.leaderboard.LeaderBoard;
-import com.orbitmines.spigot.api.handlers.leaderboard.custom.LeaderBoardDonations;
+import com.orbitmines.spigot.leaderboards.hologram.LeaderBoardDonations;
 import com.orbitmines.spigot.api.handlers.worlds.WorldLoader;
 import com.orbitmines.spigot.api.nms.Nms;
 import com.orbitmines.spigot.api.utils.ReflectionUtils;
@@ -85,35 +85,35 @@ public class OrbitMines extends JavaPlugin {
     static {
         new LeaderBoard.Instantiator("SOLARS") {
             @Override
-            public LeaderBoard instantiate(Server server, Location location, String[] data) {
-                return new DefaultLeaderBoard(location, "§7§lTop Solars", 10, Table.PLAYERS, TablePlayers.UUID, TablePlayers.SOLARS);
+            public LeaderBoard instantiate(Location location, String[] data) {
+                return new DefaultHologramLeaderBoard(location, () -> "§7§lTop Solars", 10, Table.PLAYERS, TablePlayers.UUID, TablePlayers.SOLARS);
             }
         };
         new LeaderBoard.Instantiator("PRISMS") {
             @Override
-            public LeaderBoard instantiate(Server server, Location location, String[] data) {
-                return new DefaultLeaderBoard(location, "§7§lTop Prisms", 10, Table.PLAYERS, TablePlayers.UUID, TablePlayers.PRISMS);
+            public LeaderBoard instantiate(Location location, String[] data) {
+                return new DefaultHologramLeaderBoard(location, () -> "§7§lTop Prisms", 10, Table.PLAYERS, TablePlayers.UUID, TablePlayers.PRISMS);
             }
         };
 
         new LeaderBoard.Instantiator("TOP_VOTERS") {
             @Override
-            public LeaderBoard instantiate(Server server, Location location, String[] data) {
-                return new DefaultLeaderBoard(location.clone().subtract(0, 1.5, 0), "§7§lTop Voters", 5, Table.VOTES, TableVotes.UUID, TableVotes.VOTES);
+            public LeaderBoard instantiate(Location location, String[] data) {
+                return new DefaultHologramLeaderBoard(location, () -> "§7§lTop Voters", 5, Table.VOTES, TableVotes.UUID, TableVotes.VOTES);
             }
         };
 
         new LeaderBoard.Instantiator("TOTAL_VOTES") {
             @Override
-            public LeaderBoard instantiate(Server server, Location location, String[] data) {
-                return new DefaultLeaderBoard(location, "§7§lTop Total Votes", 10, Table.VOTES, TableVotes.UUID, TableVotes.TOTAL_VOTES);
+            public LeaderBoard instantiate(Location location, String[] data) {
+                return new DefaultHologramLeaderBoard(location, () -> "§7§lTop Total Votes", 10, Table.VOTES, TableVotes.UUID, TableVotes.TOTAL_VOTES);
             }
         };
 
         new LeaderBoard.Instantiator("DONATIONS") {
             @Override
-            public LeaderBoard instantiate(Server server, Location location, String[] data) {
-                return new LeaderBoardDonations(location.clone().subtract(0, 1.5, 0), "§7§lRecent Donations", 3);
+            public LeaderBoard instantiate(Location location, String[] data) {
+                return new LeaderBoardDonations(location.clone().subtract(0, 1.5, 0), () -> "§7§lRecent Donations", 3);
             }
         };
     }

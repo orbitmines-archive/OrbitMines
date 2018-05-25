@@ -20,7 +20,7 @@ import com.orbitmines.spigot.api.handlers.PreventionSet;
 import com.orbitmines.spigot.api.handlers.chat.ActionBar;
 import com.orbitmines.spigot.api.handlers.itemhandlers.ItemHoverActionBar;
 import com.orbitmines.spigot.api.handlers.itemhandlers.ItemInteraction;
-import com.orbitmines.spigot.api.handlers.leaderboard.DefaultLeaderBoard;
+import com.orbitmines.spigot.api.handlers.leaderboard.hologram.DefaultHologramLeaderBoard;
 import com.orbitmines.spigot.api.handlers.leaderboard.LeaderBoard;
 import com.orbitmines.spigot.api.handlers.scoreboard.DefaultScoreboard;
 import com.orbitmines.spigot.api.utils.ConsoleUtils;
@@ -56,14 +56,14 @@ public class Survival extends OrbitMinesServer {
     static {
         new LeaderBoard.Instantiator("EARTH_MONEY") {
             @Override
-            public LeaderBoard instantiate(Server server, Location location, String[] data) {
-                return new DefaultLeaderBoard(location, "§7§lRichest Players", 10, Table.SURVIVAL_PLAYERS, TableSurvivalPlayers.UUID, TableSurvivalPlayers.EARTH_MONEY);
+            public LeaderBoard instantiate(Location location, String[] data) {
+                return new DefaultHologramLeaderBoard(location, () -> "§7§lRichest Players", 10, Table.SURVIVAL_PLAYERS, TableSurvivalPlayers.UUID, TableSurvivalPlayers.EARTH_MONEY);
             }
         };
         new LeaderBoard.Instantiator("CLAIM_BLOCKS") {
             @Override
-            public LeaderBoard instantiate(Server server, Location location, String[] data) {
-                return new DefaultLeaderBoard(location, "§7§lTop ClaimBlocks", 10, Table.SURVIVAL_PLAYERS, TableSurvivalPlayers.UUID, TableSurvivalPlayers.CLAIM_BLOCKS);
+            public LeaderBoard instantiate(Location location, String[] data) {
+                return new DefaultHologramLeaderBoard(location, () -> "§7§lTop ClaimBlocks", 10, Table.SURVIVAL_PLAYERS, TableSurvivalPlayers.UUID, TableSurvivalPlayers.CLAIM_BLOCKS);
             }
         };
     }

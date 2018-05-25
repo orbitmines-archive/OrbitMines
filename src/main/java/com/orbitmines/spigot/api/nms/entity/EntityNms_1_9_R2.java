@@ -1,7 +1,6 @@
 package com.orbitmines.spigot.api.nms.entity;
 
 import com.orbitmines.spigot.OrbitMines;
-import com.orbitmines.spigot.api.Mob;
 import com.orbitmines.spigot.api.utils.ReflectionUtils;
 import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.Location;
@@ -9,9 +8,10 @@ import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.entity.Ageable;
-import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Entity;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.lang.reflect.Field;
@@ -70,11 +70,13 @@ public class EntityNms_1_9_R2 implements EntityNms {
     }
 
     @Override
-    public void destroyEntityFor(Collection<? extends Player> players, Entity entity) {
-        PacketPlayOutEntityDestroy packet = new PacketPlayOutEntityDestroy(((CraftEntity) entity).getHandle().getId());
+    public void destroyEntitiesFor(Collection<? extends Entity> entities, Collection<? extends Player> players) {
+        for (Entity entity : entities) {
+            PacketPlayOutEntityDestroy packet = new PacketPlayOutEntityDestroy(((CraftEntity) entity).getHandle().getId());
 
-        for (Player player : players) {
-            ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
+            for (Player player : players) {
+                ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
+            }
         }
     }
 
@@ -102,11 +104,11 @@ public class EntityNms_1_9_R2 implements EntityNms {
     }
 
     @Override
-    public Entity disguiseAsMob(Player player, Mob mob, boolean baby, String displayName, Collection<? extends Player> players) {
+    public Entity disguiseAsMob(Player player, EntityType entityType, boolean baby, String displayName, Collection<? extends Player> players) {
         EntityLiving disguise = null;
         World world = ((CraftPlayer) player).getHandle().world;
 
-        switch (mob) {
+        switch (entityType) {
 
             case ARMOR_STAND:
                 disguise = new EntityArmorStand(world);

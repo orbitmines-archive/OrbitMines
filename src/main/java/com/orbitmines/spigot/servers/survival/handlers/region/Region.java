@@ -1,6 +1,7 @@
 package com.orbitmines.spigot.servers.survival.handlers.region;
 
 import com.orbitmines.api.Cooldown;
+import com.orbitmines.api.Message;
 import com.orbitmines.api.utils.RandomUtils;
 import com.orbitmines.spigot.api.handlers.chat.ActionBar;
 import com.orbitmines.spigot.api.handlers.chat.Title;
@@ -97,7 +98,7 @@ public class Region {
         p.teleport(this.location);
         p.playSound(p.getLocation(), Sound.ENTITY_ENDERMEN_TELEPORT, 5, 1);
 
-        Title t = new Title("", "§7" + omp.lang("Geteleporteerd naar", "Teleported to") + " §aRegion " + (id + 1) + "§7.", 20, 40, 20);
+        Title t = new Title(new Message(""), new Message("§7Geteleporteerd naar §aRegion " + (id + 1) + "§7.", "§7Teleported to §aRegion " + (id + 1) + "§7."), 20, 40, 20);
         t.send(omp);
     }
 
