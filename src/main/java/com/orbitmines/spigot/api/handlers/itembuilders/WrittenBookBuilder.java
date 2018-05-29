@@ -12,15 +12,7 @@ import java.util.*;
 /*
 * OrbitMines - @author Fadi Shawki - 29-7-2017
 */
-public class WrittenBookBuilder {
-
-    protected int amount;
-    protected String displayName;
-    protected List<String> lore;
-
-    protected Map<Enchantment, Integer> enchantments;
-
-    protected boolean glow;
+public class WrittenBookBuilder extends ItemBuilder {
 
     private String author;
     private List<String> pages;
@@ -38,76 +30,22 @@ public class WrittenBookBuilder {
     }
 
     public WrittenBookBuilder(WrittenBookBuilder itemBuilder) {
-        this.amount = itemBuilder.amount;
-        this.displayName = itemBuilder.displayName;
-        this.lore = itemBuilder.lore == null ? new ArrayList<>() : new ArrayList<>(itemBuilder.lore);
-        this.enchantments = new HashMap<>(itemBuilder.enchantments);
-        this.glow = itemBuilder.glow;
+        super(itemBuilder);
+
+        this.author = itemBuilder.author;
         this.pages = new ArrayList<>(itemBuilder.pages);
     }
 
     public WrittenBookBuilder(int amount, String displayName, List<String> lore, String author, String... pages) {
-        this.amount = amount;
-        this.displayName = displayName;
-        this.lore = lore == null ? new ArrayList<>() : lore;
-        this.enchantments = new HashMap<>();
-        this.glow = false;
+        super(Material.WRITTEN_BOOK, amount, 0, displayName, lore);
 
         this.author = author;
         this.pages = new ArrayList<>(Arrays.asList(pages));
     }
 
-    public int getAmount() {
-        return amount;
-    }
-
-    public WrittenBookBuilder setAmount(int amount) {
-        this.amount = amount;
-        return this;
-    }
-
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    public WrittenBookBuilder setDisplayName(String displayName) {
-        this.displayName = displayName;
-        return this;
-    }
-
-    public List<String> getLore() {
-        return lore;
-    }
-
-    public WrittenBookBuilder setLore(List<String> lore) {
-        this.lore = lore;
-        return this;
-    }
-
-    public WrittenBookBuilder addLore(String lore) {
-        List<String> list = new ArrayList<>(this.lore);
-        list.add(lore);
-        this.lore = list;
-        return this;
-    }
-
-    public Map<Enchantment, Integer> getEnchantments() {
-        return enchantments;
-    }
-
-    public WrittenBookBuilder addEnchantment(Enchantment enchantment, int level) {
-        enchantments.put(enchantment, level);
-        return this;
-    }
-
-    public WrittenBookBuilder setEnchantments(Map<Enchantment, Integer> enchantments) {
-        this.enchantments = enchantments;
-        return this;
-    }
-
-    public WrittenBookBuilder glow() {
-        glow = true;
-        return this;
+    @Override
+    public ItemBuilder setMaterial(Material material) {
+        throw new IllegalStateException();
     }
 
     public String getAuthor() {

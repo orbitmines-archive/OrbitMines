@@ -33,6 +33,7 @@ public class CachedPlayer {
         return uuid;
     }
 
+    //TODO When player disguises are added; this should return the preferred display name.
     public String getPlayerName() {
         if (playerName == null)
             playerName = Database.get().getString(Table.PLAYERS, TablePlayers.NAME, new Where(TablePlayers.UUID, getUUID().toString()));

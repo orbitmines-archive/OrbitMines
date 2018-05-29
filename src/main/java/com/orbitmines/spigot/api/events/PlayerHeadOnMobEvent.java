@@ -75,7 +75,7 @@ public class PlayerHeadOnMobEvent implements Listener {
         String name = UUIDUtils.getName(UUID.fromString(RandomUtils.randomFrom(entries).get(TablePlayers.UUID)));
 
         EntityEquipment ee = entity.getEquipment();
-        ee.setHelmet(new PlayerSkullBuilder(name).build());
+        ee.setHelmet(new PlayerSkullBuilder(() -> name).build());
         ee.setHelmetDropChance(0.001F);
     }
 }

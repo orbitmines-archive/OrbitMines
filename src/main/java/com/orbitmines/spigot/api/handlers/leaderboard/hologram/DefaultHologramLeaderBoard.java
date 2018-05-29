@@ -22,12 +22,12 @@ public class DefaultHologramLeaderBoard extends HologramLeaderBoard {
     protected List<UUID> ordered;
     protected final HashMap<UUID, Integer> countMap;
 
-    public DefaultHologramLeaderBoard(Location location, ScoreboardString title, int size, Table table, Column uuidColumn, Column column, Where... wheres) {
-        this(location, new ScoreboardString[] { title }, size, table, uuidColumn, column, wheres);
+    public DefaultHologramLeaderBoard(Location location, double yOff, ScoreboardString title, int size, Table table, Column uuidColumn, Column column, Where... wheres) {
+        this(location, yOff, new ScoreboardString[] { title }, size, table, uuidColumn, column, wheres);
     }
 
-    public DefaultHologramLeaderBoard(Location location, ScoreboardString[] title, int size, Table table, Column uuidColumn, Column column, Where... wheres) {
-        super(location, table, uuidColumn, column, wheres);
+    public DefaultHologramLeaderBoard(Location location, double yOff,  ScoreboardString[] title, int size, Table table, Column uuidColumn, Column column, Where... wheres) {
+        super(location, yOff, table, uuidColumn, column, wheres);
 
         this.size = size;
         this.ordered = new ArrayList<>();

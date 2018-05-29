@@ -16,6 +16,7 @@ import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.OrbitMinesMap;
 import com.orbitmines.spigot.api.handlers.leaderboard.hologram.DefaultHologramLeaderBoard;
 import com.orbitmines.spigot.api.handlers.leaderboard.LeaderBoard;
+import com.orbitmines.spigot.api.handlers.npc.Hologram;
 import com.orbitmines.spigot.leaderboards.hologram.LeaderBoardDonations;
 import com.orbitmines.spigot.api.handlers.worlds.WorldLoader;
 import com.orbitmines.spigot.api.nms.Nms;
@@ -86,34 +87,34 @@ public class OrbitMines extends JavaPlugin {
         new LeaderBoard.Instantiator("SOLARS") {
             @Override
             public LeaderBoard instantiate(Location location, String[] data) {
-                return new DefaultHologramLeaderBoard(location, () -> "§7§lTop Solars", 10, Table.PLAYERS, TablePlayers.UUID, TablePlayers.SOLARS);
+                return new DefaultHologramLeaderBoard(location, 0, () -> "§7§lTop Solars", 10, Table.PLAYERS, TablePlayers.UUID, TablePlayers.SOLARS);
             }
         };
         new LeaderBoard.Instantiator("PRISMS") {
             @Override
             public LeaderBoard instantiate(Location location, String[] data) {
-                return new DefaultHologramLeaderBoard(location, () -> "§7§lTop Prisms", 10, Table.PLAYERS, TablePlayers.UUID, TablePlayers.PRISMS);
+                return new DefaultHologramLeaderBoard(location, 0, () -> "§7§lTop Prisms", 10, Table.PLAYERS, TablePlayers.UUID, TablePlayers.PRISMS);
             }
         };
 
         new LeaderBoard.Instantiator("TOP_VOTERS") {
             @Override
             public LeaderBoard instantiate(Location location, String[] data) {
-                return new DefaultHologramLeaderBoard(location, () -> "§7§lTop Voters", 5, Table.VOTES, TableVotes.UUID, TableVotes.VOTES);
+                return new DefaultHologramLeaderBoard(location, 0, () -> "§7§lTop Voters", 5, Table.VOTES, TableVotes.UUID, TableVotes.VOTES);
             }
         };
 
         new LeaderBoard.Instantiator("TOTAL_VOTES") {
             @Override
             public LeaderBoard instantiate(Location location, String[] data) {
-                return new DefaultHologramLeaderBoard(location, () -> "§7§lTop Total Votes", 10, Table.VOTES, TableVotes.UUID, TableVotes.TOTAL_VOTES);
+                return new DefaultHologramLeaderBoard(location, 0, () -> "§7§lTop Total Votes", 10, Table.VOTES, TableVotes.UUID, TableVotes.TOTAL_VOTES);
             }
         };
 
         new LeaderBoard.Instantiator("DONATIONS") {
             @Override
             public LeaderBoard instantiate(Location location, String[] data) {
-                return new LeaderBoardDonations(location.clone().subtract(0, 1.5, 0), () -> "§7§lRecent Donations", 3);
+                return new LeaderBoardDonations(location, Hologram.Y_OFFSET_PER_LINE * 2 /* This is to match the height of Top Total Votes */, () -> "§7§lRecent Donations", 3);
             }
         };
     }

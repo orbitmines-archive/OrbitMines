@@ -14,9 +14,9 @@ public abstract class HologramLeaderBoard extends LeaderBoard {
 
     protected Hologram hologram;
 
-    public HologramLeaderBoard(Location location, Table table, Column uuidColumn, Column column, Where... wheres) {
+    public HologramLeaderBoard(Location location, double yOff, Table table, Column uuidColumn, Column column, Where... wheres) {
         super(location, table, uuidColumn, column, wheres);
 
-        hologram = new Hologram(location, 0.5, Hologram.Face.UP);
+        hologram = new Hologram(location, yOff, Hologram.Face.UP);
     }
 }

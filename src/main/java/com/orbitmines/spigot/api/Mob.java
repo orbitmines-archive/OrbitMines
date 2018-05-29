@@ -94,211 +94,213 @@ public enum Mob {
         Nms nms = OrbitMines.getInstance().getNms();
         List<MobNpcNms.Option> options = Arrays.asList(optionsArray);
 
-        switch (this) {
-
-            case BAT:
-                break;
-            case BLAZE:
-                break;
-            case CAVE_SPIDER:
-                break;
-            case CHICKEN:
-                return nms.getChickenNpc().spawn(location, options);
-            case COW:
-                break;
-            case CREEPER:
-                break;
-            case ENDER_DRAGON:
-                break;
-            case ENDERMAN:
-                break;
-            case ENDERMITE:
-                break;
-            case GHAST:
-                break;
-            case GIANT:
-                break;
-            case GUARDIAN:
-                break;
-            case HORSE:
-                break;
-            case IRON_GOLEM:
-                break;
-            case MAGMA_CUBE:
-                break;
-            case MUSHROOM_COW:
-                break;
-            case OCELOT:
-                break;
-            case PIG:
-                break;
-            case PIG_ZOMBIE:
-                break;
-            case RABBIT:
-                break;
-            case SHEEP:
-                break;
-            case SILVERFISH:
-                break;
-            case SKELETON:
-                break;
-            case SLIME:
-                break;
-            case SNOWMAN:
-                break;
-            case SPIDER:
-                break;
-            case SQUID:
-                break;
-            case VILLAGER:
-                break;
-            case WITCH:
-                break;
-            case WITHER:
-                break;
-            case WOLF:
-                break;
-            case ZOMBIE:
-                break;
-            case POLAR_BEAR:
-                break;
-            case DONKEY:
-                break;
-            case ELDER_GUARDIAN:
-                break;
-            case EVOKER:
-                break;
-            case HUSK:
-                break;
-            case ILLUSIONER:
-                break;
-            case LLAMA:
-                break;
-            case MULE:
-                break;
-            case SKELETON_HORSE:
-                break;
-            case STRAY:
-                break;
-            case VEX:
-                break;
-            case VINDICATOR:
-                break;
-            case WITHER_SKELETON:
-                break;
-            case ZOMBIE_HORSE:
-                break;
-            case ZOMBIE_VILLAGER:
-                break;
-            case PARROT:
-                break;
-        }
-        throw new IllegalArgumentException();
+//        switch (this) {
+//
+//            case BAT:
+//                break;
+//            case BLAZE:
+//                break;
+//            case CAVE_SPIDER:
+//                break;
+//            case CHICKEN:
+//                return nms.getChickenNpc().spawn(location, options);
+//            case COW:
+//                break;
+//            case CREEPER:
+//                break;
+//            case ENDER_DRAGON:
+//                break;
+//            case ENDERMAN:
+//                break;
+//            case ENDERMITE:
+//                break;
+//            case GHAST:
+//                break;
+//            case GIANT:
+//                break;
+//            case GUARDIAN:
+//                break;
+//            case HORSE:
+//                break;
+//            case IRON_GOLEM:
+//                break;
+//            case MAGMA_CUBE:
+//                break;
+//            case MUSHROOM_COW:
+//                break;
+//            case OCELOT:
+//                break;
+//            case PIG:
+//                break;
+//            case PIG_ZOMBIE:
+//                break;
+//            case RABBIT:
+//                break;
+//            case SHEEP:
+//                break;
+//            case SILVERFISH:
+//                break;
+//            case SKELETON:
+//                break;
+//            case SLIME:
+//                break;
+//            case SNOWMAN:
+//                break;
+//            case SPIDER:
+//                break;
+//            case SQUID:
+//                break;
+//            case VILLAGER:
+//                break;
+//            case WITCH:
+//                break;
+//            case WITHER:
+//                break;
+//            case WOLF:
+//                break;
+//            case ZOMBIE:
+//                break;
+//            case POLAR_BEAR:
+//                break;
+//            case DONKEY:
+//                break;
+//            case ELDER_GUARDIAN:
+//                break;
+//            case EVOKER:
+//                break;
+//            case HUSK:
+//                break;
+//            case ILLUSIONER:
+//                break;
+//            case LLAMA:
+//                break;
+//            case MULE:
+//                break;
+//            case SKELETON_HORSE:
+//                break;
+//            case STRAY:
+//                break;
+//            case VEX:
+//                break;
+//            case VINDICATOR:
+//                break;
+//            case WITHER_SKELETON:
+//                break;
+//            case ZOMBIE_HORSE:
+//                break;
+//            case ZOMBIE_VILLAGER:
+//                break;
+//            case PARROT:
+//                break;
+//        }
+        return nms.getChickenNpc().spawn(location, options);
+//        throw new IllegalArgumentException();
     }
 
     public Entity spawnRideable(Location location, float speed, float backMultiplier, float sideMultiplier, float walkHeight, float jumpHeight) {
         Nms nms = OrbitMines.getInstance().getNms();
 
-        //TODO RIDEABLE ALSO COMBATMODE?
-        switch (this) {
-
-            case BAT:
-                break;
-            case BLAZE:
-                break;
-            case CAVE_SPIDER:
-                break;
-            case CHICKEN:
-                return nms.getChickenNpc().spawnRideable(location, speed, backMultiplier, sideMultiplier, walkHeight, jumpHeight);
-            case COW:
-                break;
-            case CREEPER:
-                break;
-            case ENDER_DRAGON:
-                break;
-            case ENDERMAN:
-                break;
-            case ENDERMITE:
-                break;
-            case GHAST:
-                break;
-            case GIANT:
-                break;
-            case GUARDIAN:
-                break;
-            case HORSE:
-                break;
-            case IRON_GOLEM:
-                break;
-            case MAGMA_CUBE:
-                break;
-            case MUSHROOM_COW:
-                break;
-            case OCELOT:
-                break;
-            case PIG:
-                break;
-            case PIG_ZOMBIE:
-                break;
-            case RABBIT:
-                break;
-            case SHEEP:
-                break;
-            case SILVERFISH:
-                break;
-            case SKELETON:
-                break;
-            case SLIME:
-                break;
-            case SNOWMAN:
-                break;
-            case SPIDER:
-                break;
-            case SQUID:
-                break;
-            case VILLAGER:
-                break;
-            case WITCH:
-                break;
-            case WITHER:
-                break;
-            case WOLF:
-                break;
-            case ZOMBIE:
-                break;
-            case POLAR_BEAR:
-                break;
-            case DONKEY:
-                break;
-            case ELDER_GUARDIAN:
-                break;
-            case EVOKER:
-                break;
-            case HUSK:
-                break;
-            case ILLUSIONER:
-                break;
-            case LLAMA:
-                break;
-            case MULE:
-                break;
-            case SKELETON_HORSE:
-                break;
-            case STRAY:
-                break;
-            case VEX:
-                break;
-            case VINDICATOR:
-                break;
-            case WITHER_SKELETON:
-                break;
-            case ZOMBIE_HORSE:
-                break;
-            case ZOMBIE_VILLAGER:
-                break;
-            case PARROT:
-                break;
-        }
-        throw new IllegalArgumentException();
+        return nms.getChickenNpc().spawnRideable(location, speed, backMultiplier, sideMultiplier, walkHeight, jumpHeight);
+//        //TODO RIDEABLE ALSO COMBATMODE?
+//        switch (this) {
+//
+//            case BAT:
+//                break;
+//            case BLAZE:
+//                break;
+//            case CAVE_SPIDER:
+//                break;
+//            case CHICKEN:
+//                return nms.getChickenNpc().spawnRideable(location, speed, backMultiplier, sideMultiplier, walkHeight, jumpHeight);
+//            case COW:
+//                break;
+//            case CREEPER:
+//                break;
+//            case ENDER_DRAGON:
+//                break;
+//            case ENDERMAN:
+//                break;
+//            case ENDERMITE:
+//                break;
+//            case GHAST:
+//                break;
+//            case GIANT:
+//                break;
+//            case GUARDIAN:
+//                break;
+//            case HORSE:
+//                break;
+//            case IRON_GOLEM:
+//                break;
+//            case MAGMA_CUBE:
+//                break;
+//            case MUSHROOM_COW:
+//                break;
+//            case OCELOT:
+//                break;
+//            case PIG:
+//                break;
+//            case PIG_ZOMBIE:
+//                break;
+//            case RABBIT:
+//                break;
+//            case SHEEP:
+//                break;
+//            case SILVERFISH:
+//                break;
+//            case SKELETON:
+//                break;
+//            case SLIME:
+//                break;
+//            case SNOWMAN:
+//                break;
+//            case SPIDER:
+//                break;
+//            case SQUID:
+//                break;
+//            case VILLAGER:
+//                break;
+//            case WITCH:
+//                break;
+//            case WITHER:
+//                break;
+//            case WOLF:
+//                break;
+//            case ZOMBIE:
+//                break;
+//            case POLAR_BEAR:
+//                break;
+//            case DONKEY:
+//                break;
+//            case ELDER_GUARDIAN:
+//                break;
+//            case EVOKER:
+//                break;
+//            case HUSK:
+//                break;
+//            case ILLUSIONER:
+//                break;
+//            case LLAMA:
+//                break;
+//            case MULE:
+//                break;
+//            case SKELETON_HORSE:
+//                break;
+//            case STRAY:
+//                break;
+//            case VEX:
+//                break;
+//            case VINDICATOR:
+//                break;
+//            case WITHER_SKELETON:
+//                break;
+//            case ZOMBIE_HORSE:
+//                break;
+//            case ZOMBIE_VILLAGER:
+//                break;
+//            case PARROT:
+//                break;
+//        }
+//        throw new IllegalArgumentException();
     }
 }

@@ -2,6 +2,7 @@ package com.orbitmines.spigot.api.handlers.kit;
 
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
+import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.api.utils.ItemUtils;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -34,7 +35,7 @@ public class KitInteractive extends Kit {
     }
 
     public void setItem(int index, InteractAction action) {
-        setItem(index, action.getItemStack());
+        setItem(index, action.getItemBuilder());
 
         interactions.add(action);
     }
@@ -82,10 +83,10 @@ public class KitInteractive extends Kit {
 
     public static abstract class InteractAction {
 
-        private ItemStack itemStack;
+        private ItemBuilder itemBuilder;
 
-        public InteractAction(ItemStack itemStack) {
-            this.itemStack = itemStack;
+        public InteractAction(ItemBuilder itemBuilder) {
+            this.itemBuilder = itemBuilder;
         }
 
         public abstract void onInteract(PlayerInteractEvent event, OMPlayer omp);
@@ -97,11 +98,12 @@ public class KitInteractive extends Kit {
 
         /* Override to change */
         public boolean equals(ItemStack item) {
+            ItemStack itemStack = itemBuilder.build();
             return item.getType() == itemStack.getType() && item.getDurability() == itemStack.getDurability() && item.getItemMeta().getDisplayName().equals(itemStack.getItemMeta().getDisplayName());
         }
 
-        public ItemStack getItemStack() {
-            return itemStack;
+        public ItemBuilder getItemBuilder() {
+            return itemBuilder;
         }
     }
 

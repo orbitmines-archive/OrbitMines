@@ -14,12 +14,12 @@ import org.bukkit.Location;
  */
 public class LeaderBoardDonations extends DefaultHologramLeaderBoard {
 
-    public LeaderBoardDonations(Location location, ScoreboardString title, int size) {
-        super(location, title, size, Table.DONATIONS, TableDonations.UUID, TableDonations.PACKAGE_ID);
+    public LeaderBoardDonations(Location location, double yOff, ScoreboardString title, int size) {
+        super(location, yOff, title, size, Table.DONATIONS, TableDonations.UUID, TableDonations.PACKAGE_ID);
     }
 
-    public LeaderBoardDonations(Location location, ScoreboardString[] title, int size) {
-        super(location, title, size, Table.DONATIONS, TableDonations.UUID, TableDonations.PACKAGE_ID);
+    public LeaderBoardDonations(Location location, double yOff, ScoreboardString[] title, int size) {
+        super(location, yOff, title, size, Table.DONATIONS, TableDonations.UUID, TableDonations.PACKAGE_ID);
     }
 
     @Override

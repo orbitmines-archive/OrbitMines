@@ -57,13 +57,13 @@ public class Survival extends OrbitMinesServer {
         new LeaderBoard.Instantiator("EARTH_MONEY") {
             @Override
             public LeaderBoard instantiate(Location location, String[] data) {
-                return new DefaultHologramLeaderBoard(location, () -> "§7§lRichest Players", 10, Table.SURVIVAL_PLAYERS, TableSurvivalPlayers.UUID, TableSurvivalPlayers.EARTH_MONEY);
+                return new DefaultHologramLeaderBoard(location, 0, () -> "§7§lRichest Players", 10, Table.SURVIVAL_PLAYERS, TableSurvivalPlayers.UUID, TableSurvivalPlayers.EARTH_MONEY);
             }
         };
         new LeaderBoard.Instantiator("CLAIM_BLOCKS") {
             @Override
             public LeaderBoard instantiate(Location location, String[] data) {
-                return new DefaultHologramLeaderBoard(location, () -> "§7§lTop ClaimBlocks", 10, Table.SURVIVAL_PLAYERS, TableSurvivalPlayers.UUID, TableSurvivalPlayers.CLAIM_BLOCKS);
+                return new DefaultHologramLeaderBoard(location, 0, () -> "§7§lTop ClaimBlocks", 10, Table.SURVIVAL_PLAYERS, TableSurvivalPlayers.UUID, TableSurvivalPlayers.CLAIM_BLOCKS);
             }
         };
     }

@@ -15,7 +15,7 @@ import java.util.List;
 public class Hologram extends Npc {
 
     /* Y-offset between holograms */
-    private static final double Y_OFFSET_PER_LINE = 0.25;
+    public static final double Y_OFFSET_PER_LINE = 0.25;
 
     private static ArrayList<Hologram> holograms = new ArrayList<>();
 

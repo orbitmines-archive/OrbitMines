@@ -139,7 +139,6 @@ public class DataPointNpc extends DataPointSign {
     private ScoreboardString[] getNpcDisplayName(Server server) {
         return new ScoreboardString[]{
                 () -> "§7§lOrbit§8§lMines " + server.getDisplayName(),
-                () -> null,
                 () -> {
                     Server.Status status = server.getStatus();
                     return status != Server.Status.ONLINE ? status.getColor().getChatColor() + "§l" + status.getName() : server.getColor().getChatColor() + "§l" + server.getPlayers() + " §7§l/ " + server.getMaxPlayers();

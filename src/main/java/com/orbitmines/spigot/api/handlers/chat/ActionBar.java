@@ -77,7 +77,7 @@ public class ActionBar {
 
                 /* Check if most recent actionbar is this actionbar */
                 if (actionBars.get(player) == ActionBar.this)
-                    plugin.getNms().actionBar().send(Collections.singletonList(player.getPlayer()), message.toString());
+                    plugin.getNms().actionBar().send(Collections.singletonList(player.getPlayer()), message.getString());
             }
 
             @Override

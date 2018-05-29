@@ -1,9 +1,11 @@
 package com.orbitmines.spigot.api.handlers.kit;
 
+import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
-import org.bukkit.Material;
+import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
+import com.orbitmines.spigot.api.utils.PlayerUtils;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 
 import java.util.ArrayList;
@@ -13,22 +15,23 @@ import java.util.List;
 * OrbitMines - @author Fadi Shawki - 29-7-2017
 */
 public class Kit {
-
     private static List<Kit> kits = new ArrayList<>();
 
     private String name;
-    private ItemStack[] armorContents;
-    private ItemStack[] contents;
-    private ItemStack itemOffHand;
+    private ItemBuilder[] armorContents;
+    private ItemBuilder[] contents;
+    private ItemBuilder itemOffHand;
 
     private List<PotionEffect> potionEffects;
+
+    private CachedPlayer lastUsedBy;
 
     public Kit(String name) {
         kits.add(this);
 
         this.name = name;
-        this.armorContents = new ItemStack[4];
-        this.contents = new ItemStack[36];
+        this.armorContents = new ItemBuilder[4];
+        this.contents = new ItemBuilder[36];
         this.potionEffects = new ArrayList<>();
     }
 
@@ -40,72 +43,72 @@ public class Kit {
         this.name = name;
     }
 
-    public ItemStack getHelmet() {
+    public ItemBuilder getHelmet() {
         return this.armorContents[3];
     }
 
-    public void setHelmet(ItemStack helmet) {
+    public void setHelmet(ItemBuilder helmet) {
         this.armorContents[3] = helmet;
     }
 
-    public ItemStack getChestplate() {
+    public ItemBuilder getChestplate() {
         return this.armorContents[2];
     }
 
-    public void setChestplate(ItemStack chestplate) {
+    public void setChestplate(ItemBuilder chestplate) {
         this.armorContents[2] = chestplate;
     }
 
-    public ItemStack getLeggings() {
+    public ItemBuilder getLeggings() {
         return this.armorContents[1];
     }
 
-    public void setLeggings(ItemStack leggings) {
+    public void setLeggings(ItemBuilder leggings) {
         this.armorContents[1] = leggings;
     }
 
-    public ItemStack getBoots() {
+    public ItemBuilder getBoots() {
         return this.armorContents[0];
     }
 
-    public void setBoots(ItemStack boots) {
+    public void setBoots(ItemBuilder boots) {
         this.armorContents[0] = boots;
     }
 
-    public ItemStack[] getArmorContents() {
+    public ItemBuilder[] getArmorContents() {
         return armorContents;
     }
 
-    public void setArmorContents(ItemStack[] armorContents) {
+    public void setArmorContents(ItemBuilder[] armorContents) {
         this.armorContents = armorContents;
     }
 
-    public ItemStack[] getContents() {
+    public ItemBuilder[] getContents() {
         return contents;
     }
 
-    public void setContents(ItemStack[] contents) {
+    public void setContents(ItemBuilder[] contents) {
         this.contents = contents;
     }
 
-    public void setItem(int index, ItemStack content) {
+    public void setItem(int index, ItemBuilder content) {
         this.contents[index] = content;
     }
 
-    public ItemStack getItem(int index) {
+    public ItemBuilder getItem(int index) {
         return this.contents[index];
     }
 
-    public void setItemOffHand(ItemStack itemOffHand) {
+    public void setItemOffHand(ItemBuilder itemOffHand) {
         this.itemOffHand = itemOffHand;
     }
 
-    public ItemStack getItemOffHand() {
+    public ItemBuilder getItemOffHand() {
         return itemOffHand;
     }
 
-    public ItemStack getFirstItem() {
-        for (ItemStack item : this.contents) {
+    public ItemBuilder getFirstItem() {
+        for (ItemBuilder item : this.contents) {
             if (item != null)
                 return item;
         }
@@ -114,7 +117,7 @@ public class Kit {
 
     public int contentItems() {
         int amount = 0;
-        for (ItemStack item : getContents()) {
+        for (ItemBuilder item : getContents()) {
             if (item != null)
                 amount++;
         }
@@ -129,133 +132,138 @@ public class Kit {
         this.potionEffects.add(potionEffect);
     }
 
+    public CachedPlayer getLastUsedBy() {
+        return lastUsedBy;
+    }
+
     public void setItems(OMPlayer omp) {
-        for (ItemStack item : getContents()) {
-            if (item != null && item.getType() == Material.SKULL_ITEM && item.getDurability() == (short) 3) {
-                SkullMeta meta = (SkullMeta) item.getItemMeta();
-                meta.setOwner(omp.getName());
-                item.setItemMeta(meta);
-            }
-        }
+        lastUsedBy = CachedPlayer.getPlayer(omp.getUUID());
+
+        PlayerInventory inventory = omp.getPlayer().getInventory();
 
         ItemStack[] armorContents = new ItemStack[4];
         int index = 0;
-        for (ItemStack item : getArmorContents()) {
+        for (ItemBuilder item : getArmorContents()) {
             if (item != null)
-                armorContents[index] = item;
+                armorContents[index] = item.build();
             else
-                armorContents[index] = omp.getPlayer().getInventory().getArmorContents()[index];
+                armorContents[index] = inventory.getArmorContents()[index];
 
             index++;
         }
-        omp.getPlayer().getInventory().setArmorContents(armorContents);
+        inventory.setArmorContents(armorContents);
 
         index = 0;
-        for (ItemStack item : getContents()) {
+        for (ItemBuilder item : getContents()) {
             if (item != null)
-                omp.getPlayer().getInventory().setItem(index, item);
+                inventory.setItem(index, item.build());
 
             index++;
         }
 
-        omp.getPlayer().getInventory().setItemInOffHand(itemOffHand);
+        if (itemOffHand != null)
+            inventory.setItemInOffHand(itemOffHand.build());
 
         if (potionEffects.size() != 0) {
             for (PotionEffect potionEffect : potionEffects) {
                 omp.getPlayer().addPotionEffect(potionEffect);
             }
         }
+
+        PlayerUtils.updateInventory(omp.getPlayer());
     }
 
     public void replaceItems(OMPlayer omp) {
-        for (ItemStack item : getContents()) {
-            if (item != null && item.getType() == Material.SKULL_ITEM && item.getDurability() == (short) 3) {
-                SkullMeta meta = (SkullMeta) item.getItemMeta();
-                meta.setOwner(omp.getName());
-                item.setItemMeta(meta);
-            }
-        }
+        lastUsedBy = CachedPlayer.getPlayer(omp.getUUID());
+
+        PlayerInventory inventory = omp.getPlayer().getInventory();
 
         ItemStack[] armorContents = new ItemStack[4];
         int index = 0;
-        for (ItemStack item : getArmorContents()) {
-            if (item != null && setItem(omp.getPlayer().getInventory().getArmorContents(), index, item))
-                armorContents[index] = item;
+        for (ItemBuilder item : getArmorContents()) {
+            if (item != null && setItem(inventory.getArmorContents(), index, item.build()))
+                armorContents[index] = item.build();
             else
-                armorContents[index] = omp.getPlayer().getInventory().getArmorContents()[index];
+                armorContents[index] = inventory.getArmorContents()[index];
 
             index++;
         }
-        omp.getPlayer().getInventory().setArmorContents(armorContents);
+        inventory.setArmorContents(armorContents);
 
         index = 0;
-        for (ItemStack item : getContents()) {
-            if (item != null && setItem(omp.getPlayer().getInventory().getContents(), index, item))
-                omp.getPlayer().getInventory().setItem(index, item);
+        for (ItemBuilder item : getContents()) {
+            if (item != null && setItem(inventory.getContents(), index, item.build()))
+                inventory.setItem(index, item.build());
 
             index++;
         }
 
-        if (getItemOffHand() != null && setItem(itemOffHand, omp.getPlayer().getInventory().getItemInOffHand()))
-            omp.getPlayer().getInventory().setItemInOffHand(itemOffHand);
+        if (itemOffHand != null && setItem(itemOffHand.build(), inventory.getItemInOffHand()))
+            inventory.setItemInOffHand(itemOffHand.build());
 
         if (potionEffects.size() != 0) {
             for (PotionEffect potionEffect : potionEffects) {
                 omp.getPlayer().addPotionEffect(potionEffect);
             }
         }
+
+        PlayerUtils.updateInventory(omp.getPlayer());
     }
 
     private boolean setItem(ItemStack item, ItemStack item2) {
-        if (item2 == null)
-            return true;
+        return item2 == null || item.getType() != item2.getType() || item.getAmount() != item2.getAmount() || !item.getItemMeta().getDisplayName().equals(item2.getItemMeta().getDisplayName());
 
-        return item.getType() != item2.getType() || item.getAmount() != item2.getAmount() || !item.getItemMeta().getDisplayName().equals(item2.getItemMeta().getDisplayName());
     }
 
     private boolean setItem(ItemStack[] contents, int index, ItemStack item) {
         ItemStack item2 = contents[index];
 
-        if (item2 == null)
-            return true;
+        return item2 == null || item.getType() != item2.getType() || item.getAmount() != item2.getAmount() || !item.getItemMeta().getDisplayName().equals(item2.getItemMeta().getDisplayName());
 
-        return item.getType() != item2.getType() || item.getAmount() != item2.getAmount() || !item.getItemMeta().getDisplayName().equals(item2.getItemMeta().getDisplayName());
     }
 
     public void addItems(OMPlayer omp) {
-        for (ItemStack item : getContents()) {
+        lastUsedBy = CachedPlayer.getPlayer(omp.getUUID());
+
+        PlayerInventory inventory = omp.getPlayer().getInventory();
+
+        for (ItemBuilder item : getContents()) {
             if (item != null)
-                omp.getPlayer().getInventory().addItem(item);
+                inventory.addItem(item.build());
         }
         int index = 0;
-        for (ItemStack item : getArmorContents()) {
-            ItemStack item2 = omp.getPlayer().getInventory().getArmorContents()[index];
+        for (ItemBuilder item : getArmorContents()) {
+            ItemStack item2 = inventory.getArmorContents()[index];
 
             if (item2 != null)
-                omp.getPlayer().getInventory().addItem(item2);
+                inventory.addItem(item2);
 
             if (index == 0)
-                omp.getPlayer().getInventory().setBoots(item);
+                inventory.setBoots(item.build());
             else if (index == 1)
-                omp.getPlayer().getInventory().setLeggings(item);
+                inventory.setLeggings(item.build());
             else if (index == 2)
-                omp.getPlayer().getInventory().setChestplate(item);
+                inventory.setChestplate(item.build());
             else
-                omp.getPlayer().getInventory().setHelmet(item);
+                inventory.setHelmet(item.build());
 
             index++;
         }
 
-        if (omp.getPlayer().getInventory().getItemInOffHand() == null)
-            omp.getPlayer().getInventory().setItemInOffHand(itemOffHand);
-        else
-            omp.getPlayer().getInventory().addItem(itemOffHand);
+        if (itemOffHand != null) {
+            if (inventory.getItemInOffHand() == null)
+                inventory.setItemInOffHand(itemOffHand.build());
+            else
+                inventory.addItem(itemOffHand.build());
+        }
 
         if (potionEffects.size() != 0) {
             for (PotionEffect potionEffect : potionEffects) {
                 omp.getPlayer().addPotionEffect(potionEffect);
             }
         }
+
+        PlayerUtils.updateInventory(omp.getPlayer());
     }
 
     public static Kit getKit(String name) {

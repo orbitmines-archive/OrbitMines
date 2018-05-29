@@ -9,6 +9,7 @@ import com.orbitmines.api.database.tables.TablePlayers;
 import com.orbitmines.api.utils.DateUtils;
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.Freezer;
+import com.orbitmines.spigot.api.Mob;
 import com.orbitmines.spigot.api.handlers.chat.Title;
 import com.orbitmines.spigot.api.handlers.data.FriendsData;
 import com.orbitmines.spigot.api.handlers.data.VoteData;
@@ -23,6 +24,7 @@ import com.orbitmines.spigot.api.handlers.scoreboard.ScoreboardSet;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -233,6 +235,9 @@ public abstract class OMPlayer {
         sendMessage(" ");
 
         sendMessage("§7§m----------------------------------------");
+
+        Entity entity = Mob.CHICKEN.spawnRideable(getLocation(), 1.2F, 0.5F, 0.75F, 1F, 1.2F);
+        entity.addPassenger(player);
     }
 
     /*
@@ -617,6 +622,9 @@ public abstract class OMPlayer {
 
             case VOTES:
                 data = new VoteData(getUUID());
+                break;
+            case FRIENDS:
+                data = new FriendsData(getUUID());
                 break;
             default:
                 return null;

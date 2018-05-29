@@ -46,7 +46,7 @@ public class NpcNms_1_12_R1 implements NpcNms {
         nmsRideable.pitch = nmsRideable.passengers.get(0).pitch * 0.5F;
 
         try {
-            ReflectionUtils.getDeclaredMethod(net.minecraft.server.v1_12_R1.Entity.class, "setYawPitch", float.class, float.class).invoke(nmsRideable.yaw, nmsRideable.pitch);
+            ReflectionUtils.getDeclaredMethod(net.minecraft.server.v1_12_R1.Entity.class, "setYawPitch", float.class, float.class).invoke(nmsRideable, nmsRideable.yaw, nmsRideable.pitch);
         } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
