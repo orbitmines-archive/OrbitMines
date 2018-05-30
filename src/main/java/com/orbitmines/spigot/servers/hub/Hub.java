@@ -21,6 +21,8 @@ import com.orbitmines.spigot.api.handlers.scoreboard.DefaultScoreboard;
 import com.orbitmines.spigot.api.handlers.worlds.WorldLoader;
 import com.orbitmines.spigot.servers.hub.datapoints.HubDataPointSpawnpoint;
 import com.orbitmines.spigot.servers.hub.datapoints.HubDataPointStaffHologram;
+import com.orbitmines.spigot.servers.hub.gui.SettingsGUI;
+import com.orbitmines.spigot.servers.hub.gui.friends.FriendGUI;
 import com.orbitmines.spigot.servers.hub.handlers.HubDataPointHandler;
 import com.orbitmines.spigot.servers.hub.handlers.HubPlayer;
 import org.bukkit.Effect;
@@ -218,14 +220,14 @@ public class Hub extends OrbitMinesServer {
                     public void onInteract(PlayerInteractEvent event, OMPlayer omp) {
                         event.setCancelled(true);
 
-                        //TODO OPEN STATS
+                        new FriendGUI().open(omp);
                     }
                 });
 
                 new ItemHoverActionBar(item, false) {
                     @Override
                     public String getMessage(OMPlayer omp) {
-                        return "§b§lFriends§r §8- §e§l" + omp.lang("Rechtermuisklik", "Right Click");
+                        return "§b§l" + omp.lang("Vrienden", "Friends") + "§r §8- §e§l" + omp.lang("Rechtermuisklik", "Right Click");
                     }
                 };
             }
@@ -259,7 +261,7 @@ public class Hub extends OrbitMinesServer {
                         event.setCancelled(true);
 
                         omp.getPlayer().playEffect(omp.getPlayer().getLocation(), Effect.STEP_SOUND, Material.REDSTONE_BLOCK);
-                        //TODO OPEN SETTINGS
+                        new SettingsGUI().open(omp);
                     }
                 });
 

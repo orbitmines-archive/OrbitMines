@@ -30,14 +30,14 @@ public class FriendsData extends Data {
     private List<UUID> invites;
 
     public FriendsData(UUID uuid) {
-            super(Table.FRIENDS, Type.FRIENDS, uuid);
-            
-            messageHandler = OrbitMines.getInstance().getServerHandler().getMessageHandler();
+        super(Table.FRIENDS, Type.FRIENDS, uuid);
 
-            friends = new ArrayList<>();
-            favoriteFriends = new ArrayList<>();
-            sentRequests = new ArrayList<>();
-            invites = new ArrayList<>();
+        messageHandler = OrbitMines.getInstance().getServerHandler().getMessageHandler();
+
+        friends = new ArrayList<>();
+        favoriteFriends = new ArrayList<>();
+        sentRequests = new ArrayList<>();
+        invites = new ArrayList<>();
     }
 
     @Override

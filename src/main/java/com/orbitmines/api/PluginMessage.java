@@ -21,7 +21,9 @@ public enum PluginMessage {
     UPDATE_SILENT(Server.BUNGEECORD),
 
     FAVORITE_FRIEND_MESSAGE(Server.BUNGEECORD),
-    UPDATE_FRIENDS(Server.SPIGOT);
+    UPDATE_FRIENDS(Server.SPIGOT),
+
+    UPDATE_SETTINGS(Server.BUNGEECORD);
 
     public static final String CHANNEL = "OrbitMines";
     public static final String CHANNEL_BUNGEECORD = "BungeeCord";

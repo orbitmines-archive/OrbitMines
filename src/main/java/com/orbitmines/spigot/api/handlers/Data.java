@@ -28,7 +28,8 @@ public abstract class Data {
     public enum Type {
 
         VOTES,
-        FRIENDS;
+        FRIENDS,
+        SETTINGS;
 
     }
 }

@@ -6,12 +6,14 @@ import com.orbitmines.api.Server;
 import com.orbitmines.api.database.*;
 import com.orbitmines.api.database.Set;
 import com.orbitmines.api.database.tables.TablePlayers;
+import com.orbitmines.api.settings.Settings;
+import com.orbitmines.api.settings.SettingsType;
 import com.orbitmines.api.utils.DateUtils;
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.Freezer;
-import com.orbitmines.spigot.api.Mob;
 import com.orbitmines.spigot.api.handlers.chat.Title;
 import com.orbitmines.spigot.api.handlers.data.FriendsData;
+import com.orbitmines.spigot.api.handlers.data.SettingsData;
 import com.orbitmines.spigot.api.handlers.data.VoteData;
 import com.orbitmines.spigot.api.handlers.itembuilders.PotionBuilder;
 import com.orbitmines.spigot.api.handlers.itemhandlers.ItemHover;
@@ -24,7 +26,6 @@ import com.orbitmines.spigot.api.handlers.scoreboard.ScoreboardSet;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -119,7 +120,7 @@ public abstract class OMPlayer {
         orbitMines.getServerHandler().getServer().setPlayers(Bukkit.getOnlinePlayers().size());
 
         if (!Database.get().contains(Table.PLAYERS, TablePlayers.UUID, new Where(TablePlayers.UUID, getUUID().toString()))) {
-            Database.get().insert(Table.PLAYERS, Table.PLAYERS.values(getUUID().toString(), getRealName(), staffRank.toString(), vipRank.toString(), language.toString(), silent ? "1" : "0", solars + "", prisms + "", "null"));
+            Database.get().insert(Table.PLAYERS, Table.PLAYERS.values(getUUID().toString(), getRealName(), staffRank.toString(), vipRank.toString(), language.toString(), SettingsType.ENABLED.toString(), SettingsType.ENABLED.toString(), SettingsType.ENABLED.toString(), silent ? "1" : "0", solars + "", prisms + "", "null"));
         } else {
             Map<Column, String> values = Database.get().getValues(Table.PLAYERS, new Column[]{
                     TablePlayers.STAFFRANK,
@@ -203,6 +204,9 @@ public abstract class OMPlayer {
 
         orbitMines.getServerHandler().getServer().setPlayers(Bukkit.getOnlinePlayers().size() -1);
 
+        /* Cancel 2FA Timeout */
+        orbitMines.get2FA().onLogout(this);
+
         /* Destroy Leaderboards */
         for (LeaderBoard leaderBoard : LeaderBoard.getLeaderBoards()) {
             if (leaderBoard instanceof PlayerHologramLeaderBoard)
@@ -235,9 +239,6 @@ public abstract class OMPlayer {
         sendMessage(" ");
 
         sendMessage("§7§m----------------------------------------");
-
-        Entity entity = Mob.CHICKEN.spawnRideable(getLocation(), 1.2F, 0.5F, 0.75F, 1F, 1.2F);
-        entity.addPassenger(player);
     }
 
     /*
@@ -613,6 +614,14 @@ public abstract class OMPlayer {
         Data
      */
 
+    public void updateSettings(Settings settings, SettingsType settingsType) {
+        SettingsData data = (SettingsData) getData(Data.Type.SETTINGS);
+        data.setSettings(settings, settingsType);
+
+        /* Update Bungeecord */
+        orbitMines.getServerHandler().getMessageHandler().dataTransfer(PluginMessage.UPDATE_SETTINGS, getUUID().toString());
+    }
+
     public Data getData(Data.Type type) {
         if (data.containsKey(type))
             return data.get(type);
@@ -625,6 +634,9 @@ public abstract class OMPlayer {
                 break;
             case FRIENDS:
                 data = new FriendsData(getUUID());
+                break;
+            case SETTINGS:
+                data = new SettingsData(getUUID());
                 break;
             default:
                 return null;
@@ -887,7 +899,7 @@ public abstract class OMPlayer {
             if (omp.getPlayer() == player)
                 return omp;
         }
-        throw new IllegalStateException();
+        return null;
     }
 
     public static OMPlayer getPlayer(String name) {
@@ -895,7 +907,7 @@ public abstract class OMPlayer {
             if (omp.getName(true).equalsIgnoreCase(name))
                 return omp;
         }
-        throw new IllegalStateException();
+        return null;
     }
 
     public static OMPlayer getPlayer(UUID uuid) {
@@ -903,7 +915,7 @@ public abstract class OMPlayer {
             if (omp.getUUID().toString().equals(uuid.toString()))
                 return omp;
         }
-        throw new IllegalStateException();
+        return null;
     }
 
     public static List<OMPlayer> getPlayers() {

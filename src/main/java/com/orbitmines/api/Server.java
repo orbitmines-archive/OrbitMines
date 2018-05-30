@@ -106,5 +106,9 @@ public enum Server {
         public Color getColor() {
             return color;
         }
+
+        public String getDisplayName() {
+            return color.getChatColor() + "§l" + name;
+        }
     }
 }

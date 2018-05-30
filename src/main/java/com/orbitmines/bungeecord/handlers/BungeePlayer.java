@@ -2,18 +2,20 @@ package com.orbitmines.bungeecord.handlers;
 
 import com.orbitmines.api.*;
 import com.orbitmines.api.database.*;
+import com.orbitmines.api.database.Set;
 import com.orbitmines.api.database.tables.TablePlayers;
 import com.orbitmines.api.database.tables.TableServers;
+import com.orbitmines.api.settings.SettingsType;
 import com.orbitmines.api.utils.RandomUtils;
 import com.orbitmines.bungeecord.OrbitMinesBungee;
+import com.orbitmines.spigot.api.handlers.Data;
+import com.orbitmines.spigot.api.handlers.data.SettingsData;
+import com.orbitmines.spigot.api.handlers.data.VoteData;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /*
@@ -34,6 +36,8 @@ public class BungeePlayer {
     private Language language;
     private boolean silent;
 
+    protected Map<Data.Type, Data> data;
+
     private BungeePlayer lastMsg;
 
     public BungeePlayer(ProxiedPlayer player) {
@@ -47,6 +51,8 @@ public class BungeePlayer {
         this.vipRank = VipRank.NONE;
         this.language = Language.ENGLISH;
         this.silent = false;
+
+        this.data = new HashMap<>();
     }
 
     /*
@@ -61,7 +67,7 @@ public class BungeePlayer {
         players.add(this);
 
         if (!Database.get().contains(Table.PLAYERS, TablePlayers.UUID, new Where(TablePlayers.UUID, getUUID().toString()))) {
-            Database.get().insert(Table.PLAYERS, Table.PLAYERS.values(getUUID().toString(), getRealName(), staffRank.toString(), vipRank.toString(), language.toString(), silent ? "1" : "0", "0", "0", "null"));
+            Database.get().insert(Table.PLAYERS, Table.PLAYERS.values(getUUID().toString(), getRealName(), staffRank.toString(), vipRank.toString(), language.toString(), SettingsType.ENABLED.toString(), SettingsType.ENABLED.toString(), SettingsType.ENABLED.toString(), silent ? "1" : "0", "0", "0", "null"));
         } else {
             Map<Column, String> values = Database.get().getValues(Table.PLAYERS, new Column[]{
                     TablePlayers.NAME,
@@ -298,6 +304,36 @@ public class BungeePlayer {
 
     public void updateSilent() {
         this.silent = Database.get().getBoolean(Table.PLAYERS, TablePlayers.SILENT, new Where(TablePlayers.UUID, getUUID().toString()));
+    }
+
+    /*
+        Data
+     */
+
+    public Data getData(Data.Type type) {
+        if (data.containsKey(type))
+            return data.get(type);
+
+        Data data;
+        switch (type) {
+
+            case VOTES:
+                data = new VoteData(getUUID());
+                break;
+//            case FRIENDS:
+//                data = new FriendsData(getUUID());
+//                break; -> Not avaiable in Bungee
+            case SETTINGS:
+                data = new SettingsData(getUUID());
+                break;
+            default:
+                return null;
+        }
+
+        data.load();
+        this.data.put(type, data);
+
+        return data;
     }
 
     /*

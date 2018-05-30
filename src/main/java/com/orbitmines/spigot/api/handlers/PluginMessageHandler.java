@@ -138,6 +138,14 @@ public abstract class PluginMessageHandler implements PluginMessageListener {
 
                     break;
                 }
+                case UPDATE_SETTINGS: {
+                    OMPlayer omp = OMPlayer.getPlayer(UUID.fromString(in.readUTF()));
+
+                    if (omp != null)
+                        omp.getData(Data.Type.SETTINGS).load();
+
+                    break;
+                }
                 default: {
                     /* Is not a default PluginMessage, pass it on the GameServer */
                     onReceive(in, message);
