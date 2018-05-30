@@ -25,7 +25,6 @@ public class LootItem {
     private int level;
     private HashMap<Enchantment, Integer> enchantments;
 
-
     private int maxAmount;
     private double chance;
 

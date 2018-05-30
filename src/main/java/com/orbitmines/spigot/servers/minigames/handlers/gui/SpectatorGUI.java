@@ -4,7 +4,6 @@ import com.orbitmines.spigot.api.handlers.GUI;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.servers.minigames.MiniGame;
 import com.orbitmines.spigot.servers.minigames.handlers.MiniGamePlayer;
-import com.orbitmines.spigot.servers.minigames.handlers.team.Team;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -19,11 +18,6 @@ public abstract class SpectatorGUI extends GUI {
     public SpectatorGUI(MiniGamePlayer player){
         this.spectator = player;
         this.miniGame = player.getGame();
-        Team team = null;
-        if(miniGame.getType().getSettings().getMaxPlayers() > 1){
-            team = miniGame.getTeam(player);
-        }
-
     }
 
     public void update(){
@@ -39,6 +33,12 @@ public abstract class SpectatorGUI extends GUI {
     public MiniGamePlayer getSpectator() {
         return spectator;
     }
+
+    public MiniGame getMiniGame() {
+        return miniGame;
+    }
+
+    public abstract void createInventory();
 
     public abstract class SpectatorItem extends ItemInstance {
 

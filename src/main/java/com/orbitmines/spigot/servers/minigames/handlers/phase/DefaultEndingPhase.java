@@ -8,8 +8,6 @@ import com.orbitmines.spigot.servers.minigames.handlers.team.Team;
 import com.orbitmines.spigot.servers.minigames.utils.GameState;
 import org.bukkit.Sound;
 
-import java.util.HashMap;
-
 /**
  * Created by Robin on 4/3/2018.
  */
@@ -21,15 +19,18 @@ public abstract class DefaultEndingPhase extends MiniGamePhase {
 
     @Override
     public void start(MiniGame miniGame) {
-        HashMap<Team, Integer> winners = getWinners(miniGame);
-        for(Team team : winners.keySet()){
+        miniGame.broadcast("---------" + miniGame.getType().getName() + "---------");
+        Team[] winners = getWinners(miniGame);
+        for(int index = 0; index < winners.length; index++){
+            Team team = winners[index];
             if(team != null){
-                Integer place = winners.get(team);
-                team.gainReward(miniGame.getType().getPlace(place));
+                team.gainReward(getType().getPlace(index));
             }
+
         }
 
-        //TODO: BROADCAST WHO ARE WINNERS
+
+
     }
 
     @Override
@@ -53,5 +54,5 @@ public abstract class DefaultEndingPhase extends MiniGamePhase {
         return null;
     }
 
-    protected abstract HashMap<Team, Integer> getWinners(MiniGame miniGame);
+    protected abstract Team[] getWinners(MiniGame miniGame);
 }

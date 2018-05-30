@@ -22,14 +22,11 @@ public class Water extends FoodManager.Food {
     public Water() {
         super(FoodType.WATER, Material.POTION, (byte) 0, 2, 2.0F);
         this.outputs = new ArrayList<>();
+        new WaterOutputs(this);
     }
 
-    public void registerOutput(WaterOutput output){
+    void registerOutput(WaterOutput output){
         this.outputs.add(output);
-    }
-
-    public List<WaterOutput> getOutputs() {
-        return outputs;
     }
 
     public void output(UHPlayer uhPlayer){
@@ -43,6 +40,7 @@ public class Water extends FoodManager.Food {
     @Override
     public void consume(UHPlayer uhPlayer) {
         uhPlayer.getProfile().addWater(MathUtils.randomInteger(MAXIMUM_WATER_BOTTLE -  MINIMUM_WATER_BOTTLE) + MINIMUM_WATER_BOTTLE);
+        output(uhPlayer);
     }
 
     public static abstract class WaterOutput {

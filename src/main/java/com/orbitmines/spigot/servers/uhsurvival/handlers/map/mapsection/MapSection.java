@@ -7,10 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Created by Robin on 2/27/2018.
@@ -140,6 +137,7 @@ public class MapSection {
     public boolean hasEnteringMessage(){
         return title != null && subTitle != null;
     }
+
     /* DUNGEON METHODS */
     public void addDungeon(Dungeon dungeon) {
         this.dungeons.add(dungeon);
@@ -204,5 +202,9 @@ public class MapSection {
 
     public Mob removeMob(Entity entity){
         return removeMob(entity.getUniqueId());
+    }
+
+    public Collection<Mob> getMobs() {
+        return mobs.values();
     }
 }

@@ -105,6 +105,10 @@ public class Mob {
         return target;
     }
 
+    public boolean hasTarget(){
+        return target != null;
+    }
+
     public ToolInventory getInventory() {
         return inv;
     }
@@ -130,15 +134,7 @@ public class Mob {
     }
 
     public boolean isInRange(Location location){
-        int x = location.getBlockX();
-        int z = location.getBlockZ();
-        int y = location.getBlockY() - entity.getLocation().getBlockY();
-        int middleX = entity.getLocation().getBlockX();
-        int middleY = entity.getLocation().getBlockY();
-        int middleZ = entity.getLocation().getBlockZ();
-        double radiusZ = Math.sqrt((x-middleX)^2 + (z-middleZ)^2);
-        double radiusY = Math.sqrt((x-middleX)^2 + (y-middleY)^2);
-        return (radiusZ <= this.type.getRadius()) && (radiusY <= this.getType().getRadius());
+        return location.distance(this.entity.getLocation()) < this.getType().getRadius();
     }
 
     public void updateMap(){

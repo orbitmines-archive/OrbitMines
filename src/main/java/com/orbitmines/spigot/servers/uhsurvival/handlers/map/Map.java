@@ -6,6 +6,7 @@ import com.orbitmines.spigot.servers.uhsurvival.handlers.map.warzone.Warzone;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.mob.MobManager;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.WorldBorder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -132,5 +133,12 @@ public class Map {
             }
             height -= MAX_HEIGHT_SECTION;
         }
+        dungeons.deserialize(true);
+        setupBorders();
+    }
+
+    private void setupBorders(){
+        WorldBorder worldBorder = world.getWorldBorder();
+        worldBorder.setSize(MAX_WIDTH);
     }
 }

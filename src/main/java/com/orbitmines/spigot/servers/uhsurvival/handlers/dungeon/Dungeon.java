@@ -36,7 +36,7 @@ public class Dungeon {
         this.type = (String) f.get("type");
         this.firstLocation = Serializer.parseLocation((String) f.get("location.first"));
         this.secondLocation = Serializer.parseLocation((String) f.get("location.second"));
-        int index = (int) f.get("blocks");
+        int index = (int) f.get("block");
         this.replacedBlocks = new ArrayList<>();
         for(int i = 0; i < index; i++){
            this.replacedBlocks.add(ReplacedBlock.getBlock((String) f.get("block." + i)));
@@ -85,7 +85,7 @@ public class Dungeon {
         for(ReplacedBlock replacedBlock : replacedBlocks){
             f.set("block." + index, replacedBlock.serialize());
         }
-        f.set("blocks", index);
+        f.set("block", index);
         f.save();
     }
 }

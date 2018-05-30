@@ -47,7 +47,7 @@ public class UHSurvival extends OrbitMinesServer {
         for(World world : World.values()){
             Map map = world.getMap();
             if(map != null){
-                map.getDungeons().deserialize();
+                map.getDungeons().deserialize(false);
             }
         }
         PlayerProfile.setUpProfiles();

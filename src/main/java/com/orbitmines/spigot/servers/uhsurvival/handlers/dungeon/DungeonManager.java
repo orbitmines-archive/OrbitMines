@@ -35,7 +35,7 @@ public class DungeonManager {
         this.map = map;
         this.files = new HashMap<>();
         this.dungeonCount = new HashMap<>();
-        deserialize();
+        deserialize(false);
     }
 
     /* DUNGEON METHODS (create, build, delete, get) */
@@ -148,8 +148,8 @@ public class DungeonManager {
         lootTableManager.serialize();
     }
 
-    public void deserialize() {
-        {
+    public void deserialize(boolean resized) {
+        if(!resized) {
             File[] files = new File(map.getWorld().getWorldFolder(), "/dungeonfiles").listFiles();
             if (files != null) {
                 for (File f : files) {

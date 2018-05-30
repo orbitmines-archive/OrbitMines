@@ -3,6 +3,7 @@ package com.orbitmines.spigot.servers.uhsurvival.handlers.mob;
 import com.orbitmines.spigot.servers.uhsurvival.UHSurvival;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.UHPlayer;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.map.Map;
+import com.orbitmines.spigot.servers.uhsurvival.handlers.map.mapsection.MapSection;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -56,6 +57,7 @@ public class MobManager {
                         m.protect(uhSurvival, event);
                     }
                 }
+                mob.getType().attack(event);
                 if (!ev.isCancelled()) {
                     mob.getType().attack(event);
                 }
@@ -74,6 +76,22 @@ public class MobManager {
        }
     }
 
+    public void acquireTarget(UHPlayer player){
+        if(!player.isCloseToEdge()) {
+            for (Mob mob : player.getSection().getMobs()) {
+                if(mob.isInRange(player.getLocation())) {
+                    if (mob.hasTarget()) {
+                        if(mob.getTarget().getLocation().distance(mob.getEntity().getLocation()) > player.getLocation().distance(mob.getEntity().getLocation())){
+                            mob.setTarget(player);
+                        }
+                    } else {
+                        mob.setTarget(player);
+                    }
+                }
+            }
+        }
+    }
+
     /* GETTERS */
     public HashMap<UUID, Mob> getMobs() {
         return mobs;
@@ -89,6 +107,7 @@ public class MobManager {
     }
 
     private int getLevel(Location location){
+        MapSection mapSection = map.getMapSection(location);
         //TODO: ADD LEVEL SYSTEM WITH SECTIONS!
         return 0;
     }

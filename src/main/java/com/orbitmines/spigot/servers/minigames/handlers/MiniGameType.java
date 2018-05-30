@@ -9,6 +9,7 @@ import com.orbitmines.spigot.servers.minigames.handlers.team.kit.MiniGameKit;
 import com.orbitmines.spigot.servers.minigames.handlers.team.place.Place;
 import com.orbitmines.spigot.servers.minigames.utils.GameState;
 import org.bukkit.Sound;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,6 +53,8 @@ public abstract class MiniGameType {
     protected abstract GameState getNextState(GameState state);
 
     public abstract SpectatorGUI getSpectatorGUI(MiniGamePlayer player);
+
+    public abstract MiniGamePlayer getPlayer(Player player);
 
     /** RUN METHODS */
     public void run(MiniGame miniGame){

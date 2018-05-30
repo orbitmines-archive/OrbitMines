@@ -55,7 +55,7 @@ public class DungeonFile {
         this.minY = (int) f.get("minY");
         this.maxY = (int) f.get("maxY");
         this.surface = (boolean) f.get("surface");
-        int index = (int) f.get("blocks");
+        int index = (int) f.get("block");
         for (int i = 0; i < index; i++) {
             blocks.add(FileBlock.getBlock((String) f.get("block." + i)));
         }
@@ -95,7 +95,7 @@ public class DungeonFile {
             f.set("block." + index, block.deserialize());
             index++;
         }
-        f.set("blocks", index);
+        f.set("block", index);
         f.save();
     }
 

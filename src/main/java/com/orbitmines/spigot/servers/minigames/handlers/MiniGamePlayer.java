@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Created by Robin on 3/27/2018.
  */
-public class MiniGamePlayer extends OMPlayer {
+public abstract class MiniGamePlayer extends OMPlayer {
 
     private static MiniGames miniGames;
 

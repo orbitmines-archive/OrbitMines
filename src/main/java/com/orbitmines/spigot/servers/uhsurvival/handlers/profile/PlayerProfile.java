@@ -6,6 +6,7 @@ import com.orbitmines.api.database.Table;
 import com.orbitmines.api.database.Where;
 import com.orbitmines.api.database.tables.uhsurvival.TableUHPlayers;
 import com.orbitmines.spigot.api.utils.MathUtils;
+import com.orbitmines.spigot.servers.uhsurvival.handlers.UHPlayer;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.profile.food.FoodManager;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.profile.food.water.Water;
 import com.orbitmines.spigot.servers.uhsurvival.utils.enums.FoodType;
@@ -25,9 +26,9 @@ import java.util.UUID;
 public class PlayerProfile {
 
     private static HashMap<UUID, PlayerProfile> profiles = new HashMap<>();
+    public static float NORMAL_SPEED = 0.2F;
 
     private HashMap<FoodType, Integer> foods;
-
     private FoodManager.Food lastFood;
 
     private int water;
@@ -35,6 +36,10 @@ public class PlayerProfile {
     private UUID id;
 
     private Date bannedDate;
+
+    private float waterSpeed = NORMAL_SPEED;
+    private float temperatureSpeed = NORMAL_SPEED;
+    private float foodSpeed = NORMAL_SPEED;
 
     private PlayerProfile(UUID id){
         if(!profiles.containsKey(id)) {
@@ -84,7 +89,6 @@ public class PlayerProfile {
     public int getWater() {
         return water;
     }
-
 
     public void setWater(int water){
         this.water = MathUtils.clamp(water, 0, Water.MAXIMUM_WATER);
@@ -140,6 +144,27 @@ public class PlayerProfile {
 
     public boolean hasLastEatenFood(){
         return lastFood != null;
+    }
+
+    /* SPEED METHODS */
+    private float calculateSpeed(){
+        return (temperatureSpeed + waterSpeed + foodSpeed) / 3;
+    }
+
+    public void updateSpeed(UHPlayer player){
+        player.getPlayer().setWalkSpeed(calculateSpeed());
+    }
+
+    public void setFoodSpeed(float foodSpeed) {
+        this.foodSpeed = foodSpeed;
+    }
+
+    public void setTemperatureSpeed(float temperatureSpeed) {
+        this.temperatureSpeed = temperatureSpeed;
+    }
+
+    public void setWaterSpeed(float waterSpeed) {
+        this.waterSpeed = waterSpeed;
     }
 
     /* DATABASE METHODS */
