@@ -16,14 +16,14 @@ public abstract class VipCommand extends Command {
         this.vipRank = vipRank;
     }
 
-    public abstract void onDispatch(ChatEvent event, BungeePlayer mbp, String[] a);
+    public abstract void onDispatch(ChatEvent event, BungeePlayer omp, String[] a);
 
     @Override
-    public void dispatch(ChatEvent event, BungeePlayer mbp, String[] a) {
-        if (mbp.isEligible(vipRank))
-            onDispatch(event, mbp, a);
+    public void dispatch(ChatEvent event, BungeePlayer omp, String[] a) {
+        if (omp.isEligible(vipRank))
+            onDispatch(event, omp, a);
         else
-            mbp.sendMessage(Message.REQUIRE_RANK(vipRank));
+            omp.sendMessage(Message.REQUIRE_RANK(vipRank));
     }
 
     public VipRank getVipRank() {

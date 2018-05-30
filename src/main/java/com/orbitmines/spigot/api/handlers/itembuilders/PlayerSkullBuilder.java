@@ -1,5 +1,6 @@
 package com.orbitmines.spigot.api.handlers.itembuilders;
 
+import com.orbitmines.spigot.api.handlers.scoreboard.ScoreboardString;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -14,35 +15,35 @@ import java.util.List;
 */
 public class PlayerSkullBuilder extends ItemBuilder {
 
-    private String playerName;
+    private ScoreboardString playerName;
 
-    public PlayerSkullBuilder(String playerName) {
+    public PlayerSkullBuilder(ScoreboardString playerName) {
         this(playerName, 1);
     }
 
-    public PlayerSkullBuilder(String playerName, int amount) {
+    public PlayerSkullBuilder(ScoreboardString playerName, int amount) {
         this(playerName, amount, null);
     }
 
-    public PlayerSkullBuilder(String playerName, int amount, String displayName) {
+    public PlayerSkullBuilder(ScoreboardString playerName, int amount, String displayName) {
         this(playerName, amount, displayName, (List<String>) null);
     }
 
-    public PlayerSkullBuilder(String playerName, int amount, String displayName, String... lore) {
+    public PlayerSkullBuilder(ScoreboardString playerName, int amount, String displayName, String... lore) {
         this(playerName, amount, displayName, new ArrayList<>(Arrays.asList(lore)));
     }
 
-    public PlayerSkullBuilder(String playerName, int amount, String displayName, List<String> lore) {
+    public PlayerSkullBuilder(ScoreboardString playerName, int amount, String displayName, List<String> lore) {
         super(Material.SKULL_ITEM, amount, 3, displayName, lore);
 
         this.playerName = playerName;
     }
 
-    public String getPlayerName() {
+    public ScoreboardString getPlayerName() {
         return playerName;
     }
 
-    public void setPlayerName(String playerName) {
+    public void setPlayerName(ScoreboardString playerName) {
         this.playerName = playerName;
     }
 
@@ -52,7 +53,7 @@ public class PlayerSkullBuilder extends ItemBuilder {
         SkullMeta meta = (SkullMeta) itemStack.getItemMeta();
         meta.setDisplayName(displayName);
         meta.setLore((lore == null || lore.size() == 0) ? null : new ArrayList<>(lore));
-        meta.setOwner(playerName);
+        meta.setOwner(playerName.getString());
         for (ItemFlag itemFlag : itemFlags) {
             meta.addItemFlags(itemFlag);
         }

@@ -6,13 +6,14 @@ import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
 
 /**
  * Created by Fadi on 30-4-2016.
  */
 public class TabListNms_1_9_R2 implements TabListNms {
 
-    public void send(Player player, String header, String footer) {
+    public void send(Collection<? extends Player> players, String header, String footer) {
         IChatBaseComponent tab1 = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + header + "\"}");
         IChatBaseComponent tab2 = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + footer + "\"}");
         PacketPlayOutPlayerListHeaderFooter pack = new PacketPlayOutPlayerListHeaderFooter(tab1);
@@ -25,6 +26,8 @@ public class TabListNms_1_9_R2 implements TabListNms {
             ex.printStackTrace();
         }
 
-        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(pack);
+        for (Player player : players) {
+            ((CraftPlayer) player).getHandle().playerConnection.sendPacket(pack);
+        }
     }
 }

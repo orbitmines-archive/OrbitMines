@@ -1,6 +1,5 @@
 package com.orbitmines.spigot.api.nms.particles;
 
-import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
@@ -10,6 +9,6 @@ import java.util.Collection;
  */
 public interface ParticleNms {
 
-    void send(Collection<? extends Player> players, Particle particle, boolean longDistance, float x, float y, float z, float xOff, float yOff, float zOff, float speed, int amount, int... args);
+    void send(Collection<? extends Player> players, String particle, boolean longDistance, float x, float y, float z, float xOff, float yOff, float zOff, float speed, int amount, int... args);
 
 }

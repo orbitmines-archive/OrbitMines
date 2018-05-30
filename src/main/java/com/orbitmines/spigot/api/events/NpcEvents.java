@@ -4,6 +4,8 @@ import com.orbitmines.api.Cooldown;
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.npc.*;
+import com.orbitmines.spigot.api.handlers.npc.todo.CustomItem;
+import com.orbitmines.spigot.api.handlers.npc.todo.FloatingItem;
 import com.orbitmines.spigot.api.utils.PlayerUtils;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
@@ -33,15 +35,15 @@ public class NpcEvents implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onInteractEntityEvent(PlayerInteractEntityEvent event) {
-        NPC npc = NPC.getNpc(event.getRightClicked());
+        MobNpc npc = MobNpc.getMobNpc(event.getRightClicked());
         if (npc == null)
             return;
 
         event.setCancelled(true);
 
         OMPlayer omp = OMPlayer.getPlayer(event.getPlayer());
-        if (!omp.onCooldown(INTERACT_COOLDOWN)) {
-            npc.click(omp);
+        if (npc.isClickable() && !omp.onCooldown(INTERACT_COOLDOWN)) {
+            npc.getInteractAction().onInteract(event, omp);
 
             omp.resetCooldown(INTERACT_COOLDOWN);
         }
@@ -49,7 +51,7 @@ public class NpcEvents implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onEntityDamageEvent(EntityDamageEvent event) {
-        NPC npc = NPC.getNpc(event.getEntity());
+        MobNpc npc = MobNpc.getMobNpc(event.getEntity());
         if (npc != null)
             event.setCancelled(true);
     }
@@ -112,13 +114,13 @@ public class NpcEvents implements Listener {
             return;
         }
 
-        ArmorStandNpc armorStandNpc = ArmorStandNpc.getNpcArmorStand(armorStand);
+        ArmorStandNpc armorStandNpc = ArmorStandNpc.getArmorStandNpc(armorStand);
 
         if (armorStandNpc != null) {
             event.setCancelled(true);
 
-            if (armorStandNpc.canClick())
-                armorStandNpc.click(event, OMPlayer.getPlayer(player));
+            if (armorStandNpc.isClickable())
+                armorStandNpc.getInteractAction().onInteract(event, OMPlayer.getPlayer(player));
 
             PlayerUtils.updateInventory(player);
             return;
@@ -138,17 +140,17 @@ public class NpcEvents implements Listener {
     public void onWorldUnload(WorldUnloadEvent event) {
         String worldName = event.getWorld().getName();
 
-        for (NPC npc : new ArrayList<>(NPC.getNpcs())) {
-            if (npc.getLocation().getWorld().getName().equals(worldName))
-                npc.delete();
+        for (MobNpc npc : new ArrayList<>(MobNpc.getMobNpcs())) {
+            if (npc.getSpawnLocation().getWorld().getName().equals(worldName))
+                npc.destroy();
         }
         for (ArmorStandNpc armorStandNpc : new ArrayList<>(ArmorStandNpc.getArmorStandNpcs())) {
-            if (armorStandNpc.getLocation().getWorld().getName().equals(worldName))
-                armorStandNpc.delete();
+            if (armorStandNpc.getSpawnLocation().getWorld().getName().equals(worldName))
+                armorStandNpc.destroy();
         }
         for (Hologram hologram : new ArrayList<>(Hologram.getHolograms())) {
-            if (hologram.getLocation().getWorld().getName().equals(worldName))
-                hologram.delete();
+            if (hologram.getSpawnLocation().getWorld().getName().equals(worldName))
+                hologram.destroy();
         }
         for (FloatingItem floatingItem : new ArrayList<>(FloatingItem.getFloatingItems())) {
             if (floatingItem.getLocation().getWorld().getName().equals(worldName))

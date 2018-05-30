@@ -19,10 +19,10 @@ public abstract class Command {
 
     public abstract String[] getAlias();
 
-    public abstract String getHelp(BungeePlayer mbp);
+    public abstract String getHelp(BungeePlayer omp);
 
     /* a[0] = '/<command>' */
-    public abstract void dispatch(ChatEvent event, BungeePlayer mbp, String[] a);
+    public abstract void dispatch(ChatEvent event, BungeePlayer omp, String[] a);
 
     public void unregister() {
         commands.remove(this);

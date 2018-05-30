@@ -2,72 +2,84 @@ package com.orbitmines.spigot.api;
 
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.nms.Nms;
+import com.orbitmines.spigot.api.nms.npc.MobNpcNms;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+
+import java.util.Arrays;
+import java.util.List;
 
 /*
 * OrbitMines - @author Fadi Shawki - 2017
 */
 public enum Mob {
 
-    /* MobType-ish */
-    ARMOR_STAND(EntityType.ARMOR_STAND, "ArmorStand", "ArmorStand"),
+    //v1_8_R1
+    BAT(EntityType.BAT, "Bat"),
+    BLAZE(EntityType.BLAZE, "Blaze"),
+    CAVE_SPIDER(EntityType.CAVE_SPIDER, "Cave Spider"),
+    CHICKEN(EntityType.CHICKEN, "Chicken"),
+    COW(EntityType.COW, "Cow"),
+    CREEPER(EntityType.CREEPER, "Creeper"),
+    ENDER_DRAGON(EntityType.ENDER_DRAGON, "Ender Dragon"),
+    ENDERMAN(EntityType.ENDERMAN, "Enderman"),
+    ENDERMITE(EntityType.ENDERMITE, "Endermite"),
+    GHAST(EntityType.GHAST, "Ghast"),
+    GIANT(EntityType.GIANT, "Giant"),//TODO nms
+    GUARDIAN(EntityType.GUARDIAN, "Guardian"),
+    HORSE(EntityType.HORSE, "Horse"),
+    IRON_GOLEM(EntityType.IRON_GOLEM, "Iron Golem"),
+    MAGMA_CUBE(EntityType.MAGMA_CUBE, "Magma Cube"),
+    MUSHROOM_COW(EntityType.MUSHROOM_COW, "Mushroom Cow"),
+    OCELOT(EntityType.OCELOT, "Ocelot"),
+    PIG(EntityType.PIG, "Pig"),
+    PIG_ZOMBIE(EntityType.PIG_ZOMBIE, "Zombie Pigman"),
+    RABBIT(EntityType.RABBIT, "Rabbit"),
+    SHEEP(EntityType.SHEEP, "Sheep"),
+    SILVERFISH(EntityType.SILVERFISH, "Silverfish"),
+    SKELETON(EntityType.SKELETON, "Skeleton"),
+    SLIME(EntityType.SLIME, "Slime"),
+    SNOWMAN(EntityType.SNOWMAN, "Snowman"),
+    SPIDER(EntityType.SPIDER, "Spider"),
+    SQUID(EntityType.SQUID, "Squid"),
+    VILLAGER(EntityType.VILLAGER, "Villager"),
+    WITCH(EntityType.WITCH, "Witch"),
+    WITHER(EntityType.WITHER, "Wither"),
+    WOLF(EntityType.WOLF, "Wolf"),
+    ZOMBIE(EntityType.ZOMBIE, "Zombie"),
 
-    BAT(EntityType.BAT, "Bat", "Bat"),
-    BLAZE(EntityType.BLAZE, "Blaze", "Blaze"),
-    CAVE_SPIDER(EntityType.CAVE_SPIDER, "Cave Spider", "CaveSpider"),
-    CHICKEN(EntityType.CHICKEN, "Chicken", "Chicken"),
-    COW(EntityType.COW, "Cow", "Cow"),
-    CREEPER(EntityType.CREEPER, "Creeper", "Creeper"),
-    DONKEY(EntityType.DONKEY, "Donkey", "Donkey"),
-    ENDER_DRAGON(EntityType.ENDER_DRAGON, "Ender Dragon", "EnderDragon"),
-    ENDERMAN(EntityType.ENDERMAN, "Enderman", "Enderman"),
-    ENDERMITE(EntityType.ENDERMITE, "Endermite", "Endermite"),
-    EVOKER(EntityType.EVOKER, "Evoker", "Evocation_Illager"),
-    GHAST(EntityType.GHAST, "Ghast", "Ghast"),
-    GIANT(EntityType.GIANT, "Giant", "Giant"),
-    GUARDIAN(EntityType.GUARDIAN, "Guardian", "Guardian"),
-    HORSE(EntityType.HORSE, "Horse", "EntityHorse"),
-    HUSK(EntityType.HUSK, "Husk", "Husk"),
-    IRON_GOLEM(EntityType.IRON_GOLEM, "Iron Golem", "VillagerGolem"),
-    LLAMA(EntityType.LLAMA, "Llama", "Llama"),
-    MAGMA_CUBE(EntityType.MAGMA_CUBE, "Magma Cube", "LavaSlime"),
-    MULE(EntityType.MULE, "Mule", "Mule"),
-    MUSHROOM_COW(EntityType.MUSHROOM_COW, "Mushroom Cow", "MushroomCow"),
-    OCELOT(EntityType.OCELOT, "Ocelot", "Ozelot"),
-    PIG(EntityType.PIG, "Pig", "Pig"),
-    PIG_ZOMBIE(EntityType.PIG_ZOMBIE, "Zombie Pigman", "PigZombie"),
-    POLAR_BEAR(EntityType.POLAR_BEAR, "Polar Bear", "PolarBear"),
-    RABBIT(EntityType.RABBIT, "Rabbit", "Rabbit"),
-    SHEEP(EntityType.SHEEP, "Sheep", "Sheep"),
-    SILVERFISH(EntityType.SILVERFISH, "Silverfish", "Silverfish"),
-    SKELETON(EntityType.SKELETON, "Skeleton", "Skeleton"),
-    SKELETON_HORSE(EntityType.SKELETON_HORSE, "Skeleton Horse", "SkeletonHorse"),
-    SLIME(EntityType.SLIME, "Slime", "Slime"),
-    SNOWMAN(EntityType.SNOWMAN, "Snowman", "SnowMan"),
-    SPIDER(EntityType.SPIDER, "Spider", "Spider"),
-    SQUID(EntityType.SQUID, "Squid", "Squid"),
-    STRAY(EntityType.STRAY, "Stray", "Stray"),
-    VEX(EntityType.VEX, "Vex", "Vex"),
-    VILLAGER(EntityType.VILLAGER, "Villager", "Villager"),
-    VINDICATOR(EntityType.VINDICATOR, "Vindicator", "Vindication_Illager"),
-    WITCH(EntityType.WITCH, "Witch", "Witch"),
-    WITHER(EntityType.WITHER, "Wither", "WitherBoss"),
-    WITHER_SKELETON(EntityType.WITHER_SKELETON, "Wither Skeleton", "WitherSkeleton"),
-    WOLF(EntityType.WOLF, "Wolf", "Wolf"),
-    ZOMBIE(EntityType.ZOMBIE, "Zombie", "Zombie"),
-    ZOMBIE_HORSE(EntityType.ZOMBIE_HORSE, "Zombie Horse", "ZombieHorse"),
-    ZOMBIE_VILLAGER(EntityType.ZOMBIE_VILLAGER, "Zombie Villager", "ZombieVillager");
+    //TODO v1_10_R1
+    POLAR_BEAR(EntityType.POLAR_BEAR, "Polar Bear"),
+
+    //TODO v1_11_R1
+    DONKEY(EntityType.DONKEY, "Donkey"),//TODO nms
+    ELDER_GUARDIAN(EntityType.ELDER_GUARDIAN, "Elder Guardian"),//TODO nms (id; 4)
+    EVOKER(EntityType.EVOKER, "Evoker"),
+    HUSK(EntityType.HUSK, "Husk"),
+    ILLUSIONER(EntityType.ILLUSIONER, "Illusioner"), //TODO nms (id; 37)
+    LLAMA(EntityType.LLAMA, "Llama"),
+    MULE(EntityType.MULE, "Mule"),
+    SKELETON_HORSE(EntityType.SKELETON_HORSE, "Skeleton Horse"),
+    STRAY(EntityType.STRAY, "Stray"),
+    VEX(EntityType.VEX, "Vex"),
+    VINDICATOR(EntityType.VINDICATOR, "Vindicator"),
+    WITHER_SKELETON(EntityType.WITHER_SKELETON, "Wither Skeleton"),
+    ZOMBIE_HORSE(EntityType.ZOMBIE_HORSE, "Zombie Horse"),
+    ZOMBIE_VILLAGER(EntityType.ZOMBIE_VILLAGER, "Zombie Villager"),//TODO nms
+    //TODO ALL THESE horses etc, for 1.8-1.10 in another way.
+
+    //TODO v1_12_R1
+    PARROT(EntityType.PARROT, "Parrot"), //TODO nms (id; 105)
+
+    ;//TODO EVOKER FANGS?, SHULKER?
 
     private final EntityType type;
     private final String name;
-    private final String rawName;
 
-    Mob(EntityType type, String name, String rawName) {
+    Mob(EntityType type, String name) {
         this.type = type;
         this.name = name;
-        this.rawName = rawName;
     }
 
     public EntityType getType() {
@@ -78,125 +90,217 @@ public enum Mob {
         return name;
     }
 
-    public String getRawName() {
-        return rawName;
-    }
-
-    public short getEggId() {
-        return type.getTypeId();
-    }
-
-    public Entity spawn(Location location) {
-        return spawn(location, null);
-    }
-
-    public Entity spawn(Location location, String displayName) {
-        return spawn(location, displayName, false, false);
-    }
-
-    public Entity spawnMoving(Location location) {
-        return spawn(location, null);
-    }
-
-    public Entity spawnMoving(Location location, String displayName) {
-        return spawn(location, displayName, true, false);
-    }
-
-    public Entity spawnNoAttack(Location location) {
-        return spawn(location, null);
-    }
-
-    public Entity spawnNoAttack(Location location, String displayName) {
-        return spawn(location, displayName, true, true);
-    }
-
-    public Entity spawn(Location location, String displayName, boolean moving, boolean noAttack) {
+    public Entity spawn(Location location, MobNpcNms.Option... optionsArray) {
         Nms nms = OrbitMines.getInstance().getNms();
-        switch (this) {
-            case BAT:
-                return nms.getBatNpc().spawn(location, displayName, moving, noAttack);
-            case BLAZE:
-                return nms.getBlazeNpc().spawn(location, displayName, moving, noAttack);
-            case CAVE_SPIDER:
-                return nms.getCaveSpiderNpc().spawn(location, displayName, moving, noAttack);
-            case CHICKEN:
-                return nms.getChickenNpc().spawn(location, displayName, moving, noAttack);
-            case COW:
-                return nms.getCowNpc().spawn(location, displayName, moving, noAttack);
-            case CREEPER:
-                return nms.getCreeperNpc().spawn(location, displayName, moving, noAttack);
-            case ENDERMAN:
-                return nms.getEndermanNpc().spawn(location, displayName, moving, noAttack);
-            case ENDERMITE:
-                return nms.getEndermiteNpc().spawn(location, displayName, moving, noAttack);
-            case EVOKER:
-                return nms.getEvokerNpc().spawn(location, displayName, moving, noAttack);
-            case GHAST:
-                return nms.getGhastNpc().spawn(location, displayName, moving, noAttack);
-            case GUARDIAN:
-                return nms.getGuardianNpc().spawn(location, displayName, moving, noAttack);
-            case HORSE:
-                return nms.getHorseNpc().spawn(location, displayName, moving, noAttack);
-            case IRON_GOLEM:
-                return nms.getIronGolemNpc().spawn(location, displayName, moving, noAttack);
-            case LLAMA:
-                return nms.getLlamaNpc().spawn(location, displayName, moving, noAttack);
-            case MAGMA_CUBE:
-                return nms.getMagmaCubeNpc().spawn(location, displayName, moving, noAttack);
-            case MULE:
-                return nms.getMuleNpc().spawn(location, displayName, moving, noAttack);
-            case MUSHROOM_COW:
-                return nms.getMushroomCowNpc().spawn(location, displayName, moving, noAttack);
-            case OCELOT:
-                return nms.getOcelotNpc().spawn(location, displayName, moving, noAttack);
-            case PIG:
-                return nms.getPigNpc().spawn(location, displayName, moving, noAttack);
-            case PIG_ZOMBIE:
-                return nms.getPigZombieNpc().spawn(location, displayName, moving, noAttack);
-            case POLAR_BEAR:
-                return nms.getPolarBearNpc().spawn(location, displayName, moving, noAttack);
-            case RABBIT:
-                return nms.getRabbitNpc().spawn(location, displayName, moving, noAttack);
-            case SHEEP:
-                return nms.getSheepNpc().spawn(location, displayName, moving, noAttack);
-            case SILVERFISH:
-                return nms.getSilverfishNpc().spawn(location, displayName, moving, noAttack);
-            case SKELETON:
-                return nms.getSkeletonNpc().spawn(location, displayName, moving, noAttack);
-            case SKELETON_HORSE:
-                return nms.getSkeletonHorseNpc().spawn(location, displayName, moving, noAttack);
-            case SLIME:
-                return nms.getSlimeNpc().spawn(location, displayName, moving, noAttack);
-            case SNOWMAN:
-                return nms.getSnowmanNpc().spawn(location, displayName, moving, noAttack);
-            case SPIDER:
-                return nms.getSpiderNpc().spawn(location, displayName, moving, noAttack);
-            case SQUID:
-                return nms.getSquidNpc().spawn(location, displayName, moving, noAttack);
-            case STRAY:
-                return nms.getStrayNpc().spawn(location, displayName, moving, noAttack);
-            case VEX:
-                return nms.getVexNpc().spawn(location, displayName, moving, noAttack);
-            case VILLAGER:
-                return nms.getVillagerNpc().spawn(location, displayName, moving, noAttack);
-            case VINDICATOR:
-                return nms.getVindicatorNpc().spawn(location, displayName, moving, noAttack);
-            case WITCH:
-                return nms.getWitchNpc().spawn(location, displayName, moving, noAttack);
-            case WITHER:
-                return nms.getWitherNpc().spawn(location, displayName, moving, noAttack);
-            case WITHER_SKELETON:
-                return nms.getWitherSkeletonNpc().spawn(location, displayName, moving, noAttack);
-            case WOLF:
-                return nms.getWolfNpc().spawn(location, displayName, moving, noAttack);
-            case ZOMBIE:
-                return nms.getZombieNpc().spawn(location, displayName, moving, noAttack);
-            case ZOMBIE_HORSE:
-                return nms.getZombieHorseNpc().spawn(location, displayName, moving, noAttack);
-            case HUSK:
-                return nms.getZombieHuskNpc().spawn(location, displayName, moving, noAttack);
-            default:
-                return null;
-        }
+        List<MobNpcNms.Option> options = Arrays.asList(optionsArray);
+
+//        switch (this) {
+//
+//            case BAT:
+//                break;
+//            case BLAZE:
+//                break;
+//            case CAVE_SPIDER:
+//                break;
+//            case CHICKEN:
+//                return nms.getChickenNpc().spawn(location, options);
+//            case COW:
+//                break;
+//            case CREEPER:
+//                break;
+//            case ENDER_DRAGON:
+//                break;
+//            case ENDERMAN:
+//                break;
+//            case ENDERMITE:
+//                break;
+//            case GHAST:
+//                break;
+//            case GIANT:
+//                break;
+//            case GUARDIAN:
+//                break;
+//            case HORSE:
+//                break;
+//            case IRON_GOLEM:
+//                break;
+//            case MAGMA_CUBE:
+//                break;
+//            case MUSHROOM_COW:
+//                break;
+//            case OCELOT:
+//                break;
+//            case PIG:
+//                break;
+//            case PIG_ZOMBIE:
+//                break;
+//            case RABBIT:
+//                break;
+//            case SHEEP:
+//                break;
+//            case SILVERFISH:
+//                break;
+//            case SKELETON:
+//                break;
+//            case SLIME:
+//                break;
+//            case SNOWMAN:
+//                break;
+//            case SPIDER:
+//                break;
+//            case SQUID:
+//                break;
+//            case VILLAGER:
+//                break;
+//            case WITCH:
+//                break;
+//            case WITHER:
+//                break;
+//            case WOLF:
+//                break;
+//            case ZOMBIE:
+//                break;
+//            case POLAR_BEAR:
+//                break;
+//            case DONKEY:
+//                break;
+//            case ELDER_GUARDIAN:
+//                break;
+//            case EVOKER:
+//                break;
+//            case HUSK:
+//                break;
+//            case ILLUSIONER:
+//                break;
+//            case LLAMA:
+//                break;
+//            case MULE:
+//                break;
+//            case SKELETON_HORSE:
+//                break;
+//            case STRAY:
+//                break;
+//            case VEX:
+//                break;
+//            case VINDICATOR:
+//                break;
+//            case WITHER_SKELETON:
+//                break;
+//            case ZOMBIE_HORSE:
+//                break;
+//            case ZOMBIE_VILLAGER:
+//                break;
+//            case PARROT:
+//                break;
+//        }
+        return nms.getChickenNpc().spawn(location, options);
+//        throw new IllegalArgumentException();
+    }
+
+    public Entity spawnRideable(Location location, float speed, float backMultiplier, float sideMultiplier, float walkHeight, float jumpHeight) {
+        Nms nms = OrbitMines.getInstance().getNms();
+
+        return nms.getChickenNpc().spawnRideable(location, speed, backMultiplier, sideMultiplier, walkHeight, jumpHeight);
+//        //TODO RIDEABLE ALSO COMBATMODE?
+//        switch (this) {
+//
+//            case BAT:
+//                break;
+//            case BLAZE:
+//                break;
+//            case CAVE_SPIDER:
+//                break;
+//            case CHICKEN:
+//                return nms.getChickenNpc().spawnRideable(location, speed, backMultiplier, sideMultiplier, walkHeight, jumpHeight);
+//            case COW:
+//                break;
+//            case CREEPER:
+//                break;
+//            case ENDER_DRAGON:
+//                break;
+//            case ENDERMAN:
+//                break;
+//            case ENDERMITE:
+//                break;
+//            case GHAST:
+//                break;
+//            case GIANT:
+//                break;
+//            case GUARDIAN:
+//                break;
+//            case HORSE:
+//                break;
+//            case IRON_GOLEM:
+//                break;
+//            case MAGMA_CUBE:
+//                break;
+//            case MUSHROOM_COW:
+//                break;
+//            case OCELOT:
+//                break;
+//            case PIG:
+//                break;
+//            case PIG_ZOMBIE:
+//                break;
+//            case RABBIT:
+//                break;
+//            case SHEEP:
+//                break;
+//            case SILVERFISH:
+//                break;
+//            case SKELETON:
+//                break;
+//            case SLIME:
+//                break;
+//            case SNOWMAN:
+//                break;
+//            case SPIDER:
+//                break;
+//            case SQUID:
+//                break;
+//            case VILLAGER:
+//                break;
+//            case WITCH:
+//                break;
+//            case WITHER:
+//                break;
+//            case WOLF:
+//                break;
+//            case ZOMBIE:
+//                break;
+//            case POLAR_BEAR:
+//                break;
+//            case DONKEY:
+//                break;
+//            case ELDER_GUARDIAN:
+//                break;
+//            case EVOKER:
+//                break;
+//            case HUSK:
+//                break;
+//            case ILLUSIONER:
+//                break;
+//            case LLAMA:
+//                break;
+//            case MULE:
+//                break;
+//            case SKELETON_HORSE:
+//                break;
+//            case STRAY:
+//                break;
+//            case VEX:
+//                break;
+//            case VINDICATOR:
+//                break;
+//            case WITHER_SKELETON:
+//                break;
+//            case ZOMBIE_HORSE:
+//                break;
+//            case ZOMBIE_VILLAGER:
+//                break;
+//            case PARROT:
+//                break;
+//        }
+//        throw new IllegalArgumentException();
     }
 }

@@ -1,8 +1,8 @@
 package com.orbitmines.spigot.api.nms.entity;
 
-import com.orbitmines.spigot.api.Mob;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -21,11 +21,11 @@ public interface EntityNms {
 
     double getAttribute(Entity entity, Attribute attribute);
 
-    void destroyEntityFor(Collection<? extends Player> players, Entity entity);
+    void destroyEntitiesFor(Collection<? extends Entity> entities, Collection<? extends Player> players);
 
     void disguiseAsBlock(Player player, int Id, Collection<? extends Player> players);
 
-    Entity disguiseAsMob(Player player, Mob mob, boolean baby, String displayName, Collection<? extends Player> players);
+    Entity disguiseAsMob(Player player, EntityType entityType, boolean baby, String displayName, Collection<? extends Player> players);
 
     void mountUpdate(Entity vehicle);
 

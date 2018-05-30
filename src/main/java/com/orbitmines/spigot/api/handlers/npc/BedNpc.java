@@ -36,7 +36,7 @@ public class BedNpc {
     }
 
     public BedNpc(Player player, Location location, boolean firstPerson, boolean withItemsInHand, boolean withArmor) {
-//        nms = OrbitMines.getInstance().getNms().bedNpc();
+//TODO        nms = OrbitMines.getInstance().getNms().bedNpc();
 
         this.player = player;
         this.location = location;

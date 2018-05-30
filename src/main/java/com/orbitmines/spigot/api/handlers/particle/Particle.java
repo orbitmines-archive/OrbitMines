@@ -138,6 +138,6 @@ public class Particle {
     }
 
     public void send(Collection<? extends Player> players) {
-        orbitMines.getNms().particle().send(players, particle, longDistance, getX(), getY(), getZ(), xOff, yOff, zOff, speed, amount);
+        orbitMines.getNms().particle().send(players, particle.toString(), longDistance, getX(), getY(), getZ(), xOff, yOff, zOff, speed, amount);
     }
 }

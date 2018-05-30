@@ -4,9 +4,11 @@ import com.google.common.collect.Iterables;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import com.orbitmines.api.Color;
 import com.orbitmines.api.PluginMessage;
 import com.orbitmines.api.Server;
 import com.orbitmines.spigot.OrbitMines;
+import com.orbitmines.spigot.api.handlers.data.FriendsData;
 import com.orbitmines.spigot.api.utils.ConsoleUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -97,6 +99,21 @@ public abstract class PluginMessageHandler implements PluginMessageListener {
 
                     break;
                 }
+                case FAVORITE_FRIEND_MESSAGE: {
+                    UUID uuid = UUID.fromString(in.readUTF());
+                    OMPlayer omp = OMPlayer.getPlayer(uuid);
+
+                    if (omp == null)
+                        break;
+
+                    FriendsData data = (FriendsData) omp.getData(Data.Type.FRIENDS);
+                    if (data.getFavoriteFriends().contains(UUID.fromString(in.readUTF()))) {
+                        String name = in.readUTF();
+                        omp.sendMessage("Friends", Color.BLUE, name + "§7 is online gekomen.", name + "§7 has come online.");
+                    }
+
+                    break;
+                }
                 case UPDATE_RANKS: {
                     OMPlayer omp = OMPlayer.getPlayer(UUID.fromString(in.readUTF()));
 
@@ -118,6 +135,14 @@ public abstract class PluginMessageHandler implements PluginMessageListener {
 
                     if (omp != null)
                         omp.updateSilent();
+
+                    break;
+                }
+                case UPDATE_SETTINGS: {
+                    OMPlayer omp = OMPlayer.getPlayer(UUID.fromString(in.readUTF()));
+
+                    if (omp != null)
+                        omp.getData(Data.Type.SETTINGS).load();
 
                     break;
                 }

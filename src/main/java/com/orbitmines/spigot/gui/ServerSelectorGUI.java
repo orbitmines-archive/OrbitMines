@@ -103,7 +103,7 @@ public class ServerSelectorGUI extends GUI {
         add(4, 2, item);
         add(4, 6, item);
 
-        updateForPlayers();
+//        updateForPlayers(); TODO, DOES IT UPDATE? TO PREVENT FLICKERING ITEM, DISABLED FOR NOW
     }
 
     private ItemInstance getItem(Server server, ItemBuilder item, String[] underline, String[][] comments) {

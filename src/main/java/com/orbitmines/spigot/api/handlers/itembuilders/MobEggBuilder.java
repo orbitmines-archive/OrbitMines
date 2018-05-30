@@ -56,6 +56,6 @@ public class MobEggBuilder extends ItemBuilder {
 
     @Override
     protected ItemStack modify(ItemStack itemStack) {
-        return OrbitMines.getInstance().getNms().customItem().setEggId(super.modify(itemStack), mob);
+        return OrbitMines.getInstance().getNms().customItem().setEggId(super.modify(itemStack), mob.getType());
     }
 }

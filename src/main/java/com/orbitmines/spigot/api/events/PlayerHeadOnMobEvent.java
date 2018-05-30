@@ -10,7 +10,7 @@ import com.orbitmines.api.utils.RandomUtils;
 import com.orbitmines.api.utils.uuid.UUIDUtils;
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.handlers.itembuilders.PlayerSkullBuilder;
-import com.orbitmines.spigot.api.handlers.npc.NPC;
+import com.orbitmines.spigot.api.handlers.npc.MobNpc;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Skeleton;
@@ -60,7 +60,7 @@ public class PlayerHeadOnMobEvent implements Listener {
         new BukkitRunnable() {
             @Override
             public void run() {
-                if (NPC.getNpc(entity) == null)
+                if (MobNpc.getNpc(entity) == null)
                     addHead((LivingEntity) entity, vipRank);
             }
         }.runTaskLater(orbitMines, 1);
@@ -75,7 +75,7 @@ public class PlayerHeadOnMobEvent implements Listener {
         String name = UUIDUtils.getName(UUID.fromString(RandomUtils.randomFrom(entries).get(TablePlayers.UUID)));
 
         EntityEquipment ee = entity.getEquipment();
-        ee.setHelmet(new PlayerSkullBuilder(name).build());
+        ee.setHelmet(new PlayerSkullBuilder(() -> name).build());
         ee.setHelmetDropChance(0.001F);
     }
 }

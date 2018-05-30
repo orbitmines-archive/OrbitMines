@@ -27,7 +27,7 @@ public class DataPointLeaderBoard extends DataPointSign {
 
     @Override
     public boolean buildAt(DataPointLoader loader, Location location, String[] data) {
-        leaderboardData.put(location.add(0.5, 1.75, 0.5), data);
+        leaderboardData.put(location.add(0.5, 0.5, 0.5), data);
         return true;
     }
 
