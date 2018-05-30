@@ -1,6 +1,5 @@
 package com.orbitmines.spigot.api.handlers.npc;
 
-import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.runnables.SpigotRunnable;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -9,57 +8,67 @@ import java.util.ArrayList;
 import java.util.List;
 
 /*
-* OrbitMines - @author Fadi Shawki - 29-7-2017
-*/
+ * OrbitMines - @author Fadi Shawki - 2018
+ */
 public class PlayerFreezer extends ArmorStandNpc {
 
-    private static List<PlayerFreezer> freezers = new ArrayList<>();
+    private static ArrayList<PlayerFreezer> freezers = new ArrayList<>();
 
     private final Player player;
     private final SpigotRunnable runnable;
 
     public PlayerFreezer(Player player) {
-        this(player, player.getLocation().subtract(0, 1, 0));
+        this(player, player.getLocation().subtract(0, 1, 0)); //TODO right subtraction?
     }
 
-    public PlayerFreezer(Player player, Location location) {
-        super(location, false);
-
-        /* Clear previous */
-        PlayerFreezer prev = getFreezer(player);
-        if (prev != null)
-            prev.delete();
-
-        freezers.add(this);
+    public PlayerFreezer(Player player, Location spawnLocation) {
+        super(spawnLocation);
 
         this.player = player;
-
-        setGravity(false);
+        this.gravity = false;
 
         spawn();
 
         runnable = new SpigotRunnable(SpigotRunnable.TimeUnit.TICK, 1) {
             @Override
             public void run() {
-                if (!getArmorStand().getPassengers().contains(player))
-                    getArmorStand().addPassenger(player);
+                //TODO also for 1.8 -> setPassenger
+                if (!armorStand.getPassengers().contains(player))
+                    armorStand.addPassenger(player);
             }
         };
     }
 
     @Override
-    public void spawn() {
+    protected void spawn() {
         super.spawn();
 
-        OrbitMines.getInstance().getNms().entity().setInvisible(getArmorStand(), true);
+        nms.setInvisible(armorStand, true);
     }
 
     @Override
-    public void delete() {
-        super.delete();
+    protected void addToList() {
+        super.addToList();
+
+        /* Clear previous */
+        PlayerFreezer prev = getFreezer(player);
+        if (prev != null)
+            prev.destroy();
+
+        freezers.add(this);
+    }
+
+    @Override
+    protected void removeFromList() {
+        super.removeFromList();
+        freezers.remove(this);
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
 
         runnable.cancel();
-        freezers.remove(this);
     }
 
     public Player getPlayer() {
@@ -70,15 +79,15 @@ public class PlayerFreezer extends ArmorStandNpc {
         return runnable;
     }
 
+    public static List<PlayerFreezer> getFreezers() {
+        return freezers;
+    }
+
     public static PlayerFreezer getFreezer(Player player) {
         for (PlayerFreezer freezer : freezers) {
             if (freezer.player == player)
                 return freezer;
         }
         return null;
-    }
-
-    public static List<PlayerFreezer> getFreezers() {
-        return freezers;
     }
 }

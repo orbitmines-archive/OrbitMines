@@ -1,15 +1,12 @@
 package com.orbitmines.spigot.api.nms.npc.chicken;
 
-import org.bukkit.Location;
-import org.bukkit.entity.Entity;
+import com.orbitmines.spigot.api.nms.npc.MobNpcNms;
 
 /**
  * Created by Fadi on 30-4-2016.
  */
-public interface ChickenNpc {
+public interface ChickenNpc extends MobNpcNms {
 
     int Id = 93;
-
-    public Entity spawn(Location location, String displayName, boolean moving, boolean noAttack);
 
 }

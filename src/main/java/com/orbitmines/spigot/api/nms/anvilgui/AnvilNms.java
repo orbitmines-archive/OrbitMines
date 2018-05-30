@@ -10,26 +10,28 @@ import java.util.HashMap;
 public interface AnvilNms {
 
     void open();
+
     HashMap<AnvilSlot, ItemStack> getItems();
 
     enum AnvilSlot {
+
         INPUT_LEFT(0),
         INPUT_RIGHT(1),
         OUTPUT(2);
 
         private int slot;
 
-        private AnvilSlot(int slot){
+        AnvilSlot(int slot) {
             this.slot = slot;
         }
 
-        public int getSlot(){
+        public int getSlot() {
             return slot;
         }
 
         public static AnvilSlot bySlot(int slot) {
-            for(AnvilSlot anvilSlot : values()){
-                if(anvilSlot.getSlot() == slot){
+            for (AnvilSlot anvilSlot : values()) {
+                if (anvilSlot.getSlot() == slot) {
                     return anvilSlot;
                 }
             }
@@ -39,6 +41,7 @@ public interface AnvilNms {
     }
 
     class AnvilClickEvent {
+
         private AnvilSlot slot;
 
         private String name;
@@ -51,27 +54,27 @@ public interface AnvilNms {
             this.name = name;
         }
 
-        public AnvilSlot getSlot(){
+        public AnvilSlot getSlot() {
             return slot;
         }
 
-        public String getName(){
+        public String getName() {
             return name;
         }
 
-        public boolean getWillClose(){
+        public boolean getWillClose() {
             return close;
         }
 
-        public void setWillClose(boolean close){
+        public void setWillClose(boolean close) {
             this.close = close;
         }
 
-        public boolean getWillDestroy(){
+        public boolean getWillDestroy() {
             return destroy;
         }
 
-        public void setWillDestroy(boolean destroy){
+        public void setWillDestroy(boolean destroy) {
             this.destroy = destroy;
         }
     }

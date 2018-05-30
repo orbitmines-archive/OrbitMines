@@ -1,9 +1,7 @@
 package com.orbitmines.spigot.servers.hub;
 
 import com.google.common.io.ByteArrayDataInput;
-import com.orbitmines.api.Language;
-import com.orbitmines.api.PluginMessage;
-import com.orbitmines.api.Server;
+import com.orbitmines.api.*;
 import com.orbitmines.api.utils.NumberUtils;
 import com.orbitmines.api.utils.RandomUtils;
 import com.orbitmines.spigot.OrbitMines;
@@ -13,13 +11,18 @@ import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.PluginMessageHandler;
 import com.orbitmines.spigot.api.handlers.PreventionSet;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
+import com.orbitmines.spigot.api.handlers.itembuilders.PlayerSkullBuilder;
 import com.orbitmines.spigot.api.handlers.itembuilders.WrittenBookBuilder;
 import com.orbitmines.spigot.api.handlers.itemhandlers.ItemHoverActionBar;
 import com.orbitmines.spigot.api.handlers.kit.Kit;
 import com.orbitmines.spigot.api.handlers.kit.KitInteractive;
+import com.orbitmines.spigot.api.handlers.npc.Hologram;
 import com.orbitmines.spigot.api.handlers.scoreboard.DefaultScoreboard;
 import com.orbitmines.spigot.api.handlers.worlds.WorldLoader;
 import com.orbitmines.spigot.servers.hub.datapoints.HubDataPointSpawnpoint;
+import com.orbitmines.spigot.servers.hub.datapoints.HubDataPointStaffHologram;
+import com.orbitmines.spigot.servers.hub.gui.SettingsGUI;
+import com.orbitmines.spigot.servers.hub.gui.friends.FriendGUI;
 import com.orbitmines.spigot.servers.hub.handlers.HubDataPointHandler;
 import com.orbitmines.spigot.servers.hub.handlers.HubPlayer;
 import org.bukkit.Effect;
@@ -32,6 +35,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /*
 * OrbitMines - @author Fadi Shawki - 2017
@@ -95,6 +99,18 @@ public class Hub extends OrbitMinesServer {
 
         /* DataPoints */
         spawnLocations = ((HubDataPointSpawnpoint) (orbitMines.getLobby().getHandler().getDataPoint(HubDataPointHandler.Type.SPAWNPOINT))).getSpawns();
+
+        Map<Location, UUID> staffHolos = ((HubDataPointStaffHologram) (orbitMines.getLobby().getHandler().getDataPoint(HubDataPointHandler.Type.STAFF_HOLO))).getStaffHolograms();
+        for (Location location : staffHolos.keySet()) {
+            UUID uuid = staffHolos.get(location);
+            CachedPlayer player = CachedPlayer.getPlayer(uuid);
+            StaffRank staffRank = player.getStaffRank();
+
+            Hologram hologram = new Hologram(location, 0, Hologram.Face.UP);
+            hologram.addLine(staffRank::getDisplayName, false);
+            hologram.addLine(() -> staffRank.getPrefixColor().getChatColor() + player.getPlayerName(), false);
+            hologram.create();
+        }
     }
 
     @Override
@@ -166,7 +182,7 @@ public class Hub extends OrbitMinesServer {
                         return;
                 }
 
-                kit.setItem(0, new WrittenBookBuilder(1, "§f", "§8§lOrbit§7§lMines", rules).build());
+                kit.setItem(0, new WrittenBookBuilder(1, "§f", "§8§lOrbit§7§lMines", rules));
 
                 new ItemHoverActionBar(new ItemBuilder(Material.WRITTEN_BOOK, 1, 0, "§f"), false) {
                     @Override
@@ -177,21 +193,41 @@ public class Hub extends OrbitMinesServer {
             }
 
             {
-                ItemBuilder item = new ItemBuilder(Material.EXP_BOTTLE, 1, 0, "§f");
+                ItemBuilder item = new ItemBuilder(Material.EMERALD, 1, 0, "§f");
 
-                kit.setItem(3, new KitInteractive.InteractAction(item.build()) {
+                kit.setItem(1, new KitInteractive.InteractAction(item) {
                     @Override
                     public void onInteract(PlayerInteractEvent event, OMPlayer omp) {
                         event.setCancelled(true);
 
-                        //TODO OPEN ACHIEVEMENTS
+                        //TODO
                     }
                 });
 
                 new ItemHoverActionBar(item, false) {
                     @Override
                     public String getMessage(OMPlayer omp) {
-                        return "§d§lAchievements§r §8- §e§l" + omp.lang("Rechtermuisklik", "Right Click");
+                        return "§a§lStats§r §8- §e§l" + omp.lang("Rechtermuisklik", "Right Click");
+                    }
+                };
+            }
+
+            {
+                PlayerSkullBuilder item = new PlayerSkullBuilder(() -> kit.getLastUsedBy().getPlayerName(), 1, "§f");
+
+                kit.setItem(3, new KitInteractive.InteractAction(item) {
+                    @Override
+                    public void onInteract(PlayerInteractEvent event, OMPlayer omp) {
+                        event.setCancelled(true);
+
+                        new FriendGUI().open(omp);
+                    }
+                });
+
+                new ItemHoverActionBar(item, false) {
+                    @Override
+                    public String getMessage(OMPlayer omp) {
+                        return "§b§l" + omp.lang("Vrienden", "Friends") + "§r §8- §e§l" + omp.lang("Rechtermuisklik", "Right Click");
                     }
                 };
             }
@@ -199,7 +235,7 @@ public class Hub extends OrbitMinesServer {
             {
                 ItemBuilder item = new ItemBuilder(Material.ENDER_PEARL, 1, 0, "§f");
 
-                kit.setItem(4, new KitInteractive.InteractAction(item.build()) {
+                kit.setItem(4, new KitInteractive.InteractAction(item) {
                     @Override
                     public void onInteract(PlayerInteractEvent event, OMPlayer omp) {
                         event.setCancelled(true);
@@ -219,13 +255,13 @@ public class Hub extends OrbitMinesServer {
             {
                 ItemBuilder item = new ItemBuilder(Material.REDSTONE_TORCH_ON, 1, 0, "§f");
 
-                kit.setItem(5, new KitInteractive.InteractAction(item.build()) {
+                kit.setItem(5, new KitInteractive.InteractAction(item) {
                     @Override
                     public void onInteract(PlayerInteractEvent event, OMPlayer omp) {
                         event.setCancelled(true);
 
                         omp.getPlayer().playEffect(omp.getPlayer().getLocation(), Effect.STEP_SOUND, Material.REDSTONE_BLOCK);
-                        //TODO OPEN SETTINGS
+                        new SettingsGUI().open(omp);
                     }
                 });
 
@@ -240,7 +276,7 @@ public class Hub extends OrbitMinesServer {
             {
                 ItemBuilder item = new ItemBuilder(Material.ENDER_CHEST, 1, 0, "§f");
 
-                kit.setItem(8, new KitInteractive.InteractAction(item.build()) {
+                kit.setItem(8, new KitInteractive.InteractAction(item) {
                     @Override
                     public void onInteract(PlayerInteractEvent event, OMPlayer omp) {
                         event.setCancelled(true);

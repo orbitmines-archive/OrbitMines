@@ -28,30 +28,30 @@ public class PlayerChatEvent implements Listener {
             return;
 
         ProxiedPlayer player = (ProxiedPlayer) event.getSender();
-        BungeePlayer mbp = BungeePlayer.getPlayer(player);
+        BungeePlayer omp = BungeePlayer.getPlayer(player);
         String[] a = event.getMessage().split(" ");
 
         if (!a[0].startsWith("/")) {
             /* Message is not a command */
 
-            if (a[0].startsWith("@") && mbp.isEligible(StaffRank.MODERATOR)) {
+            if (a[0].startsWith("@") && omp.isEligible(StaffRank.MODERATOR)) {
                 /* Staff Message */
                 event.setCancelled(true);
 
-                if (!mbp.isLoggedIn()) {
-                    mbp.sendMessage(Message.ENTER_2FA);
+                if (!omp.isLoggedIn()) {
+                    omp.sendMessage(Message.ENTER_2FA);
                     return;
                 }
 
                 if (event.getMessage().length() != 1) {
-                    bungee.broadcast(StaffRank.MODERATOR, "Staff", Color.AQUA, mbp.getStaffRank().getPrefix() + mbp.getName() + " §7» §f§l" + event.getMessage().substring(1));
+                    bungee.broadcast(StaffRank.MODERATOR, "Staff", Color.AQUA, omp.getStaffRank().getPrefix() + omp.getName() + " §7» §f§l" + event.getMessage().substring(1));
                 } else {
-                    mbp.sendMessage("Staff", Color.RED, "§7Use §6@<message>§7.");
+                    omp.sendMessage("Staff", Color.RED, "§7Use §6@<message>§7.");
                 }
             }
-        } else if (!mbp.isLoggedIn()) {
+        } else if (!omp.isLoggedIn()) {
             event.setCancelled(true);
-            mbp.sendMessage(Message.ENTER_2FA);
+            omp.sendMessage(Message.ENTER_2FA);
         } else {
             /* Message is a command */
             Command command = Command.getCommand(a[0]);
@@ -60,7 +60,7 @@ public class PlayerChatEvent implements Listener {
                 return;
 
             event.setCancelled(true);
-            command.dispatch(event, mbp, a);
+            command.dispatch(event, omp, a);
         }
     }
 }

@@ -1,243 +1,291 @@
 package com.orbitmines.spigot.api.handlers.npc;
 
-/*
-* OrbitMines, LLC CONFIDENTIAL - @author Fadi Shawki - 2017
-* __________________
-*
-*  2017 OrbitMines, LLC
-*  All Rights Reserved.
-*
-* NOTICE:  All information contained herein is, and remains
-* the property of OrbitMines, LLC and its suppliers,
-* if any.  The intellectual and technical concepts contained
-* herein are proprietary to OrbitMines, LLC
-* and its suppliers and may be covered by U.S. and Foreign Patents,
-* patents in process, and are protected by trade secret or copyright law.
-* Dissemination of this information or reproduction of this material
-* is strictly forbidden unless prior written permission is obtained
-* from OrbitMines, LLC.
-*/
-
-import com.orbitmines.spigot.OrbitMines;
-import com.orbitmines.spigot.api.nms.entity.EntityNms;
-import org.bukkit.Bukkit;
+import com.orbitmines.spigot.api.handlers.scoreboard.ScoreboardString;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.Entity;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /*
-* OrbitMines - @author Fadi Shawki - 29-7-2017
-*/
-public class Hologram {
+ * OrbitMines - @author Fadi Shawki - 2018
+ */
+public class Hologram extends Npc {
 
-    private static List<Hologram> holograms = new ArrayList<>();
+    /* Y-offset between holograms */
+    public static final double Y_OFFSET_PER_LINE = 0.25;
 
-    private OrbitMines orbitMines;
-    private EntityNms nms;
+    private static ArrayList<Hologram> holograms = new ArrayList<>();
 
-    private Location location;
-    private List<ArmorStand> armorStands;
-    private List<String> lines;
-    private Map<String, ArmorStand> displayNames;
+    private ArrayList<Line> lines;
 
-    private boolean hideOnJoin;
-    private Set<Player> watchers;
+    private double yOff;
+    private Face face;
 
-    public Hologram(Location location) {
-        this(location, false);
+    public Hologram(Location spawnLocation) {
+        this(spawnLocation, 1.75, Face.DOWN);//TODO IS THAT A THE RIGHT ADDITION? 1.75
     }
 
-    public Hologram(Location location, boolean hideOnJoin) {
-        holograms.add(this);
+    public Hologram(Location spawnLocation, double yOff, Face face) {
+        super(spawnLocation.clone().add(0, yOff, 0));
 
-        orbitMines = OrbitMines.getInstance();
-        nms = orbitMines.getNms().entity();
+        this.yOff = yOff;
+        this.face = face;
 
-        this.location = location.clone().add(0, 1.75, 0);
-        this.hideOnJoin = hideOnJoin;
-        this.armorStands = new ArrayList<>();
         this.lines = new ArrayList<>();
-        this.displayNames = new HashMap<>();
-        this.watchers = new HashSet<>();
     }
 
-    public Location getLocation() {
-        return location;
+    @Override
+    protected void spawn() {
+        for (Line line : lines) {
+            line.spawn(false);
+        }
     }
 
-    public void setLocation(Location location) {
-        this.location = location.clone().add(0, 1.75, 0);
+    @Override
+    protected void despawn() {
+        for (Line line : lines) {
+            line.despawn();
+        }
     }
 
-    public boolean hideOnJoin() {
-        return hideOnJoin;
+    @Override
+    public void update() {
+        for (Line line : lines) {
+            line.update();
+        }
     }
 
-    public List<ArmorStand> getArmorStands() {
+    @Override
+    protected Collection<? extends Entity> getEntities() {
+        List<Entity> armorStands = new ArrayList<>();
+        for (Line line : lines) {
+            armorStands.add(line.armorStand);
+        }
         return armorStands;
     }
 
-    public List<String> getLines() {
-        return lines;
+    @Override
+    protected void addToList() {
+        holograms.add(this);
     }
 
-    public Map<String, ArmorStand> getDisplayNames() {
-        return displayNames;
-    }
-
-    public void addLine(String line) {
-        lines.add(line);
-        displayNames.put(line, null);
-    }
-
-    public void setLine(int index, String line) {
-        if (lines.size() < index)
-            return;
-
-        String fromLine = lines.get(index - 1);
-        lines.set(index - 1, line);
-        displayNames.remove(fromLine);
-        displayNames.put(line, null);
-    }
-
-    public void updateLine(int index, String line) {
-        if (lines.size() < index)
-            return;
-
-        String fromLine = lines.get(index - 1);
-        lines.set(index - 1, line);
-
-        ArmorStand armorStand = displayNames.get(fromLine);
-        armorStand.setCustomName(line);
-        armorStand.setCustomNameVisible(true);
-
-        displayNames.remove(fromLine);
-        displayNames.put(line, armorStand);
-    }
-
-    public void hideLines() {
-        int index = 1;
-        for (String line : lines) {
-            hideLine(index);
-            index++;
-        }
-    }
-
-    public void hideLine(int index) {
-        ArmorStand armorStand = displayNames.get(lines.get(index - 1));
-        armorStand.setCustomName(null);
-        armorStand.setCustomNameVisible(false);
-    }
-
-    public void removeLine(int index) {
-        if (lines.size() < index)
-            return;
-
-        displayNames.remove(lines.get(index - 1));
-        lines.remove(index - 1);
-    }
-
-    public void clearLines() {
-        displayNames.clear();
-        lines.clear();
-    }
-
-    public void create() {
-        create((List<Player>) null);
-    }
-
-    public void create(Player... players) {
-        create(Arrays.asList(players));
-    }
-
-    public void createHideFor(Player... players) {
-        List<Player> createFor = new ArrayList<>(Bukkit.getOnlinePlayers());
-        createFor.removeAll(Arrays.asList(players));
-
-        create(createFor);
-    }
-
-    /* null: all players */
-    public void create(Collection<? extends Player> createFor) {
-        if (armorStands.size() != 0) {
-            delete();
-            armorStands.clear();
-
-            createFor = watchers;
-        }
-
-        if (location == null)
-            return;
-
-        int index = 0;
-        for (String displayName : lines) {
-            ArmorStand armorStand = orbitMines.getNms().armorStand().spawn(new Location(location.getWorld(), location.getX(), location.getY() - (index * 0.25), location.getZ()), false);
-            armorStand.setMarker(true);
-            armorStand.setCustomName(displayName);
-            armorStand.setCustomNameVisible(true);
-            armorStand.setRemoveWhenFarAway(false);
-            armorStand.setGravity(false);
-
-            displayNames.put(displayName, armorStand);
-            armorStands.add(armorStand);
-
-            index++;
-
-            if (!hideOnJoin || createFor == null)
-                continue;
-
-            watchers.addAll(createFor);
-
-            createForWatchers();
-        }
-    }
-
-    public void createForWatchers() {
-        List<Player> hideFor = new ArrayList<>();
-        for (Player player : location.getWorld().getPlayers()) {
-            if (!watchers.contains(player))
-                hideFor.add(player);
-        }
-
-        hideFor(hideFor);
-    }
-
-    public Set<Player> getWatchers() {
-        return watchers;
-    }
-
-    public void clear() {
-        for(ArmorStand as : armorStands){
-            as.remove();
-        }
-    }
-
-    public void delete() {
-        clear();
+    @Override
+    protected void removeFromList() {
         holograms.remove(this);
     }
 
-    public void hideFor(Player player) {
-        hideFor(Collections.singletonList(player));
+    @Override
+    public void setSpawnLocation(Location spawnLocation) {
+        super.setSpawnLocation(spawnLocation.clone().add(0, yOff, 0));
     }
 
-    public void hideFor(Collection<? extends Player> players) {
-        for (ArmorStand armorStand : armorStands) {
-            nms.destroyEntityFor(players, armorStand);
+    public void addLine(ScoreboardString line, boolean spawn) {
+        Line l = new Line(line);
+        lines.add(l);
+
+        addLine(l, spawn);
+    }
+
+    public void addEmptyLine(boolean spawn) {
+        Line l = new Line(null);
+        lines.add(l);
+
+        addLine(l, spawn);
+    }
+
+    private void addLine(Line l, boolean spawn) {
+        if (!spawn)
+            return;
+
+        switch (face) {
+
+            case UP:
+                for (Line l1 : lines) {
+                    l1.move(Face.UP);
+                }
+                break;
+        }
+        l.spawn(true);
+    }
+
+    public void setLine(int index, ScoreboardString line) throws IndexOutOfBoundsException {
+        Line l = getLine(index);
+        l.setLine(line);
+
+        l.update();
+    }
+
+    public void removeLine(int index) throws IndexOutOfBoundsException {
+        Line l = getLine(index);
+        lines.remove(l);
+
+        l.despawn();
+
+        /* Last line, so no need to update all the others */
+        if (index > lines.size())
+            return;
+
+        /* Move all the lines underneath the removed line up. */
+        for (int i = index; i <= lines.size(); i++) {
+            getLine(index).move(face.reverse());
         }
     }
 
-    public static Hologram getHologram(ArmorStand armorStand) {
+    public void hideLine(int index) throws IndexOutOfBoundsException {
+        Line l = getLine(index);
+        l.setHidden(true);
+
+        l.update();
+    }
+
+    public void hideLines() throws IndexOutOfBoundsException {
+        for (int i = 1; i <= lines.size(); i++) {
+            hideLine(i);
+        }
+    }
+
+    private Line getLine(int index) throws IndexOutOfBoundsException {
+        switch (face) {
+
+            case DOWN:
+                return lines.get(index - 1);
+            case UP:
+                return lines.get(lines.size() - index);
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
+    private int getIndexOf(Line line) {
+        switch (face) {
+
+            case DOWN:
+                return lines.indexOf(line);
+            case UP:
+                return lines.size() - lines.indexOf(line) - 1;
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
+    public double getYOff() {
+        return yOff;
+    }
+
+    public void setYOff(double yOff) {
+        this.yOff = yOff;
+    }
+
+    public Face getFace() {
+        return face;
+    }
+
+    public void setFace(Face face) {
+        this.face = face;
+    }
+
+    public static ArrayList<Hologram> getHolograms() {
+        return holograms;
+    }
+
+    public static Hologram getHologram(Entity entity) {
         for (Hologram hologram : holograms) {
-            if (hologram.getArmorStands().contains(armorStand))
-                return hologram;
+            for (Line line : hologram.lines) {
+                if (line.getArmorStand() != null && line.getArmorStand() == entity) //TODO, might not work?
+                    return hologram;
+            }
         }
         return null;
     }
 
-    public static List<Hologram> getHolograms() {
-        return holograms;
+    private class Line {
+
+        private ArmorStand armorStand;
+        private ScoreboardString line;
+
+        private boolean hidden;
+
+        public Line(ScoreboardString line) {
+            this.line = line;
+            this.hidden = false;
+        }
+
+        public ArmorStand getArmorStand() {
+            return armorStand;
+        }
+
+        public ScoreboardString getLine() {
+            return line;
+        }
+
+        public void setLine(ScoreboardString line) {
+            this.line = line;
+        }
+
+        public boolean isHidden() {
+            return hidden;
+        }
+
+        public void setHidden(boolean hidden) {
+            this.hidden = hidden;
+        }
+
+        public void spawn(boolean updateWatchers) {
+            armorStand = plugin.getNms().armorStand().spawn(new Location(spawnLocation.getWorld(), spawnLocation.getX(), spawnLocation.getY() - (getIndexOf(this) * Y_OFFSET_PER_LINE * face.getMultiplier()), spawnLocation.getZ()), false);
+            armorStand.setMarker(true);
+            armorStand.setRemoveWhenFarAway(false);
+            armorStand.setGravity(false);
+
+            /* Hide for non-watchers, if the line was spawned separately, and not at once with all the other lines through Npc#create */
+            if (updateWatchers)
+                updateWatchers();
+
+            update();
+        }
+
+        public void despawn() {
+            if (armorStand != null)
+                armorStand.remove();
+        }
+
+        public void update() {
+            if (hidden || line == null || line.getString() == null) {
+                armorStand.setCustomName(null);
+                armorStand.setCustomNameVisible(false);
+            } else {
+                armorStand.setCustomName(line.getString());
+                armorStand.setCustomNameVisible(true);
+            }
+        }
+
+        public void move(Face face) {
+            if (armorStand == null)
+                return;
+
+            armorStand.teleport(armorStand.getLocation().add(0, Y_OFFSET_PER_LINE * face.reverse().getMultiplier(), 0));
+        }
+    }
+
+    public enum Face {
+
+        DOWN(1.0),
+        UP(-1.0);
+
+        private final double multiplier;
+
+        Face(double multiplier) {
+            this.multiplier = multiplier;
+        }
+
+        public double getMultiplier() {
+            return multiplier;
+        }
+
+        public Face reverse() {
+            return this == DOWN ? UP : DOWN;
+        }
     }
 }

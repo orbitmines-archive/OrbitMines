@@ -1,7 +1,6 @@
 package com.orbitmines.spigot.api.handlers.itembuilders;
 
 import com.orbitmines.spigot.OrbitMines;
-import com.orbitmines.spigot.api.utils.ItemUtils;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
@@ -181,7 +180,10 @@ public class ItemBuilder {
             itemStack.addUnsafeEnchantments(new HashMap<>(enchantments));
         } else if (glow) {
             itemStack.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-            itemStack = OrbitMines.getInstance().getNms().customItem().hideFlags(itemStack, ItemUtils.FLAG_ENCHANTMENTS);
+
+            ItemMeta meta = itemStack.getItemMeta();
+            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            itemStack.setItemMeta(meta);
         }
 
         if (unbreakable)

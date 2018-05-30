@@ -13,11 +13,17 @@ public enum PluginMessage {
 
     LOGIN_2FA(Server.BUNGEECORD),
 
+    MESSAGE_PLAYER(Server.BUNGEECORD),
+
     CHECK_VOTE_CACHE(Server.BUNGEECORD),
     UPDATE_RANKS(Server.BUNGEECORD),
     UPDATE_LANGUAGE(Server.BUNGEECORD),
     UPDATE_SILENT(Server.BUNGEECORD),
-    ;
+
+    FAVORITE_FRIEND_MESSAGE(Server.BUNGEECORD),
+    UPDATE_FRIENDS(Server.SPIGOT),
+
+    UPDATE_SETTINGS(Server.BUNGEECORD);
 
     public static final String CHANNEL = "OrbitMines";
     public static final String CHANNEL_BUNGEECORD = "BungeeCord";

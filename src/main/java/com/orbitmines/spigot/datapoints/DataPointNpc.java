@@ -5,9 +5,8 @@ import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.Mob;
 import com.orbitmines.spigot.api.datapoints.DataPointLoader;
 import com.orbitmines.spigot.api.datapoints.DataPointSign;
-import com.orbitmines.spigot.api.handlers.OMPlayer;
-import com.orbitmines.spigot.api.handlers.npc.NPC;
-import com.orbitmines.spigot.api.runnables.SpigotRunnable;
+import com.orbitmines.spigot.api.handlers.npc.MobNpc;
+import com.orbitmines.spigot.api.handlers.scoreboard.ScoreboardString;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -101,17 +100,11 @@ public class DataPointNpc extends DataPointSign {
         switch (string.toUpperCase()) {
             /* Check any global Npcs */
             case "SURVIVAL": {
-                NPC npc = new NPC(Mob.SKELETON, location, Server.SURVIVAL.getDisplayName(), new NPC.InteractAction() {
-                    @Override
-                    public void click(OMPlayer player, NPC clicked) {
-                        player.connect(Server.SURVIVAL, true);
-                    }
-                });
+                MobNpc npc = new MobNpc(Mob.SKELETON, location, getNpcDisplayName(Server.SURVIVAL));
+                npc.setInteractAction((event, omp) -> omp.connect(Server.SURVIVAL, true));
 
-                npc.spawn();
+                npc.create();
                 npc.setItemInMainHand(new ItemStack(Material.STONE_HOE));
-
-                registerServerNpc(Server.SURVIVAL, npc);
                 break;
             }
             case "FOG":
@@ -121,8 +114,8 @@ public class DataPointNpc extends DataPointSign {
             case "KITPVP":
             case "PRISON":
             case "EMPTY_SLOT": {
-                NPC npc = new NPC(Mob.WITHER_SKELETON, location, "§8§lComing Soon");
-                npc.spawn();
+                MobNpc npc = new MobNpc(Mob.WITHER_SKELETON, location, () -> "§8§lComing Soon");
+                npc.create();
                 break;
             }
             case "MG_SW":
@@ -132,8 +125,8 @@ public class DataPointNpc extends DataPointSign {
             case "MG_SC":
             case "MG_GA":
             case "MG_SP": {
-                NPC npc = new NPC(Mob.WITHER_SKELETON, location, "§8§lComing Soon");
-                npc.spawn();
+                MobNpc npc = new MobNpc(Mob.WITHER_SKELETON, location, () -> "§8§lComing Soon");
+                npc.create();
                 break;
             }
             default:
@@ -143,25 +136,13 @@ public class DataPointNpc extends DataPointSign {
         }
     }
 
-    private void registerServerNpc(Server server, NPC npc) {
-        new SpigotRunnable(SpigotRunnable.TimeUnit.SECOND, 2) {
-            @Override
-            public void run() {
-                Server.Status status = server.getStatus();
-
-                switch (status) {
-
-                    case ONLINE:
-                        int players = server.getPlayers();
-                        int maxPlayers = server.getMaxPlayers();
-                        npc.setDisplayName(server.getDisplayName() + "§r §8- " + server.getColor().getChatColor() + "§l" + players + "§7§l/" + maxPlayers);
-                        break;
-                    case OFFLINE:
-                    case MAINTENANCE:
-                        npc.setDisplayName(server.getDisplayName() + "§r §8- " + status.getColor().getChatColor() + "§l" + status.getName());
-                        break;
+    private ScoreboardString[] getNpcDisplayName(Server server) {
+        return new ScoreboardString[]{
+                () -> "§7§lOrbit§8§lMines " + server.getDisplayName(),
+                () -> {
+                    Server.Status status = server.getStatus();
+                    return status != Server.Status.ONLINE ? status.getColor().getChatColor() + "§l" + status.getName() : server.getColor().getChatColor() + "§l" + server.getPlayers() + " §7§l/ " + server.getMaxPlayers();
                 }
-            }
         };
     }
 }

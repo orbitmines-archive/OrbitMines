@@ -20,7 +20,7 @@ public enum Freezer {
 
         @Override
         public void clearFreeze(OMPlayer omp) {
-            PlayerFreezer.getFreezer(omp.getPlayer()).delete();
+            PlayerFreezer.getFreezer(omp.getPlayer()).destroy();
         }
     },
     MOVE,

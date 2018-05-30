@@ -33,6 +33,7 @@ public class CachedPlayer {
         return uuid;
     }
 
+    //TODO When player disguises are added; this should return the preferred display name.
     public String getPlayerName() {
         if (playerName == null)
             playerName = Database.get().getString(Table.PLAYERS, TablePlayers.NAME, new Where(TablePlayers.UUID, getUUID().toString()));
@@ -46,6 +47,10 @@ public class CachedPlayer {
 
     public VipRank getVipRank() {
         return VipRank.valueOf(Database.get().getString(Table.PLAYERS, TablePlayers.VIPRANK, new Where(TablePlayers.UUID, getUUID().toString())));
+    }
+
+    public Language getLanguage() {
+        return Language.valueOf(Database.get().getString(Table.PLAYERS, TablePlayers.LANGUAGE, new Where(TablePlayers.UUID, getUUID().toString())));
     }
 
     public String getLastOnline() {

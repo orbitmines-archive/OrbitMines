@@ -44,9 +44,9 @@ public enum Color {
         return RandomUtils.randomFrom(values());
     }
 
-    public static Color next(Color color) {
+    public Color next() {
         Color[] values = Color.values();
 
-        return color.ordinal() == values.length - 1 ? values[0] : values[color.ordinal() + 1];
+        return ordinal() == values.length - 1 ? values[0] : values[ordinal() + 1];
     }
 }

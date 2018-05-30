@@ -6,6 +6,7 @@ import com.orbitmines.spigot.api.handlers.scoreboard.ScoreboardString;
 import com.orbitmines.spigot.api.handlers.timer.Timer;
 import com.orbitmines.spigot.api.runnables.SpigotRunnable;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,7 +17,7 @@ public class ActionBar {
 
     private Map<OMPlayer, ActionBar> actionBars = new HashMap<>();
 
-    private OrbitMines orbitMines;
+    private OrbitMines plugin;
     private final ScoreboardString message;
     private OMPlayer player;
     private long stay;
@@ -24,7 +25,7 @@ public class ActionBar {
     private Timer timer;
 
     public ActionBar(OMPlayer player, ScoreboardString message, long stay) {
-        this.orbitMines = OrbitMines.getInstance();
+        this.plugin = OrbitMines.getInstance();
         this.player = player;
         this.message = message;
         this.stay = stay;
@@ -47,9 +48,6 @@ public class ActionBar {
     }
 
     public void send() {
-        if (!player.isLoggedIn())
-            return;
-
         start();
     }
 
@@ -79,7 +77,7 @@ public class ActionBar {
 
                 /* Check if most recent actionbar is this actionbar */
                 if (actionBars.get(player) == ActionBar.this)
-                    orbitMines.getNms().actionBar().send(player.getPlayer(), ActionBar.this);
+                    plugin.getNms().actionBar().send(Collections.singletonList(player.getPlayer()), message.getString());
             }
 
             @Override
@@ -100,6 +98,7 @@ public class ActionBar {
     public void forceStop() {
         stop();
 
-        orbitMines.getNms().actionBar().send(player.getPlayer(), new ActionBar(player, () -> "", 1));
+        /* Clear ActionBar */ //TODO this might be causing the flickering when multiple actionbars are on?
+        plugin.getNms().actionBar().send(Collections.singletonList(player.getPlayer()), "");
     }
 }

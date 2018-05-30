@@ -16,14 +16,14 @@ public abstract class StaffCommand extends Command {
         this.staffRank = staffRank;
     }
 
-    public abstract void onDispatch(ChatEvent event, BungeePlayer mbp, String[] a);
+    public abstract void onDispatch(ChatEvent event, BungeePlayer omp, String[] a);
 
     @Override
-    public void dispatch(ChatEvent event, BungeePlayer mbp, String[] a) {
-        if (mbp.isEligible(staffRank))
-            onDispatch(event, mbp, a);
+    public void dispatch(ChatEvent event, BungeePlayer omp, String[] a) {
+        if (omp.isEligible(staffRank))
+            onDispatch(event, omp, a);
         else
-            mbp.sendMessage(Message.UNKNOWN_COMMAND);
+            omp.sendMessage(Message.UNKNOWN_COMMAND);
     }
 
     public StaffRank getStaffRank() {

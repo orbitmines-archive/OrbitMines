@@ -193,13 +193,13 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
         return messageHandler;
     }
 
-    public boolean mustLogin(BungeePlayer mbp) {
-        UUID uuid = mbp.getUUID();
+    public boolean mustLogin(BungeePlayer omp) {
+        UUID uuid = omp.getUUID();
         return !lastLogin.containsKey(uuid) || !LOGIN_COOLDOWN.onCooldown(lastLogin.get(uuid));
     }
 
-    public void registerLogin(BungeePlayer mbp) {
-        lastLogin.put(mbp.getUUID(), System.currentTimeMillis());
+    public void registerLogin(BungeePlayer omp) {
+        lastLogin.put(omp.getUUID(), System.currentTimeMillis());
     }
 
 

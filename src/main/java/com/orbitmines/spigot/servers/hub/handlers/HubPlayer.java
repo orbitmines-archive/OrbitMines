@@ -1,19 +1,19 @@
 package com.orbitmines.spigot.servers.hub.handlers;
 
-import com.orbitmines.api.Color;
-import com.orbitmines.api.Language;
+import com.orbitmines.api.StaffRank;
+import com.orbitmines.api.settings.Settings;
+import com.orbitmines.api.settings.SettingsType;
+import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
+import com.orbitmines.spigot.api.handlers.data.FriendsData;
+import com.orbitmines.spigot.api.handlers.data.SettingsData;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.servers.hub.Hub;
-import net.firefang.ip2c.IpUtils;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /*
 * OrbitMines - @author Fadi Shawki - 2017
@@ -131,20 +131,10 @@ public class HubPlayer extends OMPlayer {
 //            }
 //        }
 
-        if (language != Language.DUTCH)
-            return;
+        updatePlayerVisibility(OMPlayer.getPlayers());
 
-        String country = IpUtils.getCountry(getPlayer());
-        if (country == null || (!country.equals("Netherlands") && !country.equals("Belgium") && !country.equals("Luxembourg"))) {
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    sendMessage("");
-                    sendMessage("Language", Color.RED, "§c§lIMPORTANT:");
-                    sendMessage("Language", Color.RED, "§7Welcome to OrbitMines, " + getName() + "§7!");
-                    sendMessage("Language", Color.RED, "§7It seems like you're not from the Benelux. We have added an option for players like you to change the language of all messages on our server. Click on the §c§lRedstone Torch§7, then click on the §c§lBanner§7 in order to switch to §c§lEnglish§7.");
-                }
-            }.runTaskLater(orbitMines, 30);
+        for (HubPlayer omp : HubPlayer.getHubPlayers()) {
+            omp.updatePlayerVisibility(Collections.singletonList(this));
         }
     }
 
@@ -162,6 +152,74 @@ public class HubPlayer extends OMPlayer {
     @Override
     public boolean canReceiveVelocity() {
         return false;
+    }
+
+    @Override
+    public void updateLanguage() {
+        super.updateLanguage();
+
+        /* Update Inventory */
+        hub.getLobbyKit(this).setItems(this);
+    }
+
+    @Override
+    public void updateSettings(Settings settings, SettingsType settingsType) {
+        super.updateSettings(settings, settingsType);
+
+        /* Update player visibility after settings are changed. */
+        if (settings == Settings.PLAYER_VISIBILITY)
+            updatePlayerVisibility(OMPlayer.getPlayers());
+    }
+
+    public void updatePlayerVisibility(Collection<? extends OMPlayer> players) {
+        switch (((SettingsData) getData(Data.Type.SETTINGS)).getSettings().get(Settings.PLAYER_VISIBILITY)) {
+
+            case ENABLED:
+                for (OMPlayer omp : players) {
+                    if (omp == this)
+                        continue;
+
+                    this.player.showPlayer(omp.getPlayer());
+                }
+                break;
+            case ONLY_FRIENDS: {
+                List<UUID> friends = ((FriendsData) getData(Data.Type.FRIENDS)).getFriends(true);
+                for (OMPlayer omp : players) {
+                    if (omp == this)
+                        continue;
+
+                    if (omp.getStaffRank() != StaffRank.NONE || friends.contains(omp.getUUID()))
+                        this.player.showPlayer(omp.getPlayer());
+                    else
+                        this.player.hidePlayer(omp.getPlayer());
+                }
+                break;
+            }
+            case ONLY_FAVORITE_FRIENDS: {
+                List<UUID> friends = ((FriendsData) getData(Data.Type.FRIENDS)).getFavoriteFriends();
+                for (OMPlayer omp : players) {
+                    if (omp == this)
+                        continue;
+
+                    if (omp.getStaffRank() != StaffRank.NONE || friends.contains(omp.getUUID()))
+                        this.player.showPlayer(omp.getPlayer());
+                    else
+                        this.player.hidePlayer(omp.getPlayer());
+                }
+                break;
+            }
+            case DISABLED:
+                for (OMPlayer omp : players) {
+                    if (omp == this)
+                        continue;
+
+                    if (omp.getStaffRank() != StaffRank.NONE)
+                        this.player.showPlayer(omp.getPlayer());
+                    else
+                        this.player.hidePlayer(omp.getPlayer());
+                }
+                break;
+        }
     }
 
     /*

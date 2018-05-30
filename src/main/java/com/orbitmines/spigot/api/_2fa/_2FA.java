@@ -23,6 +23,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +41,7 @@ public class _2FA {
     private Map<OMPlayer, String> tempKeys;
     private Map<OMPlayer, ItemStack[]> contents;
     private Map<OMPlayer, ItemStack[]> armorContents;
+    private Map<OMPlayer, BukkitTask> tasks;
 
     public _2FA() {
         orbitMines = OrbitMines.getInstance();
@@ -62,7 +64,7 @@ public class _2FA {
 
         omp.sendMessage(Message.ENTER_2FA);
 
-        new BukkitRunnable() {
+        BukkitTask task = new BukkitRunnable() {
             @Override
             public void run() {
                 tempKeys.remove(omp);
@@ -73,6 +75,7 @@ public class _2FA {
                     omp.kick("§8§lOrbit§7§lMines §c§l2FA§r\n§7Timeout\n\n§7IGN: §8" + omp.getName() + "\n§7UUID: §8" + omp.getUUID().toString());
             }
         }.runTaskLater(orbitMines, SpigotRunnable.TimeUnit.MINUTE.getTicks() * 3);
+        tasks.put(omp, task);
     }
 
     public Result login(OMPlayer omp, String code) {
@@ -97,8 +100,8 @@ public class _2FA {
         if (!authorized) {
             return Result.INVALID_CODE;
         } else if (tempKeys.containsKey(omp)) {
-            omp.sendMessage(Message.PREFIX_2FA, Color.LIME, "Successfully setup your 2FA!");
-            omp.sendMessage(Message.PREFIX_2FA, Color.BLUE, "You will be asked for your 2FA code every 24 hours.");
+            omp.sendMessage(Message.PREFIX_2FA, Color.LIME, "2FA is succesvol ingesteld.", "Successfully setup your 2FA!");
+            omp.sendMessage(Message.PREFIX_2FA, Color.BLUE, "Je zal elke 24 uur gevraagd worden naar je 2FA code.", "You will be asked for your 2FA code every 24 hours.");
 
             tempKeys.remove(omp);
 
@@ -116,12 +119,19 @@ public class _2FA {
         return Result.SUCCESSFUL;
     }
 
+    public void onLogout(OMPlayer omp) {
+        if (!tasks.containsKey(omp))
+            return;
+
+        tasks.get(omp).cancel();
+    }
+
     public void processNewLogin(OMPlayer omp) {
         String secret = GOOGLE_AUTH.createCredentials().getKey();
 
         tempKeys.put(omp, secret);
 
-        omp.sendMessage(Message.PREFIX_2FA, Color.BLUE, "§r§7Initiating new 2FA. Use the QR code on the map.");
+        omp.sendMessage(Message.PREFIX_2FA, Color.BLUE, "Gebruik de QR code op de kaart om je 2FA code in te stellen.", "§r§7Initiating new 2FA. Use the QR code on the map.");
 
         QRMapRenderer qrMap;
         try {
@@ -133,9 +143,9 @@ public class _2FA {
 
         if (qrMap == null) {
             ComponentMessage cM = new ComponentMessage();
-            cM.add(Message.FORMAT(Message.PREFIX_2FA, Color.RED, "§r§7n error occurred, please "));
-            cM.add("§6click here", ClickEvent.Action.OPEN_URL, "https://www.google.com/chart?chs=250x250&cht=qr&chl=" + otpAuth(omp, secret), HoverEvent.Action.SHOW_TEXT, "§7Open QR Code in browser.");
-            cM.add("§7.");
+            cM.add(new Message(Message.PREFIX_2FA, Color.RED, "§r§7Er is een fout opgetreden, ", "§r§7An error occurred, please "));
+            cM.add(new Message("§6klik hier", "§6click here"), ClickEvent.Action.OPEN_URL, new Message("https://www.google.com/chart?chs=250x250&cht=qr&chl=" + otpAuth(omp, secret)), HoverEvent.Action.SHOW_TEXT, new Message("§7Open de QR Code in je browser.", "§7Open QR Code in browser."));
+            cM.add(new Message("§7."));
 
             cM.send(omp);
         } else {
