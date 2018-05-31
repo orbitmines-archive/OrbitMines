@@ -67,7 +67,11 @@ public class StatsGUI extends GUI {
 
         add(1, 5, new EmptyItemInstance(new ItemBuilder(Material.PRISMARINE_SHARD, 1, 0, "§9§l" + omp.getPrisms() + " Prism" + (omp.getPrisms() == 1 ? "" : "s")).build()));
 
+<<<<<<< HEAD
         EmptyItemInstance item = new EmptyItemInstance(new ItemBuilder(Material.STAINED_GLASS_PANE, 1, 14, new Message("§cOnbekende Galaxies", "§cUnknown Galaxies").lang(omp.getLanguage())).build());
+=======
+        EmptyItemInstance item = new EmptyItemInstance(new ItemBuilder(Material.STAINED_GLASS_PANE, 1, 14, new Message("§cOnbekende Galaxies", "§cUnknown Galaxies").lang(language)).build());
+>>>>>>> fadi
         add(3, 1, item);
         add(3, 3, item);
         add(3, 5, item);
