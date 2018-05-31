@@ -4,7 +4,7 @@ import com.orbitmines.api.database.tables.*;
 import com.orbitmines.api.database.tables.kitpvp.TableKitPvPPlayers;
 import com.orbitmines.api.database.tables.survival.TableSurvivalClaim;
 import com.orbitmines.api.database.tables.survival.TableSurvivalPlayers;
-import com.orbitmines.api.database.tables.uhsurvival.TableUHPlayers;
+import com.orbitmines.api.database.tables.uhsurvival2.TableUHPlayers;
 
 import java.util.ArrayList;
 import java.util.List;

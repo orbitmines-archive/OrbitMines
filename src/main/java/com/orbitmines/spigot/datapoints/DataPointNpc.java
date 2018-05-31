@@ -108,7 +108,13 @@ public class DataPointNpc extends DataPointSign {
                 break;
             }
             case "FOG":
-            case "UHSURVIVAL":
+            case "UHSURVIVAL": {
+                MobNpc npc = new MobNpc(Mob.CHICKEN, location, getNpcDisplayName(Server.UHSURVIVAL));
+                npc.setInteractAction((event, omp) -> omp.connect(Server.UHSURVIVAL, true));
+
+                npc.create();
+                break;
+            }
             case "SKYBLOCK":
             case "CREATIVE":
             case "KITPVP":

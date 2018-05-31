@@ -7,6 +7,7 @@ import com.orbitmines.spigot.api.handlers.PreventionSet;
 import com.orbitmines.spigot.api.runnables.SpigotRunnable;
 import com.orbitmines.spigot.servers.hub.Hub;
 import com.orbitmines.spigot.servers.survival.Survival;
+import com.orbitmines.spigot.servers.uhsurvival2.UHSurvival;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -91,6 +92,8 @@ public abstract class OrbitMinesServer {
                 return null;
             case FOG:
                 return null;
+            case UHSURVIVAL:
+                return new UHSurvival(orbitMines);
             case MINIGAMES:
                 return null;
             default:
