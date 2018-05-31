@@ -1,6 +1,6 @@
 package com.orbitmines.spigot.api.handlers.kit;
 
-import com.orbitmines.api.CachedPlayer;
+import com.orbitmines.spigot.api.handlers.CachedPlayer;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.api.utils.PlayerUtils;

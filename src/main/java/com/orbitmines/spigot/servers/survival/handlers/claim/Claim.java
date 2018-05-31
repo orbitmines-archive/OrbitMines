@@ -1,6 +1,6 @@
 package com.orbitmines.spigot.servers.survival.handlers.claim;
 
-import com.orbitmines.api.CachedPlayer;
+import com.orbitmines.spigot.api.handlers.CachedPlayer;
 import com.orbitmines.api.StaffRank;
 import com.orbitmines.api.utils.DateUtils;
 import com.orbitmines.spigot.api.handlers.chat.ActionBar;

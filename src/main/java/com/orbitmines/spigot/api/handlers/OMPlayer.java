@@ -13,6 +13,7 @@ import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.Freezer;
 import com.orbitmines.spigot.api.handlers.chat.Title;
 import com.orbitmines.spigot.api.handlers.data.FriendsData;
+import com.orbitmines.spigot.api.handlers.data.PlayTimeData;
 import com.orbitmines.spigot.api.handlers.data.SettingsData;
 import com.orbitmines.spigot.api.handlers.data.VoteData;
 import com.orbitmines.spigot.api.handlers.itembuilders.PotionBuilder;
@@ -120,7 +121,7 @@ public abstract class OMPlayer {
         orbitMines.getServerHandler().getServer().setPlayers(Bukkit.getOnlinePlayers().size());
 
         if (!Database.get().contains(Table.PLAYERS, TablePlayers.UUID, new Where(TablePlayers.UUID, getUUID().toString()))) {
-            Database.get().insert(Table.PLAYERS, Table.PLAYERS.values(getUUID().toString(), getRealName(), staffRank.toString(), vipRank.toString(), language.toString(), SettingsType.ENABLED.toString(), SettingsType.ENABLED.toString(), SettingsType.ENABLED.toString(), silent ? "1" : "0", solars + "", prisms + "", "null"));
+            Database.get().insert(Table.PLAYERS, Table.PLAYERS.values(getUUID().toString(), getRealName(), staffRank.toString(), vipRank.toString(), DateUtils.FORMAT.format(DateUtils.now()), language.toString(), SettingsType.ENABLED.toString(), SettingsType.ENABLED.toString(), SettingsType.ENABLED.toString(), silent ? "1" : "0", solars + "", prisms + "", "null"));
         } else {
             Map<Column, String> values = Database.get().getValues(Table.PLAYERS, new Column[]{
                     TablePlayers.STAFFRANK,
@@ -185,6 +186,8 @@ public abstract class OMPlayer {
                     ((FriendsData) getData(Data.Type.FRIENDS)).sendJoinMessage(OMPlayer.this);
 
                 ip.setCurrentServer(orbitMines.getServerHandler().getServer());
+
+                orbitMines.getServerHandler().getMessageHandler().dataTransfer(PluginMessage.SERVER_SWITCH, getUUID().toString(), orbitMines.getServerHandler().getServer().toString());
 
                 if (isLoggedIn())
                     on2FALogin();
@@ -637,6 +640,9 @@ public abstract class OMPlayer {
                 break;
             case SETTINGS:
                 data = new SettingsData(getUUID());
+                break;
+            case PLAY_TIME:
+                data = new PlayTimeData(getUUID());
                 break;
             default:
                 return null;

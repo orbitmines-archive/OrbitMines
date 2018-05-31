@@ -1,11 +1,11 @@
-package com.orbitmines.api;
+package com.orbitmines.spigot.api.handlers;
 
+import com.orbitmines.api.*;
 import com.orbitmines.api.database.Database;
 import com.orbitmines.api.database.Table;
 import com.orbitmines.api.database.Where;
 import com.orbitmines.api.database.tables.TablePlayers;
 import com.orbitmines.api.utils.uuid.UUIDUtils;
-import com.orbitmines.bungeecord.OrbitMinesBungee;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -53,14 +53,20 @@ public class CachedPlayer {
         return Language.valueOf(Database.get().getString(Table.PLAYERS, TablePlayers.LANGUAGE, new Where(TablePlayers.UUID, getUUID().toString())));
     }
 
+    public String getFirstLogin() {
+        return Database.get().getString(Table.PLAYERS, TablePlayers.FIRST_LOGIN, new Where(TablePlayers.UUID, getUUID().toString()));
+    }
+
     public String getLastOnline() {
         updateIP();
+        ip.updateLastLogin();
 
         return ip == null ? null : ip.getLastLogin();
     }
 
     public String getLastOnlineInTimeUnit() {
         updateIP();
+        ip.updateLastLogin();
 
         return ip == null ? null : ip.getLastLoginInTimeUnit();
     }
@@ -68,10 +74,14 @@ public class CachedPlayer {
     public Server getServer() {
         updateIP();
 
+        /* If we somehow can't receive the player's IP address we return null */
+        if (ip == null)
+            return null;
+
         ip.updateCurrentServer();
 
         if (ip.getCurrentServer() != null) {
-            return OrbitMinesBungee.getBungee().getServer(ip.getCurrentServer());
+            return Server.valueOf(ip.getCurrentServer());
         } else {
             /* Not Online, update last online */
             ip.update();

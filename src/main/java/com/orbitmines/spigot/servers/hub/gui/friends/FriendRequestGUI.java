@@ -4,7 +4,7 @@ package com.orbitmines.spigot.servers.hub.gui.friends;
  * OrbitMines - @author Fadi Shawki - 2018
  */
 
-import com.orbitmines.api.CachedPlayer;
+import com.orbitmines.spigot.api.handlers.CachedPlayer;
 import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.GUI;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
@@ -59,7 +59,7 @@ public class FriendRequestGUI extends GUI {
                 boolean sent = sentRequests.contains(uuid);
 
                 CachedPlayer friend = CachedPlayer.getPlayer(uuid);
-                ItemBuilder item = new ItemBuilder(sent ? Material.EMPTY_MAP : Material.PAPER, 1, 0, friend.getRankPrefixColor() + friend.getPlayerName());
+                ItemBuilder item = new ItemBuilder(sent ? Material.EMPTY_MAP : Material.PAPER, 1, 0, friend.getRankPrefixColor().getChatColor() + friend.getPlayerName());
                 List<String> lore = item.getLore();
 
                 if (sent) {
@@ -79,7 +79,7 @@ public class FriendRequestGUI extends GUI {
                         }
                     });
                 } else {
-                    lore.add(omp.lang("§7§oInkomend Vriendschapsverzoek", "§7I§oncoming Friend Invite"));
+                    lore.add(omp.lang("§7§oInkomend Vriendschapsverzoek", "§7§oIncoming Friend Request"));
                     lore.add("");
                     lore.add(omp.lang("§aKlik hier om te accepteren/weigeren.", "§aClick here to add or remove."));
 
