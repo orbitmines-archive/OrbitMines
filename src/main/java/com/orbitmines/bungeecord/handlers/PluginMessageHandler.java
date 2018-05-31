@@ -8,6 +8,7 @@ import com.orbitmines.bungeecord.OrbitMinesBungee;
 import com.orbitmines.bungeecord.runnables.BungeeRunnable;
 import com.orbitmines.bungeecord.utils.ConsoleUtils;
 import com.orbitmines.spigot.api.handlers.Data;
+import com.orbitmines.spigot.api.handlers.data.PlayTimeData;
 import com.orbitmines.spigot.api.utils.Serializer;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -214,6 +215,14 @@ public class PluginMessageHandler implements Listener {
 
                     if (omp != null)
                         omp.getData(Data.Type.SETTINGS).load();
+
+                    break;
+                }
+                case SERVER_SWITCH: {
+                    BungeePlayer omp = BungeePlayer.getPlayer(UUID.fromString(in.readUTF()));
+
+                    if (omp != null)
+                        ((PlayTimeData) omp.getData(Data.Type.PLAY_TIME)).startSession(Server.valueOf(in.readUTF()));
 
                     break;
                 }

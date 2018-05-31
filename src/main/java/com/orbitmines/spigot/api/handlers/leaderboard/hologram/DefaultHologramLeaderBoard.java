@@ -1,6 +1,6 @@
 package com.orbitmines.spigot.api.handlers.leaderboard.hologram;
 
-import com.orbitmines.api.CachedPlayer;
+import com.orbitmines.spigot.api.handlers.CachedPlayer;
 import com.orbitmines.api.StaffRank;
 import com.orbitmines.api.VipRank;
 import com.orbitmines.api.database.Column;

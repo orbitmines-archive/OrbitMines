@@ -48,6 +48,7 @@ public class _2FA {
         this.tempKeys = new HashMap<>();
         this.contents = new HashMap<>();
         this.armorContents = new HashMap<>();
+        this.tasks = new HashMap<>();
     }
 
     public void initiateLogin(OMPlayer omp) {

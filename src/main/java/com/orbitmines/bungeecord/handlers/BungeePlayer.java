@@ -6,9 +6,11 @@ import com.orbitmines.api.database.Set;
 import com.orbitmines.api.database.tables.TablePlayers;
 import com.orbitmines.api.database.tables.TableServers;
 import com.orbitmines.api.settings.SettingsType;
+import com.orbitmines.api.utils.DateUtils;
 import com.orbitmines.api.utils.RandomUtils;
 import com.orbitmines.bungeecord.OrbitMinesBungee;
 import com.orbitmines.spigot.api.handlers.Data;
+import com.orbitmines.spigot.api.handlers.data.PlayTimeData;
 import com.orbitmines.spigot.api.handlers.data.SettingsData;
 import com.orbitmines.spigot.api.handlers.data.VoteData;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -67,7 +69,7 @@ public class BungeePlayer {
         players.add(this);
 
         if (!Database.get().contains(Table.PLAYERS, TablePlayers.UUID, new Where(TablePlayers.UUID, getUUID().toString()))) {
-            Database.get().insert(Table.PLAYERS, Table.PLAYERS.values(getUUID().toString(), getRealName(), staffRank.toString(), vipRank.toString(), language.toString(), SettingsType.ENABLED.toString(), SettingsType.ENABLED.toString(), SettingsType.ENABLED.toString(), silent ? "1" : "0", "0", "0", "null"));
+            Database.get().insert(Table.PLAYERS, Table.PLAYERS.values(getUUID().toString(), getRealName(), staffRank.toString(), vipRank.toString(), DateUtils.FORMAT.format(DateUtils.now()), language.toString(), SettingsType.ENABLED.toString(), SettingsType.ENABLED.toString(), SettingsType.ENABLED.toString(), silent ? "1" : "0", "0", "0", "null"));
         } else {
             Map<Column, String> values = Database.get().getValues(Table.PLAYERS, new Column[]{
                     TablePlayers.NAME,
@@ -115,6 +117,8 @@ public class BungeePlayer {
 
         updateLastOnline();
 
+        ((PlayTimeData) getData(Data.Type.PLAY_TIME)).stopSession();
+
         players.remove(this);
     }
 
@@ -155,7 +159,7 @@ public class BungeePlayer {
             sendMessage("Server", Color.RED, "§7Error met het verbinden van die server.", "§7Error while connecting to that server.");
             return;
         } else if (player.getServer().getInfo().getName().equals(serverInfo.getName())) {
-            /* Already connected to this server */
+            sendMessage("Server", Color.BLUE, "§7Je zit al op die server.", "§7You're already on that server.");
             return;
         } else if (server.getMaxPlayers() - serverInfo.getPlayers().size() < 1) {
             sendMessage("Server", Color.RED, "§7Die server is vol!", "§7That server is full!");
@@ -326,6 +330,9 @@ public class BungeePlayer {
             case SETTINGS:
                 data = new SettingsData(getUUID());
                 break;
+            case PLAY_TIME:
+                data = new PlayTimeData(getUUID());
+                break;
             default:
                 return null;
         }
@@ -464,7 +471,7 @@ public class BungeePlayer {
             if (omp.getPlayer() == player)
                 return omp;
         }
-        throw new IllegalStateException();
+        return null;
     }
 
     public static BungeePlayer getPlayer(String name) {
@@ -472,7 +479,7 @@ public class BungeePlayer {
             if (omp.getName(true).equalsIgnoreCase(name))
                 return omp;
         }
-        throw new IllegalStateException();
+        return null;
     }
 
     public static BungeePlayer getPlayer(UUID uuid) {
@@ -480,7 +487,7 @@ public class BungeePlayer {
             if (omp.getUUID().toString().equals(uuid.toString()))
                 return omp;
         }
-        throw new IllegalStateException();
+        return null;
     }
 
     public static List<BungeePlayer> getPlayers() {

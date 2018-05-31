@@ -29,7 +29,8 @@ public abstract class Data {
 
         VOTES,
         FRIENDS,
-        SETTINGS;
+        SETTINGS,
+        PLAY_TIME;
 
     }
 }

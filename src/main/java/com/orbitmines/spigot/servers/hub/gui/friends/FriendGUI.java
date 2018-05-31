@@ -4,7 +4,7 @@ package com.orbitmines.spigot.servers.hub.gui.friends;
  * OrbitMines - @author Fadi Shawki - 2018
  */
 
-import com.orbitmines.api.CachedPlayer;
+import com.orbitmines.spigot.api.handlers.CachedPlayer;
 import com.orbitmines.api.Color;
 import com.orbitmines.api.Server;
 import com.orbitmines.api.utils.uuid.UUIDUtils;
@@ -169,7 +169,7 @@ public class FriendGUI extends GUI {
         for (UUID uuid : getFriendsForPage(ordered)) {
             if (uuid != null) {
                 CachedPlayer friend = CachedPlayer.getPlayer(uuid);
-                String name = friend.getRankPrefixColor() + friend.getPlayerName();
+                String name = friend.getRankPrefixColor().getChatColor() +friend.getPlayerName();
 
                 PlayerSkullBuilder item = new PlayerSkullBuilder(friend::getPlayerName, 1, name, new ArrayList<>());
                 ItemBuilder offlineItem = new ItemBuilder(Material.SKULL_ITEM, 1, 0, name, new ArrayList<>());
@@ -194,7 +194,7 @@ public class FriendGUI extends GUI {
                             lore.add(omp.lang("§aKlik hier om te verbinden.", "§aClick here to connect."));
                         } else {
                             lore.add("§7Status: " + Server.Status.OFFLINE.getDisplayName());
-                            lore.add("§7" + omp.lang("Laatst gezien", "Last seen") + ": §c" + friend.getLastOnlineInTimeUnit() + " ago");
+                            lore.add("§7" + omp.lang("Laatst gezien", "Last seen") + ": §b§l" + friend.getLastOnlineInTimeUnit() + " ago");
                             offlineItem.setLore(lore);
                         }
                         break;

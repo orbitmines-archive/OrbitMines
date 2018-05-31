@@ -4,6 +4,7 @@ import com.orbitmines.api.database.tables.*;
 import com.orbitmines.api.database.tables.kitpvp.TableKitPvPPlayers;
 import com.orbitmines.api.database.tables.survival.TableSurvivalClaim;
 import com.orbitmines.api.database.tables.survival.TableSurvivalPlayers;
+import com.orbitmines.bungeecord.utils.ConsoleUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,7 @@ public class Table {
     public static TableIPs IPS;
     public static Table2FA _2FA;
     public static TableDonations DONATIONS;
+    public static TablePlayTime PLAY_TIME;
 
     public static TableServerData SERVER_DATA;
     public static TableServers SERVERS;
@@ -40,6 +42,7 @@ public class Table {
         IPS = new TableIPs();
         _2FA = new Table2FA();
         DONATIONS = new TableDonations();
+        PLAY_TIME = new TablePlayTime();
 
         SERVER_DATA = new TableServerData();
         SERVERS = new TableServers();

@@ -23,7 +23,8 @@ public enum PluginMessage {
     FAVORITE_FRIEND_MESSAGE(Server.BUNGEECORD),
     UPDATE_FRIENDS(Server.SPIGOT),
 
-    UPDATE_SETTINGS(Server.BUNGEECORD);
+    UPDATE_SETTINGS(Server.BUNGEECORD),
+    SERVER_SWITCH(Server.BUNGEECORD);
 
     public static final String CHANNEL = "OrbitMines";
     public static final String CHANNEL_BUNGEECORD = "BungeeCord";
