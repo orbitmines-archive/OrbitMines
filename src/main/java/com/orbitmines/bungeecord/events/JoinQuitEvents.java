@@ -1,7 +1,6 @@
 package com.orbitmines.bungeecord.events;
 
 import com.orbitmines.bungeecord.handlers.BungeePlayer;
-import com.orbitmines.bungeecord.utils.ConsoleUtils;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PostLoginEvent;
@@ -63,6 +62,6 @@ public class JoinQuitEvents implements Listener {
         ProxiedPlayer player = event.getPlayer();
 
         if (player.getServer().getInfo() == event.getTarget())
-            BungeePlayer.getPlayer(player).logout();
+            BungeePlayer.getPlayer(player).logout();//TODO AFTER CRASH = NULL?
     }
 }

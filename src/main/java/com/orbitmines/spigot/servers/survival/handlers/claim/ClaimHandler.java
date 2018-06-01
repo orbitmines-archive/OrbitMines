@@ -255,37 +255,33 @@ public class ClaimHandler {
     }
 
     public void resizeClaimWithChecks(SurvivalPlayer omp, int newX1, int newX2, int newY1, int newY2, int newZ1, int newZ2) {
-        Claim.CreateResult result = resizeClaim(omp.getResizingClaim(), omp, newX1, newX2, newY1, newY2, newZ1, newZ2);
-        Claim claim = result.getClaim();
+        Claim claim = omp.getResizingClaim();
 
-        if (!claim.hasParent()) {
-            int newWidth = (Math.abs(newX1 - newX2) + 1);
-            int newHeight = (Math.abs(newZ1 - newZ2) + 1);
-            int newArea = newWidth * newHeight;
+        int newWidth = (Math.abs(newX1 - newX2) + 1);
+        int newHeight = (Math.abs(newZ1 - newZ2) + 1);
+        int newArea = newWidth * newHeight;
 
-            boolean smaller = newWidth < claim.getWidth() || newHeight < claim.getHeight();
+        if (newWidth < Claim.MIN_WIDTH || newHeight < Claim.MIN_WIDTH) {
+            new ActionBar(omp, () -> omp.lang("§c§lEen claim moet minimaal 3x3 zijn.", "§c§lA claim must at least be 3x3."), 60).send();
+            return;
+        }
 
-            if (smaller && claim.hasOwner()) {
-                if (newWidth < Claim.MIN_WIDTH || newHeight < Claim.MIN_WIDTH) {
-                    new ActionBar(omp, () -> omp.lang("§c§lEen claim moet minimaal 3x3 zijn.", "§c§lA claim must at least be 3x3."), 60).send();
-                    return;
-                }
+        if (newArea < Claim.MIN_AREA) {
+            new ActionBar(omp, () -> omp.lang("§c§lEen claim moet minimaal 3x3 zijn.", "§c§lA claim must at least be 3x3."), 60).send();
+            return;
+        }
 
-                if (newArea < Claim.MIN_AREA) {
-                    new ActionBar(omp, () -> omp.lang("§c§lEen claim moet minimaal 3x3 zijn.", "§c§lA claim must at least be 3x3."), 60).send();
-                    return;
-                }
-            }
+        if (claim.hasOwner() && omp.getUUID().equals(claim.getOwner())) {
+            int remaining = omp.getRemainingClaimBlocks() + claim.getArea() - newArea;
 
-            if (claim.hasOwner() && omp.getUUID().equals(claim.getOwner())) {
-                int remaining = omp.getRemainingClaimBlocks() + claim.getArea() - newArea;
-
-                if (remaining < 0) {
-                    new ActionBar(omp, () -> omp.lang("§c§lJe hebt nog §6§l" + Math.abs(remaining) + " Claimblocks§c§l nodig om dit te claimen.", "§c§lYou need §6§l" + Math.abs(remaining) + " Claimblocks§c§l in order to claim this."), 60).send();
-                    return;
-                }
+            if (remaining < 0) {
+                new ActionBar(omp, () -> omp.lang("§c§lJe hebt nog §6§l" + Math.abs(remaining) + " Claimblocks§c§l nodig om dit te claimen.", "§c§lYou need §6§l" + Math.abs(remaining) + " Claimblocks§c§l in order to claim this."), 60).send();
+                return;
             }
         }
+
+        Claim.CreateResult result = resizeClaim(claim, omp, newX1, newX2, newY1, newY2, newZ1, newZ2);
+        claim = result.getClaim();
 
         if (result.isSucceeded()) {
             int remaining = 0;
@@ -389,9 +385,7 @@ public class ClaimHandler {
         saveClaim(claim);
     }
 
-    public void abandonClaim(SurvivalPlayer omp, boolean deleteParent) {
-        Claim claim = getClaimAt(omp.getLocation(), true, null);
-
+    public void abandonClaim(Claim claim, SurvivalPlayer omp, boolean deleteParent) {
         if (claim == null) {
             new ActionBar(omp, () -> omp.lang("§c§lJe bent niet in een claim!", "§c§lYou are not standing in a claim!"), 60).send();
         } else if (!claim.canModify(omp)) {

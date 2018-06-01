@@ -26,7 +26,7 @@ import java.util.UUID;
 
 public class FriendGUI extends GUI {
 
-    private final int FRIENDS_PER_PAGE = 36;
+    private final int FRIENDS_PER_PAGE = 27;
     private final int NEW_PER_PAGE = FRIENDS_PER_PAGE / 9;
 
     private OrbitMines orbitMines;
@@ -81,7 +81,7 @@ public class FriendGUI extends GUI {
                     String playerName = event.getName();
                     UUID uuid = UUIDUtils.getUUID(playerName);
 
-                    if (uuid != null) {
+                    if (uuid != null && CachedPlayer.getPlayer(uuid) != null /* If the player joined OrbitMines before */) {
                         event.setWillClose(true);
                         event.setWillDestroy(true);
 
@@ -169,7 +169,7 @@ public class FriendGUI extends GUI {
         for (UUID uuid : getFriendsForPage(ordered)) {
             if (uuid != null) {
                 CachedPlayer friend = CachedPlayer.getPlayer(uuid);
-                String name = friend.getRankPrefixColor().getChatColor() +friend.getPlayerName();
+                String name = friend.getRankPrefixColor().getChatColor() + friend.getPlayerName();
 
                 PlayerSkullBuilder item = new PlayerSkullBuilder(friend::getPlayerName, 1, name, new ArrayList<>());
                 ItemBuilder offlineItem = new ItemBuilder(Material.SKULL_ITEM, 1, 0, name, new ArrayList<>());
@@ -261,7 +261,7 @@ public class FriendGUI extends GUI {
         }
 
         if (page != 0)
-            add(5, 0, new ItemInstance(new ItemBuilder(Material.SIGN, 1, 0, omp.lang("§7« More Vrienden", "§7« More Friends")).build()) {
+            add(5, 0, new ItemInstance(new ItemBuilder(Material.SIGN, 1, 0, omp.lang("§7« Meer Vrienden", "§7« More Friends")).build()) {
                 @Override
                 public void onClick(InventoryClickEvent event, OMPlayer omp) {
                     page--;
@@ -272,7 +272,7 @@ public class FriendGUI extends GUI {
             clear(5, 0);
 
         if (canHaveMorePages(ordered))
-            add(5, 8, new ItemInstance(new ItemBuilder(Material.SIGN, 1, 0, omp.lang("§7More Vrienden »", "§7More Friends »")).build()) {
+            add(5, 8, new ItemInstance(new ItemBuilder(Material.SIGN, 1, 0, omp.lang("§7Meer Vrienden »", "§7More Friends »")).build()) {
                 @Override
                 public void onClick(InventoryClickEvent event, OMPlayer omp) {
                     page++;

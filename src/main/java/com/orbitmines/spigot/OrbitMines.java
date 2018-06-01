@@ -33,6 +33,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.time.Month;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -100,7 +102,10 @@ public class OrbitMines extends JavaPlugin {
         new LeaderBoard.Instantiator("TOP_VOTERS") {
             @Override
             public LeaderBoard instantiate(Location location, String[] data) {
-                return new DefaultHologramLeaderBoard(location, 0, () -> "§7§lTop Voters", 5, Table.VOTES, TableVotes.UUID, TableVotes.VOTES);
+                Month month = Month.of(Calendar.getInstance().get(Calendar.MONTH));
+                String string = month.toString().substring(0, 1).toUpperCase() + month.toString().substring(1, month.toString().length() - 1).toLowerCase();
+
+                return new DefaultHologramLeaderBoard(location, 0, () -> "§7§lTop Voters of " + string, 5, Table.VOTES, TableVotes.UUID, TableVotes.VOTES);
             }
         };
 

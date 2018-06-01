@@ -34,7 +34,7 @@ public abstract class ItemHover {
             @Override
             public void run(OMPlayer omp) {
                 ItemStack mainHand = omp.getItemInMainHand();
-                ItemStack offHand = omp.getItemInMainHand();
+                ItemStack offHand = omp.getItemInOffHand();
 
                 /* Player has hover, but not in main hand, and not in his off hand, leave that hover */
                 if (omp.getCurrentHover() != null && !omp.getCurrentHover().getItemBuilder().equals(mainHand) && !omp.getCurrentHover().getItemBuilder().equals(offHand))

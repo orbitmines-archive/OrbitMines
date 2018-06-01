@@ -11,6 +11,7 @@ import com.orbitmines.api.database.tables.TableServerData;
 import com.orbitmines.api.database.tables.survival.TableSurvivalClaim;
 import com.orbitmines.api.database.tables.survival.TableSurvivalPlayers;
 import com.orbitmines.api.utils.DateUtils;
+import com.orbitmines.api.utils.NumberUtils;
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.OrbitMinesServer;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
@@ -28,6 +29,7 @@ import com.orbitmines.spigot.api.utils.PlayerUtils;
 import com.orbitmines.spigot.api.utils.Serializer;
 import com.orbitmines.spigot.servers.survival.events.ClaimEvents;
 import com.orbitmines.spigot.servers.survival.events.SignEvent;
+import com.orbitmines.spigot.servers.survival.gui.ClaimGUI;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalPlayer;
 import com.orbitmines.spigot.servers.survival.handlers.claim.Claim;
 import com.orbitmines.spigot.servers.survival.handlers.claim.ClaimHandler;
@@ -289,9 +291,8 @@ public class Survival extends OrbitMinesServer {
                     } else {
                         omp.setLastClaim(claim);
 
-                        if (claim.getOwner() == omp.getUUID()) {
-                            //TODO OPEN CLAIM GUI
-
+                        if (claim.getOwner().equals(omp.getUUID())) {
+                            new ClaimGUI(Survival.this, claim).open(omp);
                         } else {
                             String name = claim.getOwnerName();
                             new ActionBar(omp, () -> omp.lang("§a§lDit is geclaimed door " + name + "§a§l.", "§a§lThis has been claimed by " + name + "§a§l."), 60).send();
@@ -567,10 +568,10 @@ public class Survival extends OrbitMinesServer {
                     () -> "§m--------------",
                     () -> "",
                     () -> "§2§lGems",
-                    () -> " " + omp.getEarthMoney(),
+                    () -> " " + NumberUtils.locale(omp.getEarthMoney()),
                     () -> " ",
                     () -> "§9§lClaimblocks",
-                    () -> " " + omp.getRemainingClaimBlocks(),
+                    () -> " " + NumberUtils.locale(omp.getRemainingClaimBlocks()),
                     () -> "  "
 
             );
@@ -584,7 +585,7 @@ public class Survival extends OrbitMinesServer {
                     () -> orbitMines.getScoreboardAnimation().get(),
                     () -> "§f§m------------------------",
                     () -> "§9§lClaimblocks",
-                    () -> " " + omp.getRemainingClaimBlocks(),
+                    () -> " " + NumberUtils.locale(omp.getRemainingClaimBlocks()),
                     () -> "",
                     () -> omp.lang("§6§lLINKER MUISKLIK", "§6§lLEFT CLICK"),
                     () -> omp.lang("§7In claim: Open claim GUI.", "§7In claim: Open claim GUI."),
