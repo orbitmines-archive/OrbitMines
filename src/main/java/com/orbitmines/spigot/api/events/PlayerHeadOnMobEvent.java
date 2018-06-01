@@ -73,6 +73,8 @@ public class PlayerHeadOnMobEvent implements Listener {
             return;
 
         String name = UUIDUtils.getName(UUID.fromString(RandomUtils.randomFrom(entries).get(TablePlayers.UUID)));
+        if (name == null)
+            return;
 
         EntityEquipment ee = entity.getEquipment();
         ee.setHelmet(new PlayerSkullBuilder(() -> name).build());

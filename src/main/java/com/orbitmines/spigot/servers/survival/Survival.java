@@ -27,6 +27,7 @@ import com.orbitmines.spigot.api.utils.ConsoleUtils;
 import com.orbitmines.spigot.api.utils.LocationUtils;
 import com.orbitmines.spigot.api.utils.PlayerUtils;
 import com.orbitmines.spigot.api.utils.Serializer;
+import com.orbitmines.spigot.servers.survival.cmds.CommandRegion;
 import com.orbitmines.spigot.servers.survival.events.ClaimEvents;
 import com.orbitmines.spigot.servers.survival.events.SignEvent;
 import com.orbitmines.spigot.servers.survival.gui.ClaimGUI;
@@ -36,6 +37,7 @@ import com.orbitmines.spigot.servers.survival.handlers.claim.ClaimHandler;
 import com.orbitmines.spigot.servers.survival.handlers.claim.Visualization;
 import com.orbitmines.spigot.servers.survival.handlers.region.Region;
 import com.orbitmines.spigot.servers.survival.handlers.region.RegionBuilder;
+import com.orbitmines.spigot.servers.survival.runnables.MobHeadRunnable;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -136,12 +138,12 @@ public class Survival extends OrbitMinesServer {
 
     @Override
     protected void registerCommands() {
-
+        new CommandRegion();
     }
 
     @Override
     protected void registerRunnables() {
-
+        new MobHeadRunnable(this);
     }
 
     @Override

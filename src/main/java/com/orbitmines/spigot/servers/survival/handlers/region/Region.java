@@ -12,7 +12,6 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,7 +54,7 @@ public class Region {
     private final int inventoryY;
 
     private final Biome biome;
-    private final ItemStack itemStack;
+    private final ItemBuilder icon;
 
     public Region(int id, Location location, int inventoryX, int inventoryY) {
         regions.add(this);
@@ -65,7 +64,7 @@ public class Region {
         this.inventoryX = inventoryX;
         this.inventoryY = inventoryY;
         this.biome = location.getWorld().getBiome(location.getBlockX(), location.getBlockZ());
-        this.itemStack = toItemStack();
+        this.icon = toItemBuilder();
     }
 
     public int getId() {
@@ -88,8 +87,8 @@ public class Region {
         return biome;
     }
 
-    public ItemStack getItemStack() {
-        return itemStack;
+    public ItemBuilder getIcon() {
+        return icon.clone();
     }
 
     public void teleport(SurvivalPlayer omp) {
@@ -155,15 +154,23 @@ public class Region {
         return regions;
     }
 
-    private ItemStack toItemStack() {
+    public static Region getRegion(int inventoryX, int inventoryY) {
+        for (Region region : regions) {
+            if (region.getInventoryX() == inventoryX && region.getInventoryY() == inventoryY)
+                return region;
+        }
+        return null;
+    }
+
+    private ItemBuilder toItemBuilder() {
         ItemBuilder item = BiomeUtils.item(biome);
         item.setAmount(id + 1 > 64 ? 64 : id + 1);
         item.setDisplayName("§7§lRegion §a§l" + (id + 1));
-        item.setLore(Arrays.asList(" §7Biome: " + BiomeUtils.name(biome), " §7XZ: §a" + location.getBlockX() + " §7/ §a" + location.getBlockZ()));
+        item.setLore(Arrays.asList(" §7Biome: " + BiomeUtils.name(biome), " §7XZ: §a§l" + location.getBlockX() + " §7/ §a§l" + location.getBlockZ()));
 
         if (id == 0)
             item.glow();
 
-        return item.build();
+        return item;
     }
 }
