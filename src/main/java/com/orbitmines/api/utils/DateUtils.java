@@ -11,6 +11,7 @@ import java.util.Date;
 public class DateUtils {
 
     public static SimpleDateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public static SimpleDateFormat SIMPLE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
     public static Date now() {
         return new Date(Calendar.getInstance().getTimeInMillis());

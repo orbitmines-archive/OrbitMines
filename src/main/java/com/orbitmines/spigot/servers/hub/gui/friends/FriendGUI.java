@@ -194,7 +194,7 @@ public class FriendGUI extends GUI {
                             lore.add(omp.lang("§aKlik hier om te verbinden.", "§aClick here to connect."));
                         } else {
                             lore.add("§7Status: " + Server.Status.OFFLINE.getDisplayName());
-                            lore.add("§7" + omp.lang("Laatst gezien", "Last seen") + ": §b§l" + friend.getLastOnlineInTimeUnit() + " ago");
+                            lore.add("§7" + omp.lang("Laatst gezien", "Last seen") + ": §b§l" + friend.getLastOnlineInTimeUnit(omp.getLanguage()) + " " + omp.lang("geleden", "ago"));
                             offlineItem.setLore(lore);
                         }
                         break;

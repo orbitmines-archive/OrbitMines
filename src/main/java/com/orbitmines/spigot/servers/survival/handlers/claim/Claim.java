@@ -12,6 +12,7 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.inventory.ItemFlag;
 
 import java.util.*;
 
@@ -24,7 +25,7 @@ public class Claim {
 
     public static int MIN_WIDTH = 3;
     public static int MIN_AREA = MIN_WIDTH * MIN_WIDTH;
-    public static ItemBuilder CLAIMING_TOOL = new ItemBuilder(Material.STONE_HOE, 1, 0, "§a§lClaiming Tool").unbreakable(true);
+    public static ItemBuilder CLAIMING_TOOL = new ItemBuilder(Material.STONE_HOE, 1, 0, "§a§lClaiming Tool").addFlag(ItemFlag.HIDE_ATTRIBUTES).addFlag(ItemFlag.HIDE_UNBREAKABLE).unbreakable(true);
 //        "",
 //        "§6§lRIGHT CLICK",
 //        "§7Create claims by selecting",

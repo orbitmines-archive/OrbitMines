@@ -255,7 +255,8 @@ public class ClaimHandler {
     }
 
     public void resizeClaimWithChecks(SurvivalPlayer omp, int newX1, int newX2, int newY1, int newY2, int newZ1, int newZ2) {
-        Claim claim = omp.getResizingClaim();
+        Claim.CreateResult result = resizeClaim(omp.getResizingClaim(), omp, newX1, newX2, newY1, newY2, newZ1, newZ2);
+        Claim claim = result.getClaim();
 
         if (!claim.hasParent()) {
             int newWidth = (Math.abs(newX1 - newX2) + 1);
@@ -264,7 +265,7 @@ public class ClaimHandler {
 
             boolean smaller = newWidth < claim.getWidth() || newHeight < claim.getHeight();
 
-            if (smaller && !claim.hasOwner()) {
+            if (smaller && claim.hasOwner()) {
                 if (newWidth < Claim.MIN_WIDTH || newHeight < Claim.MIN_WIDTH) {
                     new ActionBar(omp, () -> omp.lang("§c§lEen claim moet minimaal 3x3 zijn.", "§c§lA claim must at least be 3x3."), 60).send();
                     return;
@@ -276,7 +277,7 @@ public class ClaimHandler {
                 }
             }
 
-            if (!claim.hasOwner() && omp.getUUID().equals(claim.getOwner())) {
+            if (claim.hasOwner() && omp.getUUID().equals(claim.getOwner())) {
                 int remaining = omp.getRemainingClaimBlocks() + claim.getArea() - newArea;
 
                 if (remaining < 0) {
@@ -285,8 +286,6 @@ public class ClaimHandler {
                 }
             }
         }
-
-        Claim.CreateResult result = resizeClaim(claim, omp, newX1, newX2, newY1, newY2, newZ1, newZ2);
 
         if (result.isSucceeded()) {
             int remaining = 0;
@@ -307,9 +306,9 @@ public class ClaimHandler {
             }
 
             int fRemaining = remaining;
-            new ActionBar(omp, () -> omp.lang("§a§lClaim grootte gewijzigd. Claimblocks over: §6§l" + fRemaining + "§a§l.", "§a§lClaim resized. Available claimblocks: §6§l" + fRemaining + "§a§l."), 60).send();
+            new ActionBar(omp, () -> omp.lang("§a§lClaim grootte gewijzigd. Claimblocks over: §6§l" + fRemaining + "§a§l.", "§a§lClaim resized. Available Claimblocks: §6§l" + fRemaining + "§a§l."), 100).send();
 
-            Visualization.show(omp, claim, omp.getPlayer().getEyeLocation().getBlockY(), Visualization.Type.CLAIM, omp.getLocation());
+            Visualization.show(omp, result.getClaim(), omp.getPlayer().getEyeLocation().getBlockY(), Visualization.Type.CLAIM, omp.getLocation());
 
             omp.setResizingClaim(null);
             omp.setLastClaimToolLocation(null);

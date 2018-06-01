@@ -64,11 +64,11 @@ public class CachedPlayer {
         return ip == null ? null : ip.getLastLogin();
     }
 
-    public String getLastOnlineInTimeUnit() {
+    public String getLastOnlineInTimeUnit(Language language) {
         updateIP();
         ip.updateLastLogin();
 
-        return ip == null ? null : ip.getLastLoginInTimeUnit();
+        return ip == null ? null : ip.getLastLoginInTimeUnit(language);
     }
 
     public Server getServer() {

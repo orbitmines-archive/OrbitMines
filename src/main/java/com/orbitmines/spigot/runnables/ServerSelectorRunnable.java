@@ -12,7 +12,7 @@ public class ServerSelectorRunnable extends SpigotRunnable {
     private OrbitMines orbitMines;
 
     public ServerSelectorRunnable() {
-        super(TimeUnit.SECOND, 2);
+        super(TimeUnit.SECOND, 1);
 
         orbitMines = OrbitMines.getInstance();
     }

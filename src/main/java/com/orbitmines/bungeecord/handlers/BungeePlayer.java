@@ -66,6 +66,12 @@ public class BungeePlayer {
     */
 
     public void login() {
+        BungeePlayer prev = BungeePlayer.getPlayer(player);
+        if (prev != null) {
+            /* The player rarely doesn't disconnect correctly due to a crash (even then it doesn't always happen, but for when it does); */
+            players.remove(prev);
+        }
+
         players.add(this);
 
         if (!Database.get().contains(Table.PLAYERS, TablePlayers.UUID, new Where(TablePlayers.UUID, getUUID().toString()))) {
@@ -153,12 +159,12 @@ public class BungeePlayer {
         if (!isLoggedIn()) {
             return;
         } else if (server.getStatus() == Server.Status.OFFLINE) {
-            sendMessage("Server", Color.RED, "§7Die server is " + Server.Status.OFFLINE.getColor().getChatColor() + Server.Status.OFFLINE.getName() + "§7!", "§7That server is " + Server.Status.OFFLINE.getColor().getChatColor() + Server.Status.OFFLINE.getName() + "§7!");
+            sendMessage("Server", Color.RED, "§7Die server is " + Server.Status.OFFLINE.getDisplayName() + "§7!", "§7That server is " + Server.Status.OFFLINE.getDisplayName() + "§7!");
             return;
         } else if (serverInfo == null) {
             sendMessage("Server", Color.RED, "§7Error met het verbinden van die server.", "§7Error while connecting to that server.");
             return;
-        } else if (player.getServer().getInfo().getName().equals(serverInfo.getName())) {
+        } else if (getServer() == server) {
             sendMessage("Server", Color.BLUE, "§7Je zit al op die server.", "§7You're already on that server.");
             return;
         } else if (server.getMaxPlayers() - serverInfo.getPlayers().size() < 1) {

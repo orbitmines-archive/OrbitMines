@@ -7,6 +7,7 @@ import com.orbitmines.spigot.api.datapoints.DataPointLoader;
 import com.orbitmines.spigot.api.datapoints.DataPointSign;
 import com.orbitmines.spigot.api.handlers.npc.MobNpc;
 import com.orbitmines.spigot.api.handlers.scoreboard.ScoreboardString;
+import com.orbitmines.spigot.api.runnables.SpigotRunnable;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -105,6 +106,8 @@ public class DataPointNpc extends DataPointSign {
 
                 npc.create();
                 npc.setItemInMainHand(new ItemStack(Material.STONE_HOE));
+
+                startUpdate(npc);
                 break;
             }
             case "FOG":
@@ -134,6 +137,15 @@ public class DataPointNpc extends DataPointSign {
                 OrbitMines.getInstance().getServerHandler().setupNpc(string, location);
                 break;
         }
+    }
+
+    private void startUpdate(MobNpc npc) {
+        new SpigotRunnable(SpigotRunnable.TimeUnit.SECOND, 1) {
+            @Override
+            public void run() {
+                npc.update();
+            }
+        };
     }
 
     private ScoreboardString[] getNpcDisplayName(Server server) {

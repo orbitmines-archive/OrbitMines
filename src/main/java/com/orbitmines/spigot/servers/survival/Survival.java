@@ -11,7 +11,6 @@ import com.orbitmines.api.database.tables.TableServerData;
 import com.orbitmines.api.database.tables.survival.TableSurvivalClaim;
 import com.orbitmines.api.database.tables.survival.TableSurvivalPlayers;
 import com.orbitmines.api.utils.DateUtils;
-import com.orbitmines.api.utils.NumberUtils;
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.OrbitMinesServer;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
@@ -20,8 +19,8 @@ import com.orbitmines.spigot.api.handlers.PreventionSet;
 import com.orbitmines.spigot.api.handlers.chat.ActionBar;
 import com.orbitmines.spigot.api.handlers.itemhandlers.ItemHoverActionBar;
 import com.orbitmines.spigot.api.handlers.itemhandlers.ItemInteraction;
-import com.orbitmines.spigot.api.handlers.leaderboard.hologram.DefaultHologramLeaderBoard;
 import com.orbitmines.spigot.api.handlers.leaderboard.LeaderBoard;
+import com.orbitmines.spigot.api.handlers.leaderboard.hologram.DefaultHologramLeaderBoard;
 import com.orbitmines.spigot.api.handlers.scoreboard.DefaultScoreboard;
 import com.orbitmines.spigot.api.utils.ConsoleUtils;
 import com.orbitmines.spigot.api.utils.LocationUtils;
@@ -290,10 +289,15 @@ public class Survival extends OrbitMinesServer {
                     } else {
                         omp.setLastClaim(claim);
 
-                        String name = claim.getOwnerName();
-                        new ActionBar(omp, () -> omp.lang("§a§lDit is geclaimed door " + name + "§a§l.", "§a§lThis has been claimed by " + name + "§a§l."), 60).send();
+                        if (claim.getOwner() == omp.getUUID()) {
+                            //TODO OPEN CLAIM GUI
 
-                        Visualization.show(omp, claim, omp.getPlayer().getEyeLocation().getBlockY(), Visualization.Type.CLAIM, omp.getLocation());
+                        } else {
+                            String name = claim.getOwnerName();
+                            new ActionBar(omp, () -> omp.lang("§a§lDit is geclaimed door " + name + "§a§l.", "§a§lThis has been claimed by " + name + "§a§l."), 60).send();
+
+                            Visualization.show(omp, claim, omp.getPlayer().getEyeLocation().getBlockY(), Visualization.Type.CLAIM, omp.getLocation());
+                        }
                     }
                 }
             }
@@ -469,44 +473,46 @@ public class Survival extends OrbitMinesServer {
                     int newHeight = Math.abs(omp.getLastClaimToolLocation().getBlockZ() - block.getZ()) + 1;
 
                     UUID owner = omp.getUUID();
+                    int remaining;
 
                     if (omp.getClaimToolType() != Claim.ToolType.WITHOUT_OWNER) {
                         if (newWidth < Claim.MIN_WIDTH || newHeight < Claim.MIN_WIDTH) {
                             /* If event fired twice */
-//                            if (newWidth != 1 && newHeight != 1) TODO
-//                                instance.sendMessage(player, TextMode.Err, Messages.NewClaimTooNarrow, String.valueOf(instance.config_claims_minWidth));
+                            if (newWidth != 1 && newHeight != 1)
+                                new ActionBar(omp, () -> omp.lang("§c§lEen claim moet minimaal 3x3 zijn.", "§c§lA claim must at least be 3x3."), 60).send();
 
                             return;
                         }
 
                         int newArea = newWidth * newHeight;
                         if (newArea < Claim.MIN_AREA) {
-//                            if (newArea != 1) TODO
-//                                instance.sendMessage(player, TextMode.Err, Messages.ResizeClaimInsufficientArea, String.valueOf(instance.config_claims_minArea));
+                            if (newArea != 1)
+                                new ActionBar(omp, () -> omp.lang("§c§lEen claim moet minimaal 3x3 zijn.", "§c§lA claim must at least be 3x3."), 60).send();
 
                             return;
                         }
 
-                        if (newArea > omp.getRemainingClaimBlocks()) {
-//                            instance.sendMessage(player, TextMode.Err, Messages.CreateClaimInsufficientBlocks, String.valueOf(newClaimArea - remainingBlocks));
+                        remaining = omp.getRemainingClaimBlocks() - newArea;
+                        if (remaining < 0) {
+                            new ActionBar(omp, () -> omp.lang("§c§lJe hebt nog §6§l" + Math.abs(remaining) + " Claimblocks§c§l nodig om dit te claimen.", "§c§lYou need §6§l" + Math.abs(remaining) + " Claimblocks§c§l in order to claim this."), 60).send();
                             return;
                         }
                     } else {
                         owner = null;
+                        remaining = 0;
                     }
 
                     Claim.CreateResult result = claimHandler.createClaim(omp.getWorld(), omp, owner, null, null, omp.getLastClaimToolLocation().getBlockX(), block.getX(), omp.getLastClaimToolLocation().getBlockY(), block.getY(), omp.getLastClaimToolLocation().getBlockZ(), block.getZ());
 
                     if (!result.isSucceeded()) {
-                        if (result.getClaim() != null) {
-//                            instance.sendMessage(player, TextMode.Err, Messages.CreateClaimFailOverlapShort);
+                        new ActionBar(omp, () -> omp.lang("§c§lJouw claim overlapt een andere claim!", "§c§lYour claim overlaps another claim!"), 60).send();
+
+                        if (result.getClaim() != null)
                             Visualization.show(omp, result.getClaim(), block.getY(), Visualization.Type.INVALID, player.getLocation());
-                        } else {
-//                            instance.sendMessage(player, TextMode.Err, Messages.CreateClaimFailOverlapRegion);
-                        }
+
                         return;
                     } else {
-//                        instance.sendMessage(player, TextMode.Success, Messages.CreateClaimSuccess);
+                        new ActionBar(omp, () -> omp.lang("§a§lSuccesvol een claim gemaakt. Claimblocks over: §6§l" + remaining + "§a§l.", "§a§lSuccessfully created a claim. Available Claimblocks: §6§l" + remaining + "§a§l."), 100).send();
                         Visualization.show(omp, result.getClaim(), block.getY(), Visualization.Type.CLAIM, player.getLocation());
 
                         omp.setLastClaimToolLocation(null);
@@ -530,9 +536,14 @@ public class Survival extends OrbitMinesServer {
             }
 
             @Override
-            public void onEnter(OMPlayer omp) {
-                super.onEnter(omp);
+            public void onEnter(OMPlayer player) {
+                super.onEnter(player);
+                SurvivalPlayer omp = (SurvivalPlayer) player;
+
                 omp.playSound(Sound.UI_BUTTON_CLICK);
+
+                omp.resetScoreboard();
+                omp.setScoreboard(new ClaimScoreboard(orbitMines, omp));
             }
 
             @Override
@@ -541,6 +552,9 @@ public class Survival extends OrbitMinesServer {
                 SurvivalPlayer omp = (SurvivalPlayer) player;
                 omp.setLastClaimToolLocation(null);
                 omp.setResizingClaim(null);
+
+                omp.resetScoreboard();
+                omp.setScoreboard(new Scoreboard(orbitMines, omp));
             }
         };
     }
@@ -552,13 +566,38 @@ public class Survival extends OrbitMinesServer {
                     () -> orbitMines.getScoreboardAnimation().get(),
                     () -> "§m--------------",
                     () -> "",
-                    () -> "§2§lEarth Money",
-                    () -> " " + NumberUtils.locale(omp.getEarthMoney()),
+                    () -> "§2§lGems",
+                    () -> " " + omp.getEarthMoney(),
                     () -> " ",
-                    () -> "",
                     () -> "§9§lClaimblocks",
                     () -> " " + omp.getRemainingClaimBlocks(),
                     () -> "  "
+
+            );
+        }
+    }
+
+    public static class ClaimScoreboard extends DefaultScoreboard {
+
+        public ClaimScoreboard(OrbitMines orbitMines, SurvivalPlayer omp) {
+            super(omp,
+                    () -> orbitMines.getScoreboardAnimation().get(),
+                    () -> "§f§m------------------------",
+                    () -> "§9§lClaimblocks",
+                    () -> " " + omp.getRemainingClaimBlocks(),
+                    () -> "",
+                    () -> omp.lang("§6§lLINKER MUISKLIK", "§6§lLEFT CLICK"),
+                    () -> omp.lang("§7In claim: Open claim GUI.", "§7In claim: Open claim GUI."),
+                    () -> omp.lang("§7Buiten claim: Claim info.", "§7Outside claim: Claim info."),
+                    () -> " ",
+                    () -> omp.lang("§6§lSHIFT + LINKER MUISKLIK", "§6§lSHIFT + LEFT CLICK"),
+                    () -> omp.lang("§7Dichtstbijzijnde claims.", "§7Show nearby claims."),
+                    () -> "  ",
+                    () -> omp.lang("§6§lRECHTER MUISKLIK", "§6§lRIGHT CLICK"),
+                    () -> omp.lang("§7Kies hoeken om te claimen.", "§7Claim by selecting corners."),
+                    () -> omp.lang("§7Pas een claim aan door op", "§7Resize an existing claim by"),
+                    () -> omp.lang("§7een hoek te klikken.", "§7clicking on a corner.")
+
             );
         }
     }
