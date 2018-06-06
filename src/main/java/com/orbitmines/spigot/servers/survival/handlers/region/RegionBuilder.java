@@ -52,7 +52,7 @@ public class RegionBuilder {
         int z = locator.getZ();
         location = new Location(world, x + 0.5, locator.isGenerated() ? y - 3 : y, z + 0.5, 0, 0);
         inventoryX = locator.getInventoryX();
-        inventoryY = locator.getInventotyY();
+        inventoryY = locator.getInventoryY();
 
         if (locator.isGenerated()) {
             ConsoleUtils.msg("Already generated, moving on.");

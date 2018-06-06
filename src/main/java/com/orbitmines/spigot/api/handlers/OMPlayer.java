@@ -24,6 +24,8 @@ import com.orbitmines.spigot.api.handlers.leaderboard.hologram.PlayerHologramLea
 import com.orbitmines.spigot.api.handlers.npc.PlayerFreezer;
 import com.orbitmines.spigot.api.handlers.scoreboard.OMScoreboard;
 import com.orbitmines.spigot.api.handlers.scoreboard.ScoreboardSet;
+import com.orbitmines.spigot.api.handlers.timer.Timer;
+import com.orbitmines.spigot.servers.survival.handlers.SurvivalData;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -66,6 +68,9 @@ public abstract class OMPlayer {
     protected GUI lastInventory;
     protected KitInteractive lastInteractiveKit;
     protected ItemHover currentHover;
+
+    protected Teleportable teleportingTo;
+    protected Timer teleportingTimer;
 
     protected Map<Cooldown, Long> cooldowns;
     protected Map<Data.Type, Data> data;
@@ -224,6 +229,9 @@ public abstract class OMPlayer {
         /* Leave Hover */
         if (currentHover != null)
             currentHover.leave(this);
+
+        if (teleportingTo != null)
+            teleportingTimer.cancel();
 
         players.remove(this);
     }
@@ -594,6 +602,26 @@ public abstract class OMPlayer {
     }
 
     /*
+        Teleportable
+     */
+
+    public Teleportable getTeleportingTo() {
+        return teleportingTo;
+    }
+
+    public void setTeleportingTo(Teleportable teleportingTo) {
+        this.teleportingTo = teleportingTo;
+    }
+
+    public Timer getTeleportingTimer() {
+        return teleportingTimer;
+    }
+
+    public void setTeleportingTimer(Timer teleportingTimer) {
+        this.teleportingTimer = teleportingTimer;
+    }
+
+    /*
         Cooldowns
      */
 
@@ -643,6 +671,10 @@ public abstract class OMPlayer {
                 break;
             case PLAY_TIME:
                 data = new PlayTimeData(getUUID());
+                break;
+
+            case SURVIVAL:
+                data = new SurvivalData(getUUID());
                 break;
             default:
                 return null;

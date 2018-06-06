@@ -27,8 +27,10 @@ import com.orbitmines.spigot.api.utils.ConsoleUtils;
 import com.orbitmines.spigot.api.utils.LocationUtils;
 import com.orbitmines.spigot.api.utils.PlayerUtils;
 import com.orbitmines.spigot.api.utils.Serializer;
-import com.orbitmines.spigot.servers.survival.cmds.CommandRegion;
+import com.orbitmines.spigot.servers.survival.cmds.*;
 import com.orbitmines.spigot.servers.survival.events.ClaimEvents;
+import com.orbitmines.spigot.servers.survival.events.DeathEvent;
+import com.orbitmines.spigot.servers.survival.events.FlyEvent;
 import com.orbitmines.spigot.servers.survival.events.SignEvent;
 import com.orbitmines.spigot.servers.survival.gui.ClaimGUI;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalPlayer;
@@ -37,7 +39,6 @@ import com.orbitmines.spigot.servers.survival.handlers.claim.ClaimHandler;
 import com.orbitmines.spigot.servers.survival.handlers.claim.Visualization;
 import com.orbitmines.spigot.servers.survival.handlers.region.Region;
 import com.orbitmines.spigot.servers.survival.handlers.region.RegionBuilder;
-import com.orbitmines.spigot.servers.survival.runnables.MobHeadRunnable;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -53,6 +54,10 @@ import java.util.*;
 public class Survival extends OrbitMinesServer {
 
     private World world;
+    private World world_nether;
+    private World world_the_end;
+
+    private Location lobbySpawn;
 
     private ClaimHandler claimHandler;
 
@@ -83,6 +88,7 @@ public class Survival extends OrbitMinesServer {
                 PreventionSet.Prevention.BLOCK_BREAK,
                 PreventionSet.Prevention.BLOCK_INTERACTING,
                 PreventionSet.Prevention.BLOCK_PLACE,
+                PreventionSet.Prevention.FOOD_CHANGE,
                 PreventionSet.Prevention.CHUNK_UNLOAD,
                 PreventionSet.Prevention.ENTITY_INTERACTING,
                 PreventionSet.Prevention.LEAF_DECAY,
@@ -92,6 +98,16 @@ public class Survival extends OrbitMinesServer {
 
         world = Bukkit.getWorld("world");
         preventionSet.prevent(world,
+                PreventionSet.Prevention.PVP
+        );
+
+        world_nether = Bukkit.getWorld("world_nether");
+        preventionSet.prevent(world_nether,
+                PreventionSet.Prevention.PVP
+        );
+
+        world_the_end = Bukkit.getWorld("world_the_end");
+        preventionSet.prevent(world_the_end,
                 PreventionSet.Prevention.PVP
         );
 
@@ -132,18 +148,24 @@ public class Survival extends OrbitMinesServer {
     protected void registerEvents() {
         registerEvents(
                 new ClaimEvents(this),
+                new DeathEvent(this),
+                new FlyEvent(this),
                 new SignEvent()
         );
     }
 
     @Override
     protected void registerCommands() {
-        new CommandRegion();
+        new CommandDelHome();
+        new CommandHome();
+        new CommandHomes();
+        new CommandRegion(this);
+        new CommandSetHome();
     }
 
     @Override
     protected void registerRunnables() {
-        new MobHeadRunnable(this);
+
     }
 
     @Override
@@ -153,6 +175,18 @@ public class Survival extends OrbitMinesServer {
 
     public World getWorld() {
         return world;
+    }
+
+    public World getWorld_nether() {
+        return world_nether;
+    }
+
+    public World getWorld_the_end() {
+        return world_the_end;
+    }
+
+    public Location getLobbySpawn() {
+        return lobbySpawn;
     }
 
     public ClaimHandler getClaimHandler() {

@@ -1,8 +1,7 @@
 package com.orbitmines.spigot.api.handlers.itembuilders;
 
+import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.handlers.scoreboard.ScoreboardString;
-import com.orbitmines.spigot.api.utils.ReflectionUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -18,6 +17,7 @@ import java.util.List;
 public class PlayerSkullBuilder extends ItemBuilder {
 
     private ScoreboardString playerName;
+    private String texture;
 
     public PlayerSkullBuilder(ScoreboardString playerName) {
         this(playerName, 1);
@@ -45,8 +45,20 @@ public class PlayerSkullBuilder extends ItemBuilder {
         return playerName;
     }
 
-    public void setPlayerName(ScoreboardString playerName) {
+    public PlayerSkullBuilder setPlayerName(ScoreboardString playerName) {
         this.playerName = playerName;
+
+        return this;
+    }
+
+    public String getTexture() {
+        return texture;
+    }
+
+    public PlayerSkullBuilder setTexture(String texture) {
+        this.texture = texture;
+
+        return this;
     }
 
     @Override
@@ -56,17 +68,14 @@ public class PlayerSkullBuilder extends ItemBuilder {
         meta.setDisplayName(displayName);
         meta.setLore((lore == null || lore.size() == 0) ? null : new ArrayList<>(lore));
 
-        String value = playerName.getString();
-        if (value.length() <= 16)
+        if (texture == null)
             meta.setOwner(playerName.getString());
-        else
-            meta.setOwningPlayer(Bukkit.getOfflinePlayer(ReflectionUtils.getGameProfile(value).getId()));
 
         for (ItemFlag itemFlag : itemFlags) {
             meta.addItemFlags(itemFlag);
         }
         itemStack.setItemMeta(meta);
 
-        return modify(itemStack);
+        return texture == null ? modify(itemStack) : OrbitMines.getInstance().getNms().customItem().setCustomSkullTexture(modify(itemStack), playerName.getString(), texture);
     }
 }

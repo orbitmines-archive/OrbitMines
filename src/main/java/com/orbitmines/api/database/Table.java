@@ -3,8 +3,8 @@ package com.orbitmines.api.database;
 import com.orbitmines.api.database.tables.*;
 import com.orbitmines.api.database.tables.kitpvp.TableKitPvPPlayers;
 import com.orbitmines.api.database.tables.survival.TableSurvivalClaim;
+import com.orbitmines.api.database.tables.survival.TableSurvivalHomes;
 import com.orbitmines.api.database.tables.survival.TableSurvivalPlayers;
-import com.orbitmines.bungeecord.utils.ConsoleUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +31,7 @@ public class Table {
     /* Survival */
     public static TableSurvivalPlayers SURVIVAL_PLAYERS;
     public static TableSurvivalClaim SURVIVAL_CLAIM;
+    public static TableSurvivalHomes SURVIVAL_HOMES;
 
     /* KitPvP */
     public static TableKitPvPPlayers KITPVP_PLAYERS;
@@ -50,6 +51,7 @@ public class Table {
 
         SURVIVAL_PLAYERS = new TableSurvivalPlayers();
         SURVIVAL_CLAIM = new TableSurvivalClaim();
+        SURVIVAL_HOMES = new TableSurvivalHomes();
 
         KITPVP_PLAYERS = new TableKitPvPPlayers();
     }

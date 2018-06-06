@@ -4,13 +4,22 @@ package com.orbitmines.spigot.servers.survival.cmds;
  * OrbitMines - @author Fadi Shawki - 2018
  */
 
+import com.orbitmines.api.Color;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.cmd.Command;
+import com.orbitmines.spigot.servers.survival.Survival;
 import com.orbitmines.spigot.servers.survival.gui.RegionGUI;
+import com.orbitmines.spigot.servers.survival.handlers.region.Region;
 
 public class CommandRegion extends Command {
 
     private String[] alias = { "/region", "/regions", "/rg" };
+
+    private final Survival survival;
+
+    public CommandRegion(Survival survival) {
+        this.survival = survival;
+    }
 
     @Override
     public String[] getAlias() {
@@ -19,14 +28,33 @@ public class CommandRegion extends Command {
 
     @Override
     public String getHelp(OMPlayer omp) {
-        return "(id)";
+        return "(" + omp.lang("nummer", "number") + ")";
     }
 
     @Override
     public void dispatch(OMPlayer omp, String[] a) {
         if (a.length == 1) {
             //TODO open closest region as 0,0?
-            new RegionGUI().open(omp);
+            new RegionGUI(survival).open(omp);
+        } else if (a.length == 2) {
+            int id;
+
+            try {
+                id = Integer.parseInt(a[1]);
+            } catch(NumberFormatException ex) {
+                omp.sendMessage("Region", Color.RED, "§7Dat is geen geldig §aRegion§7 nummer.", "§7That's not a valid §aRegion§7 number.");
+                return;
+            }
+
+            if (id > 0 && id <= Region.TELEPORTABLE) {
+                Region region = Region.getRegion(id);
+                region.teleport(omp);
+                return;
+            }
+
+            omp.sendMessage("Region", Color.RED, "§7Kan §aRegion " + id + "§7 niet vinden.", "§7Can't find §aRegion " + id + "§7.");
+        } else {
+            getHelpMessage(omp).send(omp);
         }
     }
 }

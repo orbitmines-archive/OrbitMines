@@ -1,17 +1,16 @@
 package com.orbitmines.spigot.servers.survival.handlers.region;
 
+import com.orbitmines.api.Color;
 import com.orbitmines.api.Cooldown;
-import com.orbitmines.api.Message;
 import com.orbitmines.api.utils.RandomUtils;
+import com.orbitmines.spigot.api.handlers.OMPlayer;
+import com.orbitmines.spigot.api.handlers.Teleportable;
 import com.orbitmines.spigot.api.handlers.chat.ActionBar;
-import com.orbitmines.spigot.api.handlers.chat.Title;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalPlayer;
 import com.orbitmines.spigot.servers.survival.utils.BiomeUtils;
 import org.bukkit.Location;
-import org.bukkit.Sound;
 import org.bukkit.block.Biome;
-import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,7 +19,7 @@ import java.util.List;
 /*
 * OrbitMines - @author Fadi Shawki - 2017
 */
-public class Region {
+public class Region extends Teleportable {
 
     /*
         Regions are setup in a square, example:
@@ -71,6 +70,7 @@ public class Region {
         return id;
     }
 
+    @Override
     public Location getLocation() {
         return location;
     }
@@ -91,14 +91,19 @@ public class Region {
         return icon.clone();
     }
 
-    public void teleport(SurvivalPlayer omp) {
-        Player p = omp.getPlayer();
+    @Override
+    public int getDuration(OMPlayer omp) {
+        return 3;
+    }
 
-        p.teleport(this.location);
-        p.playSound(p.getLocation(), Sound.ENTITY_ENDERMEN_TELEPORT, 5, 1);
+    @Override
+    public Color getColor() {
+        return Color.LIME;
+    }
 
-        Title t = new Title(new Message(""), new Message("§7Geteleporteerd naar §aRegion " + (id + 1) + "§7.", "§7Teleported to §aRegion " + (id + 1) + "§7."), 20, 40, 20);
-        t.send(omp);
+    @Override
+    public String getName() {
+        return "Region " + (id + 1);
     }
 
     public static Region getRegion(int id) {
