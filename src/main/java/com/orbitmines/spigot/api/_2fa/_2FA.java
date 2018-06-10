@@ -125,6 +125,14 @@ public class _2FA {
             return;
 
         tasks.get(omp).cancel();
+        tempKeys.remove(omp);
+
+        /* Restore Inventory */
+        omp.getPlayer().getInventory().setContents(contents.get(omp));
+        omp.getPlayer().getInventory().setArmorContents(armorContents.get(omp));
+
+        contents.remove(omp);
+        armorContents.remove(omp);
     }
 
     public void processNewLogin(OMPlayer omp) {

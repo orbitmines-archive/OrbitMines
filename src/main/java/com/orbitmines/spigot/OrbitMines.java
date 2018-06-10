@@ -9,6 +9,7 @@ import com.orbitmines.api.database.tables.TablePlayers;
 import com.orbitmines.api.database.tables.TableServers;
 import com.orbitmines.api.database.tables.TableVotes;
 import com.orbitmines.spigot.api._2fa._2FA;
+import com.orbitmines.spigot.api.cmds.*;
 import com.orbitmines.spigot.api.datapoints.DataPointHandler;
 import com.orbitmines.spigot.api.events.*;
 import com.orbitmines.spigot.api.handlers.ConfigHandler;
@@ -279,7 +280,13 @@ public class OrbitMines extends JavaPlugin {
     }
 
     private void registerCommands() {
-
+        new CommandFriends();
+        new CommandHelp();
+        new CommandPrisms();
+        new CommandServers(this);
+        new CommandSettings();
+        new CommandSolars();
+        new CommandStats();
     }
 
     private void registerEvents(Listener... listeners) {

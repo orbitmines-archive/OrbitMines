@@ -28,7 +28,7 @@ public class CommandRegion extends Command {
 
     @Override
     public String getHelp(OMPlayer omp) {
-        return "(" + omp.lang("nummer", "number") + ")";
+        return "(" + omp.lang("nummer", "number") + ")|random";
     }
 
     @Override
@@ -37,6 +37,14 @@ public class CommandRegion extends Command {
             //TODO open closest region as 0,0?
             new RegionGUI(survival).open(omp);
         } else if (a.length == 2) {
+            if (a[1].equalsIgnoreCase("random")) {
+                Region region = Region.randomTeleportable();
+                if (omp.getWorld() == survival.getOrbitMines().getLobby().getWorld())
+                    omp.getPlayer().teleport(region.getLocation());
+                else
+                    region.teleport(omp);
+                return;
+            }
             int id;
 
             try {
@@ -48,7 +56,10 @@ public class CommandRegion extends Command {
 
             if (id > 0 && id <= Region.TELEPORTABLE) {
                 Region region = Region.getRegion(id);
-                region.teleport(omp);
+                if (omp.getWorld() == survival.getOrbitMines().getLobby().getWorld())
+                    omp.getPlayer().teleport(region.getLocation());
+                else
+                    region.teleport(omp);
                 return;
             }
 

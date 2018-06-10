@@ -1348,7 +1348,7 @@ public class ItemUtils {
                 return "Glistering Melon";
             case MONSTER_EGG:
                 Mob mob = Mob.from(durability);
-                return mob == null ? "Spawn Egg" : mob.getName();
+                return mob == null ? "SurvivalSpawn Egg" : mob.getName();
             case EXP_BOTTLE:
                 return max16 ? "EXP Bottle" : "Bottle o' Enchanting";
             case FIREBALL:

@@ -68,7 +68,7 @@ public class RegionBuilder {
         }
         chunk.load();
 
-        ConsoleUtils.msg("Building Region Spawn...");
+        ConsoleUtils.msg("Building Region SurvivalSpawn...");
 
         /* Generated with SchematicGenerator */
         setBlock(x - 3, y - 1, z - 2, Material.WOOD, 5);

@@ -55,11 +55,11 @@ public abstract class Command {
                 if (i != 1)
                     aliases.append("§7, ");
 
-                aliases.append("§6").append(getAlias()[i]);
+                aliases.append("§9").append(getAlias()[i]);
             }
         }
 
-        cM.add(new Message("§6" + firstCmd + help), ClickEvent.Action.SUGGEST_COMMAND, new Message(firstCmd + " "), HoverEvent.Action.SHOW_TEXT, new Message("§6" + firstCmd + help + aliases.toString()));
+        cM.add(new Message("§9" + firstCmd + help), ClickEvent.Action.SUGGEST_COMMAND, new Message(firstCmd + " "), HoverEvent.Action.SHOW_TEXT, new Message("§9" + firstCmd + help + aliases.toString()));
 
         return cM;
     }

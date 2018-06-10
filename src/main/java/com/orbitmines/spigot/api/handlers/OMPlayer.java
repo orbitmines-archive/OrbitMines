@@ -159,7 +159,7 @@ public abstract class OMPlayer {
         /* Default TabList */
         defaultTabList();
 
-        /* Spawn Leaderboards */
+        /* SurvivalSpawn Leaderboards */
         for (LeaderBoard leaderBoard : LeaderBoard.getLeaderBoards()) {
             if (leaderBoard instanceof PlayerHologramLeaderBoard)
                 ((PlayerHologramLeaderBoard) leaderBoard).onLogin(this);

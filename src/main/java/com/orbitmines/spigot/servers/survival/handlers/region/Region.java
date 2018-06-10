@@ -152,7 +152,11 @@ public class Region extends Teleportable {
     }
 
     public static Region random() {
-        return regions.get(RandomUtils.RANDOM.nextInt(regions.size()));
+        return RandomUtils.randomFrom(regions);
+    }
+
+    public static Region randomTeleportable() {
+        return RandomUtils.randomFrom(regions.subList(0, TELEPORTABLE - 1));
     }
 
     public static List<Region> getRegions() {

@@ -39,6 +39,7 @@ import com.orbitmines.spigot.servers.survival.handlers.claim.ClaimHandler;
 import com.orbitmines.spigot.servers.survival.handlers.claim.Visualization;
 import com.orbitmines.spigot.servers.survival.handlers.region.Region;
 import com.orbitmines.spigot.servers.survival.handlers.region.RegionBuilder;
+import com.orbitmines.spigot.servers.survival.handlers.teleportable.SurvivalSpawn;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -58,6 +59,7 @@ public class Survival extends OrbitMinesServer {
     private World world_the_end;
 
     private Location lobbySpawn;
+    private SurvivalSpawn spawnTp;
 
     private ClaimHandler claimHandler;
 
@@ -113,6 +115,8 @@ public class Survival extends OrbitMinesServer {
 
         claimHandler = new ClaimHandler(this);
 
+        spawnTp = new SurvivalSpawn(this);
+
         setupRegions();
         setupClaims();
         setupClaimTool();
@@ -161,6 +165,7 @@ public class Survival extends OrbitMinesServer {
         new CommandHomes();
         new CommandRegion(this);
         new CommandSetHome();
+        new CommandSpawn(this);
     }
 
     @Override
@@ -187,6 +192,10 @@ public class Survival extends OrbitMinesServer {
 
     public Location getLobbySpawn() {
         return lobbySpawn;
+    }
+
+    public SurvivalSpawn getSpawnTp() {
+        return spawnTp;
     }
 
     public ClaimHandler getClaimHandler() {
