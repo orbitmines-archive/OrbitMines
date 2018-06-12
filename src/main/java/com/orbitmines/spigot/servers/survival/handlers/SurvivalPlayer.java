@@ -1,11 +1,6 @@
 package com.orbitmines.spigot.servers.survival.handlers;
 
 import com.orbitmines.api.Color;
-import com.orbitmines.api.database.Column;
-import com.orbitmines.api.database.Database;
-import com.orbitmines.api.database.Table;
-import com.orbitmines.api.database.Where;
-import com.orbitmines.api.database.tables.survival.TableSurvivalPlayers;
 import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.servers.survival.Survival;
@@ -15,7 +10,10 @@ import com.orbitmines.spigot.servers.survival.handlers.teleportable.Home;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.UUID;
 
 /*
 * OrbitMines - @author Fadi Shawki - 2017
@@ -25,9 +23,6 @@ public class SurvivalPlayer extends OMPlayer {
     protected static List<SurvivalPlayer> players = new ArrayList<>();
 
     private final Survival survival;
-
-    private int earthMoney;
-    private int claimBlocks;
 
     private List<Home> homes;
 
@@ -44,9 +39,6 @@ public class SurvivalPlayer extends OMPlayer {
 
         this.survival = survival;
 
-        this.earthMoney = 0;
-        this.claimBlocks = 250 /* TODO */* 10;
-
         this.settings = new HashSet<>();
 
         this.claimToolType = Claim.ToolType.NORMAL;
@@ -55,18 +47,6 @@ public class SurvivalPlayer extends OMPlayer {
     @Override
     protected void onLogin() {
         players.add(this);
-
-        if (!Database.get().contains(Table.SURVIVAL_PLAYERS, TableSurvivalPlayers.UUID, new Where(TableSurvivalPlayers.UUID, getUUID().toString()))) {
-            Database.get().insert(Table.SURVIVAL_PLAYERS, Table.SURVIVAL_PLAYERS.values(getUUID().toString(), earthMoney + "", claimBlocks + ""));
-        } else {
-            Map<Column, String> values = Database.get().getValues(Table.SURVIVAL_PLAYERS, new Column[]{
-                    TableSurvivalPlayers.EARTH_MONEY,
-                    TableSurvivalPlayers.CLAIM_BLOCKS,
-            }, new Where(TableSurvivalPlayers.UUID, getUUID().toString()));
-
-            earthMoney = Integer.parseInt(values.get(TableSurvivalPlayers.EARTH_MONEY));
-            claimBlocks = Integer.parseInt(values.get(TableSurvivalPlayers.CLAIM_BLOCKS));
-        }
 
         homes = Home.getHomesFor(getUUID());
 
@@ -129,7 +109,7 @@ public class SurvivalPlayer extends OMPlayer {
     }
 
     public int getRemainingClaimBlocks() {
-        return survival.getClaimHandler().getRemaining(getUUID(), claimBlocks);
+        return survival.getClaimHandler().getRemaining(getUUID(), getClaimBlocks());
     }
 
     /*
@@ -152,16 +132,40 @@ public class SurvivalPlayer extends OMPlayer {
         Extra Warps
      */
 
-    public int getExtraWarps() {
-        return getData().getExtraWarps();
+    public boolean warpSlotShop() {
+        return getData().warpSlotShop();
     }
 
-    public void setExtraWarps(int extraWarps) {
-        getData().setExtraWarps(extraWarps);
+    public boolean warpSlotPrisms() {
+        return getData().warpSlotPrisms();
+    }
+
+    public void setWarpSlotShop(boolean warpSlotShop) {
+        getData().setWarpSlotShop(warpSlotShop);
+    }
+
+    public void setWarpSlotPrisms(boolean warpSlotPrisms) {
+        getData().setWarpSlotPrisms(warpSlotPrisms);
     }
 
     public int getWarpsAllowed() {
         return getData().getWarpsAllowed(this);
+    }
+
+    /*
+        Favorite Warps
+     */
+
+    public List<Long> getFavoriteWarps() {
+        return getData().getFavoriteWarps();
+    }
+
+    public void addFavoriteWarp(long id) {
+        getData().addFavoriteWarp(id);
+    }
+
+    public void removeFavoriteWarp(long id) {
+        getData().removeFavoriteWarp(id);
     }
 
     /*

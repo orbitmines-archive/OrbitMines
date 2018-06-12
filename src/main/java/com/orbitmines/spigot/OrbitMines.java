@@ -103,10 +103,10 @@ public class OrbitMines extends JavaPlugin {
         new LeaderBoard.Instantiator("TOP_VOTERS") {
             @Override
             public LeaderBoard instantiate(Location location, String[] data) {
-                Month month = Month.of(Calendar.getInstance().get(Calendar.MONTH));
-                String string = month.toString().substring(0, 1).toUpperCase() + month.toString().substring(1, month.toString().length() - 1).toLowerCase();
+                Month month = Month.of(Calendar.getInstance().get(Calendar.MONTH) + 1);
+                String string = month.toString().substring(0, 1).toUpperCase() + month.toString().substring(1, month.toString().length()).toLowerCase();
 
-                return new DefaultHologramLeaderBoard(location, 0, () -> "§7§lTop Voters of " + string, 5, Table.VOTES, TableVotes.UUID, TableVotes.VOTES);
+                return new DefaultHologramLeaderBoard(location, 0, () -> "§7§lTop Voters of " + string + " " + Calendar.getInstance().get(Calendar.YEAR), 5, Table.VOTES, TableVotes.UUID, TableVotes.VOTES);
             }
         };
 

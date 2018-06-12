@@ -32,7 +32,7 @@ import com.orbitmines.spigot.servers.survival.events.ClaimEvents;
 import com.orbitmines.spigot.servers.survival.events.DeathEvent;
 import com.orbitmines.spigot.servers.survival.events.FlyEvent;
 import com.orbitmines.spigot.servers.survival.events.SignEvent;
-import com.orbitmines.spigot.servers.survival.gui.ClaimGUI;
+import com.orbitmines.spigot.servers.survival.gui.claim.ClaimGUI;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalPlayer;
 import com.orbitmines.spigot.servers.survival.handlers.claim.Claim;
 import com.orbitmines.spigot.servers.survival.handlers.claim.ClaimHandler;
@@ -40,6 +40,7 @@ import com.orbitmines.spigot.servers.survival.handlers.claim.Visualization;
 import com.orbitmines.spigot.servers.survival.handlers.region.Region;
 import com.orbitmines.spigot.servers.survival.handlers.region.RegionBuilder;
 import com.orbitmines.spigot.servers.survival.handlers.teleportable.SurvivalSpawn;
+import com.orbitmines.spigot.servers.survival.handlers.teleportable.Warp;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -120,6 +121,8 @@ public class Survival extends OrbitMinesServer {
         setupRegions();
         setupClaims();
         setupClaimTool();
+
+        Warp.setupWarps();
     }
 
     @Override
@@ -163,9 +166,11 @@ public class Survival extends OrbitMinesServer {
         new CommandDelHome();
         new CommandHome();
         new CommandHomes();
+        new CommandMyWarps();
         new CommandRegion(this);
         new CommandSetHome();
         new CommandSpawn(this);
+        new CommandWarps();
     }
 
     @Override
@@ -562,6 +567,7 @@ public class Survival extends OrbitMinesServer {
                         Visualization.show(omp, result.getClaim(), block.getY(), Visualization.Type.CLAIM, player.getLocation());
 
                         omp.setLastClaimToolLocation(null);
+                        omp.playSound(Sound.ENTITY_ARROW_HIT_PLAYER);
                     }
                 }
             }

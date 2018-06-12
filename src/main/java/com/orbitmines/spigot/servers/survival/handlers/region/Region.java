@@ -2,6 +2,7 @@ package com.orbitmines.spigot.servers.survival.handlers.region;
 
 import com.orbitmines.api.Color;
 import com.orbitmines.api.Cooldown;
+import com.orbitmines.api.utils.NumberUtils;
 import com.orbitmines.api.utils.RandomUtils;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.Teleportable;
@@ -13,7 +14,6 @@ import org.bukkit.Location;
 import org.bukkit.block.Biome;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /*
@@ -175,7 +175,8 @@ public class Region extends Teleportable {
         ItemBuilder item = BiomeUtils.item(biome);
         item.setAmount(id + 1 > 64 ? 64 : id + 1);
         item.setDisplayName("§7§lRegion §a§l" + (id + 1));
-        item.setLore(Arrays.asList(" §7Biome: " + BiomeUtils.name(biome), " §7XZ: §a§l" + location.getBlockX() + " §7/ §a§l" + location.getBlockZ()));
+        item.addLore(" §7Biome: " + BiomeUtils.name(biome));
+        item.addLore(" §7XZ: §a§l" + NumberUtils.locale(location.getBlockX()) + " §7/ §a§l" + NumberUtils.locale(location.getBlockZ()));
 
         if (id == 0)
             item.glow();

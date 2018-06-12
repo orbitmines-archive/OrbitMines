@@ -1,4 +1,4 @@
-package com.orbitmines.spigot.servers.survival.gui;
+package com.orbitmines.spigot.servers.survival.gui.claim;
 
 /*
  * OrbitMines - @author Fadi Shawki - 2018

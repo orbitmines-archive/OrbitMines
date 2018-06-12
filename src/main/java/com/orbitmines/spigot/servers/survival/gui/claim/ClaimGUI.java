@@ -1,4 +1,4 @@
-package com.orbitmines.spigot.servers.survival.gui;
+package com.orbitmines.spigot.servers.survival.gui.claim;
 
 /*
  * OrbitMines - @author Fadi Shawki - 2018
@@ -235,10 +235,11 @@ public class ClaimGUI extends GUI {
         setupAddFriends(5, 5, FriendType.FAVORITE, data, omp);
 
         if (page != 0)
-            add(5, 0, new ItemInstance(new ItemBuilder(Material.SIGN, 1, 0, omp.lang("§7« Meer Spelers", "§7« More Players")).build()) {
+            add(5, 0, new ItemInstance(new PlayerSkullBuilder(() -> "Lime Arrow Left", 1, omp.lang("§7« Meer Spelers", "§7« More Players")).setTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjUzNDc0MjNlZTU1ZGFhNzkyMzY2OGZjYTg1ODE5ODVmZjUzODlhNDU0MzUzMjFlZmFkNTM3YWYyM2QifX19").build()) {
                 @Override
                 public void onClick(InventoryClickEvent event, OMPlayer omp) {
                     page--;
+                    omp.playSound(Sound.UI_BUTTON_CLICK);
                     reopen(omp);
                 }
             });
@@ -246,10 +247,11 @@ public class ClaimGUI extends GUI {
             clear(5, 0);
 
         if (canHaveMorePages(ordered))
-            add(5, 8, new ItemInstance(new ItemBuilder(Material.SIGN, 1, 0, omp.lang("§7Meer Spelers »", "§7More Players »")).build()) {
+            add(5, 8, new ItemInstance(new PlayerSkullBuilder(() -> "Lime Arrow Right", 1, omp.lang("§7Meer Spelers »", "§7More Players »")).setTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGVmMzU2YWQyYWE3YjE2NzhhZWNiODgyOTBlNWZhNWEzNDI3ZTVlNDU2ZmY0MmZiNTE1NjkwYzY3NTE3YjgifX19").build()) {
                 @Override
                 public void onClick(InventoryClickEvent event, OMPlayer omp) {
                     page++;
+                    omp.playSound(Sound.UI_BUTTON_CLICK);
                     reopen(omp);
                 }
             });

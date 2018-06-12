@@ -30,6 +30,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
@@ -237,7 +238,7 @@ public abstract class OMPlayer {
     }
 
     public void defaultTabList() {
-        orbitMines.getNms().tabList().send(Collections.singletonList(player), "§8§lOrbit§7§lMines\n" + orbitMines.getServerHandler().getServer().getDisplayName(), "§7Website: §6www.orbitmines.com\n§7" + lang("Winkel", "Shop") + ": §3shop.orbitmines.com\n§7Twitter: §b@OrbitMines");
+        orbitMines.getNms().tabList().send(Collections.singletonList(player), "\n§8§lOrbit§7§lMines\n" + orbitMines.getServerHandler().getServer().getDisplayName() + "\n", "\n    §7Website: §6§lwww.orbitmines.com§r    \n    §7" + lang("Winkel", "Shop") + ": §3§lshop.orbitmines.com§r    \n    §7Twitter: §b§l@OrbitMines§r    \n    §7Vote: §b§l/vote§r    \n");
     }
 
     public void on2FALogin() {
@@ -874,9 +875,10 @@ public abstract class OMPlayer {
         player.addPotionEffect(builder.build());
     }
 
-    public boolean isMoving() {
-        Vector v = getVelocity();
-        return Math.abs(v.getX()) > 0.05 || Math.abs(v.getY()) > 0.05 || Math.abs(v.getZ()) > 0.05;
+    public boolean isMoving(PlayerMoveEvent event) {
+        Location from = event.getFrom();
+        Location to = event.getTo();
+        return from.getX() != to.getX() || from.getY() != to.getY() || from.getZ() != to.getZ();
     }
 
     public void playSound(Sound sound) {

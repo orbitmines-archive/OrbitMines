@@ -4,11 +4,11 @@ package com.orbitmines.spigot.servers.hub.gui.friends;
  * OrbitMines - @author Fadi Shawki - 2018
  */
 
-import com.orbitmines.spigot.api.handlers.CachedPlayer;
 import com.orbitmines.api.Color;
 import com.orbitmines.api.Server;
 import com.orbitmines.api.utils.uuid.UUIDUtils;
 import com.orbitmines.spigot.OrbitMines;
+import com.orbitmines.spigot.api.handlers.CachedPlayer;
 import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.GUI;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
@@ -17,6 +17,7 @@ import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.api.handlers.itembuilders.PlayerSkullBuilder;
 import com.orbitmines.spigot.api.nms.anvilgui.AnvilNms;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -261,10 +262,11 @@ public class FriendGUI extends GUI {
         }
 
         if (page != 0)
-            add(5, 0, new ItemInstance(new ItemBuilder(Material.SIGN, 1, 0, omp.lang("§7« Meer Vrienden", "§7« More Friends")).build()) {
+            add(5, 0, new ItemInstance(new PlayerSkullBuilder(() -> "Light Blue Arrow Left", 1, omp.lang("§7« Meer Vrienden", "§7« More Friends")).setTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTM5NzExMjRiZTg5YWM3ZGM5YzkyOWZlOWI2ZWZhN2EwN2NlMzdjZTFkYTJkZjY5MWJmODY2MzQ2NzQ3N2M3In19fQ==").build()) {
                 @Override
                 public void onClick(InventoryClickEvent event, OMPlayer omp) {
                     page--;
+                    omp.playSound(Sound.UI_BUTTON_CLICK);
                     reopen(omp);
                 }
             });
@@ -272,10 +274,11 @@ public class FriendGUI extends GUI {
             clear(5, 0);
 
         if (canHaveMorePages(ordered))
-            add(5, 8, new ItemInstance(new ItemBuilder(Material.SIGN, 1, 0, omp.lang("§7Meer Vrienden »", "§7More Friends »")).build()) {
+            add(5, 8, new ItemInstance(new PlayerSkullBuilder(() -> "Light Blue Arrow Right", 1, omp.lang("§7Meer Vrienden »", "§7More Friends »")).setTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjY3MWM0YzA0MzM3YzM4YTVjN2YzMWE1Yzc1MWY5OTFlOTZjMDNkZjczMGNkYmVlOTkzMjA2NTVjMTlkIn19fQ==").build()) {
                 @Override
                 public void onClick(InventoryClickEvent event, OMPlayer omp) {
                     page++;
+                    omp.playSound(Sound.UI_BUTTON_CLICK);
                     reopen(omp);
                 }
             });

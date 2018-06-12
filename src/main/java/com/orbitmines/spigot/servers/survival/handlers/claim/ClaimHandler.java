@@ -12,10 +12,7 @@ import com.orbitmines.spigot.api.handlers.chat.ActionBar;
 import com.orbitmines.spigot.api.utils.Serializer;
 import com.orbitmines.spigot.servers.survival.Survival;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalPlayer;
-import org.bukkit.Chunk;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -308,6 +305,7 @@ public class ClaimHandler {
 
             omp.setResizingClaim(null);
             omp.setLastClaimToolLocation(null);
+            omp.playSound(Sound.ENTITY_ARROW_HIT_PLAYER);
             return;
         }
 

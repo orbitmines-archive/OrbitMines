@@ -23,7 +23,7 @@ public class TeleportingMoveEvent implements Listener {
         if (omp.getTeleportingTo() == null)
             return;
 
-        if (!omp.isMoving())
+        if (!omp.isMoving(event))
             return;
 
         Teleportable teleportable = omp.getTeleportingTo();
