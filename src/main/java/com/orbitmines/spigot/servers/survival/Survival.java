@@ -28,6 +28,8 @@ import com.orbitmines.spigot.api.utils.LocationUtils;
 import com.orbitmines.spigot.api.utils.PlayerUtils;
 import com.orbitmines.spigot.api.utils.Serializer;
 import com.orbitmines.spigot.servers.survival.cmds.*;
+import com.orbitmines.spigot.servers.survival.cmds.vip.CommandEnderchest;
+import com.orbitmines.spigot.servers.survival.cmds.vip.CommandWorkbench;
 import com.orbitmines.spigot.servers.survival.events.ClaimEvents;
 import com.orbitmines.spigot.servers.survival.events.DeathEvent;
 import com.orbitmines.spigot.servers.survival.events.FlyEvent;
@@ -163,14 +165,19 @@ public class Survival extends OrbitMinesServer {
 
     @Override
     protected void registerCommands() {
-        new CommandDelHome();
+        new CommandSpawn(this);
+        new CommandRegion(this);
+
         new CommandHome();
         new CommandHomes();
-        new CommandMyWarps();
-        new CommandRegion(this);
         new CommandSetHome();
-        new CommandSpawn(this);
-        new CommandWarps();
+        new CommandDelHome();
+
+        new CommandWarps(this);
+        new CommandMyWarps(this);
+
+        new CommandWorkbench();
+        new CommandEnderchest();
     }
 
     @Override
@@ -618,7 +625,7 @@ public class Survival extends OrbitMinesServer {
                     () -> orbitMines.getScoreboardAnimation().get(),
                     () -> "§m--------------",
                     () -> "",
-                    () -> "§2§lGems",
+                    () -> "§2§lCredits",
                     () -> " " + NumberUtils.locale(omp.getEarthMoney()),
                     () -> " ",
                     () -> "§9§lClaimblocks",

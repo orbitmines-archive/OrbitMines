@@ -12,6 +12,10 @@ public class CommandPrisms extends Command {
 
     private String[] alias = { "/prisms" };
 
+    public CommandPrisms() {
+        super(null);
+    }
+
     @Override
     public String[] getAlias() {
         return alias;

@@ -238,16 +238,17 @@ public abstract class OMPlayer {
     }
 
     public void defaultTabList() {
-        orbitMines.getNms().tabList().send(Collections.singletonList(player), "\n§8§lOrbit§7§lMines\n" + orbitMines.getServerHandler().getServer().getDisplayName() + "\n", "\n    §7Website: §6§lwww.orbitmines.com§r    \n    §7" + lang("Winkel", "Shop") + ": §3§lshop.orbitmines.com§r    \n    §7Twitter: §b§l@OrbitMines§r    \n    §7Vote: §b§l/vote§r    \n");
+        orbitMines.getNms().tabList().send(Collections.singletonList(player), "\n§8§lOrbit§7§lMines\n" + orbitMines.getServerHandler().getServer().getDisplayName() + "\n", "\n    §7Website: §6§lwww.orbitmines.com§r    \n    §7" + lang("Winkel", "Shop") + ": §3§lshop.orbitmines.com§r    \n    §7Twitter: §b§l@OrbitMines§r    \n\n    §7Vote: §9§l/vote§r    \n");
     }
 
     public void on2FALogin() {
         sendMessage("§7§m----------------------------------------");
         sendMessage(" §8§lOrbit§7§lMines §8- " + orbitMines.getServerHandler().getServer().getDisplayName());
         sendMessage(" ");
-        sendMessage(" §7§lWebsite: §6www.orbitmines.com");
-        sendMessage(" §7§l" + lang("Winkel", "Shop") + ": §3shop.orbitmines.com");
-        sendMessage(" §7§l" + lang("Voten", "Vote") + ": §b/vote");
+        sendMessage(" §7Website: §6§lwww.orbitmines.com");
+        sendMessage(" §7" + lang("Winkel", "Shop") + ": §3§lshop.orbitmines.com");
+        sendMessage(" §7Twitter: §b§l@OrbitMines");
+        sendMessage(" §7" + lang("Voten", "Vote") + ": §9§l/vote");
         sendMessage(" ");
 
         sendMessage("§7§m----------------------------------------");
@@ -878,7 +879,8 @@ public abstract class OMPlayer {
     public boolean isMoving(PlayerMoveEvent event) {
         Location from = event.getFrom();
         Location to = event.getTo();
-        return from.getX() != to.getX() || from.getY() != to.getY() || from.getZ() != to.getZ();
+
+        return Math.abs(from.getX() - to.getX()) > 0.05 || Math.abs(from.getY() - to.getY()) > 0.05 || Math.abs(from.getZ() - to.getZ()) > 0.05;
     }
 
     public void playSound(Sound sound) {

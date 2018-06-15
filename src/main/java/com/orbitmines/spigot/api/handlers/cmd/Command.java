@@ -2,6 +2,7 @@ package com.orbitmines.spigot.api.handlers.cmd;
 
 import com.orbitmines.api.Color;
 import com.orbitmines.api.Message;
+import com.orbitmines.api.Server;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.chat.ComponentMessage;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -17,13 +18,21 @@ public abstract class Command {
 
     private static List<Command> commands = new ArrayList<>();
 
-    public Command() {
+    private Server server;
+
+    public Command(Server server) {
+        this.server = server;
+
         commands.add(this);
     }
 
     public abstract String[] getAlias();
 
     public abstract String getHelp(OMPlayer omp);
+
+    public Server getServer() {
+        return server;
+    }
 
     /* a[0] = '/<command>' */
     public abstract void dispatch(OMPlayer omp, String[] a);

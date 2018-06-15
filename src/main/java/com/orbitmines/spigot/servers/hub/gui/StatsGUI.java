@@ -9,6 +9,7 @@ import com.orbitmines.api.Server;
 import com.orbitmines.api.StaffRank;
 import com.orbitmines.api.VipRank;
 import com.orbitmines.api.utils.DateUtils;
+import com.orbitmines.api.utils.NumberUtils;
 import com.orbitmines.api.utils.TimeUtils;
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.handlers.CachedPlayer;
@@ -18,6 +19,10 @@ import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.data.PlayTimeData;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.api.handlers.itembuilders.PlayerSkullBuilder;
+import com.orbitmines.spigot.servers.survival.handlers.SurvivalData;
+import com.orbitmines.spigot.servers.survival.handlers.claim.Claim;
+import com.orbitmines.spigot.servers.survival.handlers.teleportable.Home;
+import com.orbitmines.spigot.servers.survival.handlers.teleportable.Warp;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemFlag;
@@ -36,7 +41,7 @@ public class StatsGUI extends GUI {
 
     @Override
     protected boolean onOpen(OMPlayer omp) {
-        add(1, 3, new EmptyItemInstance(new ItemBuilder(Material.DOUBLE_PLANT, 1, 0, "§e§l" + omp.getSolars() + " Solar" + (omp.getSolars() == 1 ? "" : "s")).build()));
+        add(1, 3, new EmptyItemInstance(new ItemBuilder(Material.DOUBLE_PLANT, 1, 0, "§e§l" + NumberUtils.locale(omp.getSolars()) + " Solar" + (omp.getSolars() == 1 ? "" : "s")).build()));
 
         {
             PlayerSkullBuilder item = new PlayerSkullBuilder(() -> omp.getName(true), 1, omp.getName());
@@ -71,7 +76,7 @@ public class StatsGUI extends GUI {
             });
         }
 
-        add(1, 5, new EmptyItemInstance(new ItemBuilder(Material.PRISMARINE_SHARD, 1, 0, "§9§l" + omp.getPrisms() + " Prism" + (omp.getPrisms() == 1 ? "" : "s")).build()));
+        add(1, 5, new EmptyItemInstance(new ItemBuilder(Material.PRISMARINE_SHARD, 1, 0, "§9§l" + NumberUtils.locale(omp.getPrisms()) + " Prism" + (omp.getPrisms() == 1 ? "" : "s")).build()));
 
         add(4, 4, new ItemInstance(getItem(omp, Server.SURVIVAL)) {
             @Override
@@ -109,10 +114,22 @@ public class StatsGUI extends GUI {
                 break;
             case HUB:
                 break;
-            case SURVIVAL:
+            case SURVIVAL: {
                 item.setMaterial(Material.STONE_HOE);
                 item.addFlag(ItemFlag.HIDE_ATTRIBUTES);
+
+                SurvivalData survival = (SurvivalData) omp.getData(Data.Type.SURVIVAL);
+
+                item.addLore("§7Credits: §2§l" + NumberUtils.locale(survival.getEarthMoney()));
+                item.addLore("§7Total Claimblocks: §9§l" + NumberUtils.locale(survival.getClaimBlocks()));
+                item.addLore("");
+                item.addLore("§7Claims: §a§l" + NumberUtils.locale(Claim.getClaimCount(omp.getUUID())));
+                item.addLore("");
+                item.addLore("§7Homes: " + Home.COLOR.getChatColor() + "§l" + NumberUtils.locale(Home.getHomeCount(omp.getUUID())) + "§7§l / " + NumberUtils.locale(survival.getHomesAllowed(omp)));
+                item.addLore("§7Warps: " + Warp.COLOR.getChatColor() + "§l" + NumberUtils.locale(Warp.getWarpCount(omp.getUUID())) + "§7§l / " + NumberUtils.locale(Warp.Type.values().length));
+                item.addLore("");
                 break;
+            }
             case SKYBLOCK:
                 break;
             case FOG:

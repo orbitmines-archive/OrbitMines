@@ -12,6 +12,10 @@ public class CommandFriends extends Command {
 
     private String[] alias = { "/friends", "/friend", "/f" };
 
+    public CommandFriends() {
+        super(null);
+    }
+
     @Override
     public String[] getAlias() {
         return alias;

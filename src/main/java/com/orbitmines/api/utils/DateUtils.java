@@ -2,6 +2,7 @@ package com.orbitmines.api.utils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Month;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -24,5 +25,14 @@ public class DateUtils {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public static String getMonth() {
+        Month month = Month.of(Calendar.getInstance().get(Calendar.MONTH) + 1);
+        return month.toString().substring(0, 1).toUpperCase() + month.toString().substring(1, month.toString().length()).toLowerCase();
+    }
+
+    public static int getYear() {
+        return Calendar.getInstance().get(Calendar.YEAR);
     }
 }

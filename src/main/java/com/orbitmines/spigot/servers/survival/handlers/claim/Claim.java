@@ -2,6 +2,10 @@ package com.orbitmines.spigot.servers.survival.handlers.claim;
 
 import com.orbitmines.api.Message;
 import com.orbitmines.api.StaffRank;
+import com.orbitmines.api.database.Database;
+import com.orbitmines.api.database.Table;
+import com.orbitmines.api.database.Where;
+import com.orbitmines.api.database.tables.survival.TableSurvivalClaim;
 import com.orbitmines.api.utils.DateUtils;
 import com.orbitmines.spigot.api.handlers.CachedPlayer;
 import com.orbitmines.spigot.api.handlers.chat.ActionBar;
@@ -442,6 +446,10 @@ public class Claim {
         }
 
         return hashes;
+    }
+
+    public static int getClaimCount(UUID uuid) {
+        return Database.get().getCount(Table.SURVIVAL_CLAIM, new Where(TableSurvivalClaim.OWNER, uuid.toString()));
     }
 
     public enum Permission {

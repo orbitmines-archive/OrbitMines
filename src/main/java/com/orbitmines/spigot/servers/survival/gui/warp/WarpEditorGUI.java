@@ -5,12 +5,12 @@ package com.orbitmines.spigot.servers.survival.gui.warp;
  */
 
 import com.orbitmines.api.Color;
-import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.handlers.GUI;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.api.handlers.itembuilders.PlayerSkullBuilder;
 import com.orbitmines.spigot.api.nms.anvilgui.AnvilNms;
+import com.orbitmines.spigot.servers.survival.Survival;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalPlayer;
 import com.orbitmines.spigot.servers.survival.handlers.teleportable.Warp;
 import org.bukkit.Material;
@@ -20,11 +20,11 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 public class WarpEditorGUI extends GUI {
 
-    private final OrbitMines orbitMines;
+    private final Survival survival;
     private final Warp warp;
 
-    public WarpEditorGUI(Warp warp) {
-        this.orbitMines = OrbitMines.getInstance();
+    public WarpEditorGUI(Survival survival, Warp warp) {
+        this.survival = survival;
         this.warp = warp;
 
         newInventory(27, "§0§l" + warp.getName());
@@ -37,14 +37,14 @@ public class WarpEditorGUI extends GUI {
         add(1, 1, new ItemInstance(new PlayerSkullBuilder(() -> "Cyan Arrow Left", 1, omp.lang(Warp.COLOR.getChatColor() + "« Terug naar Jouw Warps", Warp.COLOR.getChatColor() + "« Back to Your Warps")).setTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjc2OGVkYzI4ODUzYzQyNDRkYmM2ZWViNjNiZDQ5ZWQ1NjhjYTIyYTg1MmEwYTU3OGIyZjJmOWZhYmU3MCJ9fX0=").build()) {
             @Override
             public void onClick(InventoryClickEvent event, OMPlayer omp) {
-                new WarpSlotsGUI().open(omp);
+                new WarpSlotsGUI(survival).open(omp);
             }
         });
 
         add(1, 4, new ItemInstance(new ItemBuilder(Material.BOOK_AND_QUILL, 1, 0, omp.lang("§7§lHernoem Warp", "§7§lRename Warp")).build()) {
             @Override
             public void onClick(InventoryClickEvent e, OMPlayer omp) {
-                AnvilNms anvil = orbitMines.getNms().anvilGui(omp.getPlayer(), (event) -> {
+                AnvilNms anvil = survival.getOrbitMines().getNms().anvilGui(omp.getPlayer(), (event) -> {
                     if (event.getSlot() != AnvilNms.AnvilSlot.OUTPUT) {
                         event.setWillClose(false);
                         event.setWillDestroy(false);
@@ -55,6 +55,22 @@ public class WarpEditorGUI extends GUI {
                     Warp warp = Warp.getWarp(warpName);
 
                     if (warp == null) {
+                        if (warpName.length() > Warp.MAX_CHARACTERS) {
+                            event.setWillClose(false);
+                            event.setWillDestroy(false);
+                            omp.sendMessage("Warp", Color.RED, "§7Je mag maximaal maar " + Warp.COLOR.getChatColor() + Warp.MAX_CHARACTERS + " karakters§7 gebruiken.", "§7You're only allowed to use " + Warp.COLOR.getChatColor() + Warp.MAX_CHARACTERS + " characters§7.");
+                            return;
+                        }
+
+                        for (int i = 0; i < warpName.length(); i++) {
+                            if (!Character.isAlphabetic(warpName.charAt(i)) && !Character.isDigit(warpName.charAt(i)) && !Character.isSpaceChar(warpName.charAt(i))) {
+                                event.setWillClose(false);
+                                event.setWillDestroy(false);
+                                omp.sendMessage("Warp", Color.RED, "§7Je " + Warp.COLOR.getChatColor() + "warp naam§7 kan alleen maar bestaan uit " + Warp.COLOR.getChatColor() + "letters§7," + Warp.COLOR.getChatColor() + "nummers§7 en " + Warp.COLOR.getChatColor() + "spaties§7.", "§7Your " + Warp.COLOR.getChatColor() + "warp name§7 can only contain " + Warp.COLOR.getChatColor() + "alphabetic§7 and " + Warp.COLOR.getChatColor() + "numeric§7 characters and " + Warp.COLOR.getChatColor() + "spaces§7.");
+                                return;
+                            }
+                        }
+
                         event.setWillClose(true);
                         event.setWillDestroy(true);
 
@@ -73,7 +89,7 @@ public class WarpEditorGUI extends GUI {
                             public void run() {
                                 reopen(omp);
                             }
-                        }.runTaskLater(orbitMines, 1);
+                        }.runTaskLater(survival.getOrbitMines(), 1);
                     }
                 });
 
@@ -92,6 +108,11 @@ public class WarpEditorGUI extends GUI {
             add(1, 5, new ItemInstance(item.build()) {
                 @Override
                 public void onClick(InventoryClickEvent event, OMPlayer omp) {
+                    if (omp.getLocation().getWorld() != survival.getWorld()) {
+                        omp.sendMessage("Warp", Color.RED, "§7Je kan alleen maar warps maken in de overworld!", "§7You're only allowed to create warps in the overworld!");
+                        return;
+                    }
+
                     omp.getPlayer().closeInventory();
 
                     warp.setLocation(omp.getPlayer().getLocation());
@@ -104,7 +125,7 @@ public class WarpEditorGUI extends GUI {
         add(1, 6, new ItemInstance(warp.getIcon().getItemBuilder().setDisplayName(omp.lang("§7§lVerander Icoon", "§7§lChange Icon")).build()) {
             @Override
             public void onClick(InventoryClickEvent event, OMPlayer omp) {
-                //TODO OPEN ICON INV
+                new WarpIconEditorGUI(survival, warp).open(omp);
             }
         });
 

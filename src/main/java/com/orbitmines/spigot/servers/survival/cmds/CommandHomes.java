@@ -6,6 +6,7 @@ package com.orbitmines.spigot.servers.survival.cmds;
 
 import com.orbitmines.api.Color;
 import com.orbitmines.api.Message;
+import com.orbitmines.api.Server;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.chat.ComponentMessage;
 import com.orbitmines.spigot.api.handlers.cmd.Command;
@@ -17,6 +18,10 @@ import net.md_5.bungee.api.chat.HoverEvent;
 public class CommandHomes extends Command {
 
     private String[] alias = { "/homes" };
+
+    public CommandHomes() {
+        super(Server.SURVIVAL);
+    }
 
     @Override
     public String[] getAlias() {

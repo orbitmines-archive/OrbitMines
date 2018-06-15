@@ -18,6 +18,7 @@ import com.orbitmines.spigot.api.utils.Serializer;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalPlayer;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemFlag;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -152,6 +153,10 @@ public class Warp extends Teleportable {
         return list;
     }
 
+    public static int getWarpCount(UUID uuid) {
+        return Database.get().getCount(Table.SURVIVAL_WARPS, new Where(TableSurvivalWarps.UUID, uuid.toString()));
+    }
+
     public static Warp getWarp(long id) {
         for (Warp warp : warps) {
             if (warp.getId() == id)
@@ -176,13 +181,58 @@ public class Warp extends Teleportable {
         List<Map<Column, String>> entries = Database.get().getEntries(Table.SURVIVAL_WARPS);
 
         for (Map<Column, String> entry : entries) {
-            new Warp(Long.parseLong(entry.get(TableSurvivalWarps.ID)), UUID.fromString(entry.get(TableSurvivalWarps.UUID)), entry.get(TableSurvivalWarps.NAME), Boolean.parseBoolean(entry.get(TableSurvivalWarps.ENABLED)), Type.valueOf(entry.get(TableSurvivalWarps.TYPE)), Icon.fromId(Integer.parseInt(entry.get(TableSurvivalWarps.ICON_ID))), Serializer.parseLocation(entry.get(TableSurvivalWarps.LOCATION)));
+            new Warp(Long.parseLong(entry.get(TableSurvivalWarps.ID)), UUID.fromString(entry.get(TableSurvivalWarps.UUID)), entry.get(TableSurvivalWarps.NAME), entry.get(TableSurvivalWarps.ENABLED).equals("1"), Type.valueOf(entry.get(TableSurvivalWarps.TYPE)), Icon.fromId(Integer.parseInt(entry.get(TableSurvivalWarps.ICON_ID))), Serializer.parseLocation(entry.get(TableSurvivalWarps.LOCATION)));
         }
     }
 
     public enum Icon {
 
-        STONE(new ItemBuilder(Material.STONE));//TODO Also with 1.13 icons? - total of 27 icons
+        POWERED_RAIL(new ItemBuilder(Material.POWERED_RAIL)),
+        HORN_CORAL(new ItemBuilder(Material.STONE)),//
+        IRON_CHESTPLATE(new ItemBuilder(Material.IRON_CHESTPLATE).addFlag(ItemFlag.HIDE_ATTRIBUTES)),
+        STICKY_PISTON(new ItemBuilder(Material.PISTON_STICKY_BASE)),
+        GLISTERING_MELON_SLICE(new ItemBuilder(Material.STONE)),//
+        BLUE_ICE(new ItemBuilder(Material.STONE)),//
+        FIREWORK_ROCKET(new ItemBuilder(Material.FIREWORK)),
+        BLACK_GLAZED_TERRACOTTA(new ItemBuilder(Material.BLACK_GLAZED_TERRACOTTA)),
+        GUN_POWDER(new ItemBuilder(Material.SULPHUR)),
+        DARK_OAK_SAPLING(new ItemBuilder(Material.STONE)),//
+        LIGHT_BLUE_CONCRETE_POWDER(new ItemBuilder(Material.STONE)),//
+        ORANGE_TERRACOTTA(new ItemBuilder(Material.STONE)),//
+        BOOKSHELF(new ItemBuilder(Material.BOOKSHELF)),
+        ELYTRA(new ItemBuilder(Material.ELYTRA)),
+        TOTEM_OF_UNDYING(new ItemBuilder(Material.TOTEM)),
+        PUFFERFISH_BUCKET(new ItemBuilder(Material.STONE)),//
+        GRASS_BLOCK(new ItemBuilder(Material.GRASS)),
+        HAY_BALE(new ItemBuilder(Material.HAY_BLOCK)),
+        GRAY_GLAZED_TERRACOTTA(new ItemBuilder(Material.GRAY_GLAZED_TERRACOTTA)),
+        LEATHER(new ItemBuilder(Material.LEATHER)),
+        PUMPKIN_PIE(new ItemBuilder(Material.PUMPKIN_PIE)),
+        RED_WOOL(new ItemBuilder(Material.STONE)),//
+        POPPY(new ItemBuilder(Material.RED_ROSE)),
+        TRIDENT(new ItemBuilder(Material.STONE).addFlag(ItemFlag.HIDE_ATTRIBUTES)),//
+        FIRE_CORAL(new ItemBuilder(Material.STONE)),//
+        DARK_PRISMARINE(new ItemBuilder(Material.STONE)),//
+        TNT(new ItemBuilder(Material.TNT)),
+        SIGN(new ItemBuilder(Material.SIGN)),
+        PURPUR_BLOCK(new ItemBuilder(Material.PURPUR_BLOCK)),
+        MELON(new ItemBuilder(Material.MELON_BLOCK)),
+        PAINTING(new ItemBuilder(Material.PAINTING)),
+        COOKIE(new ItemBuilder(Material.COOKIE)),
+        YELLOW_WOOL(new ItemBuilder(Material.STONE)),//
+        TURTLE_EGG(new ItemBuilder(Material.STONE)),//
+        OBSIDIAN(new ItemBuilder(Material.OBSIDIAN)),
+        TUBE_CORAL_BLOCK(new ItemBuilder(Material.STONE)),//
+        ARMOR_STAND(new ItemBuilder(Material.ARMOR_STAND)),
+        BEACON(new ItemBuilder(Material.BEACON)),
+        LIME_STAINED_GLASS(new ItemBuilder(Material.STONE)),//
+        BLAZE_POWDER(new ItemBuilder(Material.BLAZE_POWDER)),
+        ROSE_BUSH(new ItemBuilder(Material.STONE)),//
+        MAGMA_BLOCK(new ItemBuilder(Material.STONE)),//
+        CACTUS(new ItemBuilder(Material.CACTUS)),
+        TROPICAL_FISH(new ItemBuilder(Material.STONE))//
+
+        ;//TODO 1.13
 
         private final ItemBuilder itemBuilder;
 

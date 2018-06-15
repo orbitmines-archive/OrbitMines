@@ -10,6 +10,7 @@ import com.orbitmines.spigot.api.handlers.GUI;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.api.handlers.itembuilders.PlayerSkullBuilder;
+import com.orbitmines.spigot.servers.survival.Survival;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalPlayer;
 import com.orbitmines.spigot.servers.survival.handlers.teleportable.Warp;
 import org.bukkit.Material;
@@ -19,6 +20,12 @@ import java.util.List;
 
 public class WarpSlotsGUI extends GUI {
 
+    private Survival survival;
+
+    public WarpSlotsGUI(Survival survival) {
+        this.survival = survival;
+    }
+
     @Override
     protected boolean onOpen(OMPlayer player) {
         SurvivalPlayer omp = (SurvivalPlayer) player;
@@ -27,7 +34,7 @@ public class WarpSlotsGUI extends GUI {
         add(1, 2, new ItemInstance(new PlayerSkullBuilder(() -> "Cyan Arrow Left", 1, omp.lang(Warp.COLOR.getChatColor() + "« Terug naar Warps", Warp.COLOR.getChatColor() + "« Back to Warps")).setTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjc2OGVkYzI4ODUzYzQyNDRkYmM2ZWViNjNiZDQ5ZWQ1NjhjYTIyYTg1MmEwYTU3OGIyZjJmOWZhYmU3MCJ9fX0=").build()) {
             @Override
             public void onClick(InventoryClickEvent event, OMPlayer omp) {
-                new WarpGUI().open(omp);
+                new WarpGUI(survival).open(omp);
             }
         });
 
@@ -57,7 +64,7 @@ public class WarpSlotsGUI extends GUI {
                                 return;
 
                             Warp warp = Warp.createWarp(omp.getUUID(), omp.getName(true) + "s Warp", false, type, Warp.Icon.random(), null);
-                            new WarpEditorGUI(warp).open(omp);
+                            new WarpEditorGUI(survival, warp).open(omp);
                         }
                     };
                 } else {
@@ -78,7 +85,7 @@ public class WarpSlotsGUI extends GUI {
                 instance = new ItemInstance(item.build()) {
                     @Override
                     public void onClick(InventoryClickEvent event, OMPlayer omp) {
-                        new WarpEditorGUI(warp).open(omp);
+                        new WarpEditorGUI(survival, warp).open(omp);
                     }
                 };
             }

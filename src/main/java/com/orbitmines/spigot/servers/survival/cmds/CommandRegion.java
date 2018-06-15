@@ -5,6 +5,7 @@ package com.orbitmines.spigot.servers.survival.cmds;
  */
 
 import com.orbitmines.api.Color;
+import com.orbitmines.api.Server;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.cmd.Command;
 import com.orbitmines.spigot.servers.survival.Survival;
@@ -18,6 +19,8 @@ public class CommandRegion extends Command {
     private final Survival survival;
 
     public CommandRegion(Survival survival) {
+        super(Server.SURVIVAL);
+
         this.survival = survival;
     }
 

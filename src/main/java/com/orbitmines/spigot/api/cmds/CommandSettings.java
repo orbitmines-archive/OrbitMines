@@ -12,6 +12,10 @@ public class CommandSettings extends Command {
 
     private String[] alias = { "/settings", "/setting", "/prefs", "/preferences" };
 
+    public CommandSettings() {
+        super(null);
+    }
+
     @Override
     public String[] getAlias() {
         return alias;

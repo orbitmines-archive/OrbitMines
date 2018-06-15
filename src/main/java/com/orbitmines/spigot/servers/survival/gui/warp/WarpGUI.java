@@ -10,6 +10,7 @@ import com.orbitmines.spigot.api.handlers.GUI;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.api.handlers.itembuilders.PlayerSkullBuilder;
+import com.orbitmines.spigot.servers.survival.Survival;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalPlayer;
 import com.orbitmines.spigot.servers.survival.handlers.teleportable.Warp;
 import org.bukkit.Material;
@@ -24,15 +25,18 @@ public class WarpGUI extends GUI {
     private final int WARPS_PER_PAGE = 27;
     private final int NEW_PER_PAGE = WARPS_PER_PAGE / 9;
 
+    private Survival survival;
+
     private Type type;
     private int page;
 
-    public WarpGUI() {
-        this(0);
+    public WarpGUI(Survival survival) {
+        this(survival, 0);
     }
 
-    public WarpGUI(int page) {
-        type = Type.NORMAL;
+    public WarpGUI(Survival survival, int page) {
+        this.survival = survival;
+        this.type = Type.NORMAL;
         this.page = page;
 
         newInventory(54, "§0§lWarps");
@@ -52,7 +56,7 @@ public class WarpGUI extends GUI {
             add(0, 3, new ItemInstance(item.build()) {
                 @Override
                 public void onClick(InventoryClickEvent event, OMPlayer omp) {
-                    new WarpSlotsGUI().open(omp);
+                    new WarpSlotsGUI(survival).open(omp);
                 }
             });
         }

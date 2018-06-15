@@ -98,6 +98,10 @@ public class Home extends Teleportable {
         return homes;
     }
 
+    public static int getHomeCount(UUID uuid) {
+        return Database.get().getCount(Table.SURVIVAL_HOMES, new Where(TableSurvivalHomes.UUID, uuid.toString()));
+    }
+
     public static List<Home> getAllHomes() {
         List<Home> homes = new ArrayList<>();
 

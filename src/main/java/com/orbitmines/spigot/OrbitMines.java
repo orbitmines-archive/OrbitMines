@@ -8,21 +8,23 @@ import com.orbitmines.api.database.Where;
 import com.orbitmines.api.database.tables.TablePlayers;
 import com.orbitmines.api.database.tables.TableServers;
 import com.orbitmines.api.database.tables.TableVotes;
+import com.orbitmines.api.utils.DateUtils;
 import com.orbitmines.spigot.api._2fa._2FA;
 import com.orbitmines.spigot.api.cmds.*;
 import com.orbitmines.spigot.api.datapoints.DataPointHandler;
 import com.orbitmines.spigot.api.events.*;
+import com.orbitmines.spigot.api.handlers.CachedPlayer;
 import com.orbitmines.spigot.api.handlers.ConfigHandler;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.OrbitMinesMap;
-import com.orbitmines.spigot.api.handlers.leaderboard.hologram.DefaultHologramLeaderBoard;
 import com.orbitmines.spigot.api.handlers.leaderboard.LeaderBoard;
+import com.orbitmines.spigot.api.handlers.leaderboard.hologram.DefaultHologramLeaderBoard;
 import com.orbitmines.spigot.api.handlers.npc.Hologram;
-import com.orbitmines.spigot.leaderboards.hologram.LeaderBoardDonations;
 import com.orbitmines.spigot.api.handlers.worlds.WorldLoader;
 import com.orbitmines.spigot.api.nms.Nms;
 import com.orbitmines.spigot.api.utils.ReflectionUtils;
 import com.orbitmines.spigot.gui.ServerSelectorGUI;
+import com.orbitmines.spigot.leaderboards.hologram.LeaderBoardDonations;
 import com.orbitmines.spigot.runnables.LeaderBoardRunnable;
 import com.orbitmines.spigot.runnables.NPCRunnable;
 import com.orbitmines.spigot.runnables.ScoreboardRunnable;
@@ -34,8 +36,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.time.Month;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -103,10 +103,13 @@ public class OrbitMines extends JavaPlugin {
         new LeaderBoard.Instantiator("TOP_VOTERS") {
             @Override
             public LeaderBoard instantiate(Location location, String[] data) {
-                Month month = Month.of(Calendar.getInstance().get(Calendar.MONTH) + 1);
-                String string = month.toString().substring(0, 1).toUpperCase() + month.toString().substring(1, month.toString().length()).toLowerCase();
+                return new DefaultHologramLeaderBoard(location, 0, () -> "§7§lTop Voters of " + DateUtils.getMonth() + " " + DateUtils.getYear(), 5, Table.VOTES, TableVotes.UUID, TableVotes.VOTES) {
 
-                return new DefaultHologramLeaderBoard(location, 0, () -> "§7§lTop Voters of " + string + " " + Calendar.getInstance().get(Calendar.YEAR), 5, Table.VOTES, TableVotes.UUID, TableVotes.VOTES);
+                    @Override
+                    public String getValue(CachedPlayer player, int count) {
+                        return "§9§l" + count + " " + (count == 1 ? "Vote" : "Votes");
+                    }
+                };
             }
         };
 
@@ -280,13 +283,19 @@ public class OrbitMines extends JavaPlugin {
     }
 
     private void registerCommands() {
-        new CommandFriends();
-        new CommandHelp();
-        new CommandPrisms();
+        new CommandHelp(this);
+
         new CommandServers(this);
-        new CommandSettings();
-        new CommandSolars();
+
+        new CommandTopVoters();
+
+        new CommandFriends();
         new CommandStats();
+        new CommandSettings();
+
+        new CommandPrisms();
+        new CommandSolars();
+
     }
 
     private void registerEvents(Listener... listeners) {

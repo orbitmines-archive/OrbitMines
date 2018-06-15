@@ -12,6 +12,10 @@ public class CommandSolars extends Command {
 
     private String[] alias = { "/solars" };
 
+    public CommandSolars() {
+        super(null);
+    }
+
     @Override
     public String[] getAlias() {
         return alias;

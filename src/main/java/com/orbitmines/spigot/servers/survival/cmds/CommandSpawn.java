@@ -4,6 +4,7 @@ package com.orbitmines.spigot.servers.survival.cmds;
  * OrbitMines - @author Fadi Shawki - 2018
  */
 
+import com.orbitmines.api.Server;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.cmd.Command;
 import com.orbitmines.spigot.servers.survival.Survival;
@@ -15,6 +16,8 @@ public class CommandSpawn extends Command {
     private final Survival survival;
 
     public CommandSpawn(Survival survival) {
+        super(Server.SURVIVAL);
+
         this.survival = survival;
     }
 

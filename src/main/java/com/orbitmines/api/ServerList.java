@@ -9,8 +9,9 @@ public enum ServerList {
 
     //TODO
     MINECRAFT_SERVERS_ORG("MinecraftServers.org", ""),
+    SERVER_PACT("ServerPact.com", "https://serverpact.nl/vote-8503"),
+    MINECRAFT_SERVER_NET("Minecraft-Server.net", "https://minecraft-server.net/vote/orbitmines/"),
     MINECRAFT_MP_COM("Minecraft-MP.com", ""),
-    MINECRAFT_SERVER_NET("Minecraft-Server.net", ""),
     TOP_G_ORG("TopG.org", "");
 
     private final String domainName;

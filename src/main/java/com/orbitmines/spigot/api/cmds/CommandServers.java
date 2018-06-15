@@ -15,6 +15,8 @@ public class CommandServers extends Command {
     private final OrbitMines orbitMines;
 
     public CommandServers(OrbitMines orbitMines) {
+        super(null);
+
         this.orbitMines = orbitMines;
     }
 

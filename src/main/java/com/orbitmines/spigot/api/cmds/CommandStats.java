@@ -12,6 +12,10 @@ public class CommandStats extends Command {
 
     private String[] alias = { "/stats", "/statistics", "/stat" };
 
+    public CommandStats() {
+        super(null);
+    }
+
     @Override
     public String[] getAlias() {
         return alias;
