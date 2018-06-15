@@ -91,6 +91,10 @@ public abstract class PluginMessageHandler implements PluginMessageListener {
 
                     break;
                 }
+                case SHUTDOWN: {
+                    Bukkit.shutdown();
+                    break;
+                }
                 case CHECK_VOTE_CACHE: {
                     OMPlayer omp = OMPlayer.getPlayer(UUID.fromString(in.readUTF()));
 

@@ -289,13 +289,13 @@ public class OrbitMines extends JavaPlugin {
 
         new CommandTopVoters();
 
+        new CommandLoot();
         new CommandFriends();
         new CommandStats();
         new CommandSettings();
 
         new CommandPrisms();
         new CommandSolars();
-
     }
 
     private void registerEvents(Listener... listeners) {
@@ -313,15 +313,15 @@ public class OrbitMines extends JavaPlugin {
     }
 
     public void broadcast(String... messages) {
-        broadcast(null, new Message(messages));
+        broadcast((StaffRank) null, new Message(messages));
     }
 
     public void broadcast(String prefix, Color prefixColor, String... messages) {
-        broadcast(null, new Message(prefix, prefixColor, messages));
+        broadcast((StaffRank) null, new Message(prefix, prefixColor, messages));
     }
 
     public void broadcast(Message message) {
-        broadcast(null, message);
+        broadcast((StaffRank) null, message);
     }
 
     public void broadcast(StaffRank staffRank, String... messages) {
@@ -335,6 +335,33 @@ public class OrbitMines extends JavaPlugin {
     public void broadcast(StaffRank staffRank, Message message) {
         for (OMPlayer omp : OMPlayer.getPlayers()) {
             if (staffRank == null || omp.isEligible(staffRank))
+                omp.sendMessage(message);
+        }
+    }
+
+    public void broadcast(OMPlayer exclude, String... messages) {
+        broadcast(exclude, null, new Message(messages));
+    }
+
+    public void broadcast(OMPlayer exclude, String prefix, Color prefixColor, String... messages) {
+        broadcast(exclude, null, new Message(prefix, prefixColor, messages));
+    }
+
+    public void broadcast(OMPlayer exclude, Message message) {
+        broadcast(exclude, null, message);
+    }
+
+    public void broadcast(OMPlayer exclude, StaffRank staffRank, String... messages) {
+        broadcast(exclude, staffRank, new Message(messages));
+    }
+
+    public void broadcast(OMPlayer exclude, StaffRank staffRank, String prefix, Color prefixColor, String... messages) {
+        broadcast(exclude, staffRank, new Message(prefix, prefixColor, messages));
+    }
+
+    public void broadcast(OMPlayer exclude, StaffRank staffRank, Message message) {
+        for (OMPlayer omp : OMPlayer.getPlayers()) {
+            if (omp != exclude && (staffRank == null || omp.isEligible(staffRank)))
                 omp.sendMessage(message);
         }
     }

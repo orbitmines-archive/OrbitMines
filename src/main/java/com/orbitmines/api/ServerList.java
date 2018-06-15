@@ -34,6 +34,10 @@ public enum ServerList {
         return (System.currentTimeMillis() / 1000) - prevVote >= TimeUnit.DAYS.toSeconds(1);
     }
 
+    public long getCooldown(Long prevVote) {
+        return TimeUnit.DAYS.toSeconds(1) - ((System.currentTimeMillis() / 1000) - prevVote);
+    }
+
     public static ServerList fromDomain(String domainName) {
         for (ServerList serverList : ServerList.values()) {
             if (serverList.getDomainName().equalsIgnoreCase(domainName))

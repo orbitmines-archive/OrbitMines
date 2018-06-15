@@ -41,6 +41,9 @@ public class MobNpc extends Npc {
         this.mob = mob;
         this.onFire = false;
 
+        if (this instanceof PersonalisedMobNpc)
+            return;
+
         //TODO yOff for other mobs.
         nameTag = new Hologram(spawnLocation, 1.75, Hologram.Face.UP);
 
@@ -60,7 +63,8 @@ public class MobNpc extends Npc {
             this.entity = mob.spawn(getFixedLocation(), MobNpcNms.Option.DISABLE_ATTACK, MobNpcNms.Option.DISABLE_MOVEMENT);
 
         /* Also spawn NameTag */
-        nameTag.spawn();
+        if (!(this instanceof PersonalisedMobNpc))
+            nameTag.spawn();
 
         this.runnable = new SpigotRunnable(SpigotRunnable.TimeUnit.TICK, 3) {
             @Override
@@ -82,13 +86,15 @@ public class MobNpc extends Npc {
             runnable.cancel();
 
         /* Also despawn NameTag */
-        nameTag.despawn();
+        if (!(this instanceof PersonalisedMobNpc))
+            nameTag.despawn();
     }
 
     @Override
     public void update() {
         /* Also update NameTag */
-        nameTag.update();
+        if (!(this instanceof PersonalisedMobNpc))
+            nameTag.update();
     }
 
     @Override

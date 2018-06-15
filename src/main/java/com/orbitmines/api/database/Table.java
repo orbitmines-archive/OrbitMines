@@ -24,6 +24,7 @@ public class Table {
     public static Table2FA _2FA;
     public static TableDonations DONATIONS;
     public static TablePlayTime PLAY_TIME;
+    public static TableLoot LOOT;
 
     public static TableServerData SERVER_DATA;
     public static TableServers SERVERS;
@@ -46,6 +47,7 @@ public class Table {
         _2FA = new Table2FA();
         DONATIONS = new TableDonations();
         PLAY_TIME = new TablePlayTime();
+        LOOT = new TableLoot();
 
         SERVER_DATA = new TableServerData();
         SERVERS = new TableServers();

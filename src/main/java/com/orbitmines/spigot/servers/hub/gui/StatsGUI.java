@@ -17,6 +17,7 @@ import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.GUI;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.data.PlayTimeData;
+import com.orbitmines.spigot.api.handlers.data.VoteData;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.api.handlers.itembuilders.PlayerSkullBuilder;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalData;
@@ -58,6 +59,12 @@ public class StatsGUI extends GUI {
             item.addLore("§7" + omp.lang("Tijd Gespeeld", "Time Played") + ": §a§l" + TimeUtils.limitTimeUnitBy(totalTimePlayed * 1000, TimeUnit.HOURS, omp.getLanguage()));
 
             item.addLore("§7" + omp.lang("Lid Sinds", "Member Since") + ": §a§l" + DateUtils.SIMPLE_FORMAT.format(DateUtils.parse(DateUtils.FORMAT, CachedPlayer.getPlayer(omp.getUUID()).getFirstLogin())));
+            item.addLore("");
+
+            VoteData voteData = (VoteData) omp.getData(Data.Type.VOTES);
+            item.addLore("§7Votes in " + DateUtils.getMonth() + " " + DateUtils.getYear() + ": §9§l" + voteData.getVotes());
+            item.addLore("§7" + omp.lang("Vote Totaal", "Total Votes") +  ": §9§l" + NumberUtils.locale(voteData.getTotalVotes()));
+
             item.addLore("");
             item.addLore("§7Achievements: §d§l" + "0" /* TODO */ + "§7§l / " + "0");
             item.addLore("");
@@ -121,7 +128,7 @@ public class StatsGUI extends GUI {
                 SurvivalData survival = (SurvivalData) omp.getData(Data.Type.SURVIVAL);
 
                 item.addLore("§7Credits: §2§l" + NumberUtils.locale(survival.getEarthMoney()));
-                item.addLore("§7Total Claimblocks: §9§l" + NumberUtils.locale(survival.getClaimBlocks()));
+                item.addLore("§7" + omp.lang("Claimblock Totaal", "Total Claimblocks") + ": §9§l" + NumberUtils.locale(survival.getClaimBlocks()));
                 item.addLore("");
                 item.addLore("§7Claims: §a§l" + NumberUtils.locale(Claim.getClaimCount(omp.getUUID())));
                 item.addLore("");

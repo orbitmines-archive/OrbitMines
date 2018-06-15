@@ -236,6 +236,7 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
                 }
             }
         };
+        new AutoRestart(this);
     }
 
     public void broadcast(String... messages) {

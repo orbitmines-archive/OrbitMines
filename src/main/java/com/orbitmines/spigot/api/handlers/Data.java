@@ -31,6 +31,7 @@ public abstract class Data {
         FRIENDS,
         SETTINGS,
         PLAY_TIME,
+        LOOT,
 
         SURVIVAL;
 

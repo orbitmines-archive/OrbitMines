@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import static com.orbitmines.api.database.tables.TablePlayers.*;
-import static com.orbitmines.api.database.tables.TableVotes.UUID;
 
 /*
 * OrbitMines - @author Fadi Shawki - 2017

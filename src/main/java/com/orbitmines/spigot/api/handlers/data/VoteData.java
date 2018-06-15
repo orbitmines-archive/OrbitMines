@@ -1,6 +1,5 @@
 package com.orbitmines.spigot.api.handlers.data;
 
-import com.orbitmines.api.Server;
 import com.orbitmines.api.ServerList;
 import com.orbitmines.api.database.*;
 import com.orbitmines.api.database.Set;
@@ -18,7 +17,7 @@ public class VoteData extends Data {
 
     private int votes;
     private int totalVotes;
-    private Map<Server, Integer> cachedVotes;
+    private int cachedVotes;
     private Map<ServerList, Long> voteTimeStamps;
 
     public VoteData(UUID uuid) {
@@ -26,14 +25,14 @@ public class VoteData extends Data {
 
         this.votes = 0;
         this.totalVotes = 0;
-        this.cachedVotes = new HashMap<>();
+        this.cachedVotes = 0;
         this.voteTimeStamps = new HashMap<>();
     }
 
     @Override
     public void load() {
         if (!Database.get().contains(table, UUID, new Where(UUID, uuid.toString()))) {
-            Database.get().insert(table, Table.VOTES.values(uuid.toString(), votes + "", totalVotes + "", cachedVotes + "", serializeTimeStamps()));
+            Database.get().insert(table, uuid.toString(), votes + "", totalVotes + "", cachedVotes + "", serializeTimeStamps());
         } else {
             Map<Column, String> values = Database.get().getValues(table, new Column[] {
                     VOTES,
@@ -44,9 +43,7 @@ public class VoteData extends Data {
 
             votes = Integer.parseInt(values.get(VOTES));
             totalVotes = Integer.parseInt(values.get(TOTAL_VOTES));
-
-            String cachedVotes = values.get(CACHED_VOTES);
-            updateCache(cachedVotes);
+            cachedVotes = Integer.parseInt(values.get(CACHED_VOTES));
 
             String timeStamps = values.get(VOTE_TIME_STAMPS);
             updateVoteTimeStamps(timeStamps);
@@ -56,13 +53,7 @@ public class VoteData extends Data {
     public void addVote(ServerList serverList, Long timeStamp) {
         votes++;
         totalVotes++;
-
-        for (Server server : Server.values()) {
-            if (cachedVotes.containsKey(server))
-                cachedVotes.put(server, cachedVotes.get(server) +1);
-            else
-                cachedVotes.put(server, 1);
-        }
+        cachedVotes++;
 
         voteTimeStamps.put(serverList, timeStamp);
 
@@ -70,7 +61,7 @@ public class VoteData extends Data {
 
                 new Set(VOTES, votes),
                 new Set(TOTAL_VOTES, totalVotes),
-                new Set(CACHED_VOTES, serializeCachedVotes()),
+                new Set(CACHED_VOTES, cachedVotes),
                 new Set(VOTE_TIME_STAMPS, serializeTimeStamps())
 
         }, new Where(UUID, uuid.toString()));
@@ -80,48 +71,21 @@ public class VoteData extends Data {
         return votes;
     }
 
-    public Map<Server, Integer> getCachedVotes() {
+    public int getTotalVotes() {
+        return totalVotes;
+    }
+
+    public int getCachedVotes() {
         return cachedVotes;
     }
 
-    private String serializeCachedVotes() {
-        if (cachedVotes.size() == 0)
-            return "null";
-
-        StringBuilder stringBuilder = new StringBuilder();
-
-        List<Server> keySet = new ArrayList<>(cachedVotes.keySet());
-
-        for (int i = 0; i < keySet.size(); i++) {
-            if (i != 0)
-                stringBuilder.append("|");
-
-            Server server = keySet.get(i);
-            stringBuilder.append(server.toString()).append(":").append(cachedVotes.get(server));
-        }
-
-        return stringBuilder.toString();
+    public void clearCache() {
+        cachedVotes = 0;
+        Database.get().update(table, new Set(CACHED_VOTES, cachedVotes), new Where(UUID, uuid.toString()));
     }
 
     public void updateCache() {
-        updateCache(Database.get().getString(table, CACHED_VOTES, new Where(UUID, uuid.toString())));
-    }
-
-    private void updateCache(String cachedVotes) {
-        if (!cachedVotes.equals("null")) {
-            for (String serverData : cachedVotes.split("\\|")) {
-                String[] cached = serverData.split(":");
-
-                Server server;
-                try {
-                    server = Server.valueOf(cached[0]);
-                } catch(IllegalArgumentException ex) {
-                    continue;
-                }
-
-                this.cachedVotes.put(server, Integer.parseInt(cached[1]));
-            }
-        }
+        cachedVotes = Database.get().getInt(table, CACHED_VOTES, new Where(UUID, uuid.toString()));
     }
 
     public Map<ServerList, Long> getVoteTimeStamps() {

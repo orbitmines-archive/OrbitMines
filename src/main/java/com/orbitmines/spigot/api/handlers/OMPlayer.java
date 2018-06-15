@@ -9,18 +9,19 @@ import com.orbitmines.api.database.tables.TablePlayers;
 import com.orbitmines.api.settings.Settings;
 import com.orbitmines.api.settings.SettingsType;
 import com.orbitmines.api.utils.DateUtils;
+import com.orbitmines.api.utils.NumberUtils;
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.Freezer;
+import com.orbitmines.spigot.api.Loot;
 import com.orbitmines.spigot.api.handlers.chat.Title;
-import com.orbitmines.spigot.api.handlers.data.FriendsData;
-import com.orbitmines.spigot.api.handlers.data.PlayTimeData;
-import com.orbitmines.spigot.api.handlers.data.SettingsData;
-import com.orbitmines.spigot.api.handlers.data.VoteData;
+import com.orbitmines.spigot.api.handlers.data.*;
 import com.orbitmines.spigot.api.handlers.itembuilders.PotionBuilder;
 import com.orbitmines.spigot.api.handlers.itemhandlers.ItemHover;
 import com.orbitmines.spigot.api.handlers.kit.KitInteractive;
 import com.orbitmines.spigot.api.handlers.leaderboard.LeaderBoard;
 import com.orbitmines.spigot.api.handlers.leaderboard.hologram.PlayerHologramLeaderBoard;
+import com.orbitmines.spigot.api.handlers.npc.MobNpc;
+import com.orbitmines.spigot.api.handlers.npc.PersonalisedMobNpc;
 import com.orbitmines.spigot.api.handlers.npc.PlayerFreezer;
 import com.orbitmines.spigot.api.handlers.scoreboard.OMScoreboard;
 import com.orbitmines.spigot.api.handlers.scoreboard.ScoreboardSet;
@@ -106,9 +107,6 @@ public abstract class OMPlayer {
     /* Called before the player logs out */
     protected abstract void onLogout();
 
-    /* Called before a players votes, or when the players logs in and receives previous votes, this handles just the rewards */
-    public abstract void onVote(int votes);
-
     /* Called when a player receives knock back, example: gadgets */
     public abstract boolean canReceiveVelocity();
 
@@ -160,13 +158,17 @@ public abstract class OMPlayer {
         /* Default TabList */
         defaultTabList();
 
-        /* SurvivalSpawn Leaderboards */
+        /* Spawn Leaderboards */
         for (LeaderBoard leaderBoard : LeaderBoard.getLeaderBoards()) {
             if (leaderBoard instanceof PlayerHologramLeaderBoard)
                 ((PlayerHologramLeaderBoard) leaderBoard).onLogin(this);
         }
 
-        checkCachedVotes();
+        /* Spawn Personalised MobNpcs */
+        for (MobNpc npc : MobNpc.getMobNpcs()) {
+            if (npc instanceof PersonalisedMobNpc)
+                ((PersonalisedMobNpc) npc).onLogin(this);
+        }
 
         /* Initiate server login */
         onLogin();
@@ -222,6 +224,12 @@ public abstract class OMPlayer {
                 ((PlayerHologramLeaderBoard) leaderBoard).onLogout(this);
         }
 
+        /* Destroy Personalised MobNpcs */
+        for (MobNpc npc : MobNpc.getMobNpcs()) {
+            if (npc instanceof PersonalisedMobNpc)
+                ((PersonalisedMobNpc) npc).onLogout(this);
+        }
+
         /* Remove PlayerFreezer */
         PlayerFreezer freezer = PlayerFreezer.getFreezer(player);
         if (freezer != null)
@@ -250,8 +258,9 @@ public abstract class OMPlayer {
         sendMessage(" §7Twitter: §b§l@OrbitMines");
         sendMessage(" §7" + lang("Voten", "Vote") + ": §9§l/vote");
         sendMessage(" ");
-
         sendMessage("§7§m----------------------------------------");
+
+        checkCachedVotes();
     }
 
     /*
@@ -263,21 +272,38 @@ public abstract class OMPlayer {
      */
 
     public void vote(int votes) {
+        ((LootData) getData(Data.Type.LOOT)).add(Loot.PRISMS, Rarity.COMMON, "§9§l§oVote Rewards", 250 * votes);
 
-        onVote(votes);
+        String reward = "§9§l" + NumberUtils.locale(250 * votes) + " Prisms";
+
+        sendMessage("");
+        sendMessage("Vote", Color.BLUE, "§7Je hebt " + reward + "§7 gekregen in je §2/loot§7.", "§7You have received " + reward + "§7 in your §2/loot§7.");
+        playSound(Sound.ENTITY_ARROW_HIT_PLAYER);
+
+        orbitMines.broadcast(this, "Vote", Color.BLUE,
+                getName() + " §7heeft gevoten met §9/vote§7 en kreeg " + reward + "§7.",
+                getName() + " §7voted with §9/vote§7 and received " + reward + "§7.");
     }
 
     public void checkCachedVotes() {
         VoteData data = (VoteData) getData(Data.Type.VOTES);
-        Server server = orbitMines.getServerHandler().getServer();
+        data.updateCache();
 
-        if (!data.getCachedVotes().containsKey(server))
+        int votes = data.getCachedVotes();
+
+        if (votes == 0)
             return;
 
-        int votes = data.getCachedVotes().get(server);
-        data.getCachedVotes().remove(server);
+        data.clearCache();
 
         vote(votes);
+
+        /*
+                Monthly Vote Achievement
+         */
+
+        if (data.getVotes() >= TopVoterReward.MONTHLY_ACHIEVEMENT_VOTES && (data.getVotes() - votes) < TopVoterReward.MONTHLY_ACHIEVEMENT_VOTES)
+            ((LootData) getData(Data.Type.LOOT)).add(Loot.PRISMS, Rarity.UNCOMMON, "§a§l§oMonthly Achievement " + DateUtils.getMonth() + " " + DateUtils.getYear(), TopVoterReward.MONTHLY_ACHIEVEMENT_PRISMS);
     }
 
     /*
@@ -673,6 +699,9 @@ public abstract class OMPlayer {
                 break;
             case PLAY_TIME:
                 data = new PlayTimeData(getUUID());
+                break;
+            case LOOT:
+                data = new LootData(getUUID());
                 break;
 
             case SURVIVAL:

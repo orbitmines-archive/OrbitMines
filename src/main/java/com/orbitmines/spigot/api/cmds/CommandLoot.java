@@ -4,16 +4,15 @@ package com.orbitmines.spigot.api.cmds;
  * OrbitMines - @author Fadi Shawki - 2018
  */
 
-import com.orbitmines.api.Color;
-import com.orbitmines.api.utils.NumberUtils;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.cmd.Command;
+import com.orbitmines.spigot.servers.hub.gui.LootGUI;
 
-public class CommandSolars extends Command {
+public class CommandLoot extends Command {
 
-    private String[] alias = { "/solars" };
+    private String[] alias = { "/loot", "/spaceturtle" };
 
-    public CommandSolars() {
+    public CommandLoot() {
         super(null);
     }
 
@@ -29,6 +28,6 @@ public class CommandSolars extends Command {
 
     @Override
     public void dispatch(OMPlayer omp, String[] a) {
-        omp.sendMessage("Solars", Color.BLUE, "§7" + omp.lang("Je hebt", "You've got") + " §e§l" + NumberUtils.locale(omp.getSolars()) + " " + (omp.getSolars() == 1 ? "Solar" : "Solars") + "§7.");
+        new LootGUI().open(omp);
     }
 }

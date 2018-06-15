@@ -28,7 +28,14 @@ public class DateUtils {
     }
 
     public static String getMonth() {
-        Month month = Month.of(Calendar.getInstance().get(Calendar.MONTH) + 1);
+        return getMonth(Month.of(Calendar.getInstance().get(Calendar.MONTH) + 1));
+    }
+
+    public static String getPrevMonth() {
+        return getMonth(Month.of(Calendar.getInstance().get(Calendar.MONTH) + 1).minus(1));
+    }
+
+    private static String getMonth(Month month) {
         return month.toString().substring(0, 1).toUpperCase() + month.toString().substring(1, month.toString().length()).toLowerCase();
     }
 

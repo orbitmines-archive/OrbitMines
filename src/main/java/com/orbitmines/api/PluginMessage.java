@@ -13,6 +13,8 @@ public enum PluginMessage {
 
     LOGIN_2FA(Server.BUNGEECORD),
 
+    SHUTDOWN(Server.SPIGOT),
+
     MESSAGE_PLAYER(Server.BUNGEECORD),
 
     CHECK_VOTE_CACHE(Server.BUNGEECORD),

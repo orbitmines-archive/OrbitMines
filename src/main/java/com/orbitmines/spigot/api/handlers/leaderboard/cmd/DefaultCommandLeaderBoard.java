@@ -30,6 +30,8 @@ public abstract class DefaultCommandLeaderBoard extends LeaderBoard {
     protected List<UUID> ordered;
     protected final HashMap<UUID, Integer> countMap;
 
+    protected int totalCount;
+
     public DefaultCommandLeaderBoard(String name, Color color, Server server, int size, Table table, Column uuidColumn, Column column, Where... wheres) {
         super(null, table, uuidColumn, column, wheres);
 
@@ -101,6 +103,7 @@ public abstract class DefaultCommandLeaderBoard extends LeaderBoard {
         /* Clear from previous update */
         this.ordered.clear();
         this.countMap.clear();
+        this.totalCount = 0;
 
         /* Update top {size} players */
         List<Map<Column, String>> entries = Database.get().getEntries(table, columnArray, wheres);
@@ -112,6 +115,7 @@ public abstract class DefaultCommandLeaderBoard extends LeaderBoard {
             int count = Integer.parseInt(entry.get(columnArray[1]));
 
             map.put(uuidString, count);
+            totalCount += count;
         }
 
         List<String> ordered = new ArrayList<>(map.keySet());
@@ -126,7 +130,7 @@ public abstract class DefaultCommandLeaderBoard extends LeaderBoard {
 
             this.ordered.add(uuid);
             this.countMap.put(uuid, map.get(stringUUID));
-       }
+        }
     }
 
     @Override
@@ -136,6 +140,10 @@ public abstract class DefaultCommandLeaderBoard extends LeaderBoard {
 
     public int getSize() {
         return size;
+    }
+
+    public int getTotalCount() {
+        return totalCount;
     }
 
     /* Override this method to change to change the message displayed at the end */
