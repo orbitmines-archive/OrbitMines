@@ -50,8 +50,10 @@ public class JoinQuitEvents implements Listener {
 
         ServerInfo fallBackServer = omp.getFallBackServer();
 
-        if (fallBackServer == null)
+        if (fallBackServer == null) {
+            omp.getPlayer().disconnect(omp.lang("§8§lOrbit§7§lMines\n§7Kan geen server vinden om mee te verbinden.", "§8§lOrbit§7§lMines\n§7Cannot find a server to fall back to."));
             return;
+        }
 
         event.setCancelled(true);
         event.setCancelServer(fallBackServer);

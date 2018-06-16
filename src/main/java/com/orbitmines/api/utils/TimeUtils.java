@@ -11,35 +11,29 @@ import java.util.concurrent.TimeUnit;
 public class TimeUtils {
 
     public static String fromTimeStamp(long millis, Language language) {
-        int seconds = (int) millis / 1000;
+        long seconds = (millis / 1000L);
 
-        long M = (long) (int) (seconds / (60L * 60L * 24L * 7L * 4L));
-        long w = (seconds / (60L * 60L * 24L * 7L)) % 4L;
-        long d = (seconds / (60L * 60L * 24L)) % 7;
+        long d = ((seconds - (seconds % (60L * 60L * 24L))) / (60L * 60L * 24L));
         long h = (seconds / (60L * 60L)) % 24L;
         long m = (seconds / 60L) % 60L;
         long s = seconds % 60L;
 
         StringBuilder stringBuilder = new StringBuilder();
 
-        if (M != 0)
-            stringBuilder.append(NumberUtils.locale(M)).append("M");
-        if (w != 0)
-            stringBuilder.append(NumberUtils.locale(w)).append("w");
         if (d != 0)
             stringBuilder.append(NumberUtils.locale(d)).append("d");
         if (h != 0)
             stringBuilder.append(NumberUtils.locale(h)).append(new Message("u", "h").lang(language));
         if (m != 0)
             stringBuilder.append(NumberUtils.locale(m)).append("m");
-        if (s != 0)
+        if (d == 0 && s != 0)
             stringBuilder.append(NumberUtils.locale(s)).append("s");
 
         return stringBuilder.toString();
     }
 
     public static String biggestTimeUnit(long millis, Language language) {
-        long seconds = (int) (millis / 1000L);
+        long seconds = (millis / 1000L);
 
         long M = (int) (seconds / (60L * 60L * 24L * 30L));
         long w = (int) (seconds / (60L * 60L * 24L * 7L));

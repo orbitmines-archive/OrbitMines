@@ -1,4 +1,4 @@
-package com.orbitmines.bungeecord.commands;
+package com.orbitmines.bungeecord.commands.moderator;
 
 import com.orbitmines.api.Color;
 import com.orbitmines.api.Message;

@@ -113,7 +113,11 @@ public abstract class PluginMessageHandler implements PluginMessageListener {
                     FriendsData data = (FriendsData) omp.getData(Data.Type.FRIENDS);
                     if (data.getFavoriteFriends().contains(UUID.fromString(in.readUTF()))) {
                         String name = in.readUTF();
-                        omp.sendMessage("Friends", Color.BLUE, name + "§7 is online gekomen.", name + "§7 has come online.");
+
+                        CachedPlayer friend = CachedPlayer.getPlayer(name);
+                        String color = friend.getRankPrefixColor().getChatColor();
+
+                        omp.sendMessage("Friends", Color.BLUE, color + name + "§7 is online gekomen.", color + name + "§7 has come online.");
                     }
 
                     break;

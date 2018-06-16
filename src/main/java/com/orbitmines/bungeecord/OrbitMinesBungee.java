@@ -10,8 +10,8 @@ import com.orbitmines.api.database.Set;
 import com.orbitmines.api.database.Table;
 import com.orbitmines.api.database.tables.TableIPs;
 import com.orbitmines.api.database.tables.TableServers;
-import com.orbitmines.bungeecord.commands.CommandAnnouncement;
-import com.orbitmines.bungeecord.commands.CommandMotd;
+import com.orbitmines.bungeecord.commands.*;
+import com.orbitmines.bungeecord.commands.moderator.*;
 import com.orbitmines.bungeecord.events.JoinQuitEvents;
 import com.orbitmines.bungeecord.events.PingEvent;
 import com.orbitmines.bungeecord.events.PlayerChatEvent;
@@ -204,8 +204,17 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
 
 
     private void registerCommands() {
+        new CommandHelp();
+        new CommandHub();
+        new CommandServer(this);
+        new CommandList();
+        new CommandWebsite();
+
+        new CommandFind(this);
+        new CommandSend(this);
         new CommandAnnouncement();
         new CommandMotd();
+        new CommandMaintenance(this);
     }
 
     private void registerEvents(Listener... listeners) {

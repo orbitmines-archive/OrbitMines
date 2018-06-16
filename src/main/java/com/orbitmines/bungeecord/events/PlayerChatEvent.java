@@ -46,7 +46,7 @@ public class PlayerChatEvent implements Listener {
                 if (event.getMessage().length() != 1) {
                     bungee.broadcast(StaffRank.MODERATOR, "Staff", Color.AQUA, omp.getStaffRank().getPrefix() + omp.getName() + " §7» §f§l" + event.getMessage().substring(1));
                 } else {
-                    omp.sendMessage("Staff", Color.RED, "§7Use §6@<message>§7.");
+                    omp.sendMessage("Staff", Color.RED, "§7Use §9@<message>§7.");
                 }
             }
         } else if (!omp.isLoggedIn()) {

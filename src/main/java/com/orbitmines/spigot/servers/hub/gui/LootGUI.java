@@ -6,14 +6,17 @@ package com.orbitmines.spigot.servers.hub.gui;
 
 import com.orbitmines.api.Message;
 import com.orbitmines.api.ServerList;
+import com.orbitmines.api.VipRank;
 import com.orbitmines.api.utils.TimeUtils;
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.Loot;
+import com.orbitmines.spigot.api.PeriodLoot;
 import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.GUI;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.chat.ComponentMessage;
 import com.orbitmines.spigot.api.handlers.data.LootData;
+import com.orbitmines.spigot.api.handlers.data.PeriodLootData;
 import com.orbitmines.spigot.api.handlers.data.VoteData;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.api.handlers.itembuilders.PlayerSkullBuilder;
@@ -87,7 +90,47 @@ public class LootGUI extends GUI {
             });
         }
 
-        //TODO Periods
+        PeriodLootData periodLootData = (PeriodLootData) omp.getData(Data.Type.PERIOD_LOOT);
+
+        PeriodLoot[] periodLoot = PeriodLoot.values();
+        for (int i = 0; i < periodLoot.length; i++) {
+            PeriodLoot loot = periodLoot[i];
+
+            boolean canCollect = (loot != PeriodLoot.MONTHLY_VIP || omp.getVipRank() != VipRank.NONE) && periodLootData.canCollect(loot);
+
+            ItemBuilder item = canCollect ? loot.getClaimable(omp) : loot.getClaimed(omp);
+            item.setDisplayName((canCollect ? "§a§l" : "§c§l") + omp.lang(loot.getTitle(omp)));
+
+            item.addLore("");
+            for (Message desc : loot.getDescription(omp)) {
+                item.addLore(omp.lang(desc));
+            }
+            item.addLore("");
+
+            if (loot != PeriodLoot.MONTHLY_VIP || omp.getVipRank() != VipRank.NONE) {
+                if (canCollect)
+                    item.addLore(omp.lang("§aKlik hier om te ontvangen.", "§aClick here to collect."));
+                else
+                    item.addLore(omp.lang("§cJe krijgt weer beloningen over ", "§cYou can collect again in ") + TimeUtils.fromTimeStamp(periodLootData.getCooldown(loot) * 1000L, omp.getLanguage()) + ".");
+            } else {
+                item.addLore(omp.lang("§cJe hebt geen Rank.", "§cYou don't have a Rank."));
+            }
+
+            if (canCollect)
+                item.glow();
+
+            if (canCollect)
+                add(2, 3 + i, new ItemInstance(item.build()) {
+                    @Override
+                    public void onClick(InventoryClickEvent event, OMPlayer omp) {
+                        periodLootData.collect(omp, loot);
+                        omp.playSound(Sound.ENTITY_PLAYER_LEVELUP);
+                        reopen(omp);
+                    }
+                });
+            else
+                add(2, 3 + i, new EmptyItemInstance(item.build()));
+        }
 
         int slot = 36;
 
@@ -99,7 +142,7 @@ public class LootGUI extends GUI {
                 ItemBuilder item = loot.getIcon(count);
                 item.setDisplayName(loot.getDisplayName(count));
 
-                item.addLore("§7Rarity: " + instance.getRarity().getDisplayName());
+                item.addLore("§7" + omp.lang("Zeldzaamheid", "Rarity") + ": " + instance.getRarity().getDisplayName());
 
                 if (loot.getServer() != null)
                     item.addLore("§7Server: " + loot.getServer().getDisplayName());

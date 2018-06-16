@@ -25,6 +25,7 @@ public class Table {
     public static TableDonations DONATIONS;
     public static TablePlayTime PLAY_TIME;
     public static TableLoot LOOT;
+    public static TablePeriodLoot PERIOD_LOOT;
 
     public static TableServerData SERVER_DATA;
     public static TableServers SERVERS;
@@ -48,6 +49,7 @@ public class Table {
         DONATIONS = new TableDonations();
         PLAY_TIME = new TablePlayTime();
         LOOT = new TableLoot();
+        PERIOD_LOOT = new TablePeriodLoot();
 
         SERVER_DATA = new TableServerData();
         SERVERS = new TableServers();

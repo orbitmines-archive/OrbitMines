@@ -10,7 +10,7 @@ import com.orbitmines.spigot.api.handlers.cmd.Command;
 
 public class CommandServers extends Command {
 
-    private String[] alias = { "/servers", "/server", "/connect" };
+    private String[] alias = { "/servers", "/serverselector" };
 
     private final OrbitMines orbitMines;
 

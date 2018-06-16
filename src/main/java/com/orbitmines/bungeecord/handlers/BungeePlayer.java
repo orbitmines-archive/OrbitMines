@@ -75,7 +75,10 @@ public class BungeePlayer {
         players.add(this);
 
         if (!Database.get().contains(Table.PLAYERS, TablePlayers.UUID, new Where(TablePlayers.UUID, getUUID().toString()))) {
-            Database.get().insert(Table.PLAYERS, Table.PLAYERS.values(getUUID().toString(), getRealName(), staffRank.toString(), vipRank.toString(), DateUtils.FORMAT.format(DateUtils.now()), language.toString(), SettingsType.ENABLED.toString(), SettingsType.ENABLED.toString(), SettingsType.ENABLED.toString(), silent ? "1" : "0", "0", "0", "null"));
+            Database.get().insert(Table.PLAYERS, Table.PLAYERS.values(getUUID().toString(), getRealName(), staffRank.toString(), vipRank.toString(), DateUtils.FORMAT.format(DateUtils.now()), language.toString(), SettingsType.ENABLED.toString(), SettingsType.ENABLED.toString(), SettingsType.ENABLED.toString(), silent ? "1" : "0", "0", "0"));
+
+            /* Give Welcome Loot */
+            Database.get().insert(Table.LOOT, "SOLARS", Rarity.RARE.toString(), "250", "&a&l&oWelcome to &7&lOrbit&8&lMines&a&l&o!");
         } else {
             Map<Column, String> values = Database.get().getValues(Table.PLAYERS, new Column[]{
                     TablePlayers.NAME,
@@ -347,6 +350,10 @@ public class BungeePlayer {
         this.data.put(type, data);
 
         return data;
+    }
+
+    public BungeePlayer getLastMsg() {
+        return lastMsg;
     }
 
     /*

@@ -39,7 +39,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 /*
 * OrbitMines - @author Fadi Shawki - 2017
@@ -62,7 +61,6 @@ public abstract class OMPlayer {
     protected boolean silent;
     protected int solars;
     protected int prisms;
-    protected Date monthlyBonus;
 
     protected String afk;
 
@@ -125,7 +123,7 @@ public abstract class OMPlayer {
         orbitMines.getServerHandler().getServer().setPlayers(Bukkit.getOnlinePlayers().size());
 
         if (!Database.get().contains(Table.PLAYERS, TablePlayers.UUID, new Where(TablePlayers.UUID, getUUID().toString()))) {
-            Database.get().insert(Table.PLAYERS, Table.PLAYERS.values(getUUID().toString(), getRealName(), staffRank.toString(), vipRank.toString(), DateUtils.FORMAT.format(DateUtils.now()), language.toString(), SettingsType.ENABLED.toString(), SettingsType.ENABLED.toString(), SettingsType.ENABLED.toString(), silent ? "1" : "0", solars + "", prisms + "", "null"));
+            Database.get().insert(Table.PLAYERS, Table.PLAYERS.values(getUUID().toString(), getRealName(), staffRank.toString(), vipRank.toString(), DateUtils.FORMAT.format(DateUtils.now()), language.toString(), SettingsType.ENABLED.toString(), SettingsType.ENABLED.toString(), SettingsType.ENABLED.toString(), silent ? "1" : "0", solars + "", prisms + ""));
         } else {
             Map<Column, String> values = Database.get().getValues(Table.PLAYERS, new Column[]{
                     TablePlayers.STAFFRANK,
@@ -134,7 +132,6 @@ public abstract class OMPlayer {
                     TablePlayers.SILENT,
                     TablePlayers.SOLARS,
                     TablePlayers.PRISMS,
-                    TablePlayers.MONTHLY_BONUS
             }, new Where(TablePlayers.UUID, getUUID().toString()));
 
             staffRank = StaffRank.valueOf(values.get(TablePlayers.STAFFRANK));
@@ -143,10 +140,6 @@ public abstract class OMPlayer {
             silent = "1".equals(values.get(TablePlayers.SILENT));
             solars = Integer.parseInt(values.get(TablePlayers.SOLARS));
             prisms = Integer.parseInt(values.get(TablePlayers.PRISMS));
-
-            String monthlyBonus = values.get(TablePlayers.MONTHLY_BONUS);
-            if (!monthlyBonus.equals("null"))
-                this.monthlyBonus = DateUtils.parse(DateUtils.FORMAT, monthlyBonus);
         }
 
         /* Set Op */
@@ -513,24 +506,6 @@ public abstract class OMPlayer {
     }
 
     /*
-        Monthly Bonus
-     */
-
-    public Date getMonthlyBonus() {
-        return monthlyBonus;
-    }
-
-    public void registerMonthlyBonus() {
-        this.monthlyBonus = DateUtils.now();
-
-        Database.get().update(TablePlayers.PLAYERS, new Set(TablePlayers.MONTHLY_BONUS, DateUtils.FORMAT.format(this.monthlyBonus)), new Where(TablePlayers.UUID, getUUID().toString()));
-    }
-
-    public boolean canReceiveMonthlyBonus() {
-        return monthlyBonus == null || System.currentTimeMillis() - monthlyBonus.getTime() >= TimeUnit.DAYS.toMillis(30);
-    }
-
-    /*
         Afk
      */
 
@@ -702,6 +677,9 @@ public abstract class OMPlayer {
                 break;
             case LOOT:
                 data = new LootData(getUUID());
+                break;
+            case PERIOD_LOOT:
+                data = new PeriodLootData(getUUID());
                 break;
 
             case SURVIVAL:

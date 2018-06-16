@@ -7,7 +7,11 @@ import com.orbitmines.spigot.api.handlers.PreventionSet;
 import com.orbitmines.spigot.api.runnables.SpigotRunnable;
 import com.orbitmines.spigot.servers.hub.Hub;
 import com.orbitmines.spigot.servers.survival.Survival;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -23,6 +27,7 @@ public abstract class OrbitMinesServer {
     private final PluginMessageHandler messageHandler;
 
     protected final PreventionSet preventionSet;
+    private BossBar maintenanceBossBar;
 
     public OrbitMinesServer(OrbitMines orbitMines, Server server, PluginMessageHandler messageHandler) {
         this.orbitMines = orbitMines;
@@ -30,6 +35,7 @@ public abstract class OrbitMinesServer {
         this.messageHandler = messageHandler;
 
         this.preventionSet = new PreventionSet();
+        this.maintenanceBossBar = Bukkit.createBossBar(server.getDisplayName() + " §7§l| " + Server.Status.MAINTENANCE.getDisplayName(), BarColor.PINK, BarStyle.SOLID);
 
         registerEvents();
         registerCommands();
@@ -38,7 +44,15 @@ public abstract class OrbitMinesServer {
         new SpigotRunnable(SpigotRunnable.TimeUnit.SECOND, 2) {
             @Override
             public void run() {
-                server.setStatus(Server.Status.ONLINE);
+                if (server.getStatus() != Server.Status.MAINTENANCE) {
+                    server.setStatus(Server.Status.ONLINE);
+                    maintenanceBossBar.removeAll();
+                } else {
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        if (!maintenanceBossBar.getPlayers().contains(player))
+                            maintenanceBossBar.addPlayer(player);
+                    }
+                }
             }
         };
     }

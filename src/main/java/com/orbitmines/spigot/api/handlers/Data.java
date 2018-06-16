@@ -32,6 +32,7 @@ public abstract class Data {
         SETTINGS,
         PLAY_TIME,
         LOOT,
+        PERIOD_LOOT,
 
         SURVIVAL;
 
