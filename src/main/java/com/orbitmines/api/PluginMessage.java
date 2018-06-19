@@ -14,6 +14,7 @@ public enum PluginMessage {
     LOGIN_2FA(Server.BUNGEECORD),
 
     SHUTDOWN(Server.SPIGOT),
+    DISCORD_MSG(Server.SPIGOT),
 
     MESSAGE_PLAYER(Server.BUNGEECORD),
 

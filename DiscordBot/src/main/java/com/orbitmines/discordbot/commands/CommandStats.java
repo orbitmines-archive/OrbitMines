@@ -17,6 +17,7 @@ import com.orbitmines.api.utils.NumberUtils;
 import com.orbitmines.api.utils.TimeUtils;
 import com.orbitmines.discordbot.DiscordBot;
 import com.orbitmines.discordbot.handlers.Command;
+import com.orbitmines.discordbot.utils.BotToken;
 import com.orbitmines.discordbot.utils.ColorUtils;
 import com.orbitmines.discordbot.utils.SkinLibrary;
 import com.orbitmines.spigot.api.handlers.CachedPlayer;
@@ -37,6 +38,8 @@ public class CommandStats extends Command {
     private final DiscordBot bot;
 
     public CommandStats(DiscordBot bot) {
+        super(BotToken.DEFAULT);
+
         this.bot = bot;
     }
 

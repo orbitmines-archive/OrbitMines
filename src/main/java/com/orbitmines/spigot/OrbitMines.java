@@ -9,6 +9,7 @@ import com.orbitmines.api.database.tables.TablePlayers;
 import com.orbitmines.api.database.tables.TableServers;
 import com.orbitmines.api.database.tables.TableVotes;
 import com.orbitmines.api.utils.DateUtils;
+import com.orbitmines.discordbot.utils.BotToken;
 import com.orbitmines.spigot.api._2fa._2FA;
 import com.orbitmines.spigot.api.cmds.*;
 import com.orbitmines.spigot.api.datapoints.DataPointHandler;
@@ -217,6 +218,9 @@ public class OrbitMines extends JavaPlugin {
             serverSelectors.put(language, new ServerSelectorGUI(language));
         }
 
+        /* Discord Startup Message */
+        serverHandler.getMessageHandler().dataTransfer(PluginMessage.DISCORD_MSG, BotToken.from(serverHandler.getServer()).toString(), "Starting " + server.getName() + "...");
+
         /* Setup Server */
         serverHandler.onEnable();
 
@@ -233,6 +237,9 @@ public class OrbitMines extends JavaPlugin {
         if (serverHandler != null) {
             serverHandler.getServer().setStatus(Server.Status.OFFLINE);
             serverHandler.getServer().setPlayers(0);
+
+            /* Discord Shutdown Message */
+            serverHandler.getMessageHandler().dataTransfer(PluginMessage.DISCORD_MSG, BotToken.from(serverHandler.getServer()).toString(), "Shutting down " + serverHandler.getServer().getName() + "...");
 
             serverHandler.onDisable();
         }

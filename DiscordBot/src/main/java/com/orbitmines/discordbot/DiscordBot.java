@@ -1,16 +1,20 @@
 package com.orbitmines.discordbot;
 
-import com.orbitmines.api.database.Database;
 import com.orbitmines.discordbot.commands.CommandStats;
 import com.orbitmines.discordbot.commands.TestCommand;
 import com.orbitmines.discordbot.events.MessageListener;
+import com.orbitmines.discordbot.utils.BotToken;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.OnlineStatus;
+import net.dv8tion.jda.core.entities.Category;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.TextChannel;
 
 import javax.security.auth.login.LoginException;
+import java.util.HashMap;
+import java.util.Map;
 
 /*
  * OrbitMines - @author Fadi Shawki - 2018
@@ -19,49 +23,45 @@ import javax.security.auth.login.LoginException;
 public class DiscordBot {
 
     private static DiscordBot instance;
-    private JDA jda;
+    private Map<BotToken, JDA> jdaMap;
 
     public static void main(String[] args) {
-        new DiscordBot(args);
+        /* Used for testing, to start all bots */
+        new DiscordBot(BotToken.values());
     }
 
-    public DiscordBot(String[] args) {
+    public DiscordBot(BotToken... tokens) {
         instance = this;
 
-        JDABuilder jdaBuilder = new JDABuilder(AccountType.BOT).setToken("NDU3NjIzNzI4MDMzODkwMzA0.Dgb74A.phP4ztzrfLPQ-j55f996t4BPZy0").setAutoReconnect(true).setStatus(OnlineStatus.ONLINE);
+//        Database database = new Database("localhost", 3306, "OrbitMines", "root", "password");
+//        database.openConnection();
+//        database.setupTables();
 
-        try {
-            jda = jdaBuilder.buildBlocking();
-        } catch (LoginException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        this.jdaMap = new HashMap<>();
 
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+        for (BotToken token : tokens) {
+            setupToken(token);
         }
-        Database database = new Database("localhost", 3306, "OrbitMines", "root", "password");
-        database.openConnection();
-        database.setupTables();
 
         /* Register */
         registerEvents();
         registerCommands();
+
+//        getGuild().getController().createEmote()
     }
 
     public static DiscordBot getInstance() {
         return instance;
     }
 
-    public JDA getJDA() {
-        return jda;
+    public JDA getJDA(BotToken token) {
+        return jdaMap.get(token);
     }
 
     private void registerEvents() {
-        jda.addEventListener(new MessageListener());
+        for (BotToken token : jdaMap.keySet()) {
+            jdaMap.get(token).addEventListener(new MessageListener(token));
+        }
     }
 
     private void registerCommands() {
@@ -70,6 +70,31 @@ public class DiscordBot {
     }
 
     public Guild getGuild() {
-        return jda.getGuildsByName("OrbitMines", true).get(0);
+        return jdaMap.get(BotToken.DEFAULT).getGuildsByName("OrbitMines", true).get(0);
+    }
+
+    public TextChannel getChannelFor(BotToken token) {
+        return getGuild().getTextChannelsByName(token.getChannel(), true).get(0);
+    }
+
+    private void setupToken(BotToken token) {
+        JDABuilder jdaBuilder = new JDABuilder(AccountType.BOT).setToken(token.getToken()).setAutoReconnect(true).setGame(null).setStatus(OnlineStatus.ONLINE);
+
+        try {
+            jdaMap.put(token, jdaBuilder.buildBlocking());
+        } catch (LoginException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        Guild guild = getGuild();
+        if (guild.getTextChannelsByName(token.getChannel(), false).size() == 0) {
+            Category category = getGuild().getCategoriesByName("SERVERS", true).get(0);
+            category.createTextChannel(token.getChannel()).queue();
+        } else {
+            TextChannel channel = getChannelFor(token);
+            channel.getManager().setTopic("The in-game " + token.getServer().getName() + " chat.").queue();
+        }
     }
 }

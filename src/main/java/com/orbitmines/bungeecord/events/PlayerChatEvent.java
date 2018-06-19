@@ -6,6 +6,9 @@ import com.orbitmines.api.StaffRank;
 import com.orbitmines.bungeecord.OrbitMinesBungee;
 import com.orbitmines.bungeecord.handlers.BungeePlayer;
 import com.orbitmines.bungeecord.handlers.cmd.Command;
+import com.orbitmines.discordbot.utils.BotToken;
+import com.orbitmines.discordbot.utils.SkinLibrary;
+import net.dv8tion.jda.core.entities.*;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -48,6 +51,25 @@ public class PlayerChatEvent implements Listener {
                 } else {
                     omp.sendMessage("Staff", Color.RED, "§7Use §9@<message>§7.");
                 }
+
+                //TODO DISCORD STAFF CHAT
+            } else if (omp.isLoggedIn()) {
+                CharSequence text = SkinLibrary.getEmote(bungee.getDiscord().getGuild(), omp.getUUID()).getAsMention() + " **" + omp.getRankName() + " " + omp.getName(true) + "** » ";
+
+                String message = event.getMessage();
+
+                Guild guild = bungee.getDiscord().getGuild();
+                for (Role role : guild.getRoles()) {
+                    message = message.replaceAll("@" + role.getName(), role.getAsMention());
+                }
+                for (TextChannel textChannel : guild.getTextChannels()) {
+                    message = message.replaceAll("#" + textChannel.getName(), textChannel.getAsMention());
+                }
+                for (Member member : guild.getMembers()) {
+                    message = message.replace("@" + member.getEffectiveName() + "#" + member.getUser().getDiscriminator(), member.getAsMention()).replaceAll("@" + member.getEffectiveName(), member.getAsMention()).replaceAll("@" + member.getNickname(), member.getAsMention());
+                }
+
+                bungee.getDiscord().getChannelFor(BotToken.from(omp.getServer())).sendMessage(text + message).queue();
             }
         } else if (!omp.isLoggedIn()) {
             event.setCancelled(true);

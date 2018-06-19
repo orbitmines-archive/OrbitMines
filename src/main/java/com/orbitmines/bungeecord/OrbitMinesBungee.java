@@ -18,6 +18,8 @@ import com.orbitmines.bungeecord.events.PlayerChatEvent;
 import com.orbitmines.bungeecord.events.TabCompleteEvent;
 import com.orbitmines.bungeecord.handlers.*;
 import com.orbitmines.bungeecord.runnables.BungeeRunnable;
+import com.orbitmines.discordbot.DiscordBot;
+import com.orbitmines.discordbot.utils.BotToken;
 import com.vexsoftware.votifier.VoteHandler;
 import com.vexsoftware.votifier.VotifierPlugin;
 import com.vexsoftware.votifier.bungee.events.VotifierEvent;
@@ -76,6 +78,7 @@ import java.util.logging.Level;
 public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlugin {
 
     private static OrbitMinesBungee bungee;
+    private DiscordBot discord;
 
     private int maxPlayers;
 
@@ -130,6 +133,13 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
         /* Last Login */
         lastLogin = new HashMap<>();
 
+        /* Setup Discord */
+        try {
+            discord = new DiscordBot(BotToken.values());
+        } catch(Exception ex) {
+            ex.printStackTrace();
+        }
+
         /* Register */
         registerCommands();
         registerEvents(
@@ -150,6 +160,10 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
 
     public static OrbitMinesBungee getBungee() {
         return bungee;
+    }
+
+    public DiscordBot getDiscord() {
+        return discord;
     }
 
     public int getMaxPlayers() {

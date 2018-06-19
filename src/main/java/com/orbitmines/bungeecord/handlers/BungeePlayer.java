@@ -9,6 +9,7 @@ import com.orbitmines.api.settings.SettingsType;
 import com.orbitmines.api.utils.DateUtils;
 import com.orbitmines.api.utils.RandomUtils;
 import com.orbitmines.bungeecord.OrbitMinesBungee;
+import com.orbitmines.discordbot.utils.SkinLibrary;
 import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.data.PlayTimeData;
 import com.orbitmines.spigot.api.handlers.data.SettingsData;
@@ -105,6 +106,9 @@ public class BungeePlayer {
 
         /* Update IP History */
         IP.update(getUUID(), player.getAddress().getHostString());
+
+        /* Setup Discord Emote */
+        SkinLibrary.setupEmote(bungee.getDiscord().getGuild(), getUUID());
 
         updateLastOnline();
 
