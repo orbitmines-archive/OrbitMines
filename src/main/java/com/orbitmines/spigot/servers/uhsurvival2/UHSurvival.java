@@ -7,8 +7,12 @@ import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.OrbitMinesServer;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.PluginMessageHandler;
+import com.orbitmines.spigot.servers.uhsurvival2.event.BreakBlockEvent;
+import com.orbitmines.spigot.servers.uhsurvival2.event.PlayerMoveEvent;
 import com.orbitmines.spigot.servers.uhsurvival2.handlers.UHPlayer;
 import com.orbitmines.spigot.servers.uhsurvival2.handlers.map.Map;
+import com.orbitmines.spigot.servers.uhsurvival2.handlers.map.block.BlockManager;
+import com.orbitmines.spigot.servers.uhsurvival2.handlers.map.dungeon.loottable.LootTableManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -21,6 +25,9 @@ public class UHSurvival extends OrbitMinesServer {
 
     private List<Map> maps;
 
+    private BlockManager  blockManager;
+    private static LootTableManager lootTableManager;
+
     public UHSurvival(OrbitMines orbitMines) {
         super(orbitMines, Server.UHSURVIVAL, new PluginMessageHandler() {
             @Override
@@ -29,7 +36,9 @@ public class UHSurvival extends OrbitMinesServer {
             }
         });
         this.maps = new ArrayList<>();
-        maps.add(new Map(Bukkit.getWorlds().get(0), -10000, 10000, -10000, 10000));
+        this.maps.add(new Map(Bukkit.getWorlds().get(0), -10000, 10000, -10000, 10000));
+        this.blockManager = new BlockManager(this);
+        lootTableManager = new LootTableManager(this);
     }
 
     @Override
@@ -39,7 +48,10 @@ public class UHSurvival extends OrbitMinesServer {
 
     @Override
     public void onDisable() {
-
+        lootTableManager.serialize();
+        for(Map map : maps){
+            map.getDM().serialize();
+        }
     }
 
     @Override
@@ -59,6 +71,8 @@ public class UHSurvival extends OrbitMinesServer {
 
     @Override
     protected void registerEvents() {
+        registerEvents(new BreakBlockEvent(this),
+                new PlayerMoveEvent());
 
     }
 
@@ -84,5 +98,13 @@ public class UHSurvival extends OrbitMinesServer {
             }
         }
         return null;
+    }
+
+    public BlockManager getBM() {
+        return blockManager;
+    }
+
+    public static LootTableManager getLM() {
+        return lootTableManager;
     }
 }

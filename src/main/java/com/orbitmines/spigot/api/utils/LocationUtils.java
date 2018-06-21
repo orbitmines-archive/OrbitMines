@@ -97,6 +97,19 @@ public class LocationUtils {
         return blocks;
     }
 
+    public static boolean isBetween(Location l1, Location l2, Location l3){
+        int minX = l1.getBlockX() > l2.getBlockX() ? l2.getBlockX() : l1.getBlockX();
+        int maxX = l1.getBlockX() < l2.getBlockX() ? l2.getBlockX() : l1.getBlockX();
+
+        int minY = l1.getBlockY() > l2.getBlockY() ? l2.getBlockY() : l1.getBlockY();
+        int maxY = l1.getBlockY() < l2.getBlockY() ? l2.getBlockY() : l1.getBlockY();
+
+        int minZ = l1.getBlockZ() > l2.getBlockZ() ? l2.getBlockZ() : l1.getBlockZ();
+        int maxZ = l1.getBlockZ() > l2.getBlockZ() ? l2.getBlockZ() : l1.getBlockZ();
+
+        return (minX <= l3.getBlockX() && l3.getBlockX() <= maxX) && (minY <= l3.getBlockY() && l3.getBlockY() <= maxY) && (minZ <= l3.getBlockZ() && l3.getBlockZ() <= maxZ);
+    }
+
     public static void addIdenticalBlocksTouching(Block block, List<Block> blocks) {
         blocks.add(block);
 

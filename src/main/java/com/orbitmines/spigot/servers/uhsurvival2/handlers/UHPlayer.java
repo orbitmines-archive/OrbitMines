@@ -2,8 +2,10 @@ package com.orbitmines.spigot.servers.uhsurvival2.handlers;
 
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.servers.uhsurvival2.UHSurvival;
+import com.orbitmines.spigot.servers.uhsurvival2.handlers.map.Map;
 import com.orbitmines.spigot.servers.uhsurvival2.handlers.map.MapSection;
 import com.orbitmines.spigot.servers.uhsurvival2.handlers.mob.Attacker;
+import com.orbitmines.spigot.servers.uhsurvival2.handlers.tool.ToolInventory;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
@@ -15,6 +17,7 @@ public class UHPlayer extends OMPlayer implements Attacker {
     private static HashMap<UUID, UHPlayer> players = new HashMap<>();
 
     private MapSection mapSection;
+    private ToolInventory inventory;
 
     private UHSurvival instance;
 
@@ -22,12 +25,24 @@ public class UHPlayer extends OMPlayer implements Attacker {
         super(player);
         players.put(getUUID(), this);
         this.instance = uhSurvival;
-        this.mapSection = uhSurvival.getMap(getWorld()).getMapSection(getLocation());
+        this.updateMapLocation();
+        this.inventory = new ToolInventory(getInventory());
     }
 
     /* MAP METHODS */
     public MapSection getMapLocation() {
         return mapSection;
+    }
+
+    public void updateMapLocation(){
+        if(this.mapSection != null) {
+            this.mapSection.removePlayer(this);
+        }
+        Map map = instance.getMap(this.getWorld());
+        if(map != null){
+            this.mapSection = map.getMapSection(this.getLocation());
+            this.mapSection.addPlayer(this);
+        }
     }
 
     /* OM-PLAYER METHODS */
@@ -60,6 +75,16 @@ public class UHPlayer extends OMPlayer implements Attacker {
     @Override
     public void defend() {
 
+    }
+
+    @Override
+    public ToolInventory getToolInventory() {
+        return inventory;
+    }
+
+    @Override
+    public boolean hasInventory() {
+        return true;
     }
 
     /* STATIC METHODS */

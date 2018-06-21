@@ -18,6 +18,15 @@ public class MathUtils {
         return -1;
     }
 
+    public static double getDouble(String s){
+        try{
+            return Double.parseDouble(s);
+        }catch(NumberFormatException ex){
+            ex.printStackTrace();
+        }
+        return -1;
+    }
+
     public static int clamp(int x, int min, int max){
         return max < x ? max : x < min ? min : x;
     }
