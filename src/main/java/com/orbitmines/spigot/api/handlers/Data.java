@@ -30,7 +30,11 @@ public abstract class Data {
         VOTES,
         FRIENDS,
         SETTINGS,
-        PLAY_TIME;
+        PLAY_TIME,
+        LOOT,
+        PERIOD_LOOT,
+
+        SURVIVAL;
 
     }
 }

@@ -27,7 +27,7 @@ public class Serializer {
         return new Location(Bukkit.getWorld(data[0]), Double.parseDouble(data[1]), Double.parseDouble(data[2]), Double.parseDouble(data[3]), Float.parseFloat(data[4]), Float.parseFloat(data[5]));
     }
 
-    public static String serialize(List<UUID> list) {
+    public static String serializeUUIDList(List<UUID> list) {
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < list.size(); i++) {
             if (i != 0)
@@ -46,6 +46,30 @@ public class Serializer {
 
         for (String uuidString : string.split("\\|")) {
             list.add(UUID.fromString(uuidString));
+        }
+
+        return list;
+    }
+
+    public static String serializeLongList(List<Long> list) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < list.size(); i++) {
+            if (i != 0)
+                stringBuilder.append("|");
+
+            stringBuilder.append(list.get(i));
+        }
+        return stringBuilder.toString();
+    }
+
+    public static List<Long> parseLongList(String string) {
+        List<Long> list = new ArrayList<>();
+
+        if (string.equals(""))
+            return list;
+
+        for (String longString : string.split("\\|")) {
+            list.add(Long.parseLong(longString));
         }
 
         return list;

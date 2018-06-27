@@ -9,11 +9,12 @@ import com.orbitmines.api.database.tables.TableServers;
 */
 public enum Server {
 
-    KITPVP("KitPvP", Color.RED, true, TablePlayTime.KITPVP),
-    PRISON("Prison", Color.MAROON, false, TablePlayTime.PRISON),
-    CREATIVE("Creative", Color.FUCHSIA, false, TablePlayTime.CREATIVE),
     HUB("Hub", Color.TEAL, true, TablePlayTime.HUB),
     SURVIVAL("Survival", Color.LIME, false, TablePlayTime.SURVIVAL),
+    KITPVP("KitPvP", Color.RED, true, TablePlayTime.KITPVP),
+
+    PRISON("Prison", Color.MAROON, false, TablePlayTime.PRISON),
+    CREATIVE("Creative", Color.FUCHSIA, false, TablePlayTime.CREATIVE),
     SKYBLOCK("SkyBlock", Color.PURPLE, false, TablePlayTime.SKYBLOCK),
     FOG("FoG", Color.YELLOW, false, TablePlayTime.FOG),
     MINIGAMES("MiniGames", Color.WHITE, true, TablePlayTime.MINIGAMES),

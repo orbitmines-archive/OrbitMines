@@ -1,6 +1,6 @@
 package com.orbitmines.spigot.servers.survival.events;
 
-import com.orbitmines.spigot.api.handlers.CachedPlayer;
+import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.api.Color;
 import com.orbitmines.spigot.api.handlers.chat.ActionBar;
 import com.orbitmines.spigot.servers.survival.Survival;

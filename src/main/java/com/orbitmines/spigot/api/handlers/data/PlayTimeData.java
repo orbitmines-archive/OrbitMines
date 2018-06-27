@@ -7,7 +7,7 @@ import com.orbitmines.spigot.api.handlers.Data;
 
 import java.util.*;
 
-import static com.orbitmines.api.database.tables.TableVotes.UUID;
+import static com.orbitmines.api.database.tables.TablePlayTime.UUID;
 
 /*
 * OrbitMines - @author Fadi Shawki - 2017

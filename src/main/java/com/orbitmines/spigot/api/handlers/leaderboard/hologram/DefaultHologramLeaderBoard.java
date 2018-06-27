@@ -1,6 +1,6 @@
 package com.orbitmines.spigot.api.handlers.leaderboard.hologram;
 
-import com.orbitmines.spigot.api.handlers.CachedPlayer;
+import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.api.StaffRank;
 import com.orbitmines.api.VipRank;
 import com.orbitmines.api.database.Column;
@@ -53,7 +53,7 @@ public class DefaultHologramLeaderBoard extends HologramLeaderBoard {
                 StaffRank staffRank = player.getStaffRank();
                 VipRank vipRank = player.getVipRank();
 
-                return "§7" + (index + 1) + ". " + (staffRank != StaffRank.NONE ? staffRank.getPrefixColor() : vipRank.getPrefixColor()).getChatColor() + player.getPlayerName() + "  §6" + getValue(player, count);
+                return "§7" + (index + 1) + ". " + (staffRank != StaffRank.NONE ? staffRank.getPrefixColor() : vipRank.getPrefixColor()).getChatColor() + player.getPlayerName() + "  " + getValue(player, count);
             }, true);
         }
     }
@@ -100,6 +100,6 @@ public class DefaultHologramLeaderBoard extends HologramLeaderBoard {
 
     /* Override this method to change to change the message displayed at the end */
     public String getValue(CachedPlayer player, int count) {
-        return count + "";
+        return "§6" + count + "";
     }
 }

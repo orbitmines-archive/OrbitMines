@@ -20,9 +20,8 @@ public class TablePlayers extends Table {
     public static final Column SILENT = new Column("Silent", Column.Type.TINYINT, 1);
     public static final Column SOLARS = new Column("Solars", Column.Type.INT);
     public static final Column PRISMS = new Column("Prisms", Column.Type.INT);
-    public static final Column MONTHLY_BONUS = new Column("MonthlyBonus", Column.Type.VARCHAR, 32);
 
     public TablePlayers() {
-        super("Players", UUID, NAME, STAFFRANK, VIPRANK, FIRST_LOGIN, LANGUAGE, SETTINGS_PRIVATE_MESSAGES, SETTINGS_PLAYER_VISIBILITY, SETTINGS_GADGETS, SILENT, SOLARS, PRISMS, MONTHLY_BONUS);
+        super("Players", UUID, NAME, STAFFRANK, VIPRANK, FIRST_LOGIN, LANGUAGE, SETTINGS_PRIVATE_MESSAGES, SETTINGS_PLAYER_VISIBILITY, SETTINGS_GADGETS, SILENT, SOLARS, PRISMS);
     }
 }

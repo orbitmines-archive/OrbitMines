@@ -4,6 +4,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.api.Color;
 import com.orbitmines.api.PluginMessage;
 import com.orbitmines.api.Server;
@@ -91,6 +92,10 @@ public abstract class PluginMessageHandler implements PluginMessageListener {
 
                     break;
                 }
+                case SHUTDOWN: {
+                    Bukkit.shutdown();
+                    break;
+                }
                 case CHECK_VOTE_CACHE: {
                     OMPlayer omp = OMPlayer.getPlayer(UUID.fromString(in.readUTF()));
 
@@ -109,7 +114,11 @@ public abstract class PluginMessageHandler implements PluginMessageListener {
                     FriendsData data = (FriendsData) omp.getData(Data.Type.FRIENDS);
                     if (data.getFavoriteFriends().contains(UUID.fromString(in.readUTF()))) {
                         String name = in.readUTF();
-                        omp.sendMessage("Friends", Color.BLUE, name + "§7 is online gekomen.", name + "§7 has come online.");
+
+                        CachedPlayer friend = CachedPlayer.getPlayer(name);
+                        String color = friend.getRankPrefixColor().getChatColor();
+
+                        omp.sendMessage("Friends", Color.BLUE, color + name + "§7 is online gekomen.", color + name + "§7 has come online.");
                     }
 
                     break;

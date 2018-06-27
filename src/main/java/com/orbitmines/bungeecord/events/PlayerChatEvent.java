@@ -6,6 +6,7 @@ import com.orbitmines.api.StaffRank;
 import com.orbitmines.bungeecord.OrbitMinesBungee;
 import com.orbitmines.bungeecord.handlers.BungeePlayer;
 import com.orbitmines.bungeecord.handlers.cmd.Command;
+import com.orbitmines.bungeecord.handlers.cmd.ConsoleCommand;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -24,12 +25,25 @@ public class PlayerChatEvent implements Listener {
 
     @EventHandler
     public void onChat(ChatEvent event) {
-        if (!(event.getSender() instanceof ProxiedPlayer))
+        String[] a = event.getMessage().split(" ");
+
+        if (!(event.getSender() instanceof ProxiedPlayer)) {
+            if (a[0].startsWith("/")) {
+                /* Message is a command */
+                ConsoleCommand command = ConsoleCommand.getCommand(a[0]);
+
+                if (command == null)
+                    return;
+
+                event.setCancelled(true);
+                command.dispatch(event, a);
+            }
+
             return;
+        }
 
         ProxiedPlayer player = (ProxiedPlayer) event.getSender();
         BungeePlayer omp = BungeePlayer.getPlayer(player);
-        String[] a = event.getMessage().split(" ");
 
         if (!a[0].startsWith("/")) {
             /* Message is not a command */
@@ -46,8 +60,10 @@ public class PlayerChatEvent implements Listener {
                 if (event.getMessage().length() != 1) {
                     bungee.broadcast(StaffRank.MODERATOR, "Staff", Color.AQUA, omp.getStaffRank().getPrefix() + omp.getName() + " §7» §f§l" + event.getMessage().substring(1));
                 } else {
-                    omp.sendMessage("Staff", Color.RED, "§7Use §6@<message>§7.");
+                    omp.sendMessage("Staff", Color.RED, "§7Use §9@<message>§7.");
                 }
+
+                //TODO DISCORD STAFF CHAT
             }
         } else if (!omp.isLoggedIn()) {
             event.setCancelled(true);

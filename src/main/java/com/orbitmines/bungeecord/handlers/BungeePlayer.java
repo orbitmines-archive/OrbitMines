@@ -9,10 +9,13 @@ import com.orbitmines.api.settings.SettingsType;
 import com.orbitmines.api.utils.DateUtils;
 import com.orbitmines.api.utils.RandomUtils;
 import com.orbitmines.bungeecord.OrbitMinesBungee;
+import com.orbitmines.discordbot.DiscordBot;
+import com.orbitmines.discordbot.utils.SkinLibrary;
 import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.data.PlayTimeData;
 import com.orbitmines.spigot.api.handlers.data.SettingsData;
 import com.orbitmines.spigot.api.handlers.data.VoteData;
+import net.dv8tion.jda.core.entities.Guild;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -66,10 +69,18 @@ public class BungeePlayer {
     */
 
     public void login() {
+        BungeePlayer prev = BungeePlayer.getPlayer(player);
+        if (prev != null) {
+            /* The player rarely doesn't disconnect correctly due to a crash (even then it doesn't always happen, but for when it does); */
+            players.remove(prev);
+        }
+
         players.add(this);
 
         if (!Database.get().contains(Table.PLAYERS, TablePlayers.UUID, new Where(TablePlayers.UUID, getUUID().toString()))) {
-            Database.get().insert(Table.PLAYERS, Table.PLAYERS.values(getUUID().toString(), getRealName(), staffRank.toString(), vipRank.toString(), DateUtils.FORMAT.format(DateUtils.now()), language.toString(), SettingsType.ENABLED.toString(), SettingsType.ENABLED.toString(), SettingsType.ENABLED.toString(), silent ? "1" : "0", "0", "0", "null"));
+            Database.get().insert(Table.PLAYERS, getUUID().toString(), getRealName(), staffRank.toString(), vipRank.toString(), DateUtils.FORMAT.format(DateUtils.now()), language.toString(), SettingsType.ENABLED.toString(), SettingsType.ENABLED.toString(), SettingsType.ENABLED.toString(), silent ? "1" : "0", "0", "0");
+
+            onFirstLogin();
         } else {
             Map<Column, String> values = Database.get().getValues(Table.PLAYERS, new Column[]{
                     TablePlayers.NAME,
@@ -105,8 +116,6 @@ public class BungeePlayer {
             return;
         }
 
-        loggedIn = false;
-
         bungee.getProxy().getScheduler().schedule(bungee, () -> bungee.getMessageHandler().dataTransfer(PluginMessage.LOGIN_2FA, player, getUUID().toString()), 1, TimeUnit.SECONDS);
     }
 
@@ -139,6 +148,15 @@ public class BungeePlayer {
         ip.update();
     }
 
+    private void onFirstLogin() {
+        /* Give Welcome Loot */
+        Database.get().insert(Table.LOOT, "SOLARS", Rarity.RARE.toString(), "250", "&a&l&oWelcome to &7&lOrbit&8&lMines&a&l&o!");
+
+        DiscordBot discord = bungee.getDiscord();
+        Guild guild = discord.getGuild(bungee.getToken());
+        discord.getChannel(bungee.getToken(), DiscordBot.ChannelType.new_players).sendMessage(SkinLibrary.getEmote(guild, getUUID()).getAsMention() + " **" + getName(true) + "** has joined OrbitMines for the first time!").queue();
+    }
+
     /*
 
 
@@ -153,12 +171,12 @@ public class BungeePlayer {
         if (!isLoggedIn()) {
             return;
         } else if (server.getStatus() == Server.Status.OFFLINE) {
-            sendMessage("Server", Color.RED, "§7Die server is " + Server.Status.OFFLINE.getColor().getChatColor() + Server.Status.OFFLINE.getName() + "§7!", "§7That server is " + Server.Status.OFFLINE.getColor().getChatColor() + Server.Status.OFFLINE.getName() + "§7!");
+            sendMessage("Server", Color.RED, "§7Die server is " + Server.Status.OFFLINE.getDisplayName() + "§7!", "§7That server is " + Server.Status.OFFLINE.getDisplayName() + "§7!");
             return;
         } else if (serverInfo == null) {
             sendMessage("Server", Color.RED, "§7Error met het verbinden van die server.", "§7Error while connecting to that server.");
             return;
-        } else if (player.getServer().getInfo().getName().equals(serverInfo.getName())) {
+        } else if (getServer() == server) {
             sendMessage("Server", Color.BLUE, "§7Je zit al op die server.", "§7You're already on that server.");
             return;
         } else if (server.getMaxPlayers() - serverInfo.getPlayers().size() < 1) {
@@ -341,6 +359,10 @@ public class BungeePlayer {
         this.data.put(type, data);
 
         return data;
+    }
+
+    public BungeePlayer getLastMsg() {
+        return lastMsg;
     }
 
     /*

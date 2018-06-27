@@ -3,7 +3,7 @@ package com.orbitmines.spigot.api.handlers.data;
 import com.orbitmines.api.*;
 import com.orbitmines.api.database.*;
 import com.orbitmines.spigot.OrbitMines;
-import com.orbitmines.spigot.api.handlers.CachedPlayer;
+import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.PluginMessageHandler;
@@ -44,7 +44,7 @@ public class FriendsData extends Data {
     @Override
     public void load() {
         if (!Database.get().contains(table, new Column[] { UUID }, new Where(UUID, getUUID().toString()))) {
-            Database.get().insert(table, Table.FRIENDS.values(uuid.toString(), Serializer.serialize(friends), Serializer.serialize(favoriteFriends), Serializer.serialize(sentRequests), Serializer.serialize(invites)));
+            Database.get().insert(table, Table.FRIENDS.values(uuid.toString(), Serializer.serializeUUIDList(friends), Serializer.serializeUUIDList(favoriteFriends), Serializer.serializeUUIDList(sentRequests), Serializer.serializeUUIDList(invites)));
         } else {
             Map<Column, String> values = Database.get().getValues(table, new Column[] {
                     FRIENDS,
@@ -61,7 +61,7 @@ public class FriendsData extends Data {
     }
 
     public void sendJoinMessage(OMPlayer omp) {
-        messageHandler.dataTransfer(PluginMessage.FAVORITE_FRIEND_MESSAGE, Serializer.serialize(friends), getUUID().toString(), omp.getName());
+        messageHandler.dataTransfer(PluginMessage.FAVORITE_FRIEND_MESSAGE, Serializer.serializeUUIDList(friends), getUUID().toString(), omp.getName());
     }
 
     /* Inventory Interactions */
@@ -198,9 +198,9 @@ public class FriendsData extends Data {
         sentRequests.remove(friend);
 
         Database.get().update(table, new Set[] {
-            new Set(FRIENDS, Serializer.serialize(friends)),
-            new Set(SENT_INVITES, Serializer.serialize(sentRequests)),
-            new Set(INVITES, Serializer.serialize(invites))
+            new Set(FRIENDS, Serializer.serializeUUIDList(friends)),
+            new Set(SENT_INVITES, Serializer.serializeUUIDList(sentRequests)),
+            new Set(INVITES, Serializer.serializeUUIDList(invites))
         }, new Where(UUID, uuid.toString()));
     }
 
@@ -209,8 +209,8 @@ public class FriendsData extends Data {
         favoriteFriends.remove(friend);
 
         Database.get().update(table, new Set[] {
-            new Set(FRIENDS, Serializer.serialize(friends)),
-            new Set(FAVORITE, Serializer.serialize(favoriteFriends))
+            new Set(FRIENDS, Serializer.serializeUUIDList(friends)),
+            new Set(FAVORITE, Serializer.serializeUUIDList(favoriteFriends))
         }, new Where(UUID, uuid.toString()));
     }
 
@@ -230,7 +230,7 @@ public class FriendsData extends Data {
     }
 
     private void updateFavoriteFriends() {
-        Database.get().update(table, new Set(FAVORITE, Serializer.serialize(favoriteFriends)), new Where(UUID, uuid.toString()));
+        Database.get().update(table, new Set(FAVORITE, Serializer.serializeUUIDList(favoriteFriends)), new Where(UUID, uuid.toString()));
     }
 
     /* Requests */
@@ -261,7 +261,7 @@ public class FriendsData extends Data {
     }
 
     private void updateSentRequests() {
-        Database.get().update(table, new Set[] { new Set(SENT_INVITES, Serializer.serialize(sentRequests)) }, new Where(UUID, uuid.toString()));
+        Database.get().update(table, new Set[] { new Set(SENT_INVITES, Serializer.serializeUUIDList(sentRequests)) }, new Where(UUID, uuid.toString()));
     }
 
     /* Invites */
@@ -288,7 +288,7 @@ public class FriendsData extends Data {
     }
 
     private void updateInvites() {
-        Database.get().update(table, new Set(INVITES, Serializer.serialize(invites)), new Where(UUID, uuid.toString()));
+        Database.get().update(table, new Set(INVITES, Serializer.serializeUUIDList(invites)), new Where(UUID, uuid.toString()));
     }
 
     /* Get Stats for player */

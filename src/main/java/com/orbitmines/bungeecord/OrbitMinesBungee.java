@@ -10,14 +10,13 @@ import com.orbitmines.api.database.Set;
 import com.orbitmines.api.database.Table;
 import com.orbitmines.api.database.tables.TableIPs;
 import com.orbitmines.api.database.tables.TableServers;
-import com.orbitmines.bungeecord.commands.CommandAnnouncement;
-import com.orbitmines.bungeecord.commands.CommandMotd;
-import com.orbitmines.bungeecord.events.JoinQuitEvents;
-import com.orbitmines.bungeecord.events.PingEvent;
-import com.orbitmines.bungeecord.events.PlayerChatEvent;
-import com.orbitmines.bungeecord.events.TabCompleteEvent;
+import com.orbitmines.bungeecord.commands.*;
+import com.orbitmines.bungeecord.commands.moderator.*;
+import com.orbitmines.bungeecord.events.*;
 import com.orbitmines.bungeecord.handlers.*;
 import com.orbitmines.bungeecord.runnables.BungeeRunnable;
+import com.orbitmines.discordbot.DiscordBot;
+import com.orbitmines.discordbot.utils.BotToken;
 import com.vexsoftware.votifier.VoteHandler;
 import com.vexsoftware.votifier.VotifierPlugin;
 import com.vexsoftware.votifier.bungee.events.VotifierEvent;
@@ -88,6 +87,9 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
     private final Cooldown LOGIN_COOLDOWN = new Cooldown(TimeUnit.DAYS.toMillis(1));
     private Map<UUID, Long> lastLogin;
 
+    private BotToken token;
+    private DiscordBot discord;
+
     @Override
     public void onEnable() {
         bungee = this;
@@ -130,14 +132,22 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
         /* Last Login */
         lastLogin = new HashMap<>();
 
+        /* Setup Discord */
+        try {
+            token = BotToken.DEFAULT;
+            discord = new DiscordBot(token);
+        } catch(Exception ex) {
+            ex.printStackTrace();
+        }
+
         /* Register */
         registerCommands();
         registerEvents(
-                new JoinQuitEvents(),
+                new JoinQuitEvents(this),
                 new PingEvent(),
                 new PlayerChatEvent(),
-                new TabCompleteEvent()
-//                new VoteEvent()
+                new TabCompleteEvent(),
+                new VoteEvent(this)
         );
         registerRunnables();
         setupVotifier();
@@ -193,6 +203,14 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
         return messageHandler;
     }
 
+    public BotToken getToken() {
+        return token;
+    }
+
+    public DiscordBot getDiscord() {
+        return discord;
+    }
+
     public boolean mustLogin(BungeePlayer omp) {
         UUID uuid = omp.getUUID();
         return !lastLogin.containsKey(uuid) || !LOGIN_COOLDOWN.onCooldown(lastLogin.get(uuid));
@@ -204,8 +222,17 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
 
 
     private void registerCommands() {
+        new CommandHelp();
+        new CommandHub();
+        new CommandServer(this);
+        new CommandList();
+        new CommandWebsite();
+
+        new CommandFind(this);
+        new CommandSend(this);
         new CommandAnnouncement();
         new CommandMotd();
+        new CommandMaintenance(this);
     }
 
     private void registerEvents(Listener... listeners) {
@@ -236,6 +263,7 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
                 }
             }
         };
+        new AutoRestart(this);
     }
 
     public void broadcast(String... messages) {

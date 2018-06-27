@@ -5,8 +5,11 @@ import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.Mob;
 import com.orbitmines.spigot.api.datapoints.DataPointLoader;
 import com.orbitmines.spigot.api.datapoints.DataPointSign;
+import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.npc.MobNpc;
+import com.orbitmines.spigot.api.handlers.npc.PersonalisedMobNpc;
 import com.orbitmines.spigot.api.handlers.scoreboard.ScoreboardString;
+import com.orbitmines.spigot.api.runnables.SpigotRunnable;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -105,6 +108,8 @@ public class DataPointNpc extends DataPointSign {
 
                 npc.create();
                 npc.setItemInMainHand(new ItemStack(Material.STONE_HOE));
+
+                startUpdate(npc);
                 break;
             }
             case "FOG":
@@ -129,11 +134,36 @@ public class DataPointNpc extends DataPointSign {
                 npc.create();
                 break;
             }
+            case "LOOT": {
+                //TODO SPACE TURTLE?XD
+                PersonalisedMobNpc npc = new PersonalisedMobNpc(Mob.WITHER_SKELETON, location) {
+                    @Override
+                    public ScoreboardString[] getLines(OMPlayer omp) {
+                        return new ScoreboardString[] {
+                                () -> "§a§lSpace§2§lTurtle",
+                                () -> ""
+                        };
+                    }
+                };
+                npc.create();
+
+
+                break;
+            }
             default:
                 /* Otherwise pass it on to the ServerHandler */
                 OrbitMines.getInstance().getServerHandler().setupNpc(string, location);
                 break;
         }
+    }
+
+    private void startUpdate(MobNpc npc) {
+        new SpigotRunnable(SpigotRunnable.TimeUnit.SECOND, 1) {
+            @Override
+            public void run() {
+                npc.update();
+            }
+        };
     }
 
     private ScoreboardString[] getNpcDisplayName(Server server) {

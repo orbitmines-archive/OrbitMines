@@ -8,24 +8,29 @@ import com.orbitmines.api.database.Where;
 import com.orbitmines.api.database.tables.TablePlayers;
 import com.orbitmines.api.database.tables.TableServers;
 import com.orbitmines.api.database.tables.TableVotes;
+import com.orbitmines.api.utils.DateUtils;
+import com.orbitmines.discordbot.utils.ColorUtils;
 import com.orbitmines.spigot.api._2fa._2FA;
+import com.orbitmines.spigot.api.cmds.*;
 import com.orbitmines.spigot.api.datapoints.DataPointHandler;
 import com.orbitmines.spigot.api.events.*;
+import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.spigot.api.handlers.ConfigHandler;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.OrbitMinesMap;
-import com.orbitmines.spigot.api.handlers.leaderboard.hologram.DefaultHologramLeaderBoard;
 import com.orbitmines.spigot.api.handlers.leaderboard.LeaderBoard;
+import com.orbitmines.spigot.api.handlers.leaderboard.hologram.DefaultHologramLeaderBoard;
 import com.orbitmines.spigot.api.handlers.npc.Hologram;
-import com.orbitmines.spigot.leaderboards.hologram.LeaderBoardDonations;
 import com.orbitmines.spigot.api.handlers.worlds.WorldLoader;
 import com.orbitmines.spigot.api.nms.Nms;
 import com.orbitmines.spigot.api.utils.ReflectionUtils;
 import com.orbitmines.spigot.gui.ServerSelectorGUI;
+import com.orbitmines.spigot.leaderboards.hologram.LeaderBoardDonations;
 import com.orbitmines.spigot.runnables.LeaderBoardRunnable;
 import com.orbitmines.spigot.runnables.NPCRunnable;
 import com.orbitmines.spigot.runnables.ScoreboardRunnable;
 import com.orbitmines.spigot.runnables.ServerSelectorRunnable;
+import net.dv8tion.jda.core.EmbedBuilder;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -100,7 +105,13 @@ public class OrbitMines extends JavaPlugin {
         new LeaderBoard.Instantiator("TOP_VOTERS") {
             @Override
             public LeaderBoard instantiate(Location location, String[] data) {
-                return new DefaultHologramLeaderBoard(location, 0, () -> "§7§lTop Voters", 5, Table.VOTES, TableVotes.UUID, TableVotes.VOTES);
+                return new DefaultHologramLeaderBoard(location, 0, () -> "§7§lTop Voters of " + DateUtils.getMonth() + " " + DateUtils.getYear(), 5, Table.VOTES, TableVotes.UUID, TableVotes.VOTES) {
+
+                    @Override
+                    public String getValue(CachedPlayer player, int count) {
+                        return "§9§l" + count + " " + (count == 1 ? "Vote" : "Votes");
+                    }
+                };
             }
         };
 
@@ -191,8 +202,10 @@ public class OrbitMines extends JavaPlugin {
                 new PlayerChatEvent(),
                 new PlayerHeadOnMobEvent(),
                 new SpawnLocationEvent(),
+                new TeleportingMoveEvent(),
                 new WorldAdvancementsFix_1_12()
         );
+
         registerRunnables();
 
         /* Prepare Server */
@@ -207,12 +220,21 @@ public class OrbitMines extends JavaPlugin {
             serverSelectors.put(language, new ServerSelectorGUI(language));
         }
 
+        /* Discord Startup Message */
+        EmbedBuilder builder = new EmbedBuilder();
+        builder.setAuthor("Starting " + server.getName() + "...");
+        builder.setColor(ColorUtils.from(Color.LIME));
+        serverHandler.getDiscordChannel().sendMessage(builder.build()).queue();
+
         /* Setup Server */
         serverHandler.onEnable();
 
         /* Set Server Online */
         server.setPlayers(0);
         server.setStatus(Server.Status.ONLINE);
+
+        /* Discord Message Listener Message */
+        serverHandler.getDiscord().getJDA(serverHandler.getToken()).addEventListener(new DiscordMessageListener(this));
     }
 
     @Override
@@ -223,6 +245,12 @@ public class OrbitMines extends JavaPlugin {
         if (serverHandler != null) {
             serverHandler.getServer().setStatus(Server.Status.OFFLINE);
             serverHandler.getServer().setPlayers(0);
+
+            /* Discord Shutdown Message */
+            EmbedBuilder builder = new EmbedBuilder();
+            builder.setAuthor("Shutting down " + serverHandler.getServer().getName() + "...");
+            builder.setColor(ColorUtils.from(Color.RED));
+            serverHandler.getDiscordChannel().sendMessage(builder.build()).queue();
 
             serverHandler.onDisable();
         }
@@ -273,7 +301,19 @@ public class OrbitMines extends JavaPlugin {
     }
 
     private void registerCommands() {
+        new CommandHelp(this);
 
+        new CommandServers(this);
+
+        new CommandTopVoters();
+
+        new CommandLoot();
+        new CommandFriends();
+        new CommandStats();
+        new CommandSettings();
+
+        new CommandPrisms();
+        new CommandSolars();
     }
 
     private void registerEvents(Listener... listeners) {
@@ -291,15 +331,15 @@ public class OrbitMines extends JavaPlugin {
     }
 
     public void broadcast(String... messages) {
-        broadcast(null, new Message(messages));
+        broadcast((StaffRank) null, new Message(messages));
     }
 
     public void broadcast(String prefix, Color prefixColor, String... messages) {
-        broadcast(null, new Message(prefix, prefixColor, messages));
+        broadcast((StaffRank) null, new Message(prefix, prefixColor, messages));
     }
 
     public void broadcast(Message message) {
-        broadcast(null, message);
+        broadcast((StaffRank) null, message);
     }
 
     public void broadcast(StaffRank staffRank, String... messages) {
@@ -313,6 +353,33 @@ public class OrbitMines extends JavaPlugin {
     public void broadcast(StaffRank staffRank, Message message) {
         for (OMPlayer omp : OMPlayer.getPlayers()) {
             if (staffRank == null || omp.isEligible(staffRank))
+                omp.sendMessage(message);
+        }
+    }
+
+    public void broadcast(OMPlayer exclude, String... messages) {
+        broadcast(exclude, null, new Message(messages));
+    }
+
+    public void broadcast(OMPlayer exclude, String prefix, Color prefixColor, String... messages) {
+        broadcast(exclude, null, new Message(prefix, prefixColor, messages));
+    }
+
+    public void broadcast(OMPlayer exclude, Message message) {
+        broadcast(exclude, null, message);
+    }
+
+    public void broadcast(OMPlayer exclude, StaffRank staffRank, String... messages) {
+        broadcast(exclude, staffRank, new Message(messages));
+    }
+
+    public void broadcast(OMPlayer exclude, StaffRank staffRank, String prefix, Color prefixColor, String... messages) {
+        broadcast(exclude, staffRank, new Message(prefix, prefixColor, messages));
+    }
+
+    public void broadcast(OMPlayer exclude, StaffRank staffRank, Message message) {
+        for (OMPlayer omp : OMPlayer.getPlayers()) {
+            if (omp != exclude && (staffRank == null || omp.isEligible(staffRank)))
                 omp.sendMessage(message);
         }
     }

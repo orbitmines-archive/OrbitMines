@@ -35,7 +35,7 @@ public abstract class Npc {
         this.spawnLocation = spawnLocation;
     }
 
-    /* Spawn the Npc/Entit(y)(ies) in this method */
+    /* SurvivalSpawn the Npc/Entit(y)(ies) in this method */
     protected abstract void spawn();
 
     /* Despawn the Npc/Entit(y)(ies) in this method */

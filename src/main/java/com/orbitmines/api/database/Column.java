@@ -7,16 +7,26 @@ public class Column {
 
     private final String name;
     private final Type type;
+    private final String defaultValue;
     private final int[] args;
 
     public Column(String name, Type type, int... args) {
+        this(name, type, null, args);
+    }
+
+    public Column(String name, Type type, String defaultValue, int... args) {
         this.name = name;
         this.type = type;
+        this.defaultValue = defaultValue;
         this.args = args;
     }
 
     public Type getType() {
         return type;
+    }
+
+    public String getDefaultValue() {
+        return defaultValue;
     }
 
     public int[] getArgs() {
@@ -29,7 +39,7 @@ public class Column {
     }
 
     public String toTypeString() {
-        return "`" + toString() + "` " + type.toString(args);
+        return "`" + toString() + "` " + type.toString(args) + (defaultValue == null ? "" : " DEFAULT " + defaultValue);
     }
 
     public enum Type {

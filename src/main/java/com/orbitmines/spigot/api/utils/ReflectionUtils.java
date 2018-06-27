@@ -1,10 +1,14 @@
 package com.orbitmines.spigot.api.utils;
 
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
 import com.orbitmines.spigot.OrbitMines;
 import org.bukkit.Bukkit;
+import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.UUID;
 
 /*
 * OrbitMines - @author Fadi Shawki - 2017
@@ -19,6 +23,12 @@ public class ReflectionUtils {
             ex.printStackTrace();
             return;
         }
+    }
+
+    public static GameProfile getGameProfile(String texture) {
+        GameProfile newSkinProfile = new GameProfile(UUID.randomUUID(), null);
+        newSkinProfile.getProperties().put("textures", new Property("textures", Base64Coder.encodeString("{textures:{SKIN:{url:\"" + texture + "\"}}}")));
+        return newSkinProfile;//https://bukkit.org/threads/how-to-get-the-skull-with-texture-as-itemstack-correctly-alex-head-error.461178/
     }
 
     public static Object getDeclaredObject(String fieldName, Class<?> clazz, Object object) {

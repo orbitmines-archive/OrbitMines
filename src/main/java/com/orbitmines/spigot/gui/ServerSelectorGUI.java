@@ -80,7 +80,8 @@ public class ServerSelectorGUI extends GUI {
                                 "§7- " + Server.SURVIVAL.getColor().getChatColor() + "Custom Claims",
                                 "§7- " + Server.SURVIVAL.getColor().getChatColor() + NumberUtils.locale(Region.WORLD_BORDER) + "x" + NumberUtils.locale(Region.WORLD_BORDER) + " Wereld",
                                 "§7- " + Server.SURVIVAL.getColor().getChatColor() + "Economie",
-                                "§7- " + Server.SURVIVAL.getColor().getChatColor() + "Homes"
+                                "§7- " + Server.SURVIVAL.getColor().getChatColor() + "Homes",
+                                "§7- " + Server.SURVIVAL.getColor().getChatColor() + "Warps"
                         },
                         new String[] {
                                 "§7The most recent OrbitMines colony",
@@ -91,7 +92,8 @@ public class ServerSelectorGUI extends GUI {
                                 "§7- " + Server.SURVIVAL.getColor().getChatColor() + "Custom Claims",
                                 "§7- " + Server.SURVIVAL.getColor().getChatColor() + NumberUtils.locale(Region.WORLD_BORDER) + "x" + NumberUtils.locale(Region.WORLD_BORDER) + " World",
                                 "§7- " + Server.SURVIVAL.getColor().getChatColor() + "Economy",
-                                "§7- " + Server.SURVIVAL.getColor().getChatColor() + "Homes"
+                                "§7- " + Server.SURVIVAL.getColor().getChatColor() + "Homes",
+                                "§7- " + Server.SURVIVAL.getColor().getChatColor() + "Warps"
                         }
                 }));
 

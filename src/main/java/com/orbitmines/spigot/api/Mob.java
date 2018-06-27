@@ -303,4 +303,12 @@ public enum Mob {
 //        }
 //        throw new IllegalArgumentException();
     }
+
+    public static Mob from(short mobId) {
+        for (Mob mob : Mob.values()) {
+            if (mob.getType().getTypeId() == mobId)
+                return mob;
+        }
+        return null;
+    }
 }

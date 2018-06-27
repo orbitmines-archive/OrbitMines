@@ -164,6 +164,15 @@ public class PluginMessageHandler implements Listener {
                     bungee.registerLogin(omp);
                     break;
                 }
+                case SET_LOGGING_IN: {
+                    BungeePlayer omp = BungeePlayer.getPlayer(UUID.fromString(in.readUTF()));
+
+                    if (omp == null)
+                        break;
+
+                    omp.setLoggedIn(false);
+                    break;
+                }
                 case MESSAGE_PLAYER: {
                     BungeePlayer omp = BungeePlayer.getPlayer(UUID.fromString(in.readUTF()));
 
@@ -221,9 +230,11 @@ public class PluginMessageHandler implements Listener {
                 case SERVER_SWITCH: {
                     BungeePlayer omp = BungeePlayer.getPlayer(UUID.fromString(in.readUTF()));
 
-                    if (omp != null)
-                        ((PlayTimeData) omp.getData(Data.Type.PLAY_TIME)).startSession(Server.valueOf(in.readUTF()));
+                    if (omp != null) {
+                        Server server = Server.valueOf(in.readUTF());
 
+                        ((PlayTimeData) omp.getData(Data.Type.PLAY_TIME)).startSession(server);
+                    }
                     break;
                 }
             }

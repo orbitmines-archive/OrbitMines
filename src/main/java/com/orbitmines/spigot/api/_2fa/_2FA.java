@@ -3,6 +3,7 @@ package com.orbitmines.spigot.api._2fa;
 import com.google.zxing.WriterException;
 import com.orbitmines.api.Color;
 import com.orbitmines.api.Message;
+import com.orbitmines.api.PluginMessage;
 import com.orbitmines.api.database.Database;
 import com.orbitmines.api.database.Table;
 import com.orbitmines.api.database.Where;
@@ -52,6 +53,8 @@ public class _2FA {
     }
 
     public void initiateLogin(OMPlayer omp) {
+        orbitMines.getServerHandler().getMessageHandler().dataTransfer(PluginMessage.SET_LOGGING_IN, omp.getUUID().toString());
+
         omp.setLoggedIn(false);
         omp.freeze(Freezer.MOVE_AND_JUMP);
 
@@ -125,6 +128,14 @@ public class _2FA {
             return;
 
         tasks.get(omp).cancel();
+        tempKeys.remove(omp);
+
+        /* Restore Inventory */
+        omp.getPlayer().getInventory().setContents(contents.get(omp));
+        omp.getPlayer().getInventory().setArmorContents(armorContents.get(omp));
+
+        contents.remove(omp);
+        armorContents.remove(omp);
     }
 
     public void processNewLogin(OMPlayer omp) {
