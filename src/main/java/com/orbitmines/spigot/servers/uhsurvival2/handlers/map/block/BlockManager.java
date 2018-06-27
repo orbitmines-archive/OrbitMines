@@ -24,6 +24,7 @@ public class BlockManager {
         /* init blocks */
         new Block(Material.STONE, (byte) 0, ToolType.PICKAXE, 5){};
         new Block(Material.DIRT, (byte) 0, ToolType.SPADE, 5){};
+        new Block(Material.LOG, (byte) 0, ToolType.AXE, 5){};
     }
 
     /* BOOLEANS */

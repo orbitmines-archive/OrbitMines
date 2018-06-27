@@ -1,5 +1,6 @@
 package com.orbitmines.spigot.servers.uhsurvival2.handlers.map.dungeon;
 
+import com.orbitmines.api.StaffRank;
 import com.orbitmines.spigot.api.utils.LocationUtils;
 import com.orbitmines.spigot.api.utils.MathUtils;
 import com.orbitmines.spigot.servers.uhsurvival.utils.FileBuilder;
@@ -8,6 +9,7 @@ import com.orbitmines.spigot.servers.uhsurvival2.handlers.map.Map;
 import com.orbitmines.spigot.servers.uhsurvival2.handlers.map.MapSection;
 import com.orbitmines.spigot.servers.uhsurvival2.handlers.map.dungeon.block.FileBlock;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 
 import java.io.File;
@@ -18,6 +20,7 @@ import java.util.List;
 public class DungeonManager {
 
     private static List<DungeonFile> allDungeons = new ArrayList<>();
+    private static DungeonSelector selector = new DungeonSelector(StaffRank.DEVELOPER, Material.ARROW, (byte) 0);
 
     private HashMap<DungeonFile, FileBuilder> dungeonFiles;
     private HashMap<Dungeon, FileBuilder> dungeons;
@@ -37,21 +40,22 @@ public class DungeonManager {
     }
 
     /* DUNGEON METHODS */
-    public void createDungeon(Location corner, Location corner1, String name, String loottable){
-        List<Block> blocks = LocationUtils.getBlocksBetween(corner, corner1);
-        Location highestCorner = getHighest(corner, corner1);
-        Location lowestCorner = getLowest(corner, corner1);
-        DungeonFile dungeonFile = new DungeonFile(name, loottable, highestCorner, lowestCorner);
-        for(Block b : blocks){
-            dungeonFile.addBlock(new FileBlock(b.getLocation(), lowestCorner));
-        }
-        FileBuilder file = new FileBuilder(directoryFiles, "dungeon_" + name);
-        dungeonFiles.put(dungeonFile, file);
-        allDungeons.add(dungeonFile);
-    }
 
         /* private */
-    private boolean buildDungeon(Location loc, DungeonFile file){
+        private void createDungeon(Location corner, Location corner1, String name, String loottable){
+            List<Block> blocks = LocationUtils.getBlocksBetween(corner, corner1);
+            Location highestCorner = getHighest(corner, corner1);
+            Location lowestCorner = getLowest(corner, corner1);
+            DungeonFile dungeonFile = new DungeonFile(name, loottable, highestCorner, lowestCorner);
+            for(Block b : blocks){
+                dungeonFile.addBlock(new FileBlock(b.getLocation(), lowestCorner));
+            }
+            FileBuilder file = new FileBuilder(directoryFiles, "dungeon_" + name);
+            dungeonFiles.put(dungeonFile, file);
+            allDungeons.add(dungeonFile);
+        }
+
+        private boolean buildDungeon(Location loc, DungeonFile file){
         MapSection mapSection = map.getMapSection(loc);
         boolean spawn = true;
         /* checking if no other dungeon spawned */
@@ -68,7 +72,7 @@ public class DungeonManager {
         return spawn;
     }
 
-    private boolean buildDungeonRandomly(DungeonFile d){
+        private boolean buildDungeonRandomly(DungeonFile d){
         MapSection mapSection = map.getMapSections().get(MathUtils.randomInteger(map.getTiles()));
         if(d != null) {
             int x = MathUtils.randomInteger(mapSection.getMaxX() - mapSection.getMinX()) + mapSection.getMinX();
@@ -86,12 +90,12 @@ public class DungeonManager {
     }
 
         /* public */
-    public boolean buildDungeon(UHPlayer player, String type){
+        public boolean buildDungeon(UHPlayer player, String type){
         DungeonFile file = getDungeonFile(type);
         return file != null && this.buildDungeon(player.getLocation(), file);
     }
 
-    public boolean buildDungeonRandomly(){
+        public boolean buildDungeonRandomly(){
         MapSection mapSection = map.getMapSections().get(MathUtils.randomInteger(map.getTiles()));
         if(mapSection.getDungeonAmount() < mapSection.getMaxDungeons()){
             DungeonFile d = null;
@@ -107,6 +111,21 @@ public class DungeonManager {
             return this.buildDungeonRandomly(d);
         }
         return false;
+    }
+
+    /* STATIC METHODS */
+    public static void createDungeon(UHPlayer player, String name, String loottable) {
+        DungeonManager dm = player.getMapLocation().getMap().getDM();
+        if (dm != null) {
+            if (selector.hasSelectedArea(player)) {
+                Location[] locations = selector.getLocations(player);
+                dm.createDungeon(locations[0], locations[1], name, loottable);
+            }
+        }
+    }
+
+    public static DungeonSelector getDungeonSelector(){
+        return selector;
     }
 
     /* GETTERS */
@@ -132,6 +151,7 @@ public class DungeonManager {
         double z = (double) loc.getBlockZ() < loc1.getBlockZ() ? loc1.getBlockZ() : loc.getBlockZ();
         return new Location(loc.getWorld(), x,y,z);
     }
+
 
     /* FILE METHODS */
     public void serialize(){

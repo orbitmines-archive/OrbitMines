@@ -68,13 +68,23 @@ public class UHPlayer extends OMPlayer implements Attacker {
 
     /* ATTACKER METHODS TODO!*/
     @Override
-    public void attack() {
-
+    public boolean attack(Attacker attacker) {
+        if(attacker instanceof UHPlayer){
+            UHPlayer p = (UHPlayer) attacker;
+            if(p.getMapLocation().canPvP() && getMapLocation().canPvP()){
+                return p.defend(attacker);
+            } else {
+                return true;
+            }
+        } else {
+            return attacker.defend(attacker);
+        }
     }
 
     @Override
-    public void defend() {
-
+    public boolean defend(Attacker attacker) {
+        //TODO: ADD BLOCK CHANCES IN THE TOOLS & ADD ENCHANTMENTS!
+        return false;
     }
 
     @Override

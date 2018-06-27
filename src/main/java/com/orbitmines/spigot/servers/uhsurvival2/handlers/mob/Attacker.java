@@ -4,9 +4,9 @@ import com.orbitmines.spigot.servers.uhsurvival2.handlers.tool.ToolInventory;
 
 public interface Attacker {
 
-    void attack();
+    boolean attack(Attacker attacker);
 
-    void defend();
+    boolean defend(Attacker attacker);
 
     ToolInventory getToolInventory();
 

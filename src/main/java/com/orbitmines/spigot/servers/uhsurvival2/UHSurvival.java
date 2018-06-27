@@ -8,6 +8,7 @@ import com.orbitmines.spigot.OrbitMinesServer;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.PluginMessageHandler;
 import com.orbitmines.spigot.servers.uhsurvival2.event.BreakBlockEvent;
+import com.orbitmines.spigot.servers.uhsurvival2.event.PlayerInteractEvent;
 import com.orbitmines.spigot.servers.uhsurvival2.event.PlayerMoveEvent;
 import com.orbitmines.spigot.servers.uhsurvival2.handlers.UHPlayer;
 import com.orbitmines.spigot.servers.uhsurvival2.handlers.map.Map;
@@ -72,7 +73,8 @@ public class UHSurvival extends OrbitMinesServer {
     @Override
     protected void registerEvents() {
         registerEvents(new BreakBlockEvent(this),
-                new PlayerMoveEvent());
+                new PlayerMoveEvent(),
+                new PlayerInteractEvent());
 
     }
 
