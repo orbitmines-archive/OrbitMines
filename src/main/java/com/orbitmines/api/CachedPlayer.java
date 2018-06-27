@@ -5,7 +5,6 @@ import com.orbitmines.api.database.Table;
 import com.orbitmines.api.database.Where;
 import com.orbitmines.api.database.tables.TablePlayers;
 import com.orbitmines.api.utils.uuid.UUIDUtils;
-import com.orbitmines.bungeecord.OrbitMinesBungee;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -53,25 +52,35 @@ public class CachedPlayer {
         return Language.valueOf(Database.get().getString(Table.PLAYERS, TablePlayers.LANGUAGE, new Where(TablePlayers.UUID, getUUID().toString())));
     }
 
+    public String getFirstLogin() {
+        return Database.get().getString(Table.PLAYERS, TablePlayers.FIRST_LOGIN, new Where(TablePlayers.UUID, getUUID().toString()));
+    }
+
     public String getLastOnline() {
         updateIP();
+        ip.updateLastLogin();
 
         return ip == null ? null : ip.getLastLogin();
     }
 
-    public String getLastOnlineInTimeUnit() {
+    public String getLastOnlineInTimeUnit(Language language) {
         updateIP();
+        ip.updateLastLogin();
 
-        return ip == null ? null : ip.getLastLoginInTimeUnit();
+        return ip == null ? null : ip.getLastLoginInTimeUnit(language);
     }
 
     public Server getServer() {
         updateIP();
 
+        /* If we somehow can't receive the player's IP address we return null */
+        if (ip == null)
+            return null;
+
         ip.updateCurrentServer();
 
         if (ip.getCurrentServer() != null) {
-            return OrbitMinesBungee.getBungee().getServer(ip.getCurrentServer());
+            return Server.valueOf(ip.getCurrentServer());
         } else {
             /* Not Online, update last online */
             ip.update();
@@ -118,7 +127,7 @@ public class CachedPlayer {
         if (cached.containsKey(uuid))
             return cached.get(uuid);
 
-        return new CachedPlayer(uuid);
+        return Database.get().contains(Table.PLAYERS, TablePlayers.UUID, new Where(TablePlayers.UUID, uuid.toString())) ? new CachedPlayer(uuid) : null;
     }
 
     public static CachedPlayer getPlayer(String playerName) {

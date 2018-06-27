@@ -28,22 +28,28 @@ public enum Donation {
     SOLARS_10000(15, 20.00, "§e§l10,000 Solars", ""),
     SOLARS_25000(16, 40.00, "§e§l25,000 Solars", ""),
 
-    SURVIVAL_CLAIMBLOCKS_10000(17, 5.00, "§9§l10,000 Claimblocks", ""),
-    SURVIVAL_CLAIMBLOCKS_25000(18, 10.00, "§9§l25,000 Claimblocks", ""),
-    SURVIVAL_CLAIMBLOCKS_50000(19, 17.50, "§9§l50,000 Claimblocks", ""),
-    SURVIVAL_HOMES_50(20, 2.50, "§6§l50 Homes", ""),
-    SURVIVAL_CHEST_SHOPS_5(21, 2.50, "§6§l5 Chest Shops", ""),
-    SURVIVAL_CHEST_SHOPS_25(22, 10.00, "§6§l25 Chest Shops", ""),
-    SURVIVAL_WARP_1(23, 7.50, "§3§l1 Warp", "");
+    SURVIVAL_CLAIMBLOCKS_10000(17, 5.00, Server.SURVIVAL, "§9§l10,000 Claimblocks", ""),
+    SURVIVAL_CLAIMBLOCKS_25000(18, 10.00, Server.SURVIVAL, "§9§l25,000 Claimblocks", ""),
+    SURVIVAL_CLAIMBLOCKS_50000(19, 17.50, Server.SURVIVAL, "§9§l50,000 Claimblocks", ""),
+    SURVIVAL_HOMES_50(20, 2.50, Server.SURVIVAL, "§6§l50 Homes", ""),
+    SURVIVAL_CHEST_SHOPS_5(21, 2.50, Server.SURVIVAL, "§6§l5 Chest Shops", ""),
+    SURVIVAL_CHEST_SHOPS_25(22, 10.00, Server.SURVIVAL, "§6§l25 Chest Shops", ""),
+    SURVIVAL_WARP_1(23, 7.50, Server.SURVIVAL, "§3§l1 Warp", "");
 
     private final int id;
     private final double price;
+    private final Server server;
     private final String title;
     private final String[] description;
 
     Donation(int id, double price, String title, String... description) {
+        this(id, price, null, title, description);
+    }
+
+    Donation(int id, double price, Server server, String title, String... description) {
         this.id = id;
         this.price = price;
+        this.server = server;
         this.title = title;
         this.description = description;
     }
@@ -54,6 +60,10 @@ public enum Donation {
 
     public double getPrice() {
         return price;
+    }
+
+    public Server getServer() {
+        return server;
     }
 
     public String getTitle() {

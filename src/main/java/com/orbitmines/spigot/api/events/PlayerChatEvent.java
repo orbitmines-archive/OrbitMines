@@ -27,6 +27,7 @@ public class PlayerChatEvent implements Listener {
 
         if (omp.isLoggedIn()) {
             orbitMines.getServerHandler().format(event, omp);
+            orbitMines.getServerHandler().toDiscord(event, omp);
             return;
         }
 

@@ -3,6 +3,7 @@ package com.orbitmines.spigot.api.handlers.data;
 import com.orbitmines.api.*;
 import com.orbitmines.api.database.*;
 import com.orbitmines.spigot.OrbitMines;
+import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.PluginMessageHandler;
@@ -43,7 +44,7 @@ public class FriendsData extends Data {
     @Override
     public void load() {
         if (!Database.get().contains(table, new Column[] { UUID }, new Where(UUID, getUUID().toString()))) {
-            Database.get().insert(table, Table.FRIENDS.values(uuid.toString(), Serializer.serialize(friends), Serializer.serialize(favoriteFriends), Serializer.serialize(sentRequests), Serializer.serialize(invites)));
+            Database.get().insert(table, Table.FRIENDS.values(uuid.toString(), Serializer.serializeUUIDList(friends), Serializer.serializeUUIDList(favoriteFriends), Serializer.serializeUUIDList(sentRequests), Serializer.serializeUUIDList(invites)));
         } else {
             Map<Column, String> values = Database.get().getValues(table, new Column[] {
                     FRIENDS,
@@ -60,7 +61,7 @@ public class FriendsData extends Data {
     }
 
     public void sendJoinMessage(OMPlayer omp) {
-        messageHandler.dataTransfer(PluginMessage.FAVORITE_FRIEND_MESSAGE, Serializer.serialize(friends), getUUID().toString(), omp.getName());
+        messageHandler.dataTransfer(PluginMessage.FAVORITE_FRIEND_MESSAGE, Serializer.serializeUUIDList(friends), getUUID().toString(), omp.getName());
     }
 
     /* Inventory Interactions */
@@ -83,12 +84,12 @@ public class FriendsData extends Data {
             omp.sendMessage("Friends", Color.RED, "§7Je kan jezelf niet als een vriend toevoegen. :(", "§7You cannot add yourself as a friend. :(");
         } else if (sentRequests.contains(friend)) {
             CachedPlayer f = CachedPlayer.getPlayer(friend);
-            String name = f.getRankPrefixColor() + f.getPlayerName();
+            String name = f.getRankPrefixColor().getChatColor() + f.getPlayerName();
 
             omp.sendMessage("Friends", Color.RED, "§7Je hebt al een vriendschapsverzoek naar " + name + "§7gestuurd!", "§7You have already sent a friend request to " + name + "§7!");
         } else if (friends.contains(friend)) {
             CachedPlayer f = CachedPlayer.getPlayer(friend);
-            String name = f.getRankPrefixColor() + f.getPlayerName();
+            String name = f.getRankPrefixColor().getChatColor() + f.getPlayerName();
 
             omp.sendMessage("Friends", Color.RED, "§7Je bent al vrienden met " + name + "§7.", "§7You're already friends with " + name + "§7.");
         } else if (friends.size() >= DATABASE_FRIEND_LIMIT) {
@@ -104,9 +105,9 @@ public class FriendsData extends Data {
                 addSentRequests(friend);
                 data.addInvites(this.uuid);
 
-                String name = f.getRankPrefixColor() + f.getPlayerName();
+                String name = f.getRankPrefixColor().getChatColor() + f.getPlayerName();
 
-                omp.sendMessage("Friends", Color.GREEN, "§7Je hebt een vriendschapsverzoek gestuurd naar " + name + "§7.", "§7You have sent a friend request to " + name + "§7.");
+                omp.sendMessage("Friends", Color.LIME, "§7Je hebt een vriendschapsverzoek gestuurd naar " + name + "§7.", "§7You have sent a friend request to " + name + "§7.");
 
                 forceUpdateFor(f, new Message("Friends", Color.BLUE, "§7" + omp.getName() + "§7 heeft je een vriendschapsverzoek gestuurd.", "§7" + omp.getName() + " §7has sent you a friend request!"));
             }
@@ -121,31 +122,37 @@ public class FriendsData extends Data {
     }
 
     public void onFriendAddition(CachedPlayer friend) {
+        if (friends.contains(friend.getUUID()))
+            return;
+
         FriendsData data = getDataFor(friend.getUUID());
 
         addToFriends(data.getUUID());
         data.addToFriends(uuid);
 
         OMPlayer omp = OMPlayer.getPlayer(uuid);
-        String name = friend.getRankPrefixColor() + friend.getPlayerName();
+        String name = friend.getRankPrefixColor().getChatColor() + friend.getPlayerName();
 
-        omp.sendMessage("Friends", Color.GREEN, "§7Je bent nu vrienden met " + name + "§7.", "§7You are now friends with " + name + "§7.");
+        omp.sendMessage("Friends", Color.LIME, "§7Je bent nu vrienden met " + name + "§7.", "§7You are now friends with " + name + "§7.");
 
-        forceUpdateFor(friend, new Message("Friends", Color.BLUE, "§7Je bent nu vrienden met " + name + "§7.", "§7You are now friends with " + name + "§7."));
+        forceUpdateFor(friend, new Message("Friends", Color.BLUE, "§7Je bent nu vrienden met " + omp.getName() + "§7.", "§7You are now friends with " + omp.getName() + "§7."));
     }
 
     public void onFriendRemoval(CachedPlayer friend) {
+        if (!friends.contains(friend.getUUID()))
+            return;
+
         FriendsData data = getDataFor(friend.getUUID());
 
         removeFromFriends(friend.getUUID());
         data.removeFromFriends(uuid);
 
         OMPlayer omp = OMPlayer.getPlayer(uuid);
-        String name = friend.getRankPrefixColor() + friend.getPlayerName();
+        String name = friend.getRankPrefixColor().getChatColor() + friend.getPlayerName();
 
-        omp.sendMessage("Friends", Color.GREEN, "§7Je bent geen vrienden meer met " + name + "§7.", "§7You are no longer friends with " + name + "§7.");
+        omp.sendMessage("Friends", Color.LIME, "§7Je bent geen vrienden meer met " + name + "§7.", "§7You are no longer friends with " + name + "§7.");
 
-        forceUpdateFor(friend, new Message("Friends", Color.BLUE, "§7Je bent geen vrienden meer met " + name + "§7.", "§7You are no longer friends with " + name + "§7."));
+        forceUpdateFor(friend, new Message("Friends", Color.BLUE, "§7Je bent geen vrienden meer met " + omp.getName() + "§7.", "§7You are no longer friends with " + omp.getName() + "§7."));
     }
 
     private void forceUpdateFor(CachedPlayer friend) {
@@ -191,9 +198,9 @@ public class FriendsData extends Data {
         sentRequests.remove(friend);
 
         Database.get().update(table, new Set[] {
-            new Set(FRIENDS, Serializer.serialize(friends)),
-            new Set(SENT_INVITES, Serializer.serialize(sentRequests)),
-            new Set(INVITES, Serializer.serialize(invites))
+            new Set(FRIENDS, Serializer.serializeUUIDList(friends)),
+            new Set(SENT_INVITES, Serializer.serializeUUIDList(sentRequests)),
+            new Set(INVITES, Serializer.serializeUUIDList(invites))
         }, new Where(UUID, uuid.toString()));
     }
 
@@ -202,8 +209,8 @@ public class FriendsData extends Data {
         favoriteFriends.remove(friend);
 
         Database.get().update(table, new Set[] {
-            new Set(FRIENDS, Serializer.serialize(friends)),
-            new Set(FAVORITE, Serializer.serialize(favoriteFriends))
+            new Set(FRIENDS, Serializer.serializeUUIDList(friends)),
+            new Set(FAVORITE, Serializer.serializeUUIDList(favoriteFriends))
         }, new Where(UUID, uuid.toString()));
     }
 
@@ -223,7 +230,7 @@ public class FriendsData extends Data {
     }
 
     private void updateFavoriteFriends() {
-        Database.get().update(table, new Set(FAVORITE, Serializer.serialize(favoriteFriends)), new Where(UUID, uuid.toString()));
+        Database.get().update(table, new Set(FAVORITE, Serializer.serializeUUIDList(favoriteFriends)), new Where(UUID, uuid.toString()));
     }
 
     /* Requests */
@@ -254,7 +261,7 @@ public class FriendsData extends Data {
     }
 
     private void updateSentRequests() {
-        Database.get().update(table, new Set[] { new Set(SENT_INVITES, Serializer.serialize(sentRequests)) }, new Where(UUID, uuid.toString()));
+        Database.get().update(table, new Set[] { new Set(SENT_INVITES, Serializer.serializeUUIDList(sentRequests)) }, new Where(UUID, uuid.toString()));
     }
 
     /* Invites */
@@ -267,7 +274,7 @@ public class FriendsData extends Data {
         getDataFor(friend.getUUID()).removeSentRequests(uuid);
 
         OMPlayer omp = OMPlayer.getPlayer(this.uuid);
-        forceUpdateFor(friend, new Message("Friends", Color.BLUE, "§7" + omp.getName() + "§7 heeft je vriendschapsverzoek afgewezen.", "§7" + omp.getName() + " denied your friend request."));
+        forceUpdateFor(friend, new Message("Friends", Color.BLUE, "§7" + omp.getName() + "§7 heeft je vriendschapsverzoek afgewezen.", "§7" + omp.getName() + "§7 denied your friend request."));
     }
 
     private void addInvites(UUID friend) {
@@ -281,7 +288,7 @@ public class FriendsData extends Data {
     }
 
     private void updateInvites() {
-        Database.get().update(table, new Set(INVITES, Serializer.serialize(invites)), new Where(UUID, uuid.toString()));
+        Database.get().update(table, new Set(INVITES, Serializer.serializeUUIDList(invites)), new Where(UUID, uuid.toString()));
     }
 
     /* Get Stats for player */

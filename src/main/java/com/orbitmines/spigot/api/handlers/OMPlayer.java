@@ -9,24 +9,32 @@ import com.orbitmines.api.database.tables.TablePlayers;
 import com.orbitmines.api.settings.Settings;
 import com.orbitmines.api.settings.SettingsType;
 import com.orbitmines.api.utils.DateUtils;
+import com.orbitmines.api.utils.NumberUtils;
+import com.orbitmines.discordbot.DiscordBot;
+import com.orbitmines.discordbot.utils.SkinLibrary;
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.Freezer;
+import com.orbitmines.spigot.api.Loot;
 import com.orbitmines.spigot.api.handlers.chat.Title;
-import com.orbitmines.spigot.api.handlers.data.FriendsData;
-import com.orbitmines.spigot.api.handlers.data.SettingsData;
-import com.orbitmines.spigot.api.handlers.data.VoteData;
+import com.orbitmines.spigot.api.handlers.data.*;
 import com.orbitmines.spigot.api.handlers.itembuilders.PotionBuilder;
 import com.orbitmines.spigot.api.handlers.itemhandlers.ItemHover;
 import com.orbitmines.spigot.api.handlers.kit.KitInteractive;
 import com.orbitmines.spigot.api.handlers.leaderboard.LeaderBoard;
 import com.orbitmines.spigot.api.handlers.leaderboard.hologram.PlayerHologramLeaderBoard;
+import com.orbitmines.spigot.api.handlers.npc.MobNpc;
+import com.orbitmines.spigot.api.handlers.npc.PersonalisedMobNpc;
 import com.orbitmines.spigot.api.handlers.npc.PlayerFreezer;
 import com.orbitmines.spigot.api.handlers.scoreboard.OMScoreboard;
 import com.orbitmines.spigot.api.handlers.scoreboard.ScoreboardSet;
+import com.orbitmines.spigot.api.handlers.timer.Timer;
+import com.orbitmines.spigot.servers.survival.handlers.SurvivalData;
+import net.dv8tion.jda.core.entities.Guild;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
@@ -34,7 +42,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 /*
 * OrbitMines - @author Fadi Shawki - 2017
@@ -57,7 +64,6 @@ public abstract class OMPlayer {
     protected boolean silent;
     protected int solars;
     protected int prisms;
-    protected Date monthlyBonus;
 
     protected String afk;
 
@@ -65,6 +71,9 @@ public abstract class OMPlayer {
     protected GUI lastInventory;
     protected KitInteractive lastInteractiveKit;
     protected ItemHover currentHover;
+
+    protected Teleportable teleportingTo;
+    protected Timer teleportingTimer;
 
     protected Map<Cooldown, Long> cooldowns;
     protected Map<Data.Type, Data> data;
@@ -99,9 +108,6 @@ public abstract class OMPlayer {
     /* Called before the player logs out */
     protected abstract void onLogout();
 
-    /* Called before a players votes, or when the players logs in and receives previous votes, this handles just the rewards */
-    public abstract void onVote(int votes);
-
     /* Called when a player receives knock back, example: gadgets */
     public abstract boolean canReceiveVelocity();
 
@@ -120,7 +126,7 @@ public abstract class OMPlayer {
         orbitMines.getServerHandler().getServer().setPlayers(Bukkit.getOnlinePlayers().size());
 
         if (!Database.get().contains(Table.PLAYERS, TablePlayers.UUID, new Where(TablePlayers.UUID, getUUID().toString()))) {
-            Database.get().insert(Table.PLAYERS, Table.PLAYERS.values(getUUID().toString(), getRealName(), staffRank.toString(), vipRank.toString(), language.toString(), SettingsType.ENABLED.toString(), SettingsType.ENABLED.toString(), SettingsType.ENABLED.toString(), silent ? "1" : "0", solars + "", prisms + "", "null"));
+            Database.get().insert(Table.PLAYERS, getUUID().toString(), getRealName(), staffRank.toString(), vipRank.toString(), DateUtils.FORMAT.format(DateUtils.now()), language.toString(), SettingsType.ENABLED.toString(), SettingsType.ENABLED.toString(), SettingsType.ENABLED.toString(), silent ? "1" : "0", solars + "", prisms + "");
         } else {
             Map<Column, String> values = Database.get().getValues(Table.PLAYERS, new Column[]{
                     TablePlayers.STAFFRANK,
@@ -129,7 +135,6 @@ public abstract class OMPlayer {
                     TablePlayers.SILENT,
                     TablePlayers.SOLARS,
                     TablePlayers.PRISMS,
-                    TablePlayers.MONTHLY_BONUS
             }, new Where(TablePlayers.UUID, getUUID().toString()));
 
             staffRank = StaffRank.valueOf(values.get(TablePlayers.STAFFRANK));
@@ -138,10 +143,6 @@ public abstract class OMPlayer {
             silent = "1".equals(values.get(TablePlayers.SILENT));
             solars = Integer.parseInt(values.get(TablePlayers.SOLARS));
             prisms = Integer.parseInt(values.get(TablePlayers.PRISMS));
-
-            String monthlyBonus = values.get(TablePlayers.MONTHLY_BONUS);
-            if (!monthlyBonus.equals("null"))
-                this.monthlyBonus = DateUtils.parse(DateUtils.FORMAT, monthlyBonus);
         }
 
         /* Set Op */
@@ -159,16 +160,25 @@ public abstract class OMPlayer {
                 ((PlayerHologramLeaderBoard) leaderBoard).onLogin(this);
         }
 
-        checkCachedVotes();
+        /* Spawn Personalised MobNpcs */
+        for (MobNpc npc : MobNpc.getMobNpcs()) {
+            if (npc instanceof PersonalisedMobNpc)
+                ((PersonalisedMobNpc) npc).onLogin(this);
+        }
 
         /* Initiate server login */
         onLogin();
 
         /* Join Message */
-        if (silent)
-            orbitMines.broadcast(StaffRank.MODERATOR, " §a» " + getName() + "§a is gejoind. §7§o[Silent]", " §a» " + getName() + "§a joined. §7§o[Silent]");
-        else
-            orbitMines.broadcast(" §a» " + getName() + "§a is gejoind.", " §a» " + getName() + "§a joined.");
+        if (silent) {
+            orbitMines.broadcast(StaffRank.MODERATOR, " §a» " + getName() + "§a is gejoind. §7§o[Silent]", " §a» " + getName() + "§a has joined. §7§o[Silent]");
+        } else {
+            orbitMines.broadcast(" §a» " + getName() + "§a is gejoind.", " §a» " + getName() + "§a has joined.");
+
+            DiscordBot discord = orbitMines.getServerHandler().getDiscord();
+            Guild guild = discord.getGuild(orbitMines.getServerHandler().getToken());
+            orbitMines.getServerHandler().getDiscordChannel().sendMessage(guild.getRolesByName("»", true).get(0).getAsMention() + " " + SkinLibrary.getEmote(guild, getUUID()).getAsMention() + orbitMines.getServerHandler().getDiscordRankPrefix(this) + " **" + getName(true) + "** has joined.").queue();
+        }
 
         new BukkitRunnable() {
             @Override
@@ -186,6 +196,8 @@ public abstract class OMPlayer {
 
                 ip.setCurrentServer(orbitMines.getServerHandler().getServer());
 
+                orbitMines.getServerHandler().getMessageHandler().dataTransfer(PluginMessage.SERVER_SWITCH, getUUID().toString(), orbitMines.getServerHandler().getServer().toString());
+
                 if (isLoggedIn())
                     on2FALogin();
             }
@@ -197,10 +209,15 @@ public abstract class OMPlayer {
         onLogout();
 
         /* Quit Message */
-        if (silent)
-            orbitMines.broadcast(StaffRank.MODERATOR, " §c« " + getName() + "§c is weggegaan. §7§o[Silent]", " §c« " + getName() + "§c left. §7§o[Silent]");
-        else
-            orbitMines.broadcast(" §c« " + getName() + "§c is weggegaan.", " §c« " + getName() + "§c left.");
+        if (silent) {
+            orbitMines.broadcast(StaffRank.MODERATOR, " §c« " + getName() + "§c is weggegaan. §7§o[Silent]", " §c« " + getName() + "§c has left. §7§o[Silent]");
+        } else {
+            orbitMines.broadcast(" §c« " + getName() + "§c is weggegaan.", " §c« " + getName() + "§c has left.");
+
+            DiscordBot discord = orbitMines.getServerHandler().getDiscord();
+            Guild guild = discord.getGuild(orbitMines.getServerHandler().getToken());
+            orbitMines.getServerHandler().getDiscordChannel().sendMessage(guild.getRolesByName("«", true).get(0).getAsMention() + " " + SkinLibrary.getEmote(guild, getUUID()).getAsMention() + orbitMines.getServerHandler().getDiscordRankPrefix(this) + " **" + getName(true) + "** has left.").queue();
+        }
 
         orbitMines.getServerHandler().getServer().setPlayers(Bukkit.getOnlinePlayers().size() -1);
 
@@ -213,6 +230,12 @@ public abstract class OMPlayer {
                 ((PlayerHologramLeaderBoard) leaderBoard).onLogout(this);
         }
 
+        /* Destroy Personalised MobNpcs */
+        for (MobNpc npc : MobNpc.getMobNpcs()) {
+            if (npc instanceof PersonalisedMobNpc)
+                ((PersonalisedMobNpc) npc).onLogout(this);
+        }
+
         /* Remove PlayerFreezer */
         PlayerFreezer freezer = PlayerFreezer.getFreezer(player);
         if (freezer != null)
@@ -222,23 +245,28 @@ public abstract class OMPlayer {
         if (currentHover != null)
             currentHover.leave(this);
 
+        if (teleportingTo != null)
+            teleportingTimer.cancel();
+
         players.remove(this);
     }
 
     public void defaultTabList() {
-        orbitMines.getNms().tabList().send(Collections.singletonList(player), "§8§lOrbit§7§lMines\n" + orbitMines.getServerHandler().getServer().getDisplayName(), "§7Website: §6www.orbitmines.com\n§7" + lang("Winkel", "Shop") + ": §3shop.orbitmines.com\n§7Twitter: §b@OrbitMines");
+        orbitMines.getNms().tabList().send(Collections.singletonList(player), "\n§8§lOrbit§7§lMines\n" + orbitMines.getServerHandler().getServer().getDisplayName() + "\n", "\n    §7Website: §6§lwww.orbitmines.com§r    \n    §7" + lang("Winkel", "Shop") + ": §3§lshop.orbitmines.com§r    \n    §7Twitter: §b§l@OrbitMines§r    \n\n    §7Vote: §9§l/vote§r    \n");
     }
 
     public void on2FALogin() {
         sendMessage("§7§m----------------------------------------");
         sendMessage(" §8§lOrbit§7§lMines §8- " + orbitMines.getServerHandler().getServer().getDisplayName());
         sendMessage(" ");
-        sendMessage(" §7§lWebsite: §6www.orbitmines.com");
-        sendMessage(" §7§l" + lang("Winkel", "Shop") + ": §3shop.orbitmines.com");
-        sendMessage(" §7§l" + lang("Voten", "Vote") + ": §b/vote");
+        sendMessage(" §7Website: §6§lwww.orbitmines.com");
+        sendMessage(" §7" + lang("Winkel", "Shop") + ": §3§lshop.orbitmines.com");
+        sendMessage(" §7Twitter: §b§l@OrbitMines");
+        sendMessage(" §7" + lang("Voten", "Vote") + ": §9§l/vote");
         sendMessage(" ");
-
         sendMessage("§7§m----------------------------------------");
+
+        checkCachedVotes();
     }
 
     /*
@@ -250,21 +278,38 @@ public abstract class OMPlayer {
      */
 
     public void vote(int votes) {
+        ((LootData) getData(Data.Type.LOOT)).add(Loot.PRISMS, Rarity.COMMON, "§9§l§oVote Rewards", 250 * votes);
 
-        onVote(votes);
+        String reward = "§9§l" + NumberUtils.locale(250 * votes) + " Prisms";
+
+        sendMessage("");
+        sendMessage("Vote", Color.BLUE, "§7Je hebt " + reward + "§7 gekregen in je §2/loot§7.", "§7You have received " + reward + "§7 in your §2/loot§7.");
+        playSound(Sound.ENTITY_ARROW_HIT_PLAYER);
+
+        orbitMines.broadcast(this, "Vote", Color.BLUE,
+                getName() + " §7heeft gevoten met §9/vote§7 en kreeg " + reward + "§7.",
+                getName() + " §7voted with §9/vote§7 and received " + reward + "§7.");
     }
 
     public void checkCachedVotes() {
         VoteData data = (VoteData) getData(Data.Type.VOTES);
-        Server server = orbitMines.getServerHandler().getServer();
+        data.updateCache();
 
-        if (!data.getCachedVotes().containsKey(server))
+        int votes = data.getCachedVotes();
+
+        if (votes == 0)
             return;
 
-        int votes = data.getCachedVotes().get(server);
-        data.getCachedVotes().remove(server);
+        data.clearCache();
 
         vote(votes);
+
+        /*
+                Monthly Vote Achievement
+         */
+
+        if (data.getVotes() >= TopVoterReward.MONTHLY_ACHIEVEMENT_VOTES && (data.getVotes() - votes) < TopVoterReward.MONTHLY_ACHIEVEMENT_VOTES)
+            ((LootData) getData(Data.Type.LOOT)).add(Loot.PRISMS, Rarity.UNCOMMON, "§a§l§oMonthly Achievement " + DateUtils.getMonth() + " " + DateUtils.getYear(), TopVoterReward.MONTHLY_ACHIEVEMENT_PRISMS);
     }
 
     /*
@@ -474,24 +519,6 @@ public abstract class OMPlayer {
     }
 
     /*
-        Monthly Bonus
-     */
-
-    public Date getMonthlyBonus() {
-        return monthlyBonus;
-    }
-
-    public void registerMonthlyBonus() {
-        this.monthlyBonus = DateUtils.now();
-
-        Database.get().update(TablePlayers.PLAYERS, new Set(TablePlayers.MONTHLY_BONUS, DateUtils.FORMAT.format(this.monthlyBonus)), new Where(TablePlayers.UUID, getUUID().toString()));
-    }
-
-    public boolean canReceiveMonthlyBonus() {
-        return monthlyBonus == null || System.currentTimeMillis() - monthlyBonus.getTime() >= TimeUnit.DAYS.toMillis(30);
-    }
-
-    /*
         Afk
      */
 
@@ -591,6 +618,26 @@ public abstract class OMPlayer {
     }
 
     /*
+        Teleportable
+     */
+
+    public Teleportable getTeleportingTo() {
+        return teleportingTo;
+    }
+
+    public void setTeleportingTo(Teleportable teleportingTo) {
+        this.teleportingTo = teleportingTo;
+    }
+
+    public Timer getTeleportingTimer() {
+        return teleportingTimer;
+    }
+
+    public void setTeleportingTimer(Timer teleportingTimer) {
+        this.teleportingTimer = teleportingTimer;
+    }
+
+    /*
         Cooldowns
      */
 
@@ -637,6 +684,19 @@ public abstract class OMPlayer {
                 break;
             case SETTINGS:
                 data = new SettingsData(getUUID());
+                break;
+            case PLAY_TIME:
+                data = new PlayTimeData(getUUID());
+                break;
+            case LOOT:
+                data = new LootData(getUUID());
+                break;
+            case PERIOD_LOOT:
+                data = new PeriodLootData(getUUID());
+                break;
+
+            case SURVIVAL:
+                data = new SurvivalData(getUUID());
                 break;
             default:
                 return null;
@@ -836,9 +896,11 @@ public abstract class OMPlayer {
         player.addPotionEffect(builder.build());
     }
 
-    public boolean isMoving() {
-        Vector v = getVelocity();
-        return Math.abs(v.getX()) > 0.05 || Math.abs(v.getY()) > 0.05 || Math.abs(v.getZ()) > 0.05;
+    public boolean isMoving(PlayerMoveEvent event) {
+        Location from = event.getFrom();
+        Location to = event.getTo();
+
+        return Math.abs(from.getX() - to.getX()) > 0.05 || Math.abs(from.getY() - to.getY()) > 0.05 || Math.abs(from.getZ() - to.getZ()) > 0.05;
     }
 
     public void playSound(Sound sound) {

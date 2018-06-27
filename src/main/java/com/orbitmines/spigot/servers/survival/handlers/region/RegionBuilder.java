@@ -52,7 +52,7 @@ public class RegionBuilder {
         int z = locator.getZ();
         location = new Location(world, x + 0.5, locator.isGenerated() ? y - 3 : y, z + 0.5, 0, 0);
         inventoryX = locator.getInventoryX();
-        inventoryY = locator.getInventotyY();
+        inventoryY = locator.getInventoryY();
 
         if (locator.isGenerated()) {
             ConsoleUtils.msg("Already generated, moving on.");
@@ -68,7 +68,7 @@ public class RegionBuilder {
         }
         chunk.load();
 
-        ConsoleUtils.msg("Building Region Spawn...");
+        ConsoleUtils.msg("Building Region SurvivalSpawn...");
 
         /* Generated with SchematicGenerator */
         setBlock(x - 3, y - 1, z - 2, Material.WOOD, 5);

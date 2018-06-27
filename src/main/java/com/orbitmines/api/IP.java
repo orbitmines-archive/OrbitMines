@@ -73,8 +73,8 @@ public class IP {
         return lastLogin;
     }
 
-    public String getLastLoginInTimeUnit() {
-        return TimeUtils.biggestTimeUnit(System.currentTimeMillis() - lastLoginInMillis);
+    public String getLastLoginInTimeUnit(Language language) {
+        return TimeUtils.biggestTimeUnit(System.currentTimeMillis() - lastLoginInMillis, language);
     }
 
     public List<String> getAllIps() {

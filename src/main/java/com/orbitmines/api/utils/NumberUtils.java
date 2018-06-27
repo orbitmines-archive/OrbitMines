@@ -43,7 +43,7 @@ public class NumberUtils {
         return romanEqui;
     }
 
-    public static String locale(int integer) {
-        return NumberFormat.getNumberInstance(Locale.US).format(integer);
+    public static String locale(long number) {
+        return NumberFormat.getNumberInstance(Locale.US).format(number);
     }
 }

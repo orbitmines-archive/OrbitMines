@@ -11,6 +11,7 @@ import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.data.FriendsData;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.api.handlers.itembuilders.PlayerSkullBuilder;
+import com.orbitmines.spigot.servers.hub.handlers.HubPlayer;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
@@ -37,6 +38,9 @@ public class FriendRequestDetailsGUI extends GUI {
                     new FriendRequestGUI().open(omp);
                 else
                     new FriendGUI().open(omp);
+
+                if (omp instanceof HubPlayer)
+                    ((HubPlayer) omp).updatePlayerVisibility(OMPlayer.getPlayers());
             }
         });
 
@@ -56,6 +60,9 @@ public class FriendRequestDetailsGUI extends GUI {
                     new FriendRequestGUI().open(omp);
                 else
                     new FriendGUI().open(omp);
+
+                if (omp instanceof HubPlayer)
+                    ((HubPlayer) omp).updatePlayerVisibility(OMPlayer.getPlayers());
             }
         });
 

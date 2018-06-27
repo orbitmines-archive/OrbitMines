@@ -1,6 +1,7 @@
 package com.orbitmines.spigot.api.handlers.cmd;
 
 import com.orbitmines.api.Message;
+import com.orbitmines.api.Server;
 import com.orbitmines.api.StaffRank;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 
@@ -11,7 +12,9 @@ public abstract class StaffCommand extends Command {
 
     private final StaffRank staffRank;
 
-    public StaffCommand(StaffRank rank) {
+    public StaffCommand(Server server, StaffRank rank) {
+        super(server);
+
         this.staffRank = rank;
     }
 
