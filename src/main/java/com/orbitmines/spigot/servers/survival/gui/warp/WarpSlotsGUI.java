@@ -5,7 +5,7 @@ package com.orbitmines.spigot.servers.survival.gui.warp;
  */
 
 import com.orbitmines.api.utils.NumberUtils;
-import com.orbitmines.spigot.api.handlers.CachedPlayer;
+import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.spigot.api.handlers.GUI;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;

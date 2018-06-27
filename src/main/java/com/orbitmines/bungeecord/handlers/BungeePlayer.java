@@ -9,11 +9,13 @@ import com.orbitmines.api.settings.SettingsType;
 import com.orbitmines.api.utils.DateUtils;
 import com.orbitmines.api.utils.RandomUtils;
 import com.orbitmines.bungeecord.OrbitMinesBungee;
+import com.orbitmines.discordbot.DiscordBot;
 import com.orbitmines.discordbot.utils.SkinLibrary;
 import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.data.PlayTimeData;
 import com.orbitmines.spigot.api.handlers.data.SettingsData;
 import com.orbitmines.spigot.api.handlers.data.VoteData;
+import net.dv8tion.jda.core.entities.Guild;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -76,10 +78,9 @@ public class BungeePlayer {
         players.add(this);
 
         if (!Database.get().contains(Table.PLAYERS, TablePlayers.UUID, new Where(TablePlayers.UUID, getUUID().toString()))) {
-            Database.get().insert(Table.PLAYERS, Table.PLAYERS.values(getUUID().toString(), getRealName(), staffRank.toString(), vipRank.toString(), DateUtils.FORMAT.format(DateUtils.now()), language.toString(), SettingsType.ENABLED.toString(), SettingsType.ENABLED.toString(), SettingsType.ENABLED.toString(), silent ? "1" : "0", "0", "0"));
+            Database.get().insert(Table.PLAYERS, getUUID().toString(), getRealName(), staffRank.toString(), vipRank.toString(), DateUtils.FORMAT.format(DateUtils.now()), language.toString(), SettingsType.ENABLED.toString(), SettingsType.ENABLED.toString(), SettingsType.ENABLED.toString(), silent ? "1" : "0", "0", "0");
 
-            /* Give Welcome Loot */
-            Database.get().insert(Table.LOOT, "SOLARS", Rarity.RARE.toString(), "250", "&a&l&oWelcome to &7&lOrbit&8&lMines&a&l&o!");
+            onFirstLogin();
         } else {
             Map<Column, String> values = Database.get().getValues(Table.PLAYERS, new Column[]{
                     TablePlayers.NAME,
@@ -107,9 +108,6 @@ public class BungeePlayer {
         /* Update IP History */
         IP.update(getUUID(), player.getAddress().getHostString());
 
-        /* Setup Discord Emote */
-        SkinLibrary.setupEmote(bungee.getDiscord().getGuild(), getUUID());
-
         updateLastOnline();
 
         /* Initiate Login */
@@ -117,8 +115,6 @@ public class BungeePlayer {
             on2FALogin();
             return;
         }
-
-        loggedIn = false;
 
         bungee.getProxy().getScheduler().schedule(bungee, () -> bungee.getMessageHandler().dataTransfer(PluginMessage.LOGIN_2FA, player, getUUID().toString()), 1, TimeUnit.SECONDS);
     }
@@ -150,6 +146,15 @@ public class BungeePlayer {
 
         ip.set(player.getAddress().getHostString());
         ip.update();
+    }
+
+    private void onFirstLogin() {
+        /* Give Welcome Loot */
+        Database.get().insert(Table.LOOT, "SOLARS", Rarity.RARE.toString(), "250", "&a&l&oWelcome to &7&lOrbit&8&lMines&a&l&o!");
+
+        DiscordBot discord = bungee.getDiscord();
+        Guild guild = discord.getGuild(bungee.getToken());
+        discord.getChannel(bungee.getToken(), DiscordBot.ChannelType.new_players).sendMessage(SkinLibrary.getEmote(guild, getUUID()).getAsMention() + " **" + getName(true) + "** has joined OrbitMines for the first time!").queue();
     }
 
     /*

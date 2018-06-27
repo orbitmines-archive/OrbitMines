@@ -12,7 +12,7 @@ import com.orbitmines.api.database.tables.TableVotes;
 import com.orbitmines.api.utils.DateUtils;
 import com.orbitmines.api.utils.NumberUtils;
 import com.orbitmines.api.utils.TimeUtils;
-import com.orbitmines.spigot.api.handlers.CachedPlayer;
+import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.chat.ComponentMessage;

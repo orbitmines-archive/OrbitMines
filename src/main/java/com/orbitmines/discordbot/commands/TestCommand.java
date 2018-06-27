@@ -38,7 +38,7 @@ public class TestCommand extends Command {
     public void dispatch(MessageReceivedEvent event, User user, MessageChannel channel, Message msg, String[] a) {
         channel.sendMessage(user.getAsMention() + " Testing Emote..").queue();
 
-        Guild guild = DiscordBot.getInstance().getGuild();
+        Guild guild = DiscordBot.getInstance().getGuild(BotToken.DEFAULT);
         UUID uuid = UUID.fromString("01a5412b-275b-4f42-aea9-1bef163210b9");
 
         SkinLibrary.setupEmote(guild, uuid);

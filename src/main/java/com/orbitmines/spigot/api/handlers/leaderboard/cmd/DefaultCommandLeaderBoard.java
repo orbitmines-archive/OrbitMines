@@ -8,7 +8,7 @@ import com.orbitmines.api.database.Column;
 import com.orbitmines.api.database.Database;
 import com.orbitmines.api.database.Table;
 import com.orbitmines.api.database.Where;
-import com.orbitmines.spigot.api.handlers.CachedPlayer;
+import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.cmd.Command;
 import com.orbitmines.spigot.api.handlers.leaderboard.LeaderBoard;

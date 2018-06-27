@@ -16,6 +16,27 @@ import org.bukkit.Sound;
 
 public enum Loot {
 
+//    DONATION() {
+//        @Override
+//        public Server getServer(int count) {
+//            return Donation.getById(count).getServer();
+//        }
+//
+//        @Override
+//        public String getDisplayName(int count) {
+//
+//        }
+//
+//        @Override
+//        public ItemBuilder getIcon(int count) {
+//
+//        }
+//
+//        @Override
+//        public void onInteract(OMPlayer omp, Rarity rarity, String description, int count) {
+//
+//        }
+//    },
     BUYCRAFT_VOUCHER() {
         @Override
         public String getDisplayName(int count) {
@@ -81,7 +102,7 @@ public enum Loot {
         }
     };
 
-    private final Server server;
+    private Server server;
 
     Loot() {
         this(null);
@@ -91,7 +112,7 @@ public enum Loot {
         this.server = server;
     }
 
-    public Server getServer() {
+    public Server getServer(int count) {
         return server;
     }
 

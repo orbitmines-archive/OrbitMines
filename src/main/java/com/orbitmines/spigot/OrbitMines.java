@@ -9,12 +9,12 @@ import com.orbitmines.api.database.tables.TablePlayers;
 import com.orbitmines.api.database.tables.TableServers;
 import com.orbitmines.api.database.tables.TableVotes;
 import com.orbitmines.api.utils.DateUtils;
-import com.orbitmines.discordbot.utils.BotToken;
+import com.orbitmines.discordbot.utils.ColorUtils;
 import com.orbitmines.spigot.api._2fa._2FA;
 import com.orbitmines.spigot.api.cmds.*;
 import com.orbitmines.spigot.api.datapoints.DataPointHandler;
 import com.orbitmines.spigot.api.events.*;
-import com.orbitmines.spigot.api.handlers.CachedPlayer;
+import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.spigot.api.handlers.ConfigHandler;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.OrbitMinesMap;
@@ -30,6 +30,7 @@ import com.orbitmines.spigot.runnables.LeaderBoardRunnable;
 import com.orbitmines.spigot.runnables.NPCRunnable;
 import com.orbitmines.spigot.runnables.ScoreboardRunnable;
 import com.orbitmines.spigot.runnables.ServerSelectorRunnable;
+import net.dv8tion.jda.core.EmbedBuilder;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -204,6 +205,7 @@ public class OrbitMines extends JavaPlugin {
                 new TeleportingMoveEvent(),
                 new WorldAdvancementsFix_1_12()
         );
+
         registerRunnables();
 
         /* Prepare Server */
@@ -219,7 +221,10 @@ public class OrbitMines extends JavaPlugin {
         }
 
         /* Discord Startup Message */
-        serverHandler.getMessageHandler().dataTransfer(PluginMessage.DISCORD_MSG, BotToken.from(serverHandler.getServer()).toString(), "Starting " + server.getName() + "...");
+        EmbedBuilder builder = new EmbedBuilder();
+        builder.setAuthor("Starting " + server.getName() + "...");
+        builder.setColor(ColorUtils.from(Color.LIME));
+        serverHandler.getDiscordChannel().sendMessage(builder.build()).queue();
 
         /* Setup Server */
         serverHandler.onEnable();
@@ -227,6 +232,9 @@ public class OrbitMines extends JavaPlugin {
         /* Set Server Online */
         server.setPlayers(0);
         server.setStatus(Server.Status.ONLINE);
+
+        /* Discord Message Listener Message */
+        serverHandler.getDiscord().getJDA(serverHandler.getToken()).addEventListener(new DiscordMessageListener(this));
     }
 
     @Override
@@ -239,7 +247,10 @@ public class OrbitMines extends JavaPlugin {
             serverHandler.getServer().setPlayers(0);
 
             /* Discord Shutdown Message */
-            serverHandler.getMessageHandler().dataTransfer(PluginMessage.DISCORD_MSG, BotToken.from(serverHandler.getServer()).toString(), "Shutting down " + serverHandler.getServer().getName() + "...");
+            EmbedBuilder builder = new EmbedBuilder();
+            builder.setAuthor("Shutting down " + serverHandler.getServer().getName() + "...");
+            builder.setColor(ColorUtils.from(Color.RED));
+            serverHandler.getDiscordChannel().sendMessage(builder.build()).queue();
 
             serverHandler.onDisable();
         }

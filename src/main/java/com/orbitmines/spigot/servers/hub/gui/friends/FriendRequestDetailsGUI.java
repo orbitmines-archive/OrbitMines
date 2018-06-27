@@ -4,7 +4,7 @@ package com.orbitmines.spigot.servers.hub.gui.friends;
  * OrbitMines - @author Fadi Shawki - 2018
  */
 
-import com.orbitmines.spigot.api.handlers.CachedPlayer;
+import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.GUI;
 import com.orbitmines.spigot.api.handlers.OMPlayer;

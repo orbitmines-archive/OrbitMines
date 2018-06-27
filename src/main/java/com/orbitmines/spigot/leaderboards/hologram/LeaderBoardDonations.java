@@ -1,6 +1,6 @@
 package com.orbitmines.spigot.leaderboards.hologram;
 
-import com.orbitmines.spigot.api.handlers.CachedPlayer;
+import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.api.Donation;
 import com.orbitmines.api.database.Table;
 import com.orbitmines.api.database.tables.TableDonations;

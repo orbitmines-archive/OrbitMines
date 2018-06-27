@@ -3,7 +3,7 @@ package com.orbitmines.spigot.api.handlers.data;
 import com.orbitmines.api.*;
 import com.orbitmines.api.database.*;
 import com.orbitmines.spigot.OrbitMines;
-import com.orbitmines.spigot.api.handlers.CachedPlayer;
+import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.PluginMessageHandler;

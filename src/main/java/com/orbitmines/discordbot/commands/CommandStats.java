@@ -20,7 +20,7 @@ import com.orbitmines.discordbot.handlers.Command;
 import com.orbitmines.discordbot.utils.BotToken;
 import com.orbitmines.discordbot.utils.ColorUtils;
 import com.orbitmines.discordbot.utils.SkinLibrary;
-import com.orbitmines.spigot.api.handlers.CachedPlayer;
+import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.spigot.api.handlers.data.PlayTimeData;
 import com.orbitmines.spigot.api.handlers.data.VoteData;
 import net.dv8tion.jda.core.EmbedBuilder;

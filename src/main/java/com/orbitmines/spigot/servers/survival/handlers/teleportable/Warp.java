@@ -10,7 +10,7 @@ import com.orbitmines.api.VipRank;
 import com.orbitmines.api.database.*;
 import com.orbitmines.api.database.tables.survival.TableSurvivalWarps;
 import com.orbitmines.api.utils.RandomUtils;
-import com.orbitmines.spigot.api.handlers.CachedPlayer;
+import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.Teleportable;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;

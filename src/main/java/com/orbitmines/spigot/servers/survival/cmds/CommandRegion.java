@@ -58,7 +58,7 @@ public class CommandRegion extends Command {
             }
 
             if (id > 0 && id <= Region.TELEPORTABLE) {
-                Region region = Region.getRegion(id);
+                Region region = Region.getRegion(id - 1);
                 if (omp.getWorld() == survival.getOrbitMines().getLobby().getWorld())
                     omp.getPlayer().teleport(region.getLocation());
                 else

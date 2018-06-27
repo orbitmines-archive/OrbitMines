@@ -8,7 +8,7 @@ import com.orbitmines.api.Color;
 import com.orbitmines.api.Server;
 import com.orbitmines.api.utils.uuid.UUIDUtils;
 import com.orbitmines.spigot.OrbitMines;
-import com.orbitmines.spigot.api.handlers.CachedPlayer;
+import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.GUI;
 import com.orbitmines.spigot.api.handlers.OMPlayer;

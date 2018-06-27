@@ -10,20 +10,17 @@ import com.orbitmines.api.database.tables.TableServerData;
 import com.orbitmines.api.database.tables.TableVotes;
 import com.orbitmines.api.utils.DateUtils;
 import com.orbitmines.api.utils.TimeUtils;
+import com.orbitmines.bungeecord.handlers.BossBar;
 import com.orbitmines.bungeecord.handlers.BungeePlayer;
 import com.orbitmines.bungeecord.handlers.timer.Timer;
 import com.orbitmines.bungeecord.runnables.BungeeRunnable;
 import com.orbitmines.bungeecord.utils.ConsoleUtils;
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
-import net.md_5.bungee.chat.ComponentSerializer;
-import net.md_5.bungee.protocol.packet.BossBar;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
-import java.nio.charset.Charset;
 import java.time.Month;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class AutoRestart extends BungeeRunnable {
 
@@ -74,6 +71,12 @@ public class AutoRestart extends BungeeRunnable {
     }
 
     private void initiateRestart(boolean voteRestart) {
+        BossBar bossBar = new BossBar("§7§lOrbit§8§lMines §c§lRestarting in " + TimeUtils.fromTimeStamp(10 * 60 * 1000, Language.ENGLISH) + "...", BossBar.Color.RED, BossBar.Style.SOLID);
+
+        for (ProxiedPlayer player : bungee.getProxy().getPlayers()) {
+            bossBar.addPlayer(player);
+        }
+
         new Timer(new BungeeRunnable.Time(TimeUnit.MINUTE, 10), new BungeeRunnable.Time(TimeUnit.SECOND, 1)) {
             @Override
             public void onFinish() {
@@ -99,13 +102,12 @@ public class AutoRestart extends BungeeRunnable {
 
             @Override
             public void onInterval() {
-                BossBar bossBar = new BossBar(UUID.nameUUIDFromBytes(("BBB:" + new AtomicInteger(1).getAndIncrement()).getBytes(Charset.forName("UTF-8"))), 0);
-                bossBar.setColor(2);
-                bossBar.setHealth(getProgress());
+                bossBar.setTitle("§7§lOrbit§8§lMines §c§lRestarting in " + TimeUtils.fromTimeStamp(getRemainingSeconds() * 1000, Language.ENGLISH) + "...");
+                bossBar.setProgress(getProgress());
 
-                bossBar.setTitle(ComponentSerializer.toString(new TextComponent("§7§lOrbit§8§lMines §c§lRestarting in " + TimeUtils.fromTimeStamp(getRemainingSeconds() * 1000, Language.ENGLISH) + "...")));
-
-                BungeePlayer.getPlayers().forEach(omp -> omp.getPlayer().unsafe().sendPacket(bossBar));
+                for (ProxiedPlayer player : bungee.getProxy().getPlayers()) {
+                    bossBar.addPlayer(player);
+                }
             }
         };
     }

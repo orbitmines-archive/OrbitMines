@@ -7,7 +7,7 @@ package com.orbitmines.spigot.servers.survival.gui.claim;
 import com.orbitmines.api.Color;
 import com.orbitmines.api.Message;
 import com.orbitmines.api.utils.NumberUtils;
-import com.orbitmines.spigot.api.handlers.CachedPlayer;
+import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.spigot.api.handlers.GUI;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;

@@ -1,12 +1,20 @@
 package com.orbitmines.spigot;
 
-import com.orbitmines.api.Server;
+import com.orbitmines.api.*;
+import com.orbitmines.api.Message;
+import com.orbitmines.discordbot.DiscordBot;
+import com.orbitmines.discordbot.utils.BotToken;
+import com.orbitmines.discordbot.utils.SkinLibrary;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.PluginMessageHandler;
 import com.orbitmines.spigot.api.handlers.PreventionSet;
+import com.orbitmines.spigot.api.handlers.chat.ComponentMessage;
 import com.orbitmines.spigot.api.runnables.SpigotRunnable;
 import com.orbitmines.spigot.servers.hub.Hub;
 import com.orbitmines.spigot.servers.survival.Survival;
+import net.dv8tion.jda.core.entities.*;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.boss.BarColor;
@@ -25,6 +33,9 @@ public abstract class OrbitMinesServer {
     protected final OrbitMines orbitMines;
     protected final Server server;
     private final PluginMessageHandler messageHandler;
+
+    protected DiscordBot discord;
+    protected BotToken token;
 
     protected final PreventionSet preventionSet;
     private BossBar maintenanceBossBar;
@@ -55,6 +66,14 @@ public abstract class OrbitMinesServer {
                 }
             }
         };
+
+        /* Setup Discord */
+        try {
+            token = BotToken.from(server);
+            discord = new DiscordBot(token);
+        } catch(Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     public abstract void onEnable();
@@ -79,6 +98,86 @@ public abstract class OrbitMinesServer {
 
     public void format(AsyncPlayerChatEvent event, OMPlayer omp) {
         event.setFormat(omp.getRankPrefix() + omp.getName() + "§7 » " + omp.getRankChatColor().getChatColor() + "%2$s");
+    }
+
+    public void fromDiscord(Member member, net.dv8tion.jda.core.entities.Message message) {
+        StaffRank staffRank = StaffRank.NONE;
+        VipRank vipRank = VipRank.NONE;
+
+        for (Role role : member.getRoles()) {
+            try {
+                staffRank = StaffRank.valueOf(role.getName().toUpperCase());
+            } catch (IllegalArgumentException ex) {
+                try {
+                    vipRank = VipRank.valueOf(role.getName().toUpperCase());
+                } catch (IllegalArgumentException ex1) { }
+            }
+        }
+        //TODO DISCORD LINK GRAB CACHEDPLAYER
+
+        ComponentMessage cM = new ComponentMessage();
+
+        String rankPrefix = staffRank != StaffRank.NONE ? staffRank.getPrefix(staffRank.getPrefixColor()) : vipRank.getPrefix(vipRank.getPrefixColor());
+        Color chatColor = staffRank != StaffRank.NONE ? staffRank.getChatColor() : vipRank.getChatColor();
+
+        cM.add(new Message("§9§lDISCORD§r"));
+        cM.add(new Message(" §7» "));
+
+        String name = rankPrefix + "@" + member.getEffectiveName();
+        cM.add(new Message(name), HoverEvent.Action.SHOW_TEXT, new Message(rankPrefix + "@" + member.getUser().getName() + "#" + member.getUser().getDiscriminator()));
+
+        String msg = message.getContentDisplay();
+        for (Role role : message.getMentionedRoles()) {
+            msg = msg.replaceAll(role.getAsMention(), "@" + role.getName());
+        }
+        for (TextChannel textChannel : message.getMentionedChannels()) {
+            msg = msg.replaceAll(textChannel.getAsMention(), "#" + textChannel.getName());
+        }
+        for (Member mem : message.getMentionedMembers()) {
+            msg = msg.replaceAll(mem.getAsMention(), "@" + mem.getEffectiveName());
+        }
+        for (Emote emote : message.getEmotes()) {
+            msg = msg.replaceAll(emote.getAsMention(), emote.getName());
+        }
+
+        cM.add(new Message(" §7» " + chatColor.getChatColor() + msg));
+
+        if (message.getAttachments().size() != 0) {
+            net.dv8tion.jda.core.entities.Message.Attachment attachment = message.getAttachments().get(0);
+            cM.add(new Message(" (File: §9§l" + attachment.getFileName() + "§r" + chatColor.getChatColor() + ")"), ClickEvent.Action.OPEN_URL, new Message(attachment.getUrl()), HoverEvent.Action.SHOW_TEXT, new Message("§7Klik hier om §9§l" + attachment.getFileName() + "§7 te openen.", "§7Click here to open §9§l" + attachment.getFileName() + "§7."));
+        }
+
+        cM.send(OMPlayer.getPlayers());
+    }
+
+    public void toDiscord(AsyncPlayerChatEvent event, OMPlayer omp) {
+        Guild guild = discord.getGuild(token);
+
+        CharSequence text = SkinLibrary.getEmote(guild, omp.getUUID()).getAsMention() + getDiscordRankPrefix(omp) + " **" + omp.getName(true) + "** » ";
+
+        String message = event.getMessage();
+
+        for (Role role : guild.getRoles()) {
+            message = message.replaceAll("@" + role.getName(), role.getAsMention());
+        }
+        for (TextChannel textChannel : guild.getTextChannels()) {
+            message = message.replaceAll("#" + textChannel.getName(), textChannel.getAsMention());
+        }
+        for (Member member : guild.getMembers()) {
+            message = message.replace("@" + member.getEffectiveName() + "#" + member.getUser().getDiscriminator(), member.getAsMention()).replaceAll("@" + member.getEffectiveName(), member.getAsMention()).replaceAll("@" + member.getNickname(), member.getAsMention());
+        }
+        for (Emote emote : guild.getEmotes()) {
+            message = message.replaceAll(":" + emote.getName() + ":", emote.getAsMention());
+        }
+
+        getDiscordChannel().sendMessage(text + message).queue();
+    }
+
+    public String getDiscordRankPrefix(OMPlayer omp) {
+        if (omp.getStaffRank() == StaffRank.NONE)
+            return omp.getVipRank() != VipRank.NONE ? " " + discord.getEmote(token, omp.getVipRank()).getAsMention() + "**" + omp.getRankName() + "**" : "";
+
+        return " **" + omp.getRankName() + "**";
     }
 
     protected void registerEvents(Listener... listeners) {
@@ -122,6 +221,18 @@ public abstract class OrbitMinesServer {
 
     public PluginMessageHandler getMessageHandler() {
         return messageHandler;
+    }
+
+    public DiscordBot getDiscord() {
+        return discord;
+    }
+
+    public TextChannel getDiscordChannel() {
+        return discord.getChannelFor(token);
+    }
+
+    public BotToken getToken() {
+        return token;
     }
 
     public PreventionSet getPreventionSet() {

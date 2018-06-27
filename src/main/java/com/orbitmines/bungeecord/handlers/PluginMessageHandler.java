@@ -7,8 +7,6 @@ import com.orbitmines.api.Server;
 import com.orbitmines.bungeecord.OrbitMinesBungee;
 import com.orbitmines.bungeecord.runnables.BungeeRunnable;
 import com.orbitmines.bungeecord.utils.ConsoleUtils;
-import com.orbitmines.discordbot.utils.BotToken;
-import com.orbitmines.discordbot.utils.SkinLibrary;
 import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.data.PlayTimeData;
 import com.orbitmines.spigot.api.utils.Serializer;
@@ -166,6 +164,15 @@ public class PluginMessageHandler implements Listener {
                     bungee.registerLogin(omp);
                     break;
                 }
+                case SET_LOGGING_IN: {
+                    BungeePlayer omp = BungeePlayer.getPlayer(UUID.fromString(in.readUTF()));
+
+                    if (omp == null)
+                        break;
+
+                    omp.setLoggedIn(false);
+                    break;
+                }
                 case MESSAGE_PLAYER: {
                     BungeePlayer omp = BungeePlayer.getPlayer(UUID.fromString(in.readUTF()));
 
@@ -227,15 +234,8 @@ public class PluginMessageHandler implements Listener {
                         Server server = Server.valueOf(in.readUTF());
 
                         ((PlayTimeData) omp.getData(Data.Type.PLAY_TIME)).startSession(server);
-
-                        bungee.getDiscord().getChannelFor(BotToken.from(server)).sendMessage(SkinLibrary.getEmote(bungee.getDiscord().getGuild(), omp.getUUID()).getAsMention() + " **" + omp.getRankName() + " " + omp.getName(true) + "** has joined.").queue();
                     }
                     break;
-                }
-                case DISCORD_MSG: {
-                    BotToken token = BotToken.valueOf(in.readUTF());
-
-                    bungee.getDiscord().getChannelFor(token).sendMessage(in.readUTF()).queue();
                 }
             }
         } catch (IOException ex) {

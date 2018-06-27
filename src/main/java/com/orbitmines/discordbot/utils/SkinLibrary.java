@@ -4,7 +4,8 @@ package com.orbitmines.discordbot.utils;
  * OrbitMines - @author Fadi Shawki - 2018
  */
 
-import com.orbitmines.spigot.api.handlers.CachedPlayer;
+import com.orbitmines.api.CachedPlayer;
+import com.orbitmines.api.utils.uuid.UUIDUtils;
 import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Icon;
@@ -23,20 +24,41 @@ public class SkinLibrary {
         return type.url + uuid.toString();
     }
 
-    public static void setupEmote(Guild guild, UUID uuid) {
-        CachedPlayer player = CachedPlayer.getPlayer(uuid);
+    public static void setupEmote(Guild guild, String name) {
+        CachedPlayer player = CachedPlayer.getPlayer(name);
 
+        UUID uuid = player != null ? player.getUUID() : UUIDUtils.getUUID(name);
+
+        if (uuid == null)
+            return;
+
+        setupEmote(guild, uuid);
+    }
+
+    public static void setupEmote(Guild guild, UUID uuid) {
         if (emoteCache.contains(uuid))
             return;
 
-        List<Emote> existing = guild.getEmotesByName("player_" + player.getPlayerName(), true);
+        String name;
+
+        CachedPlayer player = CachedPlayer.getPlayer(uuid);
+
+        if (player != null)
+            name = player.getPlayerName();
+        else
+            name = UUIDUtils.getName(uuid);
+
+        if (name == null)
+            return;
+
+        List<Emote> existing = guild.getEmotesByName("player_" + name, true);
         if (existing.size() != 0) {
             Emote emote = existing.get(0);
             emote.delete().queue();
         }
 
         try {
-            guild.getController().createEmote("player_" + player.getPlayerName(), Icon.from(new URL(Type.HEAD_FLAT.url + uuid.toString()).openStream())).queue();
+            guild.getController().createEmote("player_" + name, Icon.from(new URL(Type.HEAD_FLAT.url + uuid.toString()).openStream())).queue();
             emoteCache.add(uuid);
         } catch (IOException e) {
             e.printStackTrace();

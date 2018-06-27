@@ -6,8 +6,13 @@ import com.orbitmines.api.StaffRank;
 import com.orbitmines.bungeecord.OrbitMinesBungee;
 import com.orbitmines.bungeecord.handlers.BungeePlayer;
 import com.orbitmines.bungeecord.handlers.cmd.StaffCommand;
+import com.orbitmines.bungeecord.runnables.BungeeRunnable;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.event.ChatEvent;
+import org.bukkit.boss.BossBar;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /*
 * OrbitMines - @author Fadi Shawki - 2017
@@ -18,10 +23,27 @@ public class CommandMaintenance extends StaffCommand {
 
     private OrbitMinesBungee bungee;
 
+    private Map<Server, BungeeRunnable> runnables;
+    private Map<Server, BossBar> bossBar;
+
     public CommandMaintenance(OrbitMinesBungee bungee) {
         super(StaffRank.MODERATOR);
 
         this.bungee = bungee;
+        this.runnables = new HashMap<>();
+
+        for (Server server : Server.values()) {
+            if (server.getStatus() == Server.Status.MAINTENANCE)
+                startNewRunnable(server);
+
+//            net.md_5.bungee.protocol.packet.BossBar bossBar = new net.md_5.bungee.protocol.packet.BossBar(UUID.nameUUIDFromBytes(("BBB:" + new AtomicInteger(1).getAndIncrement()).getBytes(Charset.forName("UTF-8"))), 0);
+//            bossBar.setColor(2);
+//            bossBar.setHealth(getProgress());
+//
+//            bossBar.setTitle(ComponentSerializer.toString(new TextComponent("§7§lOrbit§8§lMines §c§lRestarting in " + TimeUtils.fromTimeStamp(getRemainingSeconds() * 1000, Language.ENGLISH) + "...")));
+//
+//            BungeePlayer.getPlayers().forEach(omp -> omp.getPlayer().unsafe().sendPacket(bossBar));
+        }
     }
 
     @Override
@@ -51,10 +73,15 @@ public class CommandMaintenance extends StaffCommand {
         if (server.getStatus() == Server.Status.MAINTENANCE) {
             server.setStatus(Server.Status.OFFLINE);
             omp.sendMessage("Maintenance", Color.LIME, server.getDisplayName() + "§7 is nu uit " + Server.Status.MAINTENANCE.getDisplayName() + "§7.", server.getDisplayName() + "§7 is no longer in " + Server.Status.MAINTENANCE.getDisplayName() + "§7.");
+
+            clearRunnable(server);
+
             return;
         }
 
         server.setStatus(Server.Status.MAINTENANCE);
+        startNewRunnable(server);
+
         for (BungeePlayer player : BungeePlayer.getPlayers(server)) {
             if (player.isEligible(StaffRank.MODERATOR))
                 continue;
@@ -69,5 +96,18 @@ public class CommandMaintenance extends StaffCommand {
             player.connect(bungee.getServer(fallback), true);
         }
         omp.sendMessage("Maintenance", Color.LIME, server.getDisplayName() + "§7 is nu in " + Server.Status.MAINTENANCE.getDisplayName() + "§7.", server.getDisplayName() + "§7 is now in " + Server.Status.MAINTENANCE.getDisplayName() + "§7.");
+    }
+
+    private void startNewRunnable(Server server) {
+//        runnables.put(server, new BungeeRunnable() {
+//            @Override
+//            public void run() {
+//
+//            }
+//        });
+    }
+
+    private void clearRunnable(Server server) {
+
     }
 }

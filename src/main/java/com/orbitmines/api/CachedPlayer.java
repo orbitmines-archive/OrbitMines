@@ -1,6 +1,5 @@
-package com.orbitmines.spigot.api.handlers;
+package com.orbitmines.api;
 
-import com.orbitmines.api.*;
 import com.orbitmines.api.database.Database;
 import com.orbitmines.api.database.Table;
 import com.orbitmines.api.database.Where;
@@ -128,7 +127,7 @@ public class CachedPlayer {
         if (cached.containsKey(uuid))
             return cached.get(uuid);
 
-        return new CachedPlayer(uuid);
+        return Database.get().contains(Table.PLAYERS, TablePlayers.UUID, new Where(TablePlayers.UUID, uuid.toString())) ? new CachedPlayer(uuid) : null;
     }
 
     public static CachedPlayer getPlayer(String playerName) {

@@ -144,8 +144,8 @@ public class LootGUI extends GUI {
 
                 item.addLore("§7" + omp.lang("Zeldzaamheid", "Rarity") + ": " + instance.getRarity().getDisplayName());
 
-                if (loot.getServer() != null)
-                    item.addLore("§7Server: " + loot.getServer().getDisplayName());
+                if (loot.getServer(count) != null)
+                    item.addLore("§7Server: " + loot.getServer(count).getDisplayName());
 
                 item.addLore("");
                 item.addLore("§2§l§o" + instance.getDescription());

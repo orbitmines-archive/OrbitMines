@@ -10,6 +10,8 @@ import com.orbitmines.api.settings.Settings;
 import com.orbitmines.api.settings.SettingsType;
 import com.orbitmines.api.utils.DateUtils;
 import com.orbitmines.api.utils.NumberUtils;
+import com.orbitmines.discordbot.DiscordBot;
+import com.orbitmines.discordbot.utils.SkinLibrary;
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.Freezer;
 import com.orbitmines.spigot.api.Loot;
@@ -27,6 +29,7 @@ import com.orbitmines.spigot.api.handlers.scoreboard.OMScoreboard;
 import com.orbitmines.spigot.api.handlers.scoreboard.ScoreboardSet;
 import com.orbitmines.spigot.api.handlers.timer.Timer;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalData;
+import net.dv8tion.jda.core.entities.Guild;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -123,7 +126,7 @@ public abstract class OMPlayer {
         orbitMines.getServerHandler().getServer().setPlayers(Bukkit.getOnlinePlayers().size());
 
         if (!Database.get().contains(Table.PLAYERS, TablePlayers.UUID, new Where(TablePlayers.UUID, getUUID().toString()))) {
-            Database.get().insert(Table.PLAYERS, Table.PLAYERS.values(getUUID().toString(), getRealName(), staffRank.toString(), vipRank.toString(), DateUtils.FORMAT.format(DateUtils.now()), language.toString(), SettingsType.ENABLED.toString(), SettingsType.ENABLED.toString(), SettingsType.ENABLED.toString(), silent ? "1" : "0", solars + "", prisms + ""));
+            Database.get().insert(Table.PLAYERS, getUUID().toString(), getRealName(), staffRank.toString(), vipRank.toString(), DateUtils.FORMAT.format(DateUtils.now()), language.toString(), SettingsType.ENABLED.toString(), SettingsType.ENABLED.toString(), SettingsType.ENABLED.toString(), silent ? "1" : "0", solars + "", prisms + "");
         } else {
             Map<Column, String> values = Database.get().getValues(Table.PLAYERS, new Column[]{
                     TablePlayers.STAFFRANK,
@@ -167,10 +170,15 @@ public abstract class OMPlayer {
         onLogin();
 
         /* Join Message */
-        if (silent)
-            orbitMines.broadcast(StaffRank.MODERATOR, " §a» " + getName() + "§a is gejoind. §7§o[Silent]", " §a» " + getName() + "§a joined. §7§o[Silent]");
-        else
-            orbitMines.broadcast(" §a» " + getName() + "§a is gejoind.", " §a» " + getName() + "§a joined.");
+        if (silent) {
+            orbitMines.broadcast(StaffRank.MODERATOR, " §a» " + getName() + "§a is gejoind. §7§o[Silent]", " §a» " + getName() + "§a has joined. §7§o[Silent]");
+        } else {
+            orbitMines.broadcast(" §a» " + getName() + "§a is gejoind.", " §a» " + getName() + "§a has joined.");
+
+            DiscordBot discord = orbitMines.getServerHandler().getDiscord();
+            Guild guild = discord.getGuild(orbitMines.getServerHandler().getToken());
+            orbitMines.getServerHandler().getDiscordChannel().sendMessage(guild.getRolesByName("»", true).get(0).getAsMention() + " " + SkinLibrary.getEmote(guild, getUUID()).getAsMention() + orbitMines.getServerHandler().getDiscordRankPrefix(this) + " **" + getName(true) + "** has joined.").queue();
+        }
 
         new BukkitRunnable() {
             @Override
@@ -201,10 +209,15 @@ public abstract class OMPlayer {
         onLogout();
 
         /* Quit Message */
-        if (silent)
-            orbitMines.broadcast(StaffRank.MODERATOR, " §c« " + getName() + "§c is weggegaan. §7§o[Silent]", " §c« " + getName() + "§c left. §7§o[Silent]");
-        else
-            orbitMines.broadcast(" §c« " + getName() + "§c is weggegaan.", " §c« " + getName() + "§c left.");
+        if (silent) {
+            orbitMines.broadcast(StaffRank.MODERATOR, " §c« " + getName() + "§c is weggegaan. §7§o[Silent]", " §c« " + getName() + "§c has left. §7§o[Silent]");
+        } else {
+            orbitMines.broadcast(" §c« " + getName() + "§c is weggegaan.", " §c« " + getName() + "§c has left.");
+
+            DiscordBot discord = orbitMines.getServerHandler().getDiscord();
+            Guild guild = discord.getGuild(orbitMines.getServerHandler().getToken());
+            orbitMines.getServerHandler().getDiscordChannel().sendMessage(guild.getRolesByName("«", true).get(0).getAsMention() + " " + SkinLibrary.getEmote(guild, getUUID()).getAsMention() + orbitMines.getServerHandler().getDiscordRankPrefix(this) + " **" + getName(true) + "** has left.").queue();
+        }
 
         orbitMines.getServerHandler().getServer().setPlayers(Bukkit.getOnlinePlayers().size() -1);
 

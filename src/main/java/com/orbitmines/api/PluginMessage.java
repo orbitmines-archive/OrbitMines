@@ -11,10 +11,10 @@ public enum PluginMessage {
     CONNECT(Server.BUNGEECORD),
     KICK(Server.BUNGEECORD),
 
+    SET_LOGGING_IN(Server.BUNGEECORD),
     LOGIN_2FA(Server.BUNGEECORD),
 
     SHUTDOWN(Server.SPIGOT),
-    DISCORD_MSG(Server.SPIGOT),
 
     MESSAGE_PLAYER(Server.BUNGEECORD),
 
