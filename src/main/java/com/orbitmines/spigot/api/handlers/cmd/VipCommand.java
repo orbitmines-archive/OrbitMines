@@ -1,6 +1,7 @@
 package com.orbitmines.spigot.api.handlers.cmd;
 
 import com.orbitmines.api.Message;
+import com.orbitmines.api.Server;
 import com.orbitmines.api.VipRank;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 
@@ -11,7 +12,9 @@ public abstract class VipCommand extends Command {
 
     private final VipRank vipRank;
 
-    public VipCommand(VipRank vipRank) {
+    public VipCommand(Server server, VipRank vipRank) {
+        super(server);
+        
         this.vipRank = vipRank;
     }
 

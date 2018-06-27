@@ -12,7 +12,7 @@ import java.util.List;
 */
 public class RegionLocator {
 
-    private final List<Material> yFinder = Arrays.asList(Material.LOG, Material.LOG_2);
+    private final List<Material> yFinder = Arrays.asList(Material.LEAVES, Material.LEAVES_2, Material.LOG, Material.LOG_2);
 
     private final int id;
 
@@ -21,7 +21,7 @@ public class RegionLocator {
     private int z;
 
     private int inventoryX;
-    private int inventotyY;
+    private int inventoryY;
 
     private boolean generated;
 
@@ -31,7 +31,7 @@ public class RegionLocator {
         x = Region.START_X;
         z = Region.START_Z;
         inventoryX = 0;
-        inventotyY = 0;
+        inventoryY = 0;
     }
 
     public int getId() {
@@ -50,8 +50,8 @@ public class RegionLocator {
         return inventoryX;
     }
 
-    public int getInventotyY() {
-        return inventotyY;
+    public int getInventoryY() {
+        return inventoryY;
     }
 
     public int locateY() {
@@ -83,7 +83,7 @@ public class RegionLocator {
                     continue;
                 }
                 z += Region.OFFSET;
-                inventotyY++;
+                inventoryY++;
                 continue;
             }
             if (x > z) {
@@ -93,16 +93,16 @@ public class RegionLocator {
                     continue;
                 }
                 z -= Region.OFFSET;
-                inventotyY--;
+                inventoryY--;
                 continue;
             }
             if (x <= 0) {
                 z += Region.OFFSET;
-                inventotyY++;
+                inventoryY++;
                 continue;
             }
             z -= Region.OFFSET;
-            inventotyY--;
+            inventoryY--;
         }
     }
 }

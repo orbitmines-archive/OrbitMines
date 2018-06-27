@@ -12,4 +12,6 @@ public interface ItemStackNms {
 
     ItemStack setEggId(ItemStack item, EntityType entityType);
 
+    ItemStack setCustomSkullTexture(ItemStack item, String name, String value);
+    
 }

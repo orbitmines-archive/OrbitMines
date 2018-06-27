@@ -1,9 +1,7 @@
 package com.orbitmines.api;
 
-import com.orbitmines.api.database.Database;
-import com.orbitmines.api.database.Set;
-import com.orbitmines.api.database.Table;
-import com.orbitmines.api.database.Where;
+import com.orbitmines.api.database.*;
+import com.orbitmines.api.database.tables.TablePlayTime;
 import com.orbitmines.api.database.tables.TableServers;
 
 /*
@@ -11,24 +9,27 @@ import com.orbitmines.api.database.tables.TableServers;
 */
 public enum Server {
 
-    KITPVP("KitPvP", Color.RED, true),
-    PRISON("Prison", Color.MAROON, false),
-    CREATIVE("Creative", Color.FUCHSIA, false),
-    HUB("Hub", Color.TEAL, true),
-    SURVIVAL("Survival", Color.LIME, false),
-    SKYBLOCK("SkyBlock", Color.PURPLE, false),
-    FOG("FoG", Color.YELLOW, false),
-    MINIGAMES("MiniGames", Color.WHITE, true),
-    UHSURVIVAL("UHSurvival", Color.GREEN, false);
+    HUB("Hub", Color.TEAL, true, TablePlayTime.HUB),
+    SURVIVAL("Survival", Color.LIME, false, TablePlayTime.SURVIVAL),
+    KITPVP("KitPvP", Color.RED, true, TablePlayTime.KITPVP),
+
+    PRISON("Prison", Color.MAROON, false, TablePlayTime.PRISON),
+    CREATIVE("Creative", Color.FUCHSIA, false, TablePlayTime.CREATIVE),
+    SKYBLOCK("SkyBlock", Color.PURPLE, false, TablePlayTime.SKYBLOCK),
+    FOG("FoG", Color.YELLOW, false, TablePlayTime.FOG),
+    MINIGAMES("MiniGames", Color.WHITE, true, TablePlayTime.MINIGAMES),
+    UHSURVIVAL("UHSurvival", Color.GREEN, false, TablePlayTime.UHSURVIVAL);
 
     private final String name;
     private final Color color;
     private final boolean cleanUpPlayerData;
+    private final Column playTimeColumn;
 
-    Server(String name, Color color, boolean cleanUpPlayerData) {
+    Server(String name, Color color, boolean cleanUpPlayerData, Column playTimeColumn) {
         this.name = name;
         this.color = color;
         this.cleanUpPlayerData = cleanUpPlayerData;
+        this.playTimeColumn = playTimeColumn;
     }
 
     public String getName() {
@@ -41,6 +42,10 @@ public enum Server {
 
     public boolean cleanUpPlayerData() {
         return cleanUpPlayerData;
+    }
+
+    public Column getPlayTimeColumn() {
+        return playTimeColumn;
     }
 
     public String getDisplayName() {

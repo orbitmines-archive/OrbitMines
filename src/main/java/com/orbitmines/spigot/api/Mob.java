@@ -199,4 +199,12 @@ public enum Mob {
                 return null;
         }
     }
+
+    public static Mob from(short mobId) {
+        for (Mob mob : Mob.values()) {
+            if (mob.getType().getTypeId() == mobId)
+                return mob;
+        }
+        return null;
+    }
 }

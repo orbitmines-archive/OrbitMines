@@ -1,16 +1,19 @@
 package com.orbitmines.spigot.servers.survival.handlers;
 
-import com.orbitmines.api.database.*;
-import com.orbitmines.api.database.Set;
-import com.orbitmines.api.database.tables.survival.TableSurvivalPlayers;
+import com.orbitmines.api.Color;
+import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.servers.survival.Survival;
 import com.orbitmines.spigot.servers.survival.handlers.claim.Claim;
 import com.orbitmines.spigot.servers.survival.handlers.claim.Visualization;
+import com.orbitmines.spigot.servers.survival.handlers.teleportable.Home;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.UUID;
 
 /*
 * OrbitMines - @author Fadi Shawki - 2017
@@ -21,8 +24,7 @@ public class SurvivalPlayer extends OMPlayer {
 
     private final Survival survival;
 
-    private int earthMoney;
-    private int claimBlocks;
+    private List<Home> homes;
 
     private java.util.Set<Survival.Settings> settings;
 
@@ -37,9 +39,6 @@ public class SurvivalPlayer extends OMPlayer {
 
         this.survival = survival;
 
-        this.earthMoney = 0;
-        this.claimBlocks = 250 /* TODO */* 10;
-
         this.settings = new HashSet<>();
 
         this.claimToolType = Claim.ToolType.NORMAL;
@@ -49,17 +48,7 @@ public class SurvivalPlayer extends OMPlayer {
     protected void onLogin() {
         players.add(this);
 
-        if (!Database.get().contains(Table.SURVIVAL_PLAYERS, TableSurvivalPlayers.UUID, new Where(TableSurvivalPlayers.UUID, getUUID().toString()))) {
-            Database.get().insert(Table.SURVIVAL_PLAYERS, Table.SURVIVAL_PLAYERS.values(getUUID().toString(), earthMoney + "", claimBlocks + ""));
-        } else {
-            Map<Column, String> values = Database.get().getValues(Table.SURVIVAL_PLAYERS, new Column[]{
-                    TableSurvivalPlayers.EARTH_MONEY,
-                    TableSurvivalPlayers.CLAIM_BLOCKS,
-            }, new Where(TableSurvivalPlayers.UUID, getUUID().toString()));
-
-            earthMoney = Integer.parseInt(values.get(TableSurvivalPlayers.EARTH_MONEY));
-            claimBlocks = Integer.parseInt(values.get(TableSurvivalPlayers.CLAIM_BLOCKS));
-        }
+        homes = Home.getHomesFor(getUUID());
 
         setScoreboard(new Survival.Scoreboard(orbitMines, this));
 
@@ -74,11 +63,6 @@ public class SurvivalPlayer extends OMPlayer {
     }
 
     @Override
-    public void onVote(int votes) {
-
-    }
-
-    @Override
     public boolean canReceiveVelocity() {
         return true;
     }
@@ -90,57 +74,128 @@ public class SurvivalPlayer extends OMPlayer {
 
 
      */
-    
-    /*
-        EarthMoney
-     */
 
     public int getEarthMoney() {
-        return earthMoney;
+        return getData().getEarthMoney();
     }
 
     public void addEarthMoney(int amount) {
-        earthMoney += amount;
-
-        updateEarthMoney();
+        getData().addEarthMoney(amount);
     }
 
     public void removeEarthMoney(int amount) {
-        earthMoney -= amount;
-
-        updateEarthMoney();
+        getData().removeEarthMoney(amount);
     }
 
-    private void updateEarthMoney() {
-        Database.get().update(Table.SURVIVAL_PLAYERS, new Set(TableSurvivalPlayers.EARTH_MONEY, this.earthMoney), new Where(TableSurvivalPlayers.UUID, getUUID().toString()));
-    }
-    
     /*
         ClaimBlocks
      */
 
     public int getClaimBlocks() {
-        return claimBlocks;
+        return getData().getClaimBlocks();
     }
 
     public void addClaimBlocks(int amount) {
-        claimBlocks += amount;
-
-        updateClaimBlocks();
+        getData().addClaimBlocks(amount);
     }
 
     public void removeClaimBlocks(int amount) {
-        claimBlocks -= amount;
-
-        updateClaimBlocks();
+        getData().removeClaimBlocks(amount);
     }
 
     public int getRemainingClaimBlocks() {
-        return survival.getClaimHandler().getRemaining(getUUID(), claimBlocks);
+        return survival.getClaimHandler().getRemaining(getUUID(), getClaimBlocks());
     }
 
-    private void updateClaimBlocks() {
-        Database.get().update(Table.SURVIVAL_PLAYERS, new Set(TableSurvivalPlayers.CLAIM_BLOCKS, this.claimBlocks), new Where(TableSurvivalPlayers.UUID, getUUID().toString()));
+    /*
+        Extra Homes
+     */
+
+    public int getExtraHomes() {
+        return getData().getExtraHomes();
+    }
+
+    public void setExtraHomes(int extraHomes) {
+        getData().setExtraHomes(extraHomes);
+    }
+
+    public int getHomesAllowed() {
+        return getData().getHomesAllowed(this);
+    }
+
+    /*
+        Extra Warps
+     */
+
+    public boolean warpSlotShop() {
+        return getData().warpSlotShop();
+    }
+
+    public boolean warpSlotPrisms() {
+        return getData().warpSlotPrisms();
+    }
+
+    public void setWarpSlotShop(boolean warpSlotShop) {
+        getData().setWarpSlotShop(warpSlotShop);
+    }
+
+    public void setWarpSlotPrisms(boolean warpSlotPrisms) {
+        getData().setWarpSlotPrisms(warpSlotPrisms);
+    }
+
+    public int getWarpsAllowed() {
+        return getData().getWarpsAllowed(this);
+    }
+
+    /*
+        Favorite Warps
+     */
+
+    public List<Long> getFavoriteWarps() {
+        return getData().getFavoriteWarps();
+    }
+
+    public void addFavoriteWarp(long id) {
+        getData().addFavoriteWarp(id);
+    }
+
+    public void removeFavoriteWarp(long id) {
+        getData().removeFavoriteWarp(id);
+    }
+
+    /*
+        Homes
+     */
+
+    public List<Home> getHomes() {
+        return homes;
+    }
+
+    public Home getHome(String name) {
+        for (Home home : this.homes) {
+            if (home.getName().equals(name))
+                return home;
+        }
+        return null;
+    }
+
+    public void delHome(Home home) {
+        home.delete();
+    }
+
+    public void setHome(String name) {
+        Home home = getHome(name);
+
+        String color = Home.COLOR.getChatColor();
+
+        if (home == null) {
+            this.homes.add(Home.createHome(getUUID(), name, player.getLocation()));
+            sendMessage("Home", Color.LIME, "§7Nieuwe home " + color + "neergezet§7! (" + color + name + "§7)", "§7New home " + color + "set§7! (" + color + name + "§7)");
+            return;
+        }
+
+        home.setLocation(player.getLocation());
+        sendMessage("Home", Color.LIME, "§7Home " + color + "neergezet§7! (" + color + name + "§7)", "§7Home " + color + "set§7! (" + color + name + "§7)");
     }
 
     /*
@@ -222,6 +277,10 @@ public class SurvivalPlayer extends OMPlayer {
 
     public void setLastClaimToolLocation(Location lastClaimToolLocation) {
         this.lastClaimToolLocation = lastClaimToolLocation;
+    }
+
+    public SurvivalData getData() {
+        return (SurvivalData) getData(Data.Type.SURVIVAL);
     }
 
     /*

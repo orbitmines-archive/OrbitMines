@@ -1,27 +1,25 @@
 package com.orbitmines.spigot.servers.survival.handlers.region;
 
+import com.orbitmines.api.Color;
 import com.orbitmines.api.Cooldown;
-import com.orbitmines.api.Message;
+import com.orbitmines.api.utils.NumberUtils;
 import com.orbitmines.api.utils.RandomUtils;
+import com.orbitmines.spigot.api.handlers.OMPlayer;
+import com.orbitmines.spigot.api.handlers.Teleportable;
 import com.orbitmines.spigot.api.handlers.chat.ActionBar;
-import com.orbitmines.spigot.api.handlers.chat.Title;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalPlayer;
 import com.orbitmines.spigot.servers.survival.utils.BiomeUtils;
 import org.bukkit.Location;
-import org.bukkit.Sound;
 import org.bukkit.block.Biome;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /*
 * OrbitMines - @author Fadi Shawki - 2017
 */
-public class Region {
+public class Region extends Teleportable {
 
     /*
         Regions are setup in a square, example:
@@ -55,7 +53,7 @@ public class Region {
     private final int inventoryY;
 
     private final Biome biome;
-    private final ItemStack itemStack;
+    private final ItemBuilder icon;
 
     public Region(int id, Location location, int inventoryX, int inventoryY) {
         regions.add(this);
@@ -65,13 +63,14 @@ public class Region {
         this.inventoryX = inventoryX;
         this.inventoryY = inventoryY;
         this.biome = location.getWorld().getBiome(location.getBlockX(), location.getBlockZ());
-        this.itemStack = toItemStack();
+        this.icon = toItemBuilder();
     }
 
     public int getId() {
         return id;
     }
 
+    @Override
     public Location getLocation() {
         return location;
     }
@@ -88,18 +87,23 @@ public class Region {
         return biome;
     }
 
-    public ItemStack getItemStack() {
-        return itemStack;
+    public ItemBuilder getIcon() {
+        return icon.clone();
     }
 
-    public void teleport(SurvivalPlayer omp) {
-        Player p = omp.getPlayer();
+    @Override
+    public int getDuration(OMPlayer omp) {
+        return 3;
+    }
 
-        p.teleport(this.location);
-        p.playSound(p.getLocation(), Sound.ENTITY_ENDERMEN_TELEPORT, 5, 1);
+    @Override
+    public Color getColor() {
+        return Color.LIME;
+    }
 
-        Title t = new Title(new Message(""), new Message("§7Geteleporteerd naar §aRegion " + (id + 1) + "§7.", "§7Teleported to §aRegion " + (id + 1) + "§7."), 20, 40, 20);
-        t.send(omp);
+    @Override
+    public String getName() {
+        return "Region " + (id + 1);
     }
 
     public static Region getRegion(int id) {
@@ -148,22 +152,35 @@ public class Region {
     }
 
     public static Region random() {
-        return regions.get(RandomUtils.RANDOM.nextInt(regions.size()));
+        return RandomUtils.randomFrom(regions);
+    }
+
+    public static Region randomTeleportable() {
+        return RandomUtils.randomFrom(regions.subList(0, TELEPORTABLE - 1));
     }
 
     public static List<Region> getRegions() {
         return regions;
     }
 
-    private ItemStack toItemStack() {
+    public static Region getRegion(int inventoryX, int inventoryY) {
+        for (Region region : regions) {
+            if (region.getInventoryX() == inventoryX && region.getInventoryY() == inventoryY)
+                return region;
+        }
+        return null;
+    }
+
+    private ItemBuilder toItemBuilder() {
         ItemBuilder item = BiomeUtils.item(biome);
         item.setAmount(id + 1 > 64 ? 64 : id + 1);
         item.setDisplayName("§7§lRegion §a§l" + (id + 1));
-        item.setLore(Arrays.asList(" §7Biome: " + BiomeUtils.name(biome), " §7XZ: §a" + location.getBlockX() + " §7/ §a" + location.getBlockZ()));
+        item.addLore(" §7Biome: " + BiomeUtils.name(biome));
+        item.addLore(" §7XZ: §a§l" + NumberUtils.locale(location.getBlockX()) + " §7/ §a§l" + NumberUtils.locale(location.getBlockZ()));
 
         if (id == 0)
             item.glow();
 
-        return item.build();
+        return item;
     }
 }

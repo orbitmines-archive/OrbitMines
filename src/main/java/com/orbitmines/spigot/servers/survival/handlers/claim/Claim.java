@@ -1,8 +1,13 @@
 package com.orbitmines.spigot.servers.survival.handlers.claim;
 
-import com.orbitmines.api.CachedPlayer;
+import com.orbitmines.api.Message;
 import com.orbitmines.api.StaffRank;
+import com.orbitmines.api.database.Database;
+import com.orbitmines.api.database.Table;
+import com.orbitmines.api.database.Where;
+import com.orbitmines.api.database.tables.survival.TableSurvivalClaim;
 import com.orbitmines.api.utils.DateUtils;
+import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.spigot.api.handlers.chat.ActionBar;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.api.utils.ItemUtils;
@@ -12,6 +17,7 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.inventory.ItemFlag;
 
 import java.util.*;
 
@@ -24,7 +30,7 @@ public class Claim {
 
     public static int MIN_WIDTH = 3;
     public static int MIN_AREA = MIN_WIDTH * MIN_WIDTH;
-    public static ItemBuilder CLAIMING_TOOL = new ItemBuilder(Material.STONE_HOE, 1, 0, "§a§lClaiming Tool").unbreakable(true);
+    public static ItemBuilder CLAIMING_TOOL = new ItemBuilder(Material.STONE_HOE, 1, 0, "§a§lClaiming Tool").addFlag(ItemFlag.HIDE_ATTRIBUTES).addFlag(ItemFlag.HIDE_UNBREAKABLE).unbreakable(true);
 //        "",
 //        "§6§lRIGHT CLICK",
 //        "§7Create claims by selecting",
@@ -261,9 +267,6 @@ public class Claim {
         if (isOwner(omp.getUUID()))
             return true;
 
-        if (hasPermission(omp.getUUID(), Permission.CO_OWNER))
-            return true;
-
         String name = getOwnerName();
         new ActionBar(omp, () -> omp.lang("§c§lAlleen " + name + "§c§l kan deze claim wijzigen.", "§c§lOnly " + name + "§c§l can modify this claim."), 60).send();
 
@@ -445,21 +448,53 @@ public class Claim {
         return hashes;
     }
 
+    public static int getClaimCount(UUID uuid) {
+        return Database.get().getCount(Table.SURVIVAL_CLAIM, new Where(TableSurvivalClaim.OWNER, uuid.toString()));
+    }
+
     public enum Permission {
 
-        ACCESS, /* Use Doors, Buttons, Fly etc. */
-        MANAGE, /* Access Chests & Plant Farms */
-        BUILD, /* Build & Break Blocks */
-        CO_OWNER; /* Manage Claims */
+        ACCESS(new ItemBuilder(Material.DARK_OAK_DOOR_ITEM), new Message("Toegang", "Access"), new Message("Fly"), new Message("Ender Pearls"), new Message("Doors"), new Message("Buttons"), new Message("Gates"), new Message("Beds")), /* Use Doors, Buttons, Fly etc. */
+        MANAGE(new ItemBuilder(Material.HOPPER), new Message("Beheren", "Manage"), new Message("Mobs"), new Message("Chests"), new Message("Farms"), new Message("Boats"), new Message("Minecarts"), new Message("Cauldrons"), new Message("Jukeboxes"), new Message("Anvils"), new Message("Cakes")), /* Access Chests & Plant Farms */
+        BUILD(new ItemBuilder(Material.IRON_AXE).addFlag(ItemFlag.HIDE_ATTRIBUTES), new Message("Bouwen", "Build"), new Message("Blocks Plaatsen", "Placing Blocks"), new Message("Blocks Breken", "Breaking Blocks"), new Message("Note Blocks"), new Message("Redstone"), new Message("Armor Stands")); /* Build & Break Blocks */
+
+        private final ItemBuilder icon;
+        private final Message name;
+        private final Message[] description;
+
+        Permission(ItemBuilder icon, Message name, Message... description) {
+            this.icon = icon;
+            this.name = name;
+            this.description = description;
+        }
+
+        public ItemBuilder getIcon() {
+            return icon.clone();
+        }
+
+        public Message getName() {
+            return name;
+        }
+
+        public Message[] getDescription() {
+            return description;
+        }
 
         public boolean hasPerms(Permission permission) {
             return this.ordinal() >= permission.ordinal();
         }
+
+        public Permission next() {
+            Permission[] values = Permission.values();
+
+            return values.length == ordinal() +1 ? values[0] : values[ordinal() + 1];
+        }
     }
 
     public enum Settings {
-
-        ENDER_PEARL(Permission.ACCESS);
+        //TODO Maybe add this later to region GUI? Might be a bit too complicated. (for users)
+        ENDER_PEARL(Permission.ACCESS),
+        FLY(Permission.ACCESS);
 
         private final Permission defaultPermission;
 
