@@ -1,5 +1,6 @@
 package com.orbitmines.spigot.servers.uhsurvival2.commands;
 
+import com.orbitmines.api.Server;
 import com.orbitmines.api.StaffRank;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.cmd.StaffCommand;
@@ -9,7 +10,7 @@ public class DungeonCommand extends StaffCommand {
     //TODO!
 
     public DungeonCommand() {
-        super(StaffRank.MODERATOR);
+        super(Server.UHSURVIVAL, StaffRank.MODERATOR);
     }
 
     @Override

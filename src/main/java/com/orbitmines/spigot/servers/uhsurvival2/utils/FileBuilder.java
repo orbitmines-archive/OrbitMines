@@ -1,4 +1,4 @@
-package com.orbitmines.spigot.servers.uhsurvival.utils;
+package com.orbitmines.spigot.servers.uhsurvival2.utils;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 

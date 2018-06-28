@@ -14,6 +14,18 @@ public class Tool {
     private static final int LEVEL_INDEX = 1;
     private static final int EXP_INDEX = 3;
 
+    private static final String LEVEL = " §fLevel§8: §b%d ";
+    private static final String EXP = " §fExp§8: §b%.1f§9/§b%.1f ";
+    private static final String MAXED_OUT = " §4Maxed Out ";
+    private static final String LINE = "§8§m-----------------------";
+
+    private static final int OFFSET_EXP_LEFT = 12;
+    private static final int OFFSET_EXP_RIGHT = 1;
+
+    private static final int OFFSET_LEVEL_LEFT = 14;
+    private static final int OFFSET_LEVEL_RIGHT = 1;
+    //WHEN EDITING THIS, DON'T FORGET TO EDIT THE / ASWELL IN THE updateTool(boolean) METHOD!
+
     private static int MAX_LEVEL = 20;
 
     private List<String> lore;
@@ -50,25 +62,25 @@ public class Tool {
             this.exp = 0;
             this.maxExp = 500;
             this.maxedOut = false;
-            lore.add(0, "-----------------------");
-            lore.add(LEVEL_INDEX, " Level: " + level + " ");
-            lore.add(2, "-----------------------");
+            lore.add(0, LINE);
+            lore.add(LEVEL_INDEX, String.format(LEVEL, level));
+            lore.add(2, LINE);
             if (!maxedOut) {
-                lore.add(EXP_INDEX, " Exp: " + exp + "/" + maxExp + " ");
+                lore.add(EXP_INDEX, String.format(EXP, exp, maxExp));
             } else {
-                lore.add(EXP_INDEX, " Maxed Out");
+                lore.add(EXP_INDEX, MAXED_OUT);
             }
-            lore.add(4, "-----------------------");
+            lore.add(4, LINE);
         }
 
         /* UPDATING LORE */
         if (!maxedOut && update) {
-            lore.set(LEVEL_INDEX, " Level: " + level + " ");
-            lore.set(EXP_INDEX, " Exp: " + exp + "/" + maxExp + " ");
+            lore.set(LEVEL_INDEX, String.format(LEVEL, level));
+            lore.set(EXP_INDEX, String.format(EXP, exp, maxExp));
         } else {
             if (maxedOut) {
-                lore.set(LEVEL_INDEX, " Level: " + MAX_LEVEL + " ");
-                lore.set(EXP_INDEX, " Maxed Out ");
+                lore.set(LEVEL_INDEX, String.format(LEVEL, MAX_LEVEL));
+                lore.set(EXP_INDEX, MAXED_OUT);
             }
         }
 
@@ -78,11 +90,11 @@ public class Tool {
 
     private void initTool() {
         if (!lore.isEmpty()) {
-            if (!lore.get(EXP_INDEX).equalsIgnoreCase(" Maxed Out ")) {
-                level = MathUtils.getInteger(lore.get(LEVEL_INDEX).substring(8, lore.get(LEVEL_INDEX).length() - 1));
-                String s = lore.get(EXP_INDEX).substring(6, lore.get(EXP_INDEX).length() - 1);
+            if (!lore.get(EXP_INDEX).equalsIgnoreCase(MAXED_OUT)) {
+                level = MathUtils.getInteger(lore.get(LEVEL_INDEX).substring(OFFSET_LEVEL_LEFT, lore.get(LEVEL_INDEX).length() - OFFSET_LEVEL_RIGHT));
+                String s = lore.get(EXP_INDEX).substring(OFFSET_EXP_LEFT, lore.get(EXP_INDEX).length() - OFFSET_EXP_RIGHT);
                 String[] str = s.split("/");
-                exp = MathUtils.getDouble(str[0]);
+                exp = MathUtils.getDouble(str[0].substring(0, str[0].length() - 2));
                 maxExp = MathUtils.getDouble(str[1]);
             } else {
                 setMaxedOut();

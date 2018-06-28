@@ -12,6 +12,7 @@ import com.orbitmines.spigot.api.handlers.chat.ComponentMessage;
 import com.orbitmines.spigot.api.runnables.SpigotRunnable;
 import com.orbitmines.spigot.servers.hub.Hub;
 import com.orbitmines.spigot.servers.survival.Survival;
+import com.orbitmines.spigot.servers.uhsurvival2.UHSurvival;
 import net.dv8tion.jda.core.entities.*;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -206,6 +207,8 @@ public abstract class OrbitMinesServer {
                 return null;
             case MINIGAMES:
                 return null;
+            case UHSURVIVAL:
+                return new UHSurvival(orbitMines);
             default:
                 throw new IllegalStateException();
         }

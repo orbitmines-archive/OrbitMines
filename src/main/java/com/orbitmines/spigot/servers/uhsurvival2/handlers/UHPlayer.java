@@ -57,11 +57,6 @@ public class UHPlayer extends OMPlayer implements Attacker {
     }
 
     @Override
-    public void onVote(int votes) {
-
-    }
-
-    @Override
     public boolean canReceiveVelocity() {
         return false;
     }

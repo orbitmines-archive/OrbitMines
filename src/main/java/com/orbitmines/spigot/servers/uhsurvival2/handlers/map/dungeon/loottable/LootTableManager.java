@@ -1,8 +1,8 @@
 package com.orbitmines.spigot.servers.uhsurvival2.handlers.map.dungeon.loottable;
 
 import com.orbitmines.spigot.api.utils.MathUtils;
-import com.orbitmines.spigot.servers.uhsurvival.utils.FileBuilder;
 import com.orbitmines.spigot.servers.uhsurvival2.UHSurvival;
+import com.orbitmines.spigot.servers.uhsurvival2.utils.FileBuilder;
 import org.bukkit.Material;
 
 import java.io.File;
