@@ -4,6 +4,7 @@ import com.orbitmines.api.database.Database;
 import com.orbitmines.api.database.Table;
 import com.orbitmines.api.database.Where;
 import com.orbitmines.api.database.tables.TablePlayers;
+import com.orbitmines.api.punishment.PunishmentHandler;
 import com.orbitmines.api.utils.uuid.UUIDUtils;
 
 import java.util.HashMap;
@@ -86,6 +87,10 @@ public class CachedPlayer {
             ip.update();
             return null;
         }
+    }
+
+    public PunishmentHandler getPunishmentHandler() {
+        return PunishmentHandler.getHandler(uuid);
     }
 
     private void updateIP() {

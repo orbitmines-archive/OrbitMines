@@ -14,6 +14,10 @@ public enum PluginMessage {
     SET_LOGGING_IN(Server.BUNGEECORD),
     LOGIN_2FA(Server.BUNGEECORD),
 
+    PUNISH(Server.BUNGEECORD),
+    PARDON(Server.BUNGEECORD),
+    MUTE(Server.BUNGEECORD),
+
     SHUTDOWN(Server.SPIGOT),
 
     MESSAGE_PLAYER(Server.BUNGEECORD),

@@ -12,6 +12,7 @@ import com.orbitmines.api.utils.DateUtils;
 import com.orbitmines.discordbot.utils.ColorUtils;
 import com.orbitmines.spigot.api._2fa._2FA;
 import com.orbitmines.spigot.api.cmds.*;
+import com.orbitmines.spigot.api.cmds.moderator.CommandPunish;
 import com.orbitmines.spigot.api.datapoints.DataPointHandler;
 import com.orbitmines.spigot.api.events.*;
 import com.orbitmines.api.CachedPlayer;
@@ -314,6 +315,8 @@ public class OrbitMines extends JavaPlugin {
 
         new CommandPrisms();
         new CommandSolars();
+
+        new CommandPunish();
     }
 
     private void registerEvents(Listener... listeners) {

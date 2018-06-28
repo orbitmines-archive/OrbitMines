@@ -1,10 +1,12 @@
 package com.orbitmines.bungeecord.events;
 
+import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.api.StaffRank;
+import com.orbitmines.api.punishment.Punishment;
+import com.orbitmines.api.punishment.PunishmentHandler;
 import com.orbitmines.bungeecord.OrbitMinesBungee;
 import com.orbitmines.bungeecord.handlers.BungeePlayer;
 import com.orbitmines.discordbot.utils.SkinLibrary;
-import com.orbitmines.api.CachedPlayer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.*;
@@ -38,12 +40,23 @@ public class JoinQuitEvents implements Listener {
             event.setCancelReason("§8§lOrbit§7§lMines\n§a§lWe're coming back soon!\n\n§7For more updates be sure to join us on:\n§9§lDiscord§r §7» §9https://discord.gg/QjVGJMe\n§6§lWebsite§r §7» §6https://www.orbitmines.com");
             return;
         }
+
+        if (player == null)
+            return;
+
+        PunishmentHandler handler = PunishmentHandler.getHandler(player.getUUID());
+        Punishment active = handler.getActivePunishment(Punishment.Type.BAN);
+
+        /* Check if player is banned */
+        if (active != null) {
+            event.setCancelled(true);
+            event.setCancelReason(active.getBanString(player.getLanguage()));
+            return;
+        }
     }
 
     @EventHandler
     public void onLogin(PostLoginEvent event) {
-        //TODO CHECK IF BANNED
-
         /* Otherwise login */
         BungeePlayer bp = new BungeePlayer(event.getPlayer());
         bp.login();

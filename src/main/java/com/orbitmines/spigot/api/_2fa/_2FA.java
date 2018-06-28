@@ -131,8 +131,11 @@ public class _2FA {
         tempKeys.remove(omp);
 
         /* Restore Inventory */
-        omp.getPlayer().getInventory().setContents(contents.get(omp));
-        omp.getPlayer().getInventory().setArmorContents(armorContents.get(omp));
+        if (contents.containsKey(omp))
+            omp.getPlayer().getInventory().setContents(contents.get(omp));
+
+        if (armorContents.containsKey(omp))
+            omp.getPlayer().getInventory().setArmorContents(armorContents.get(omp));
 
         contents.remove(omp);
         armorContents.remove(omp);

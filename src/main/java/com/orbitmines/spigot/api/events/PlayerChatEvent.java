@@ -26,6 +26,11 @@ public class PlayerChatEvent implements Listener {
         OMPlayer omp = OMPlayer.getPlayer(event.getPlayer());
 
         if (omp.isLoggedIn()) {
+            if (omp.isMuted()) {
+                omp.sendMessage("Mute", Color.RED, "§7Je bent gemute!", "§7You have been muted!");//TODO GIVE player indication how long the mute lasts
+                return;
+            }
+
             orbitMines.getServerHandler().format(event, omp);
             orbitMines.getServerHandler().toDiscord(event, omp);
             return;

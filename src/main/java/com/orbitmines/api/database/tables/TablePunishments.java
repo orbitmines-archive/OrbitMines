@@ -23,5 +23,4 @@ public class TablePunishments extends Table {
     public TablePunishments() {
         super("Punishments", UUID, OFFENCE, SEVERITY, FROM, TO, PUNISHED_BY, REASON, PARDONED, PARDONED_ON, PARDONED_BY, PARDONED_REASON);
     }
-
 }

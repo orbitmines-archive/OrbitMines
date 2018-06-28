@@ -4,6 +4,8 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.orbitmines.api.PluginMessage;
 import com.orbitmines.api.Server;
+import com.orbitmines.api.punishment.offences.Offence;
+import com.orbitmines.api.punishment.offences.Severity;
 import com.orbitmines.bungeecord.OrbitMinesBungee;
 import com.orbitmines.bungeecord.runnables.BungeeRunnable;
 import com.orbitmines.bungeecord.utils.ConsoleUtils;
@@ -162,6 +164,41 @@ public class PluginMessageHandler implements Listener {
 
                     omp.setLoggedIn(true);
                     bungee.registerLogin(omp);
+                    break;
+                }
+                case PUNISH: {
+                    UUID uuid = UUID.fromString(in.readUTF());
+                    Offence offence = Offence.valueOf(in.readUTF());
+                    Severity severity = Severity.valueOf(in.readUTF());
+                    String reason = in.readUTF();
+
+                    BungeePlayer omp = BungeePlayer.getPlayer(UUID.fromString(in.readUTF()));
+
+                    if (omp == null)
+                        break;
+
+                    omp.punish(uuid, offence, severity, reason);
+                    break;
+                }
+                case PARDON: {
+                    UUID uuid = UUID.fromString(in.readUTF());
+                    Offence offence = Offence.valueOf(in.readUTF());
+                    String reason = in.readUTF();
+
+                    BungeePlayer omp = BungeePlayer.getPlayer(UUID.fromString(in.readUTF()));
+
+                    if (omp == null)
+                        break;
+
+                    omp.pardon(uuid, offence, reason);
+                    break;
+                }
+                case MUTE: {
+                    BungeePlayer omp = BungeePlayer.getPlayer(UUID.fromString(in.readUTF()));
+
+                    if (omp != null && omp.isMuted())
+                        omp.muteOnSpigot(true);
+
                     break;
                 }
                 case SET_LOGGING_IN: {

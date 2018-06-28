@@ -11,6 +11,9 @@ import com.orbitmines.api.Server;
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.handlers.data.FriendsData;
 import com.orbitmines.spigot.api.utils.ConsoleUtils;
+import com.orbitmines.spigot.servers.hub.gui.friends.FriendGUI;
+import com.orbitmines.spigot.servers.hub.gui.friends.FriendRequestDetailsGUI;
+import com.orbitmines.spigot.servers.hub.gui.friends.FriendRequestGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.Messenger;
@@ -92,6 +95,14 @@ public abstract class PluginMessageHandler implements PluginMessageListener {
 
                     break;
                 }
+                case MUTE: {
+                    OMPlayer omp = OMPlayer.getPlayer(UUID.fromString(in.readUTF()));
+
+                    if (omp != null)
+                        omp.setMuted(Boolean.parseBoolean(in.readUTF()));
+
+                    break;
+                }
                 case SHUTDOWN: {
                     Bukkit.shutdown();
                     break;
@@ -101,6 +112,23 @@ public abstract class PluginMessageHandler implements PluginMessageListener {
 
                     if (omp != null)
                         omp.checkCachedVotes();
+
+                    break;
+                }
+                case UPDATE_FRIENDS: {
+                    OMPlayer omp = OMPlayer.getPlayer(UUID.fromString(in.readUTF()));
+
+                    if (omp == null)
+                        break;
+
+                    omp.getData(Data.Type.FRIENDS).load();
+
+                    /* Update Inventory */
+                    GUI gui = omp.getLastInventory();
+                    if (gui == null)
+                        break;
+                    else if ((gui instanceof FriendGUI || gui instanceof FriendRequestDetailsGUI || gui instanceof FriendRequestGUI) && gui.hasOpened(omp))
+                        gui.reopen(omp);
 
                     break;
                 }

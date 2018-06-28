@@ -61,6 +61,7 @@ public abstract class OMPlayer {
     protected StaffRank staffRank;
     protected VipRank vipRank;
     protected Language language;
+    protected boolean muted;
     protected boolean silent;
     protected int solars;
     protected int prisms;
@@ -92,6 +93,7 @@ public abstract class OMPlayer {
         this.staffRank = StaffRank.NONE;
         this.vipRank = VipRank.NONE;
         this.language = Language.ENGLISH;
+        this.muted = false;
         this.silent = false;
         this.solars = 0;
         this.prisms = 0;
@@ -448,6 +450,18 @@ public abstract class OMPlayer {
         this.language = Language.valueOf(Database.get().getString(Table.PLAYERS, TablePlayers.LANGUAGE, new Where(TablePlayers.UUID, getUUID().toString())));
         
         defaultTabList();
+    }
+
+    /*
+        Muted
+     */
+
+    public boolean isMuted() {
+        return muted;
+    }
+
+    public void setMuted(boolean muted) {
+        this.muted = muted;
     }
 
     /*

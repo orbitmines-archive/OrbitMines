@@ -34,7 +34,7 @@ public enum StaffRank {
     }
 
     public String getPrefix() {
-        return getPrefix(Color.SILVER);
+        return getPrefix(prefixColor);
     }
 
     public String getPrefix(Color color) {

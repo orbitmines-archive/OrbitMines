@@ -5,17 +5,24 @@ import com.orbitmines.api.database.*;
 import com.orbitmines.api.database.Set;
 import com.orbitmines.api.database.tables.TablePlayers;
 import com.orbitmines.api.database.tables.TableServers;
+import com.orbitmines.api.punishment.Punishment;
+import com.orbitmines.api.punishment.PunishmentHandler;
+import com.orbitmines.api.punishment.offences.Offence;
+import com.orbitmines.api.punishment.offences.Severity;
 import com.orbitmines.api.settings.SettingsType;
 import com.orbitmines.api.utils.DateUtils;
 import com.orbitmines.api.utils.RandomUtils;
 import com.orbitmines.bungeecord.OrbitMinesBungee;
 import com.orbitmines.discordbot.DiscordBot;
+import com.orbitmines.discordbot.utils.ColorUtils;
 import com.orbitmines.discordbot.utils.SkinLibrary;
 import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.data.PlayTimeData;
 import com.orbitmines.spigot.api.handlers.data.SettingsData;
 import com.orbitmines.spigot.api.handlers.data.VoteData;
+import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -116,7 +123,12 @@ public class BungeePlayer {
             return;
         }
 
-        bungee.getProxy().getScheduler().schedule(bungee, () -> bungee.getMessageHandler().dataTransfer(PluginMessage.LOGIN_2FA, player, getUUID().toString()), 1, TimeUnit.SECONDS);
+        bungee.getProxy().getScheduler().schedule(bungee, () -> {
+            bungee.getMessageHandler().dataTransfer(PluginMessage.LOGIN_2FA, player, getUUID().toString());
+
+            if (isMuted())
+                muteOnSpigot(true);
+        }, 1, TimeUnit.SECONDS);
     }
 
     public void logout() {
@@ -328,6 +340,189 @@ public class BungeePlayer {
         this.silent = Database.get().getBoolean(Table.PLAYERS, TablePlayers.SILENT, new Where(TablePlayers.UUID, getUUID().toString()));
     }
 
+    public void punish(UUID uuid, Offence offence, Severity severity, String reason) {
+        CachedPlayer player = CachedPlayer.getPlayer(uuid);
+        String color = player.getRankPrefixColor().getChatColor();
+
+        PunishmentHandler handler = PunishmentHandler.getHandler(uuid);
+
+        if (handler.getActivePunishment(offence.getType()) != null) {
+            sendMessage("Mod", Color.RED, color + player.getPlayerName() + " §7heeft al een lopende straf!", color + player.getPlayerName() + " §7has already been punished!");
+            return;
+        }
+
+        sendMessage("Mod", Color.LIME, "Je hebt " + color + player.getPlayerName() + " §7succesvol een straf opgedragen. (Reden: " + reason + ")", "You have successfully punished " + color + player.getPlayerName() + "§7. (Reason: " + reason + ")");
+
+        Punishment punishment = new Punishment(uuid, offence, severity, handler.getPunishedTo(offence, severity), getUUID(), reason);
+        handler.addPunishment(punishment);
+
+        BungeePlayer mbp = BungeePlayer.getPlayer(uuid);
+
+        if (severity == Severity.WARNING) {
+            if (mbp != null) {
+                mbp.sendMessage("§4§m---------------------------------------------");
+                mbp.sendMessage("  §c§l" + mbp.lang("WAARSCHUWING", "WARNING"));
+                mbp.sendMessage("     §7" + mbp.lang("Je bent gewaarschuwd door", "You have been warned by") + " " + getRankPrefix() + getName() + "§7.");
+                mbp.sendMessage("     §7" + mbp.lang("Overtreding", "Offence") + ": §c" + mbp.lang(offence.getName()));
+                mbp.sendMessage("     §7" + mbp.lang("Reden", "Reason") + ": §c" + reason);
+                mbp.sendMessage("§4§m---------------------------------------------");
+            } else {
+                //TODO MESSAGE WHEN BACK ONLINE
+            }
+
+            getPunishmentChannel().sendMessage(getDiscordName(player) + " has been WARNED!").queue();
+            {
+                EmbedBuilder builder = new EmbedBuilder();
+                builder.setAuthor("WARNING");
+                builder.setDescription("");
+                builder.setColor(ColorUtils.from(Color.GRAY));
+
+                builder.addField("Offence", punishment.getOffence().getName().lang(Language.ENGLISH), true);
+                builder.addField("Warned By", punishment.getPunishedBy().getPlayerName(), true);
+                builder.addField("Reason", punishment.getReason(), true);
+
+                builder.setThumbnail(SkinLibrary.getSkinUrl(SkinLibrary.Type.BODY_3D, player.getUUID()) + "/");
+
+                getPunishmentChannel().sendMessage(builder.build()).queue();
+            }
+            return;
+        }
+
+        switch (offence.getType()) {
+
+            case MUTE:
+                if (mbp != null) {
+                    mbp.sendMessage("§4§m---------------------------------------------");
+                    mbp.sendMessage("  §c§l" + mbp.lang("GEMUTE", "MUTED"));
+                    mbp.sendMessage("     §7" + mbp.lang("Je bent gemute door", "You have been muted by") + " " + getRankPrefix() + getName() + "§7.");
+                    mbp.sendMessage("     §7" + mbp.lang("Reden", "Reason") + ": §c" + reason);
+                    mbp.sendMessage("     §7" + mbp.lang("Duur", "Duration") + ": §c" + (severity.getDuration() == Punishment.Duration.PERMANENT ? "§lPERMANENT" : punishment.getExpireInString(mbp.getLanguage())));
+                    mbp.sendMessage("§4§m---------------------------------------------");
+                    mbp.muteOnSpigot(true);
+                } else {
+                    //TODO MESSAGE WHEN BACK ONLINE
+                }
+
+                getPunishmentChannel().sendMessage(getDiscordName(player) + " has been MUTED!").queue();
+
+                break;
+            case BAN:
+                if (mbp != null) {
+                    mbp.getPlayer().disconnect(punishment.getBanString(mbp.getLanguage()));
+                } else {
+                    //TODO MESSAGE WHEN BACK ONLINE
+                }
+
+                getPunishmentChannel().sendMessage(getDiscordName(player) + " has been BANNED!").queue();
+                break;
+        }
+
+        {
+            EmbedBuilder builder = new EmbedBuilder();
+            builder.setAuthor(offence.getType() == Punishment.Type.MUTE ? "MUTE" : "BAN");
+            builder.setDescription("");
+            builder.setColor(ColorUtils.from(offence.getType() == Punishment.Type.MUTE ? Color.RED : Color.MAROON));
+
+            builder.addField("Offence", punishment.getOffence().getName().lang(Language.ENGLISH), true);
+            builder.addField("Severity", punishment.getSeverity().getName().lang(Language.ENGLISH), true);
+            builder.addField("From", punishment.getFromString(DateUtils.FORMAT), true);
+
+            if (punishment.getSeverity().getDuration() != Punishment.Duration.PERMANENT)
+                builder.addField("To", punishment.getFromString(DateUtils.FORMAT), true);
+
+            builder.addField("Duration", punishment.getSeverity().getDuration() == Punishment.Duration.PERMANENT ? "PERMANENT" : punishment.getExpireInString(Language.ENGLISH), true);
+            builder.addField((offence.getType() == Punishment.Type.MUTE ? "Muted" : "Banned") + " By", punishment.getPunishedBy().getPlayerName(), true);
+            builder.addField("Reason", punishment.getReason(), true);
+
+            builder.setThumbnail(SkinLibrary.getSkinUrl(SkinLibrary.Type.BODY_3D, player.getUUID()) + "/");
+
+            getPunishmentChannel().sendMessage(builder.build()).queue();
+        }
+    }
+
+    public void pardon(UUID uuid, Offence offence, String reason) {
+        CachedPlayer player = CachedPlayer.getPlayer(uuid);
+        String color = player.getRankPrefixColor().getChatColor();
+
+        PunishmentHandler handler = PunishmentHandler.getHandler(uuid);
+        Punishment active = handler.getActivePunishment(offence.getType());
+
+        if (active == null) {
+            sendMessage("Mod", Color.BLUE, color + player.getPlayerName() + " §7heeft geen lopende straf meer!", color + player.getPlayerName() + " §7has already been pardoned!");
+            return;
+        }
+
+        active.pardon(getUUID(), reason);
+
+        sendMessage("Mod", Color.LIME, "Je hebt " + color + player.getPlayerName() + "§7 succesvol ontzegd van zijn/haar straf. (Reden: " + reason + ")", "You have successfully pardoned " + color + player.getPlayerName() + "§7. (Reason: " + reason + ")");
+
+        getPunishmentChannel().sendMessage(getDiscordName(player) + " has been PARDONED!").queue();
+
+        {
+            EmbedBuilder builder = new EmbedBuilder();
+            builder.setAuthor("PARDON");
+            builder.setDescription("");
+            builder.setColor(ColorUtils.from(Color.LIME));
+
+            builder.addField("Offence", active.getOffence().getName().lang(Language.ENGLISH), true);
+            builder.addField("Severity", active.getSeverity().getName().lang(Language.ENGLISH), true);
+            builder.addField("From", active.getFromString(DateUtils.FORMAT), true);
+
+            if (active.getSeverity().getDuration() != Punishment.Duration.PERMANENT)
+                builder.addField("To", active.getFromString(DateUtils.FORMAT), true);
+
+            builder.addField("Would have expired in", active.getSeverity().getDuration() == Punishment.Duration.PERMANENT ? "NEVER" : active.getExpireInString(Language.ENGLISH), true);
+            builder.addField((active.getSeverity() == Severity.WARNING ? "Warned" : (offence.getType() == Punishment.Type.MUTE ? "Muted" : "Banned")) + " By", active.getPunishedBy().getPlayerName(), true);
+            builder.addField("Reason", active.getReason(), true);
+            builder.addField("Pardoned Reason", active.getPardonedReason(), true);
+            builder.addField("Pardoned On", active.getPardonedOnString(DateUtils.FORMAT), true);
+            builder.addField("Pardoned By", active.getPardonedBy().getPlayerName(), true);
+
+            builder.setThumbnail(SkinLibrary.getSkinUrl(SkinLibrary.Type.BODY_3D, player.getUUID()) + "/");
+
+            getPunishmentChannel().sendMessage(builder.build()).queue();
+        }
+    }
+
+    private TextChannel getPunishmentChannel() {
+        return bungee.getDiscord().getChannel(bungee.getToken(), DiscordBot.ChannelType.punishments);
+    }
+
+    private String getDiscordName(CachedPlayer player) {
+        return SkinLibrary.getEmote(bungee.getDiscord().getGuild(bungee.getToken()), player.getUUID()).getAsMention() + getDiscordRankPrefix(player) + " **" + player.getPlayerName() + "**";
+    }
+
+    private String getDiscordRankPrefix(CachedPlayer player) {
+        if (player.getStaffRank() == StaffRank.NONE)
+            return player.getVipRank() != VipRank.NONE ? " " + bungee.getDiscord().getEmote(bungee.getToken(), player.getVipRank()).getAsMention() + "**" + player.getRankName() + "**" : "";
+
+        return " **" + player.getRankName() + "**";
+    }
+
+    public boolean isMuted() {
+        return PunishmentHandler.getHandler(getUUID()).getActivePunishment(Punishment.Type.MUTE) != null;
+    }
+
+    public void muteOnSpigot(boolean mute) {
+        bungee.getMessageHandler().dataTransfer(PluginMessage.MUTE, player, getUUID().toString(), mute + "");
+    }
+
+    public BungeePlayer getLastMsg() {
+        return lastMsg;
+    }
+
+    public void setLastMsg(BungeePlayer lastMsg) {
+        this.lastMsg = lastMsg;
+    }
+
+    public boolean hasLastMsg() {
+        if (lastMsg != null && !lastMsg.getPlayer().isConnected()) {
+            lastMsg = null;
+            return false;
+        }
+        return lastMsg != null;
+    }
+
     /*
         Data
      */
@@ -359,10 +554,6 @@ public class BungeePlayer {
         this.data.put(type, data);
 
         return data;
-    }
-
-    public BungeePlayer getLastMsg() {
-        return lastMsg;
     }
 
     /*
