@@ -22,6 +22,7 @@ public class Table {
     public static TableFriends FRIENDS;
     public static TableIPs IPS;
     public static TablePunishments PUNISHMENTS;
+    public static TableReports REPORTS;
     public static Table2FA _2FA;
     public static TableDonations DONATIONS;
     public static TablePlayTime PLAY_TIME;
@@ -47,6 +48,7 @@ public class Table {
         FRIENDS = new TableFriends();
         IPS = new TableIPs();
         PUNISHMENTS = new TablePunishments();
+        REPORTS = new TableReports();
         _2FA = new Table2FA();
         DONATIONS = new TableDonations();
         PLAY_TIME = new TablePlayTime();

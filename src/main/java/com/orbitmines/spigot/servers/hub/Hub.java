@@ -7,7 +7,6 @@ import com.orbitmines.api.utils.RandomUtils;
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.OrbitMinesServer;
 import com.orbitmines.spigot.api.events.VoidDamageEvent;
-import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.PluginMessageHandler;
 import com.orbitmines.spigot.api.handlers.PreventionSet;
@@ -27,6 +26,7 @@ import com.orbitmines.spigot.servers.hub.gui.StatsGUI;
 import com.orbitmines.spigot.servers.hub.gui.friends.FriendGUI;
 import com.orbitmines.spigot.servers.hub.handlers.HubDataPointHandler;
 import com.orbitmines.spigot.servers.hub.handlers.HubPlayer;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -53,8 +53,8 @@ public class Hub extends OrbitMinesServer {
     public static Map<Language, WrittenBookBuilder> RULE_BOOK = new HashMap<>();
 
     static {
-        RULE_BOOK.put(Language.DUTCH, new WrittenBookBuilder(1, "§f", "§8§lOrbit§7§lMines", "   §8§lOrbit§7§lMines§4§lRegels" + "\n" + "§0§m-------------------" + "\n" + "§4NIET§0 Adverteren!" + "\n" + "§0Let op je taalgebruik!" + "\n" + "Luister naar de Staff!" + "\n" + "§4GEEN§0 Bugs gebruiken!" + "\n" + "§4NIET§0 hacken!" + "\n" + "§4NIET§0 spammen!" + "\n" + "§4NIET§0 spelers pesten!" + "\n" + "§0\n" + "§0§lVeel Plezier!"));
-        RULE_BOOK.put(Language.ENGLISH, new WrittenBookBuilder(1, "§f", "§8§lOrbit§7§lMines", "   §8§lOrbit§7§lMines§4§lRules" + "\n" + "§0§m-------------------" + "\n" + "§4DO NOT§0 Advertise!" + "\n" + "§0Watch your Language!" + "\n" + "Listen to Staff!" + "\n" + "§4DO NOT§0 Abuse Bugs!" + "\n" + "§4DO NOT§0 Hack!" + "\n" + "§4DO NOT§0 Spam!" + "\n" + "§4DO NOT§0 Bully Players!" + "\n" + "§0\n" + "§0§lHave Fun!"));
+        RULE_BOOK.put(Language.DUTCH, new WrittenBookBuilder(1, "§f", "§8§lOrbit§7§lMines", new TextComponent("   §8§lOrbit§7§lMines§4§lRegels" + "\n" + "§0§m-------------------" + "\n" + "§4NIET§0 Adverteren!" + "\n" + "§0Let op je taalgebruik!" + "\n" + "Luister naar de Staff!" + "\n" + "§4GEEN§0 Bugs gebruiken!" + "\n" + "§4NIET§0 hacken!" + "\n" + "§4NIET§0 spammen!" + "\n" + "§4NIET§0 spelers pesten!" + "\n" + "§0\n" + "§0§lVeel Plezier!")));
+        RULE_BOOK.put(Language.ENGLISH, new WrittenBookBuilder(1, "§f", "§8§lOrbit§7§lMines", new TextComponent("   §8§lOrbit§7§lMines§4§lRules" + "\n" + "§0§m-------------------" + "\n" + "§4DO NOT§0 Advertise!" + "\n" + "§0Watch your Language!" + "\n" + "Listen to Staff!" + "\n" + "§4DO NOT§0 Abuse Bugs!" + "\n" + "§4DO NOT§0 Hack!" + "\n" + "§4DO NOT§0 Spam!" + "\n" + "§4DO NOT§0 Bully Players!" + "\n" + "§0\n" + "§0§lHave Fun!")));
     }
 
     public Hub(OrbitMines orbitMines) {

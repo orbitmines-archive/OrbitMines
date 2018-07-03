@@ -1,5 +1,8 @@
 package com.orbitmines.spigot.datapoints;
 
+import com.orbitmines.api.Server;
+import com.orbitmines.spigot.OrbitMines;
+import com.orbitmines.spigot.PatchNotes;
 import com.orbitmines.spigot.api.datapoints.DataPointLoader;
 import com.orbitmines.spigot.api.datapoints.DataPointSign;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
@@ -7,8 +10,10 @@ import com.orbitmines.spigot.api.handlers.npc.FloatingItem;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /*
@@ -16,23 +21,45 @@ import java.util.List;
  */
 public class DataPointPatchNotes extends DataPointSign {
 
+    private OrbitMines orbitMines;
+
     private List<FloatingItem> items;
 
     public DataPointPatchNotes() {
         super("PATCH_NOTES", Type.IRON_PLATE, Material.WOOL, DyeColor.BROWN.getWoolData());
 
+        orbitMines = OrbitMines.getInstance();
         items = new ArrayList<>();
     }
 
     @Override
     public boolean buildAt(DataPointLoader loader, Location location, String[] data) {
-        FloatingItem item = new FloatingItem(new ItemBuilder(Material.BOOK_AND_QUILL), location);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                FloatingItem item = new FloatingItem(new ItemBuilder(Material.BOOK_AND_QUILL), location.add(0.5, 0, 0.5));
 
-        item.addLine(() -> "§c§lPATCH NOTES", false);
+                item.addLine(() -> "§c§lPATCH NOTES", false);
 
-        item.create();
+                Server server = orbitMines.getServerHandler().getServer();
+                PatchNotes patchNotes = orbitMines.getPatchNotes();
 
-        items.add(item);
+                List<PatchNotes.Instance> latest = server == Server.HUB ? patchNotes.getLatest() : Collections.singletonList(patchNotes.getLatest(server));
+
+                for (PatchNotes.Instance instance : latest) {
+                    item.addLine(() -> (instance.isNew() ? "§c§lNew!§r " : "") + "§7" + instance.getVersion() + " \"" + instance.getName() + "\"" + (server == Server.HUB && instance.getServer() != Server.HUB ? " §7(" + instance.getServer().getDisplayName() + "§r§7)" : ""), false);
+                }
+
+//        if (server == Server.HUB)
+//            item.setInteractAction(((event, omp) -> patchNotes.getHubInstance().open(omp)));
+//        else
+                item.setInteractAction((event, omp) -> patchNotes.getLatest(server).open(omp));
+
+                item.create();
+
+                items.add(item);
+            }
+        }.runTaskLater(orbitMines, 1);
 
         return true;
     }

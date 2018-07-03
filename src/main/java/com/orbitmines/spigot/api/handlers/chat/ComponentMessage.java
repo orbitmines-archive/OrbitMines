@@ -21,20 +21,21 @@ public class ComponentMessage {
         tcs = new ArrayList<>();
     }
 
-    public void add(Message component) {
-        add(component, null, null, null, null);
+    public ComponentMessage add(Message component) {
+        return add(component, null, null, null, null);
     }
 
-    public void add(Message component, ClickEvent.Action clickAction, Message clickEvent) {
-        add(component, clickAction, clickEvent, null, null);
+    public ComponentMessage add(Message component, ClickEvent.Action clickAction, Message clickEvent) {
+        return add(component, clickAction, clickEvent, null, null);
     }
 
-    public void add(Message component, HoverEvent.Action hoverAction, Message hoverEvent) {
-        add(component, null, null, hoverAction, hoverEvent);
+    public ComponentMessage add(Message component, HoverEvent.Action hoverAction, Message hoverEvent) {
+        return add(component, null, null, hoverAction, hoverEvent);
     }
 
-    public void add(Message component, ClickEvent.Action clickAction, Message clickEvent, HoverEvent.Action hoverAction, Message hoverEvent) {
+    public ComponentMessage add(Message component, ClickEvent.Action clickAction, Message clickEvent, HoverEvent.Action hoverAction, Message hoverEvent) {
         tcs.add(new TempTextComponent(component, clickAction, clickEvent, hoverAction, hoverEvent));
+        return this;
     }
 
     public void send(OMPlayer player) {
@@ -55,19 +56,24 @@ public class ComponentMessage {
         }
 
         for (Language language : perLanguage.keySet()) {
-            TextComponent[] tcs = new TextComponent[this.tcs.size()];
+            TextComponent tc = getAsComponent(language);
 
-            int index = 0;
-            for (TempTextComponent tc : this.tcs) {
-                tcs[index] = tc.lang(language);
-                index++;
-            }
-
-            TextComponent tc = new TextComponent(tcs);
             for (OMPlayer player : perLanguage.get(language)) {
                 player.sendMessage(tc);
             }
         }
+    }
+
+    public TextComponent getAsComponent(Language language) {
+        TextComponent[] tcs = new TextComponent[this.tcs.size()];
+
+        int index = 0;
+        for (TempTextComponent tc : this.tcs) {
+            tcs[index] = tc.lang(language);
+            index++;
+        }
+
+        return new TextComponent(tcs);
     }
 
     private class TempTextComponent {

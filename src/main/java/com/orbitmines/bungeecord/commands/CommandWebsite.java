@@ -30,7 +30,7 @@ public class CommandWebsite extends Command {
     public void dispatch(ChatEvent event, BungeePlayer omp, String[] a) {
         ComponentMessage cM = new ComponentMessage();
         cM.add(new Message(Message.FORMAT("Website", Color.BLUE, "")));
-        cM.add(new Message("§6www.orbitmines.com"), ClickEvent.Action.OPEN_URL, new Message("https://www.orbitmines.com"), HoverEvent.Action.SHOW_TEXT, new Message("§7Visit §6www.orbitmines.com§7."));
+        cM.add(new Message("§6www.orbitmines.com"), ClickEvent.Action.OPEN_URL, new Message("https://www.orbitmines.com"), HoverEvent.Action.SHOW_TEXT, new Message("§7" + omp.lang("Open", "Visit") + " §6www.orbitmines.com§7."));
         cM.add(new Message("§7."));
 
         cM.send(omp);

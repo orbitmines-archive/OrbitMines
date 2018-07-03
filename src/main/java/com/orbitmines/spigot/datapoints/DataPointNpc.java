@@ -18,6 +18,7 @@ import com.orbitmines.spigot.api.handlers.npc.MobNpc;
 import com.orbitmines.spigot.api.handlers.npc.PersonalisedMobNpc;
 import com.orbitmines.spigot.api.handlers.scoreboard.ScoreboardString;
 import com.orbitmines.spigot.api.runnables.SpigotRunnable;
+import com.orbitmines.spigot.servers.hub.gui.LootGUI;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -150,9 +151,7 @@ public class DataPointNpc extends DataPointSign {
                         VoteData voteData = (VoteData) omp.getData(Data.Type.VOTES);
                         voteData.updateVoteTimeStamps();
                         LootData lootData = (LootData) omp.getData(Data.Type.LOOT);
-                        lootData.load();
                         PeriodLootData periodLootData = (PeriodLootData) omp.getData(Data.Type.PERIOD_LOOT);
-                        periodLootData.load();
 
                         int maxVotes = ServerList.values().length;
                         PeriodLoot[] values = PeriodLoot.values();
@@ -183,15 +182,18 @@ public class DataPointNpc extends DataPointSign {
                                         duration = d;
                                     }
 
-                                    return lootCount != 0 ? (color ? "§a" : "§2") + "§l" + omp.lang("ONTVANG", "COLLECT") + " " + lootCount + " " + (lootCount == 1 ? "ITEM" : "ITEMS") : "§7" + omp.lang("Meer loot over", "More loot in") + " §a§l" + TimeUtils.fromTimeStamp(duration * 1000L, omp.getLanguage()) + "§r§7.";
+                                    return lootCount != 0 ? (color ? "§a" : "§2") + "§l" + omp.lang("VERZAMEL", "COLLECT") + " " + lootCount + " " + (lootCount == 1 ? "ITEM" : "ITEMS") : "§7" + omp.lang("Meer loot over", "More loot in") + " §a§l" + TimeUtils.fromTimeStamp(duration * 1000L, omp.getLanguage()) + "§r§7.";
                                 },
                                 () -> {
                                     int votes = maxVotes - voteData.getVoteTimeStamps().size();
-                                    return votes == 0 ? null : omp.lang("§7Je kan nog §9§l" + votes + "x§r§7 voten.", "§7You can still vote §9§l" + votes + "§r§7.");
+                                    return votes == 0 ? null : omp.lang("§9§l" + votes + " " + (votes == 1 ? "VOTE" : "VOTES") + " OVER", "§9§l" + votes + " " + (votes == 1 ? "VOTE" : "VOTES") + " LEFT");
                                 }
                         };
                     }
                 };
+
+                npc.setInteractAction((event, omp) -> new LootGUI().open(omp));
+
                 npc.create();
 
                 startLootUpdate(npc);
@@ -225,7 +227,7 @@ public class DataPointNpc extends DataPointSign {
 
         startedLoot = true;
 
-        new SpigotRunnable(SpigotRunnable.TimeUnit.TICK, 10) {
+        new SpigotRunnable(SpigotRunnable.TimeUnit.TICK, 5) {
             @Override
             public void run() {
                 color = !color;

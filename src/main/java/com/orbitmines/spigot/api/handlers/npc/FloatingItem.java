@@ -20,7 +20,7 @@ public class FloatingItem extends Hologram {
     private static List<FloatingItem> floatingItems = new ArrayList<>();
 
     private Item item;
-    private ArmorStand vehicle;
+    private ArmorStand clickBox;
 
     private ItemBuilder itemBuilder;
 
@@ -28,32 +28,38 @@ public class FloatingItem extends Hologram {
         super(spawnLocation);
 
         this.itemBuilder = itemBuilder;
+        addLine(() -> null, true);
+        addLine(() -> null, true);
     }
 
     public FloatingItem(ItemBuilder itemBuilder, Location spawnLocation, double yOff) {
-        super(spawnLocation, yOff, Face.UP);
+        super(spawnLocation, yOff, Face.DOWN);
 
         this.itemBuilder = itemBuilder;
+        addLine(() -> null, true);
+        addLine(() -> null, true);
     }
 
     @Override
     protected void spawn() {
         super.spawn();
 
-        vehicle = OrbitMines.getInstance().getNms().armorStand().spawn(spawnLocation, false);
+        clickBox = OrbitMines.getInstance().getNms().armorStand().spawn(spawnLocation.clone().subtract(0, getYOff() - Hologram.Y_OFFSET_PER_LINE * 3, 0), false);
+        clickBox.setGravity(false);
 
         item = spawnLocation.getWorld().dropItem(spawnLocation, itemBuilder.build());
         item.setPickupDelay(Integer.MAX_VALUE);
+        item.setInvulnerable(true);
 
-        vehicle.addPassenger(item);
+        lines.get(0).getArmorStand().addPassenger(item);
     }
 
     @Override
     protected void despawn() {
         super.despawn();
 
-        if (vehicle != null)
-            vehicle.remove();
+        if (clickBox != null)
+            clickBox.remove();
         if (item != null)
             item.remove();
     }
@@ -69,7 +75,7 @@ public class FloatingItem extends Hologram {
     protected Collection<Entity> getEntities() {
         Collection<Entity> entities = super.getEntities();
         entities.add(item);
-        entities.add(vehicle);
+        entities.add(clickBox);
 
         return entities;
     }
@@ -93,9 +99,9 @@ public class FloatingItem extends Hologram {
         super.setSpawnLocation(spawnLocation);
     }
 
-    public ArmorStand getVehicle() {
-        return vehicle;
-    }
+//    public ArmorStand getVehicle() {
+//        return vehicle;
+//    }
 
     public Item getItem() {
         return item;
@@ -113,10 +119,10 @@ public class FloatingItem extends Hologram {
         return floatingItems;
     }
 
-    public static FloatingItem getNpc(Entity entity) {
+    public static FloatingItem getFloatingItem(Entity entity) {
         for (FloatingItem npc : floatingItems) {
             for (Entity en : npc.getEntities()) {
-                if (en == entity) //TODO, might not work?
+                if (en.getEntityId() == entity.getEntityId()) //TODO, might not work?
                     return npc;
             }
         }

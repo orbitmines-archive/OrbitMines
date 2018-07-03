@@ -23,6 +23,7 @@ import com.orbitmines.spigot.api.handlers.kit.KitInteractive;
 import com.orbitmines.spigot.api.handlers.leaderboard.LeaderBoard;
 import com.orbitmines.spigot.api.handlers.leaderboard.hologram.PlayerHologramLeaderBoard;
 import com.orbitmines.spigot.api.handlers.npc.MobNpc;
+import com.orbitmines.spigot.api.handlers.npc.Npc;
 import com.orbitmines.spigot.api.handlers.npc.PersonalisedMobNpc;
 import com.orbitmines.spigot.api.handlers.npc.PlayerFreezer;
 import com.orbitmines.spigot.api.handlers.scoreboard.OMScoreboard;
@@ -187,6 +188,12 @@ public abstract class OMPlayer {
             public void run() {
                 if (!player.isOnline())
                     return;
+
+                /* Hide other npcs that shouldn't be visible */
+                for (Npc npc : Npc.getNpcs()) {
+                    if (npc.getWatchers() != null && !npc.getWatchers().contains(player))
+                        npc.hideFor(player);
+                }
 
                 /* Update current server */
                 IP ip = IP.getIp(player.getUniqueId());

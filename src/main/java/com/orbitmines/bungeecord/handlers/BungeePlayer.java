@@ -377,6 +377,7 @@ public class BungeePlayer {
                 builder.setDescription("");
                 builder.setColor(ColorUtils.from(Color.GRAY));
 
+                builder.addField("Player", punishment.getPunished().getPlayerName(), true);
                 builder.addField("Offence", punishment.getOffence().getName().lang(Language.ENGLISH), true);
                 builder.addField("Warned By", punishment.getPunishedBy().getPlayerName(), true);
                 builder.addField("Reason", punishment.getReason(), true);
@@ -423,6 +424,7 @@ public class BungeePlayer {
             builder.setDescription("");
             builder.setColor(ColorUtils.from(offence.getType() == Punishment.Type.MUTE ? Color.RED : Color.MAROON));
 
+            builder.addField("Player", punishment.getPunished().getPlayerName(), true);
             builder.addField("Offence", punishment.getOffence().getName().lang(Language.ENGLISH), true);
             builder.addField("Severity", punishment.getSeverity().getName().lang(Language.ENGLISH), true);
             builder.addField("From", punishment.getFromString(DateUtils.FORMAT), true);
@@ -464,6 +466,7 @@ public class BungeePlayer {
             builder.setDescription("");
             builder.setColor(ColorUtils.from(Color.LIME));
 
+            builder.addField("Player", active.getPunished().getPlayerName(), true);
             builder.addField("Offence", active.getOffence().getName().lang(Language.ENGLISH), true);
             builder.addField("Severity", active.getSeverity().getName().lang(Language.ENGLISH), true);
             builder.addField("From", active.getFromString(DateUtils.FORMAT), true);

@@ -55,6 +55,8 @@ public class OrbitMines extends JavaPlugin {
 
     private Nms nms;
 
+    private PatchNotes patchNotes;
+
     private String resourceFolder;
 
     private OrbitMinesServer serverHandler;
@@ -236,6 +238,10 @@ public class OrbitMines extends JavaPlugin {
 
         /* Discord Message Listener Message */
         serverHandler.getDiscord().getJDA(serverHandler.getToken()).addEventListener(new DiscordMessageListener(this));
+
+        /* Setup Patch Notes */
+        patchNotes = new PatchNotes(this);
+        patchNotes.build();
     }
 
     @Override
@@ -271,6 +277,10 @@ public class OrbitMines extends JavaPlugin {
 
     public void setNms(Nms nms) {
         this.nms = nms;
+    }
+
+    public PatchNotes getPatchNotes() {
+        return patchNotes;
     }
 
     public String getResourceFolder() {

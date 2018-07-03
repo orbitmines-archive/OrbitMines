@@ -19,10 +19,10 @@ public class Hologram extends Npc {
 
     private static ArrayList<Hologram> holograms = new ArrayList<>();
 
-    private ArrayList<Line> lines;
+    protected ArrayList<Line> lines;
 
-    private double yOff;
-    private Face face;
+    protected double yOff;
+    protected Face face;
 
     public Hologram(Location spawnLocation) {
         this(spawnLocation, 1.75, Face.DOWN);//TODO IS THAT A THE RIGHT ADDITION? 1.75
@@ -201,7 +201,7 @@ public class Hologram extends Npc {
         return null;
     }
 
-    private class Line {
+    protected class Line {
 
         private ArmorStand armorStand;
         private ScoreboardString line;

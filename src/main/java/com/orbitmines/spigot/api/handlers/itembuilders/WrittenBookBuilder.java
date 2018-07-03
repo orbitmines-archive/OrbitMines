@@ -6,8 +6,10 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import net.md_5.bungee.api.chat.TextComponent;
 
 import java.util.*;
+import java.util.List;
 
 /*
 * OrbitMines - @author Fadi Shawki - 29-7-2017
@@ -15,13 +17,13 @@ import java.util.*;
 public class WrittenBookBuilder extends ItemBuilder {
 
     private String author;
-    private List<String> pages;
+    private List<TextComponent> pages;
 
     public WrittenBookBuilder(int amount, String displayName) {
         this(amount, displayName, null);
     }
 
-    public WrittenBookBuilder(int amount, String displayName, String author, String... pages) {
+    public WrittenBookBuilder(int amount, String displayName, String author, TextComponent... pages) {
         this(amount, displayName, null, author, pages);
     }
 
@@ -36,7 +38,7 @@ public class WrittenBookBuilder extends ItemBuilder {
         this.pages = new ArrayList<>(itemBuilder.pages);
     }
 
-    public WrittenBookBuilder(int amount, String displayName, List<String> lore, String author, String... pages) {
+    public WrittenBookBuilder(int amount, String displayName, List<String> lore, String author, TextComponent... pages) {
         super(Material.WRITTEN_BOOK, amount, 0, displayName, lore);
 
         this.author = author;
@@ -57,11 +59,16 @@ public class WrittenBookBuilder extends ItemBuilder {
         return this;
     }
 
-    public List<String> getPages() {
+    public List<TextComponent> getPages() {
         return pages;
     }
 
     public WrittenBookBuilder addPage(String page) {
+        pages.add(new TextComponent(page));
+        return this;
+    }
+
+    public WrittenBookBuilder addPage(TextComponent page) {
         pages.add(page);
         return this;
     }
@@ -73,7 +80,7 @@ public class WrittenBookBuilder extends ItemBuilder {
 
         for (int i = 1; i < pages.size() + 1; i++) {
             meta.addPage(i + "");
-            meta.setPage(i, pages.get(i - 1));
+            meta.spigot().setPage(i, pages.get(i - 1));
         }
 
         if (author != null)

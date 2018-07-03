@@ -227,15 +227,20 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
 
     private void registerCommands() {
         new CommandHelp();
+        new CommandMsg();
+        new CommandReply();
         new CommandHub();
         new CommandServer(this);
         new CommandList();
         new CommandWebsite();
+        new CommandShop();
+        new CommandReport(this);
 
         new CommandFind(this);
         new CommandSend(this);
         new CommandAnnouncement();
         new CommandMotd();
+        new CommandSilent();
         new CommandMaintenance(this);
 
         /* Console Commands */
