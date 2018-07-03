@@ -4,9 +4,7 @@ package com.orbitmines.spigot.servers.hub.gui;
  * OrbitMines - @author Fadi Shawki - 2018
  */
 
-import com.orbitmines.api.Message;
-import com.orbitmines.api.ServerList;
-import com.orbitmines.api.VipRank;
+import com.orbitmines.api.*;
 import com.orbitmines.api.utils.TimeUtils;
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.Loot;
@@ -51,6 +49,7 @@ public class LootGUI extends GUI {
         VoteData voteData = (VoteData) omp.getData(Data.Type.VOTES);
         voteData.updateVoteTimeStamps();
         LootData lootData = (LootData) omp.getData(Data.Type.LOOT);
+        lootData.load();
 
         ServerList[] serverLists = ServerList.values();
         for (int i = 0; i < serverLists.length; i++) {
@@ -144,7 +143,9 @@ public class LootGUI extends GUI {
 
                 item.addLore("§7" + omp.lang("Zeldzaamheid", "Rarity") + ": " + instance.getRarity().getDisplayName());
 
-                if (loot.getServer(count) != null)
+                Server server = loot.getServer(count);
+
+                if (server != null)
                     item.addLore("§7Server: " + loot.getServer(count).getDisplayName());
 
                 item.addLore("");
@@ -153,7 +154,10 @@ public class LootGUI extends GUI {
                 add(slot, new ItemInstance(item.build()) {
                     @Override
                     public void onClick(InventoryClickEvent event, OMPlayer omp) {
-                        loot.onInteract(omp, instance.getRarity(), instance.getDescription(), count);
+                        if (server == null || server == orbitMines.getServerHandler().getServer())
+                            loot.onInteract(omp, instance.getRarity(), instance.getDescription(), count);
+                        else
+                            omp.sendMessage("Loot", Color.RED, "§7Je kan dit item alleen gebruiken in " + server.getDisplayName() + "§7.", "§7You can only use this item in " + server.getDisplayName() + "§7.");
                     }
                 });
             }

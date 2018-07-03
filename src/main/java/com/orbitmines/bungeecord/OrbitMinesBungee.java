@@ -11,6 +11,7 @@ import com.orbitmines.api.database.Table;
 import com.orbitmines.api.database.tables.TableIPs;
 import com.orbitmines.api.database.tables.TableServers;
 import com.orbitmines.bungeecord.commands.*;
+import com.orbitmines.bungeecord.commands.console.CommandDonation;
 import com.orbitmines.bungeecord.commands.moderator.*;
 import com.orbitmines.bungeecord.events.*;
 import com.orbitmines.bungeecord.handlers.*;
@@ -96,7 +97,7 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
 
         /* Setup Config Files */
         configHandler = new ConfigHandler(this);
-        configHandler.setup("settings");
+        configHandler.setup(/*"donations", */"settings");
 
         /* Setup Database */
         Configuration settings = configHandler.get("settings");
@@ -151,6 +152,9 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
         );
         registerRunnables();
         setupVotifier();
+
+        /* */
+//        new OldDonationProcessor(configHandler, "donations").load();
     }
 
     @Override
@@ -233,6 +237,9 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
         new CommandAnnouncement();
         new CommandMotd();
         new CommandMaintenance(this);
+
+        /* Console Commands */
+        getProxy().getPluginManager().registerCommand(this, new CommandDonation(this));
     }
 
     private void registerEvents(Listener... listeners) {

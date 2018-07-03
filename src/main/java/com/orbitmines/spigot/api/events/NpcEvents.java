@@ -5,7 +5,7 @@ import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.npc.*;
 import com.orbitmines.spigot.api.handlers.npc.todo.CustomItem;
-import com.orbitmines.spigot.api.handlers.npc.todo.FloatingItem;
+import com.orbitmines.spigot.api.handlers.npc.todo.DEPRECATED_FloatingItem;
 import com.orbitmines.spigot.api.utils.PlayerUtils;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
@@ -61,7 +61,7 @@ public class NpcEvents implements Listener {
 
         floatingItem:
         {
-            FloatingItem floatingItem = FloatingItem.getFloatingItem(event.getItem());
+            DEPRECATED_FloatingItem floatingItem = DEPRECATED_FloatingItem.getFloatingItem(event.getItem());
 
             if (floatingItem == null)
                 break floatingItem;
@@ -102,7 +102,7 @@ public class NpcEvents implements Listener {
 
         Player player = event.getPlayer();
 
-        FloatingItem floatingItem = FloatingItem.getFloatingItem(armorStand);
+        DEPRECATED_FloatingItem floatingItem = DEPRECATED_FloatingItem.getFloatingItem(armorStand);
 
         if (floatingItem != null) {
             event.setCancelled(true);
@@ -152,7 +152,7 @@ public class NpcEvents implements Listener {
             if (hologram.getSpawnLocation().getWorld().getName().equals(worldName))
                 hologram.destroy();
         }
-        for (FloatingItem floatingItem : new ArrayList<>(FloatingItem.getFloatingItems())) {
+        for (DEPRECATED_FloatingItem floatingItem : new ArrayList<>(DEPRECATED_FloatingItem.getFloatingItems())) {
             if (floatingItem.getLocation().getWorld().getName().equals(worldName))
                 floatingItem.delete();
         }

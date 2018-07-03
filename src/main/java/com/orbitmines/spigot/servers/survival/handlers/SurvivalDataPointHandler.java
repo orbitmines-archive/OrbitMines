@@ -5,6 +5,7 @@ import com.orbitmines.spigot.api.datapoints.DataPointHandler;
 import com.orbitmines.spigot.api.datapoints.DataPointType;
 import com.orbitmines.spigot.datapoints.DataPointLeaderBoard;
 import com.orbitmines.spigot.datapoints.DataPointNpc;
+import com.orbitmines.spigot.datapoints.DataPointPatchNotes;
 import com.orbitmines.spigot.servers.hub.datapoints.HubDataPointSpawnpoint;
 import com.orbitmines.spigot.servers.hub.datapoints.HubDataPointStaffHologram;
 
@@ -29,6 +30,12 @@ public class SurvivalDataPointHandler extends DataPointHandler {
             @Override
             public DataPoint newInstance() {
                 return new DataPointNpc();
+            }
+        },
+        PATCH_NOTES() {
+            @Override
+            public DataPoint newInstance() {
+                return new DataPointPatchNotes();
             }
         },
 

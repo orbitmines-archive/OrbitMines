@@ -27,8 +27,7 @@ public abstract class DefaultCommandLeaderBoard extends LeaderBoard {
 
     protected final Command command;
 
-    protected List<UUID> ordered;
-    protected final HashMap<UUID, Integer> countMap;
+    protected List<Map<Column, String>> ordered;
 
     protected int totalCount;
 
@@ -39,7 +38,6 @@ public abstract class DefaultCommandLeaderBoard extends LeaderBoard {
         this.color = color;
         this.size = size;
         this.ordered = new ArrayList<>();
-        this.countMap = new HashMap<>();
 
         command = new Command(server) {
             @Override
@@ -61,9 +59,11 @@ public abstract class DefaultCommandLeaderBoard extends LeaderBoard {
                     if (ordered.size() < i + 1)
                         continue;
 
-                    UUID uuid = ordered.get(i);
+                    Map<Column, String> entry = ordered.get(i);
+
+                    UUID uuid = UUID.fromString(entry.get(columnArray[0]));
                     CachedPlayer player = CachedPlayer.getPlayer(uuid);
-                    int count = countMap.get(uuid);
+                    int count = Integer.parseInt(entry.get(columnArray[1]));
 
                     StaffRank staffRank = player.getStaffRank();
                     VipRank vipRank = player.getVipRank();
@@ -102,35 +102,17 @@ public abstract class DefaultCommandLeaderBoard extends LeaderBoard {
     public void update() {
         /* Clear from previous update */
         this.ordered.clear();
-        this.countMap.clear();
         this.totalCount = 0;
 
         /* Update top {size} players */
         List<Map<Column, String>> entries = Database.get().getEntries(table, columnArray, wheres);
 
-        Map<String, Integer> map = new HashMap<>();
-
+        /* Update Total Count */
         for (Map<Column, String> entry : entries) {
-            String uuidString = entry.get(columnArray[0]);
-            int count = Integer.parseInt(entry.get(columnArray[1]));
-
-            map.put(uuidString, count);
-            totalCount += count;
+            totalCount += Integer.parseInt(entry.get(columnArray[1]));
         }
 
-        List<String> ordered = new ArrayList<>(map.keySet());
-        ordered.sort(Comparator.comparing(map::get));
-
-        if (ordered.size() > size)
-            ordered = ordered.subList(ordered.size() -size, ordered.size());
-
-        for (int i = 0; i < ordered.size(); i++) {
-            String stringUUID = ordered.get(ordered.size() -1 -i);
-            UUID uuid = UUID.fromString(stringUUID);
-
-            this.ordered.add(uuid);
-            this.countMap.put(uuid, map.get(stringUUID));
-        }
+        this.ordered = getOnLeaderBoard(entries);
     }
 
     @Override
@@ -144,6 +126,17 @@ public abstract class DefaultCommandLeaderBoard extends LeaderBoard {
 
     public int getTotalCount() {
         return totalCount;
+    }
+
+    /* Override this method to change the displayed uuids */
+    protected List<Map<Column, String>> getOnLeaderBoard(List<Map<Column, String>> entries) {
+        List<Map<Column, String>> ordered = new ArrayList<>(entries);
+        ordered.sort((m1, m2) -> Integer.parseInt(m2.get(columnArray[1])) - Integer.parseInt(m1.get(columnArray[1])));
+
+        if (ordered.size() > size)
+            ordered = ordered.subList(ordered.size() -size, ordered.size());
+
+        return ordered;
     }
 
     /* Override this method to change to change the message displayed at the end */

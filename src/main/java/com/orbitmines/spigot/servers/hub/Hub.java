@@ -50,6 +50,13 @@ public class Hub extends OrbitMinesServer {
 
     private List<Location> spawnLocations;
 
+    public static Map<Language, WrittenBookBuilder> RULE_BOOK = new HashMap<>();
+
+    static {
+        RULE_BOOK.put(Language.DUTCH, new WrittenBookBuilder(1, "§f", "§8§lOrbit§7§lMines", "   §8§lOrbit§7§lMines§4§lRegels" + "\n" + "§0§m-------------------" + "\n" + "§4NIET§0 Adverteren!" + "\n" + "§0Let op je taalgebruik!" + "\n" + "Luister naar de Staff!" + "\n" + "§4GEEN§0 Bugs gebruiken!" + "\n" + "§4NIET§0 hacken!" + "\n" + "§4NIET§0 spammen!" + "\n" + "§4NIET§0 spelers pesten!" + "\n" + "§0\n" + "§0§lVeel Plezier!"));
+        RULE_BOOK.put(Language.ENGLISH, new WrittenBookBuilder(1, "§f", "§8§lOrbit§7§lMines", "   §8§lOrbit§7§lMines§4§lRules" + "\n" + "§0§m-------------------" + "\n" + "§4DO NOT§0 Advertise!" + "\n" + "§0Watch your Language!" + "\n" + "Listen to Staff!" + "\n" + "§4DO NOT§0 Abuse Bugs!" + "\n" + "§4DO NOT§0 Hack!" + "\n" + "§4DO NOT§0 Spam!" + "\n" + "§4DO NOT§0 Bully Players!" + "\n" + "§0\n" + "§0§lHave Fun!"));
+    }
+
     public Hub(OrbitMines orbitMines) {
         super(orbitMines, Server.HUB, new PluginMessageHandler() {
             @Override
@@ -171,20 +178,7 @@ public class Hub extends OrbitMinesServer {
             KitInteractive kit = new KitInteractive(language.toString());
 
             {
-                String rules;
-                switch (language) {
-
-                    case DUTCH:
-                        rules = "   §8§lOrbit§7§lMines§4§lRegels" + "\n" + "§0§m-------------------" + "\n" + "§4NIET§0 Adverteren!" + "\n" + "§0Let op je taalgebruik!" + "\n" + "Luister naar de Staff!" + "\n" + "§4GEEN§0 Bugs gebruiken!" + "\n" + "§4NIET§0 hacken!" + "\n" + "§4NIET§0 spammen!" + "\n" + "§4NIET§0 spelers pesten!" + "\n" + "§0\n" + "§0§lVeel Plezier!";
-                        break;
-                    case ENGLISH:
-                        rules = "   §8§lOrbit§7§lMines§4§lRules" + "\n" + "§0§m-------------------" + "\n" + "§4DO NOT§0 Advertise!" + "\n" + "§0Watch your Language!" + "\n" + "Listen to Staff!" + "\n" + "§4DO NOT§0 Abuse Bugs!" + "\n" + "§4DO NOT§0 Hack!" + "\n" + "§4DO NOT§0 Spam!" + "\n" + "§4DO NOT§0 Bully Players!" + "\n" + "§0\n" + "§0§lHave Fun!";
-                        break;
-                    default:
-                        return;
-                }
-
-                kit.setItem(0, new WrittenBookBuilder(1, "§f", "§8§lOrbit§7§lMines", rules));
+                kit.setItem(0, RULE_BOOK.get(language));
 
                 new ItemHoverActionBar(new ItemBuilder(Material.WRITTEN_BOOK, 1, 0, "§f"), false) {
                     @Override

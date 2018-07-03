@@ -63,7 +63,7 @@ public class MobNpc extends Npc {
             this.entity = mob.spawn(getFixedLocation(), MobNpcNms.Option.DISABLE_ATTACK, MobNpcNms.Option.DISABLE_MOVEMENT);
 
         /* Also spawn NameTag */
-        if (!(this instanceof PersonalisedMobNpc))
+        if (nameTag != null && !(this instanceof PersonalisedMobNpc))
             nameTag.spawn();
 
         this.runnable = new SpigotRunnable(SpigotRunnable.TimeUnit.TICK, 3) {
@@ -86,19 +86,19 @@ public class MobNpc extends Npc {
             runnable.cancel();
 
         /* Also despawn NameTag */
-        if (!(this instanceof PersonalisedMobNpc))
+        if (nameTag != null && !(this instanceof PersonalisedMobNpc))
             nameTag.despawn();
     }
 
     @Override
     public void update() {
         /* Also update NameTag */
-        if (!(this instanceof PersonalisedMobNpc))
+        if (nameTag != null && !(this instanceof PersonalisedMobNpc))
             nameTag.update();
     }
 
     @Override
-    protected Collection<? extends Entity> getEntities() {
+    protected Collection<Entity> getEntities() {
         return Collections.singletonList(entity);
     }
 
@@ -116,28 +116,36 @@ public class MobNpc extends Npc {
     @Override
     public void setInteractAction(InteractAction interactAction) {
         super.setInteractAction(interactAction);
-        nameTag.setInteractAction(interactAction);
+
+        if (nameTag != null)
+            nameTag.setInteractAction(interactAction);
     }
 
     /* Also create NameTag */
     @Override
     public void create(Collection<? extends Player> createFor) {
         super.create(createFor);
-        nameTag.create(createFor);
+
+        if (nameTag != null)
+            nameTag.create(createFor);
     }
 
     /* Also destroy NameTag */
     @Override
     public void destroy() {
         super.destroy();
-        nameTag.destroy();
+
+        if (nameTag != null)
+            nameTag.destroy();
     }
 
     /* Also hide NameTag */
     @Override
     public void hideFor(Collection<? extends Player> players) {
         super.hideFor(players);
-        nameTag.hideFor(players);
+
+        if (nameTag != null)
+            nameTag.hideFor(players);
     }
 
     public Location getFixedLocation() {

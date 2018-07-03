@@ -125,7 +125,11 @@ public class DiscordBot {
         votes(true),
 
         reports(true),
-        punishments(true);
+        punishments(true),
+
+        command_log(true),
+
+        staff(false);
 
         private final boolean autoMute;
 

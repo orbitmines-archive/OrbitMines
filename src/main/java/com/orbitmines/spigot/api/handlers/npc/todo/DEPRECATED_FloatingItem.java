@@ -16,9 +16,9 @@ import java.util.*;
 /*
 * OrbitMines - @author Fadi Shawki - 29-7-2017
 */
-public class FloatingItem {
+public class DEPRECATED_FloatingItem {
 
-    private static List<FloatingItem> floatingItems = new ArrayList<>();
+    private static List<DEPRECATED_FloatingItem> floatingItems = new ArrayList<>();
 
     private OrbitMines orbitMines;
 
@@ -30,19 +30,19 @@ public class FloatingItem {
     private PickUpAction pickUpAction;
     private ClickAction clickAction;
 
-    public FloatingItem(Location location) {
+    public DEPRECATED_FloatingItem(Location location) {
         this(location, null, null);
     }
 
-    public FloatingItem(Location location, PickUpAction pickUpAction) {
+    public DEPRECATED_FloatingItem(Location location, PickUpAction pickUpAction) {
         this(location, pickUpAction, null);
     }
 
-    public FloatingItem(Location location, ClickAction clickAction) {
+    public DEPRECATED_FloatingItem(Location location, ClickAction clickAction) {
         this(location, null, clickAction);
     }
 
-    public FloatingItem(Location location, PickUpAction pickUpAction, ClickAction clickAction) {
+    public DEPRECATED_FloatingItem(Location location, PickUpAction pickUpAction, ClickAction clickAction) {
         orbitMines = OrbitMines.getInstance();
 
         floatingItems.add(this);
@@ -95,7 +95,7 @@ public class FloatingItem {
             itemInstance.spawn();
         }
 
-        FloatingItem floatingItem = this;
+        DEPRECATED_FloatingItem floatingItem = this;
 
         new SpigotRunnable(SpigotRunnable.TimeUnit.TICK, 1) {
             @Override
@@ -143,8 +143,8 @@ public class FloatingItem {
         clickAction.click(event, player, this);
     }
 
-    public static FloatingItem getFloatingItem(Item item) {
-        for (FloatingItem floatingItem : floatingItems) {
+    public static DEPRECATED_FloatingItem getFloatingItem(Item item) {
+        for (DEPRECATED_FloatingItem floatingItem : floatingItems) {
             for (ItemInstance itemInstance : floatingItem.itemInstances) {
                 if (itemInstance.item != null && itemInstance.item.getEntityId() == item.getEntityId())
                     return floatingItem;
@@ -154,8 +154,8 @@ public class FloatingItem {
         return null;
     }
 
-    public static FloatingItem getFloatingItem(ArmorStand armorStand) {
-        for (FloatingItem floatingItem : floatingItems) {
+    public static DEPRECATED_FloatingItem getFloatingItem(ArmorStand armorStand) {
+        for (DEPRECATED_FloatingItem floatingItem : floatingItems) {
             if (floatingItem.getArmorStand().getEntityId() == armorStand.getEntityId())
                 return floatingItem;
         }
@@ -163,30 +163,30 @@ public class FloatingItem {
         return null;
     }
 
-    public static List<FloatingItem> getFloatingItems() {
+    public static List<DEPRECATED_FloatingItem> getFloatingItems() {
         return floatingItems;
     }
 
     public static abstract class PickUpAction {
 
-        public abstract void pickUp(PlayerPickupItemEvent event, OMPlayer player, FloatingItem item);
+        public abstract void pickUp(PlayerPickupItemEvent event, OMPlayer player, DEPRECATED_FloatingItem item);
 
     }
 
     public static abstract class ClickAction {
 
-        public abstract void click(PlayerInteractAtEntityEvent event, OMPlayer player, FloatingItem item);
+        public abstract void click(PlayerInteractAtEntityEvent event, OMPlayer player, DEPRECATED_FloatingItem item);
 
     }
 
     public static abstract class ItemInstance {
 
-        private FloatingItem floatingItem;
+        private DEPRECATED_FloatingItem floatingItem;
         private Item item;
         private boolean hideOnJoin;
         private Set<Player> watchers;
 
-        public ItemInstance(FloatingItem floatingItem, boolean hideOnJoin) {
+        public ItemInstance(DEPRECATED_FloatingItem floatingItem, boolean hideOnJoin) {
             this.floatingItem = floatingItem;
             this.hideOnJoin = hideOnJoin;
             this.watchers = new HashSet<>();
@@ -199,7 +199,7 @@ public class FloatingItem {
 
         public abstract boolean isDisplayNameVisible();
 
-        public FloatingItem getFloatingItem() {
+        public DEPRECATED_FloatingItem getFloatingItem() {
             return floatingItem;
         }
 

@@ -103,7 +103,7 @@ public class ArmorStandNpc extends Npc {
     }
 
     @Override
-    protected Collection<? extends Entity> getEntities() {
+    protected Collection<Entity> getEntities() {
         return Collections.singletonList(armorStand);
     }
 

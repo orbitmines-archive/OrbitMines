@@ -114,9 +114,9 @@ public class AutoRestart extends BungeeRunnable {
 
     private void giveEndOfMonthRewards() {
         if (!Database.get().contains(Table.SERVER_DATA, TableServerData.DATA, new Where(TableServerData.SERVER, "BUNGEE"), new Where(TableServerData.TYPE, "LAST_VOTE_MONTH")))
-            Database.get().insert(Table.SERVER_DATA, "BUNGEE", "LAST_VOTE_MONTH", startUpMonth + startUpYear);
+            Database.get().insert(Table.SERVER_DATA, "BUNGEE", "LAST_VOTE_MONTH", DateUtils.getMonth() + DateUtils.getYear());
         else
-            Database.get().update(Table.SERVER_DATA, new Set(TableServerData.DATA, startUpMonth + startUpYear), new Where(TableServerData.SERVER, "BUNGEE"), new Where(TableServerData.TYPE, "LAST_VOTE_MONTH"));
+            Database.get().update(Table.SERVER_DATA, new Set(TableServerData.DATA, DateUtils.getMonth() + DateUtils.getYear()), new Where(TableServerData.SERVER, "BUNGEE"), new Where(TableServerData.TYPE, "LAST_VOTE_MONTH"));
 
         /*
                 Top 3 Voters:

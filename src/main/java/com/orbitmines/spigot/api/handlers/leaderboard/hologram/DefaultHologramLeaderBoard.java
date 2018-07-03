@@ -19,8 +19,7 @@ public class DefaultHologramLeaderBoard extends HologramLeaderBoard {
 
     protected final int size;
 
-    protected List<UUID> ordered;
-    protected final HashMap<UUID, Integer> countMap;
+    protected List<Map<Column, String>> ordered;
 
     public DefaultHologramLeaderBoard(Location location, double yOff, ScoreboardString title, int size, Table table, Column uuidColumn, Column column, Where... wheres) {
         this(location, yOff, new ScoreboardString[] { title }, size, table, uuidColumn, column, wheres);
@@ -31,7 +30,6 @@ public class DefaultHologramLeaderBoard extends HologramLeaderBoard {
 
         this.size = size;
         this.ordered = new ArrayList<>();
-        this.countMap = new HashMap<>();
 
         for (ScoreboardString string : title) {
             hologram.addLine(string, true);
@@ -46,9 +44,15 @@ public class DefaultHologramLeaderBoard extends HologramLeaderBoard {
                 if (ordered.size() < index + 1)
                     return null; /* Empty Line */
 
-                UUID uuid = ordered.get(index);
+                Map<Column, String> entry = ordered.get(index);
+
+                UUID uuid = UUID.fromString(entry.get(columnArray[0]));
                 CachedPlayer player = CachedPlayer.getPlayer(uuid);
-                int count = countMap.get(uuid);
+
+                if (player == null)
+                    return null;
+
+                int count = Integer.parseInt(entry.get(columnArray[1]));
 
                 StaffRank staffRank = player.getStaffRank();
                 VipRank vipRank = player.getVipRank();
@@ -62,40 +66,29 @@ public class DefaultHologramLeaderBoard extends HologramLeaderBoard {
     public void update() {
         /* Clear from previous update */
         this.ordered.clear();
-        this.countMap.clear();
 
         /* Update top {size} players */
         List<Map<Column, String>> entries = Database.get().getEntries(table, columnArray, wheres);
 
-        Map<String, Integer> map = new HashMap<>();
+        this.ordered = getOnLeaderBoard(entries);
 
-        for (Map<Column, String> entry : entries) {
-            String uuidString = entry.get(columnArray[0]);
-            int count = Integer.parseInt(entry.get(columnArray[1]));
-
-            map.put(uuidString, count);
-        }
-
-        List<String> ordered = new ArrayList<>(map.keySet());
-        ordered.sort(Comparator.comparing(map::get));
-
-        if (ordered.size() > size)
-            ordered = ordered.subList(ordered.size() -size, ordered.size());
-
-        for (int i = 0; i < ordered.size(); i++) {
-            String stringUUID = ordered.get(ordered.size() -1 -i);
-            UUID uuid = UUID.fromString(stringUUID);
-
-            this.ordered.add(uuid);
-            this.countMap.put(uuid, map.get(stringUUID));
-       }
-
-       /* Update Hologram */
-       hologram.update();
+        /* Update Hologram */
+        hologram.update();
     }
 
     public int getSize() {
         return size;
+    }
+
+    /* Override this method to change the displayed uuids */
+    protected List<Map<Column, String>> getOnLeaderBoard(List<Map<Column, String>> entries) {
+        List<Map<Column, String>> ordered = new ArrayList<>(entries);
+        ordered.sort((m1, m2) -> Integer.parseInt(m2.get(columnArray[1])) - Integer.parseInt(m1.get(columnArray[1])));
+
+        if (ordered.size() > size)
+            ordered = ordered.subList(ordered.size() -size, ordered.size());
+
+        return ordered;
     }
 
     /* Override this method to change to change the message displayed at the end */

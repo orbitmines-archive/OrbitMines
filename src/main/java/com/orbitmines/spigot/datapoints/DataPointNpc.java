@@ -1,11 +1,19 @@
 package com.orbitmines.spigot.datapoints;
 
 import com.orbitmines.api.Server;
+import com.orbitmines.api.ServerList;
+import com.orbitmines.api.VipRank;
+import com.orbitmines.api.utils.TimeUtils;
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.Mob;
+import com.orbitmines.spigot.api.PeriodLoot;
 import com.orbitmines.spigot.api.datapoints.DataPointLoader;
 import com.orbitmines.spigot.api.datapoints.DataPointSign;
+import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
+import com.orbitmines.spigot.api.handlers.data.LootData;
+import com.orbitmines.spigot.api.handlers.data.PeriodLootData;
+import com.orbitmines.spigot.api.handlers.data.VoteData;
 import com.orbitmines.spigot.api.handlers.npc.MobNpc;
 import com.orbitmines.spigot.api.handlers.npc.PersonalisedMobNpc;
 import com.orbitmines.spigot.api.handlers.scoreboard.ScoreboardString;
@@ -139,15 +147,54 @@ public class DataPointNpc extends DataPointSign {
                 PersonalisedMobNpc npc = new PersonalisedMobNpc(Mob.WITHER_SKELETON, location) {
                     @Override
                     public ScoreboardString[] getLines(OMPlayer omp) {
+                        VoteData voteData = (VoteData) omp.getData(Data.Type.VOTES);
+                        voteData.updateVoteTimeStamps();
+                        LootData lootData = (LootData) omp.getData(Data.Type.LOOT);
+                        lootData.load();
+                        PeriodLootData periodLootData = (PeriodLootData) omp.getData(Data.Type.PERIOD_LOOT);
+                        periodLootData.load();
+
+                        int maxVotes = ServerList.values().length;
+                        PeriodLoot[] values = PeriodLoot.values();
+
                         return new ScoreboardString[] {
                                 () -> "§a§lSpace§2§lTurtle",
-                                () -> ""
+                                () -> {
+                                    int lootCount = lootData.getLoot().size();
+
+                                    PeriodLoot shortestDuration = null;
+                                    long duration = 0;
+
+                                    for (PeriodLoot loot : values) {
+                                        if ((loot != PeriodLoot.MONTHLY_VIP || omp.getVipRank() != VipRank.NONE) && periodLootData.canCollect(loot)) {
+                                            lootCount++;
+                                            continue;
+                                        }
+
+                                        if (loot == PeriodLoot.MONTHLY_VIP && omp.getVipRank() == VipRank.NONE)
+                                            continue;
+
+                                        long d = periodLootData.getCooldown(loot);
+
+                                        if (shortestDuration != null && duration < d)
+                                            continue;
+
+                                        shortestDuration = loot;
+                                        duration = d;
+                                    }
+
+                                    return lootCount != 0 ? (color ? "§a" : "§2") + "§l" + omp.lang("ONTVANG", "COLLECT") + " " + lootCount + " " + (lootCount == 1 ? "ITEM" : "ITEMS") : "§7" + omp.lang("Meer loot over", "More loot in") + " §a§l" + TimeUtils.fromTimeStamp(duration * 1000L, omp.getLanguage()) + "§r§7.";
+                                },
+                                () -> {
+                                    int votes = maxVotes - voteData.getVoteTimeStamps().size();
+                                    return votes == 0 ? null : omp.lang("§7Je kan nog §9§l" + votes + "x§r§7 voten.", "§7You can still vote §9§l" + votes + "§r§7.");
+                                }
                         };
                     }
                 };
                 npc.create();
 
-
+                startLootUpdate(npc);
                 break;
             }
             default:
@@ -162,6 +209,30 @@ public class DataPointNpc extends DataPointSign {
             @Override
             public void run() {
                 npc.update();
+            }
+        };
+    }
+
+    private List<PersonalisedMobNpc> lootNpcs = new ArrayList<>();
+    private boolean startedLoot = false;
+    private boolean color = false;
+
+    private void startLootUpdate(PersonalisedMobNpc npc) {
+        lootNpcs.add(npc);
+
+        if (startedLoot)
+            return;
+
+        startedLoot = true;
+
+        new SpigotRunnable(SpigotRunnable.TimeUnit.TICK, 10) {
+            @Override
+            public void run() {
+                color = !color;
+
+                for (PersonalisedMobNpc npc : lootNpcs) {
+                    npc.update();
+                }
             }
         };
     }

@@ -4,23 +4,20 @@ package com.orbitmines.bungeecord.handlers.cmd;
  * OrbitMines - @author Fadi Shawki - 2018
  */
 
-import net.md_5.bungee.api.event.ChatEvent;
+import net.md_5.bungee.api.plugin.Command;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class ConsoleCommand {
+public abstract class ConsoleCommand extends Command {
 
     private static List<ConsoleCommand> commands = new ArrayList<>();
 
-    public ConsoleCommand() {
+    public ConsoleCommand(String name) {
+        super(name);
+
         commands.add(this);
     }
-
-    public abstract String[] getAlias();
-
-    /* a[0] = '/<command>' */
-    public abstract void dispatch(ChatEvent event, String[] a);
 
     public void unregister() {
         commands.remove(this);
@@ -28,10 +25,8 @@ public abstract class ConsoleCommand {
 
     public static ConsoleCommand getCommand(String cmd) {
         for (ConsoleCommand command : commands) {
-            for (String alias : command.getAlias()) {
-                if (cmd.equalsIgnoreCase(alias))
-                    return command;
-            }
+            if (cmd.equalsIgnoreCase(command.getName()))
+                return command;
         }
 
         return null;

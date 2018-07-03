@@ -195,7 +195,7 @@ public class OrbitMines extends JavaPlugin {
         registerEvents(
                 new AfkEvents(),
                 new ClickEvent(),
-                new CommandPreprocessEvent(),
+                new CommandPreprocessEvent(this),
                 new FreezeEvent(),
                 new ItemHandlerEvents(),
                 new JoinQuitEvents(),
@@ -303,6 +303,7 @@ public class OrbitMines extends JavaPlugin {
 
     private void registerCommands() {
         new CommandHelp(this);
+        new CommandRules(this);
 
         new CommandServers(this);
 

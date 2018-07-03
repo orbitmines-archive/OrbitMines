@@ -254,7 +254,7 @@ public abstract class OMPlayer {
     }
 
     public void defaultTabList() {
-        orbitMines.getNms().tabList().send(Collections.singletonList(player), "\n§8§lOrbit§7§lMines\n" + orbitMines.getServerHandler().getServer().getDisplayName() + "\n", "\n    §7Website: §6§lwww.orbitmines.com§r    \n    §7" + lang("Winkel", "Shop") + ": §3§lshop.orbitmines.com§r    \n    §7Twitter: §b§l@OrbitMines§r    \n\n    §7Vote: §9§l/vote§r    \n");
+        orbitMines.getNms().tabList().send(Collections.singletonList(player), "\n§8§lOrbit§7§lMines\n" + orbitMines.getServerHandler().getServer().getDisplayName() + "\n", "\n    §7Website: §6§lwww.orbitmines.com§r    \n    §7" + lang("Winkel", "Shop") + ": §3§lorbitmines.buycraft.net§r    \n    §7Twitter: §b§l@OrbitMines§r    \n\n    §7Vote: §9§l/vote§r    \n");
     }
 
     public void on2FALogin() {
@@ -262,7 +262,7 @@ public abstract class OMPlayer {
         sendMessage(" §8§lOrbit§7§lMines §8- " + orbitMines.getServerHandler().getServer().getDisplayName());
         sendMessage(" ");
         sendMessage(" §7Website: §6§lwww.orbitmines.com");
-        sendMessage(" §7" + lang("Winkel", "Shop") + ": §3§lshop.orbitmines.com");
+        sendMessage(" §7" + lang("Winkel", "Shop") + ": §3§lorbitmines.buycraft.net");
         sendMessage(" §7Twitter: §b§l@OrbitMines");
         sendMessage(" §7" + lang("Voten", "Vote") + ": §9§l/vote");
         sendMessage(" ");
@@ -384,7 +384,7 @@ public abstract class OMPlayer {
     }
 
     public void setStaffRank(StaffRank staffRank) {
-        Title t = new Title(new Message(""), new Message("§7Je bent nu een " + staffRank.getDisplayName() + "§7!", "§7You are now " + staffRank.getDisplayName() + " " + (staffRank == StaffRank.OWNER ? "an" : "a") + "§7!"), 20, 80, 20);
+        Title t = new Title(new Message(""), new Message("§7Je bent nu een " + staffRank.getDisplayName() + "§7!", "§7You are now " + (staffRank == StaffRank.OWNER ? "an" : "a") + " " + staffRank.getDisplayName() + "§7!"), 20, 80, 20);
         t.send(this);
 
         Database.get().update(Table.PLAYERS, new Set(TablePlayers.STAFFRANK, staffRank.toString()), new Where(TablePlayers.UUID, getUUID().toString()));
@@ -403,7 +403,7 @@ public abstract class OMPlayer {
     }
 
     public void setVipRank(VipRank vipRank) {
-        Title t = new Title(new Message(""), new Message("§7Je bent nu een " + vipRank.getDisplayName() + "§7!", "§7You are now " + vipRank.getDisplayName() + " " + (vipRank == VipRank.EMERALD || vipRank == VipRank.IRON ? "an" : "a") + "§7!"), 20, 80, 20);
+        Title t = new Title(new Message(""), new Message("§7Je bent nu een " + vipRank.getDisplayName() + "§7!", "§7You are now " + (vipRank == VipRank.EMERALD || vipRank == VipRank.IRON ? "an" : "a") + " " + vipRank.getDisplayName() + "§7!"), 20, 80, 20);
         t.send(this);
 
         Database.get().update(Table.PLAYERS, new Set(TablePlayers.VIPRANK, vipRank.toString()), new Where(TablePlayers.UUID, getUUID().toString()));

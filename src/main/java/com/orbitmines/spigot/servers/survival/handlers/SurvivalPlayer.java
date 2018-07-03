@@ -115,8 +115,8 @@ public class SurvivalPlayer extends OMPlayer {
         return getData().getExtraHomes();
     }
 
-    public void setExtraHomes(int extraHomes) {
-        getData().setExtraHomes(extraHomes);
+    public void addExtraHomes(int extraHomes) {
+        getData().setExtraHomes(getExtraHomes() + extraHomes);
     }
 
     public int getHomesAllowed() {
