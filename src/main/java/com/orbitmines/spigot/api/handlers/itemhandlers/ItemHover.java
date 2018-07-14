@@ -7,7 +7,9 @@ import com.orbitmines.spigot.api.runnables.SpigotRunnable;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /*
 * OrbitMines - @author Fadi Shawki - 2017
@@ -21,9 +23,12 @@ public abstract class ItemHover {
 
     private PlayerRunnable offHandRunnable;
 
+    protected Set<OMPlayer> entered;
+
     public ItemHover(ItemBuilder itemBuilder, boolean offHandAllowed) {
         this.itemBuilder = itemBuilder;
         this.offHandAllowed = offHandAllowed;
+        this.entered = new HashSet<>();
 
         itemHovers.add(this);
 
@@ -65,9 +70,14 @@ public abstract class ItemHover {
 
         omp.setCurrentHover(this);
         onEnter(omp);
+
+        entered.add(omp);
     }
 
     public void leave(OMPlayer omp) {
+        if (!entered.contains(omp))
+            return;
+
         onLeave(omp);
 
         omp.setCurrentHover(null);
@@ -78,6 +88,10 @@ public abstract class ItemHover {
 
         if (offHandRunnable != null)
             offHandRunnable.cancel();
+    }
+
+    public boolean hasEntered(OMPlayer omp) {
+        return entered.contains(omp);
     }
 
     public static List<ItemHover> getItemHovers() {

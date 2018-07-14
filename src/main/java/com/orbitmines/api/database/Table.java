@@ -20,6 +20,7 @@ public class Table {
     public static TablePlayers PLAYERS;
     public static TableVotes VOTES;
     public static TableFriends FRIENDS;
+    public static TableAchievements ACHIEVEMENTS;
     public static TableIPs IPS;
     public static TablePunishments PUNISHMENTS;
     public static TableReports REPORTS;
@@ -28,6 +29,8 @@ public class Table {
     public static TablePlayTime PLAY_TIME;
     public static TableLoot LOOT;
     public static TablePeriodLoot PERIOD_LOOT;
+
+    public static TableChestShops CHEST_SHOPS;
 
     public static TableServerData SERVER_DATA;
     public static TableServers SERVERS;
@@ -46,6 +49,7 @@ public class Table {
         PLAYERS = new TablePlayers();
         VOTES = new TableVotes();
         FRIENDS = new TableFriends();
+        ACHIEVEMENTS = new TableAchievements();
         IPS = new TableIPs();
         PUNISHMENTS = new TablePunishments();
         REPORTS = new TableReports();
@@ -54,6 +58,8 @@ public class Table {
         PLAY_TIME = new TablePlayTime();
         LOOT = new TableLoot();
         PERIOD_LOOT = new TablePeriodLoot();
+
+        CHEST_SHOPS = new TableChestShops();
 
         SERVER_DATA = new TableServerData();
         SERVERS = new TableServers();

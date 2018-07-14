@@ -204,6 +204,7 @@ public class OrbitMines extends JavaPlugin {
                 new NpcEvents(),
                 new PlayerChatEvent(),
                 new PlayerHeadOnMobEvent(),
+                new SignLogEvent(this),
                 new SpawnLocationEvent(),
                 new TeleportingMoveEvent(),
                 new WorldAdvancementsFix_1_12()

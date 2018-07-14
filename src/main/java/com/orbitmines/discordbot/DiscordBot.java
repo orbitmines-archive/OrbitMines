@@ -128,6 +128,7 @@ public class DiscordBot {
         punishments(true),
 
         command_log(true),
+        sign_log(true),
 
         staff(false);
 
@@ -172,6 +173,21 @@ public class DiscordBot {
 
         public int getIndex() {
             return index;
+        }
+    }
+
+    public enum Images {
+
+        SIGN("https://i.imgur.com/bw8AOr8.png");
+
+        private final String url;
+
+        Images(String url) {
+            this.url = url;
+        }
+
+        public String getUrl() {
+            return url;
         }
     }
 }

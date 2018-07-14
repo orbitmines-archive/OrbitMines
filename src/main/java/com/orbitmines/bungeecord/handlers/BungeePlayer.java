@@ -76,12 +76,6 @@ public class BungeePlayer {
     */
 
     public void login() {
-        BungeePlayer prev = BungeePlayer.getPlayer(player);
-        if (prev != null) {
-            /* The player rarely doesn't disconnect correctly due to a crash (even then it doesn't always happen, but for when it does); */
-            players.remove(prev);
-        }
-
         players.add(this);
 
         if (!Database.get().contains(Table.PLAYERS, TablePlayers.UUID, new Where(TablePlayers.UUID, getUUID().toString()))) {
@@ -687,7 +681,10 @@ public class BungeePlayer {
             if (omp.getPlayer() == player)
                 return omp;
         }
-        return null;
+
+        BungeePlayer omp = new BungeePlayer(player);
+        omp.login();
+        return omp;
     }
 
     public static BungeePlayer getPlayer(String name) {

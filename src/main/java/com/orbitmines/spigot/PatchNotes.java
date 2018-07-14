@@ -46,8 +46,8 @@ public class PatchNotes {
                 new PatchNotes.Feature("PATCH NOTES", Color.RED, "With the patch notes users will be able to view additions and changes to OrbitMines more easily through the 'Patch Notes' npc in game or through Discord.", "https://i.imgur.com/EsOVG5S.png")
         ));
 
-        add(new PatchNotes.Instance(Server.SURVIVAL, "v1.0.0", "Survival Release", "The first Survival release, presenting a new systems for claiming and warps and many other features!", "2018-07-02",
-               new Feature("", Color.RED, "", "")
+        add(new PatchNotes.Instance(Server.SURVIVAL, "v1.0.0", "Survival Release", "The first Survival release, presenting new systems for claiming and warps and many other features!", "2018-07-02",
+               new Feature("", Color.RED, "")
         ));
     }
 
@@ -320,6 +320,10 @@ public class PatchNotes {
         private final Color color;
         private final String description;
         private final String imageLink;
+
+        public Feature(String name, Color color, String description) {
+            this(name, color, description, null);
+        }
 
         public Feature(String name, Color color, String description, String imageLink) {
             this.name = name;

@@ -10,7 +10,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.BlockIterator;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 /*
 * OrbitMines - @author Fadi Shawki - 2017
@@ -76,29 +77,46 @@ public class PlayerUtils {
         return getAmount(player, material, durability) >= amount;
     }
 
-    public static void removeItems(Player player, Material material, int amount) {
-        removeItems(player, material, -1, amount);
+    public static List<ItemStack> removeItems(Player player, Material material, int amount) {
+        return removeItems(player, material, -1, amount);
     }
 
-    public static void removeItems(Player player, Material material, int durability, int amount) {
+    public static List<ItemStack> removeItems(Player player, Material material, int durability, int amount) {
+        return removeItems(player.getInventory(), material, durability, amount);
+    }
+
+    public static List<ItemStack> removeItems(Inventory inventory, Material material, int amount) {
+        return removeItems(inventory, material, -1, amount);
+    }
+
+    public static List<ItemStack> removeItems(Inventory inventory, Material material, int durability, int amount) {
+        List<ItemStack> removed = new ArrayList<>();
+
         int count = 0;
-        for (ItemStack item : Arrays.asList(player.getInventory().getContents())) {
+        for (ItemStack item : inventory.getContents()) {
             if (item == null || item.getType() != material || !(durability == -1 || item.getDurability() == durability))
                 continue;
 
             if (count + item.getAmount() <= amount) {
                 count += item.getAmount();
-                player.getInventory().remove(item);
+                inventory.remove(item);
+                removed.add(item);
             } else {
                 /* LeftOvers */
                 ItemStack newItem = new ItemStack(item);
                 newItem.setAmount(item.getAmount() - (amount - count));
 
-                player.getInventory().setItem(player.getInventory().first(item), newItem);
+                ItemStack removedItem = new ItemStack(item);
+                removedItem.setAmount(amount - count);
+
+                inventory.setItem(inventory.first(item), newItem);
+                removed.add(removedItem);
 
                 break;
             }
         }
+
+        return removed;
     }
 
     public static int getAmount(Player player, Material material) {
@@ -106,9 +124,17 @@ public class PlayerUtils {
     }
 
     public static int getAmount(Player player, Material material, int durability) {
+        return getAmount(player.getInventory(), material, durability);
+    }
+
+    public static int getAmount(Inventory inventory, Material material) {
+        return getAmount(inventory, material, -1);
+    }
+
+    public static int getAmount(Inventory inventory, Material material, int durability) {
         int amount = 0;
 
-        for (ItemStack item : player.getInventory().getContents()) {
+        for (ItemStack item : inventory.getContents()) {
             if (item != null && item.getType() == material && (durability == -1 || item.getDurability() == durability))
                 amount += item.getAmount();
         }

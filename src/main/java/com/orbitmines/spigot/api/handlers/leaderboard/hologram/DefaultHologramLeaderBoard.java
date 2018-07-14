@@ -7,6 +7,7 @@ import com.orbitmines.api.database.Column;
 import com.orbitmines.api.database.Database;
 import com.orbitmines.api.database.Table;
 import com.orbitmines.api.database.Where;
+import com.orbitmines.api.utils.uuid.UUIDUtils;
 import com.orbitmines.spigot.api.handlers.scoreboard.ScoreboardString;
 import org.bukkit.Location;
 
@@ -49,10 +50,16 @@ public class DefaultHologramLeaderBoard extends HologramLeaderBoard {
                 UUID uuid = UUID.fromString(entry.get(columnArray[0]));
                 CachedPlayer player = CachedPlayer.getPlayer(uuid);
 
-                if (player == null)
-                    return null;
-
                 int count = Integer.parseInt(entry.get(columnArray[1]));
+
+                if (player == null) {
+                    String name = UUIDUtils.getName(uuid);
+
+                    if (name != null)
+                        return "§7" + (index + 1) + ". " + VipRank.NONE.getPrefixColor().getChatColor() + name + "  " + getValue(null, count);
+                    else
+                        return "§7" + (index + 1) + ". " + VipRank.NONE.getPrefixColor().getChatColor() + "UNKNOWN PLAYER" + "  " + getValue(null, count);
+                }
 
                 StaffRank staffRank = player.getStaffRank();
                 VipRank vipRank = player.getVipRank();
@@ -86,7 +93,7 @@ public class DefaultHologramLeaderBoard extends HologramLeaderBoard {
         ordered.sort((m1, m2) -> Integer.parseInt(m2.get(columnArray[1])) - Integer.parseInt(m1.get(columnArray[1])));
 
         if (ordered.size() > size)
-            ordered = ordered.subList(ordered.size() -size, ordered.size());
+            ordered = ordered.subList(0, size);
 
         return ordered;
     }

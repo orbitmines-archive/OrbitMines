@@ -133,7 +133,7 @@ public class LootGUI extends GUI {
 
         int slot = 36;
 
-        for (LootData.LootInstance instance : getLootForPage(lootData.getLoot())) {
+        for (LootData.Loot.Instance instance : getLootForPage(lootData.getLoot())) {
             if (instance != null) {
                 Loot loot = instance.getLoot();
                 int count = instance.getCount();
@@ -194,8 +194,8 @@ public class LootGUI extends GUI {
     }
 
 
-    private LootData.LootInstance[] getLootForPage(List<LootData.LootInstance> loot) {
-        LootData.LootInstance[] pageLoot = new LootData.LootInstance[LOOT_PER_PAGE];
+    private LootData.Loot.Instance[] getLootForPage(List<LootData.Loot.Instance> loot) {
+        LootData.Loot.Instance[] pageLoot = new LootData.Loot.Instance[LOOT_PER_PAGE];
 
         for (int i = 0; i < LOOT_PER_PAGE; i++) {
             if (loot.size() > i)
@@ -222,7 +222,7 @@ public class LootGUI extends GUI {
         return pageLoot;
     }
 
-    private boolean canHaveMorePages(List<LootData.LootInstance> loot) {
+    private boolean canHaveMorePages(List<LootData.Loot.Instance> loot) {
         int lootAmount = loot.size();
 
         if (lootAmount <= LOOT_PER_PAGE)

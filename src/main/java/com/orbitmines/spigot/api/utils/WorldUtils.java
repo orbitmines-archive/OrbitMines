@@ -5,10 +5,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.Chest;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,6 +22,21 @@ import java.util.List;
 public class WorldUtils {
 
     public static final List<Material> CANNOT_TRANSFORM = Arrays.asList(Material.LONG_GRASS, Material.YELLOW_FLOWER, Material.RED_ROSE, Material.DOUBLE_PLANT, Material.WOOD_STEP, Material.WOOD_STAIRS, Material.COBBLESTONE_STAIRS, Material.TRAP_DOOR, Material.IRON_TRAPDOOR, Material.IRON_TRAPDOOR, Material.SKULL, Material.WATER_LILY, Material.SIGN_POST, Material.WALL_SIGN, Material.TORCH, Material.FENCE, Material.WATER, Material.STATIONARY_WATER);
+
+    private static final BlockFace[] signFaces = new BlockFace[] { BlockFace.DOWN, BlockFace.UP, BlockFace.EAST, BlockFace.NORTH, BlockFace.WEST, BlockFace.SOUTH };
+
+    public static Chest getChestAtSign(Location signLocation) {
+        Block sign = signLocation.getBlock();
+
+        for (BlockFace face : signFaces) {
+            Block block = sign.getRelative(face);
+
+            if (block.getState() instanceof Chest)
+                return (Chest) block.getState();
+        }
+
+        return null;
+    }
 
     public static void removeAllEntities() {
         for (World world : Bukkit.getWorlds()) {
@@ -118,6 +137,20 @@ public class WorldUtils {
                 e = o;
         }
         return e;
+    }
+
+    public static List<Player> getNearbyPlayers(Location loc, double range) {
+        List<Player> list = new ArrayList<>();
+
+        for (Player p : loc.getWorld().getPlayers()) {
+            Location loc2 = p.getLocation();
+            double distance = loc.distance(loc2);
+
+            if (distance <= range)
+                list.add(p);
+        }
+
+        return list;
     }
 //
 //    /* Returns a list of OMPlayers nearby a location */

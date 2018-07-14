@@ -14,10 +14,12 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ItemDespawnEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 
@@ -111,5 +113,21 @@ public class NpcEvents implements Listener {
 
         if (npc != null)
             event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onWorldSwitch(PlayerChangedWorldEvent event) {
+        Player player = event.getPlayer();
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                /* Hide other npcs that shouldn't be visible */
+                for (Npc npc : Npc.getNpcIn(player.getWorld())) {
+                    if (npc.getWatchers() != null && !npc.getWatchers().contains(player))
+                        npc.hideFor(player);
+                }
+            }
+        }.runTaskLater(orbitMines, 10);
     }
 }

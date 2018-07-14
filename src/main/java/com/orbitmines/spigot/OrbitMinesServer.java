@@ -9,6 +9,7 @@ import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.PluginMessageHandler;
 import com.orbitmines.spigot.api.handlers.PreventionSet;
 import com.orbitmines.spigot.api.handlers.chat.ComponentMessage;
+import com.orbitmines.spigot.api.options.ApiOption;
 import com.orbitmines.spigot.api.runnables.SpigotRunnable;
 import com.orbitmines.spigot.servers.hub.Hub;
 import com.orbitmines.spigot.servers.survival.Survival;
@@ -24,6 +25,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.scheduler.BukkitRunnable;
 
 /*
 * OrbitMines - @author Fadi Shawki - 2017
@@ -95,6 +97,17 @@ public abstract class OrbitMinesServer {
     protected abstract void registerRunnables();
 
     public abstract void setupNpc(String npcName, Location location);
+
+    protected void setup(ApiOption... options) {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (ApiOption option : options) {
+                    option.setup(orbitMines);
+                }
+            }
+        }.runTaskLater(orbitMines, 1);
+    }
 
     public void format(AsyncPlayerChatEvent event, OMPlayer omp) {
         event.setFormat(omp.getRankPrefix() + omp.getName() + "§7 » " + omp.getRankChatColor().getChatColor() + "%2$s");

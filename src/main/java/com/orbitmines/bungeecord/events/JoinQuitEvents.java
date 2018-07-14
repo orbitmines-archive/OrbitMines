@@ -72,9 +72,6 @@ public class JoinQuitEvents implements Listener {
 
         BungeePlayer omp = BungeePlayer.getPlayer(player);
 
-        if (omp == null)
-            return;
-
         ServerInfo fallBackServer = omp.getFallBackServer();
 
         if (fallBackServer != null) {
@@ -88,9 +85,6 @@ public class JoinQuitEvents implements Listener {
     @EventHandler
     public void onKick(ServerKickEvent event) {
         BungeePlayer omp = BungeePlayer.getPlayer(event.getPlayer());
-
-        if (omp == null)
-            return;
 
         ServerInfo fallBackServer = omp.getFallBackServer();
 
@@ -108,6 +102,6 @@ public class JoinQuitEvents implements Listener {
         ProxiedPlayer player = event.getPlayer();
 
         if (player.getServer().getInfo() == event.getTarget())
-            BungeePlayer.getPlayer(player).logout();//TODO AFTER CRASH = NULL?
+            BungeePlayer.getPlayer(player).logout();
     }
 }

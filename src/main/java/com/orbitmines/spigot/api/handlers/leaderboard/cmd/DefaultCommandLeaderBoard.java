@@ -134,7 +134,7 @@ public abstract class DefaultCommandLeaderBoard extends LeaderBoard {
         ordered.sort((m1, m2) -> Integer.parseInt(m2.get(columnArray[1])) - Integer.parseInt(m1.get(columnArray[1])));
 
         if (ordered.size() > size)
-            ordered = ordered.subList(ordered.size() -size, ordered.size());
+            ordered = ordered.subList(0, size);
 
         return ordered;
     }

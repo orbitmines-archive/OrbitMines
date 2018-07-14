@@ -23,6 +23,8 @@ import com.orbitmines.spigot.api.handlers.itemhandlers.ItemInteraction;
 import com.orbitmines.spigot.api.handlers.leaderboard.LeaderBoard;
 import com.orbitmines.spigot.api.handlers.leaderboard.hologram.DefaultHologramLeaderBoard;
 import com.orbitmines.spigot.api.handlers.scoreboard.DefaultScoreboard;
+import com.orbitmines.spigot.api.handlers.scoreboard.ScoreboardSet;
+import com.orbitmines.spigot.api.options.chestshops.ChestShopHandler;
 import com.orbitmines.spigot.api.utils.ConsoleUtils;
 import com.orbitmines.spigot.api.utils.LocationUtils;
 import com.orbitmines.spigot.api.utils.PlayerUtils;
@@ -35,6 +37,7 @@ import com.orbitmines.spigot.servers.survival.events.DeathEvent;
 import com.orbitmines.spigot.servers.survival.events.FlyEvent;
 import com.orbitmines.spigot.servers.survival.events.SignEvent;
 import com.orbitmines.spigot.servers.survival.gui.claim.ClaimGUI;
+import com.orbitmines.spigot.servers.survival.handlers.SurvivalData;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalPlayer;
 import com.orbitmines.spigot.servers.survival.handlers.claim.Claim;
 import com.orbitmines.spigot.servers.survival.handlers.claim.ClaimHandler;
@@ -125,6 +128,76 @@ public class Survival extends OrbitMinesServer {
         setupClaimTool();
 
         Warp.setupWarps();
+
+        setup(new ChestShopHandler() {
+            @Override
+            public int getMoney(UUID uuid) {
+                SurvivalPlayer omp = SurvivalPlayer.getPlayer(uuid);
+
+                if (omp != null)
+                    return omp.getEarthMoney();
+
+                SurvivalData data = new SurvivalData(uuid);
+                data.load();
+
+                return data.getEarthMoney();
+            }
+
+            @Override
+            public void addMoney(UUID uuid, int count) {
+                SurvivalPlayer omp = SurvivalPlayer.getPlayer(uuid);
+
+                if (omp != null) {
+                    omp.addEarthMoney(count);
+                    return;
+                }
+
+                SurvivalData data = new SurvivalData(uuid);
+                data.load();
+
+                data.addEarthMoney(count);
+            }
+
+            @Override
+            public void removeMoney(UUID uuid, int count) {
+                SurvivalPlayer omp = SurvivalPlayer.getPlayer(uuid);
+
+                if (omp != null) {
+                    omp.removeEarthMoney(count);
+                    return;
+                }
+
+                SurvivalData data = new SurvivalData(uuid);
+                data.load();
+
+                data.removeEarthMoney(count);
+            }
+
+            @Override
+            public String getCurrencyDisplay(int count) {
+                return count + " " + (count == 1 ? "Credit" : "Credits");
+            }
+
+            @Override
+            public char getCurrencySymbol() {
+                return 'C';
+            }
+
+            @Override
+            public String getScoreboardCurrencyName() {
+                return "§2§lCredits";
+            }
+
+            @Override
+            public ScoreboardSet getNewScoreboardInstance(OrbitMines orbitMines, OMPlayer omp) {
+                return new Survival.Scoreboard(orbitMines, (SurvivalPlayer) omp);
+            }
+
+            @Override
+            public List<World> getWorlds() {
+                return Collections.singletonList(world);
+            }
+        });
     }
 
     @Override

@@ -264,4 +264,43 @@ public enum Loot {
     public void onInteract(OMPlayer omp, Rarity rarity, String description, int count) {
         throw new IllegalStateException();
     }
+
+    public static class Instance {
+
+        private final Loot loot;
+        private final Rarity rarity;
+        private int count;
+        private final String description;
+
+        public Instance(Loot loot, int count) {
+            this(loot, null, count, null);
+        }
+
+        public Instance(Loot loot, Rarity rarity, int count, String description) {
+            this.loot = loot;
+            this.rarity = rarity;
+            this.count = count;
+            this.description = description;
+        }
+
+        public Loot getLoot() {
+            return loot;
+        }
+
+        public Rarity getRarity() {
+            return rarity;
+        }
+
+        public int getCount() {
+            return count;
+        }
+
+        public void setCount(int count) {
+            this.count = count;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+    }
 }
