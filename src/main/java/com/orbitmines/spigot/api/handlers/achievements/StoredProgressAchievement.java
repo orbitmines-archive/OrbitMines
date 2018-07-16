@@ -17,11 +17,11 @@ public class StoredProgressAchievement extends ProgressAchievement {
     /* Override this if it is stored elsewhere */
     @Override
     public int getCurrent(OMPlayer omp) {
-        return getStats(omp).getProgress(achievement);
+        return getData(omp).getProgress(achievement);
     }
 
     public void progress(OMPlayer omp, int count, boolean notifyOnComplete) {
-        getStats(omp).progress(achievement, count, notifyOnComplete);
+        getData(omp).progress(achievement, count, notifyOnComplete);
     }
 
     @Override

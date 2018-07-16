@@ -65,7 +65,7 @@ public class CommandMsg extends Command {
         if (type != SettingsType.ENABLED && !omp.isEligible(StaffRank.MODERATOR)) {
             switch (type) {
                 case DISABLED: {
-                    omp.sendMessage("Msg", Color.RED, omp2.getName() + " §7§heeft privé berichten uit staan.", omp2.getName() + " §7has private messages disabled.");
+                    omp.sendMessage("Msg", Color.RED, omp2.getName() + " §7heeft privé berichten uit staan.", omp2.getName() + " §7has private messages disabled.");
                     return;
                 }
                 case ONLY_FRIENDS: {

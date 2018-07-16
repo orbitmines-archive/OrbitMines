@@ -4,6 +4,7 @@ package com.orbitmines.spigot.servers.minigames.handlers;
  * OrbitMines - @author Fadi Shawki - 2018
  */
 
+import com.orbitmines.api.Message;
 import com.orbitmines.api.Rarity;
 import com.orbitmines.api.Server;
 import com.orbitmines.spigot.api.Loot;
@@ -21,18 +22,22 @@ public enum MiniGamesAchievements implements Achievement {
     private final String name;
     private final Rarity rarity;
     private final Loot.Instance[] rewards;
-    private final String[] description;
+    private final boolean showProgressOnComplete;
+    private final Message completedProgress;
+    private final Message[] description;
 
     private AchievementHandler handler;
 
-    MiniGamesAchievements(String name, Rarity rarity, Loot.Instance reward, String... description) {
-        this(name, rarity, new Loot.Instance[] { reward }, description);
+    MiniGamesAchievements(String name, Rarity rarity, Loot.Instance reward, boolean showProgressOnComplete, Message completedProgress, Message... description) {
+        this(name, rarity, new Loot.Instance[] { reward }, showProgressOnComplete, completedProgress, description);
     }
 
-    MiniGamesAchievements(String name, Rarity rarity, Loot.Instance[] rewards, String... description) {
+    MiniGamesAchievements(String name, Rarity rarity, Loot.Instance[] rewards, boolean showProgressOnComplete, Message completedProgress, Message... description) {
         this.name = name;
         this.rarity = rarity;
         this.rewards = rewards;
+        this.showProgressOnComplete = showProgressOnComplete;
+        this.completedProgress = completedProgress;
         this.description = description;
     }
 
@@ -62,7 +67,17 @@ public enum MiniGamesAchievements implements Achievement {
     }
 
     @Override
-    public String[] getDescription() {
+    public boolean shouldShowProgressOnComplete() {
+        return showProgressOnComplete;
+    }
+
+    @Override
+    public Message completedProgress(int progress) {
+        return completedProgress;
+    }
+
+    @Override
+    public Message[] getDescription() {
         return description;
     }
 

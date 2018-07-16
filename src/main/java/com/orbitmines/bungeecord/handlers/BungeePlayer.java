@@ -9,7 +9,7 @@ import com.orbitmines.api.punishment.Punishment;
 import com.orbitmines.api.punishment.PunishmentHandler;
 import com.orbitmines.api.punishment.offences.Offence;
 import com.orbitmines.api.punishment.offences.Severity;
-import com.orbitmines.api.settings.SettingsType;
+import com.orbitmines.api.settings.Settings;
 import com.orbitmines.api.utils.DateUtils;
 import com.orbitmines.api.utils.RandomUtils;
 import com.orbitmines.bungeecord.OrbitMinesBungee;
@@ -79,7 +79,7 @@ public class BungeePlayer {
         players.add(this);
 
         if (!Database.get().contains(Table.PLAYERS, TablePlayers.UUID, new Where(TablePlayers.UUID, getUUID().toString()))) {
-            Database.get().insert(Table.PLAYERS, getUUID().toString(), getRealName(), staffRank.toString(), vipRank.toString(), DateUtils.FORMAT.format(DateUtils.now()), language.toString(), SettingsType.ENABLED.toString(), SettingsType.ENABLED.toString(), SettingsType.ENABLED.toString(), silent ? "1" : "0", "0", "0");
+            Database.get().insert(Table.PLAYERS, getUUID().toString(), getRealName(), staffRank.toString(), vipRank.toString(), DateUtils.FORMAT.format(DateUtils.now()), language.toString(), Settings.PRIVATE_MESSAGES.getDefaultType().toString(), Settings.PLAYER_VISIBILITY.getDefaultType().toString(), Settings.GADGETS.getDefaultType().toString(), Settings.STATS.getDefaultType().toString(), silent ? "1" : "0", "0", "0");
 
             onFirstLogin();
         } else {

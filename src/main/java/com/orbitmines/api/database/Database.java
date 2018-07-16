@@ -114,6 +114,10 @@ public class Database {
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                 }
+
+                /* Cannot use 'AFTER' AND 'DEFAULT' in the same query so we use this; */
+                if (column.getDefaultValue() != null)
+                    update(table, new Set(column, column.getDefaultValue()));
             }
         }
     }

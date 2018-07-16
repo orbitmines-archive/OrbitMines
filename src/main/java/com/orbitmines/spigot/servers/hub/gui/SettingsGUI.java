@@ -35,10 +35,10 @@ public class SettingsGUI extends GUI {
 
         int index = 0;
         for (Settings settings : Settings.values()) {
-            add(1, 1 + index * 2, new EmptyItemInstance(getItemBuilder(settings).setDisplayName("§7§l" + omp.lang(settings.getName())).build()));
+            add(1, 1 + index, new EmptyItemInstance(getItemBuilder(settings).setDisplayName("§7§l" + omp.lang(settings.getName())).build()));
 
             SettingsType settingsType = data.getSettings().get(settings);
-            add(2, 1 + index * 2, new ItemInstance(new ItemBuilder(Material.STAINED_GLASS_PANE, 1, ColorUtils.getWoolData(settingsType.getColor()), settingsType.getDisplayName(omp.getLanguage())).build()) {
+            add(2, 1 + index, new ItemInstance(new ItemBuilder(Material.STAINED_GLASS_PANE, 1, ColorUtils.getWoolData(settingsType.getColor()), settingsType.getDisplayName(omp.getLanguage())).build()) {
                 @Override
                 public void onClick(InventoryClickEvent event, OMPlayer omp) {
                     omp.updateSettings(settings, settingsType.next());
@@ -73,6 +73,8 @@ public class SettingsGUI extends GUI {
                 return new ItemBuilder(Material.EYE_OF_ENDER);
             case GADGETS:
                 return new ItemBuilder(Material.COMPASS);
+            case STATS:
+                return new ItemBuilder(Material.EMERALD);
         }
         throw new NullPointerException();
     }

@@ -4,6 +4,8 @@ package com.orbitmines.spigot.api.handlers.achievements;
  * OrbitMines - @author Fadi Shawki - 2018
  */
 
+import com.orbitmines.api.Message;
+import com.orbitmines.api.utils.NumberUtils;
 import com.orbitmines.spigot.api.Loot;
 import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
@@ -38,7 +40,7 @@ public abstract class AchievementHandler {
             if (i != 0)
                 stringBuilder.append(" ");
 
-            stringBuilder.append(achievement.getDescription()[i]);
+            stringBuilder.append(omp.lang(achievement.getDescription()[i]));
         }
 
         return stringBuilder.toString();
@@ -50,8 +52,8 @@ public abstract class AchievementHandler {
         ItemBuilder item = new ItemBuilder(completed ? Material.EXP_BOTTLE : Material.GLASS_BOTTLE, 1, 0, (completed ? "§a§l" : "§c§l") + achievement.getName());
         item.addLore("");
 
-        for (String line : achievement.getDescription()) {
-            item.addLore("§7" + line);
+        for (Message line : achievement.getDescription()) {
+            item.addLore("§7§o" + omp.lang(line));
         }
 
         item.addLore("");
@@ -59,6 +61,12 @@ public abstract class AchievementHandler {
 
         for (Loot.Instance loot : achievement.getRewards()) {
             item.addLore("§7- " + loot.getLoot().getDisplayName(loot.getCount()));
+        }
+
+        if (completed && achievement.shouldShowProgressOnComplete()) {
+            item.addLore("");
+            AchievementsData data = getData(omp);
+            item.addLore("§7§o" + NumberUtils.locale(data.getProgress(achievement)) + " " + achievement.completedProgress(data.getProgress(achievement)));
         }
 
         return item;
@@ -83,7 +91,7 @@ public abstract class AchievementHandler {
             omp.playSound(Sound.ENTITY_ARROW_HIT_PLAYER);
         }
 
-        getStats(omp).complete(achievement);
+        getData(omp).complete(achievement);
 
         LootData lootData = (LootData) omp.getData(Data.Type.LOOT);
         for (Loot.Instance loot : rewards) {
@@ -108,10 +116,10 @@ public abstract class AchievementHandler {
     }
 
     public boolean alreadyCompletedAchievement(OMPlayer omp) {
-        return getStats(omp).hasCompleted(achievement);
+        return getData(omp).hasCompleted(achievement);
     }
 
-    protected AchievementsData getStats(OMPlayer omp) {
+    protected AchievementsData getData(OMPlayer omp) {
         return ((AchievementsData) omp.getData(Data.Type.ACHIEVEMENTS));
     }
 }

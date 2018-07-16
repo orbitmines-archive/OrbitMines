@@ -22,7 +22,7 @@ import com.orbitmines.spigot.api.handlers.worlds.WorldLoader;
 import com.orbitmines.spigot.servers.hub.datapoints.HubDataPointSpawnpoint;
 import com.orbitmines.spigot.servers.hub.datapoints.HubDataPointStaffHologram;
 import com.orbitmines.spigot.servers.hub.gui.SettingsGUI;
-import com.orbitmines.spigot.servers.hub.gui.StatsGUI;
+import com.orbitmines.spigot.servers.hub.gui.stats.StatsGUI;
 import com.orbitmines.spigot.servers.hub.gui.friends.FriendGUI;
 import com.orbitmines.spigot.servers.hub.handlers.HubDataPointHandler;
 import com.orbitmines.spigot.servers.hub.handlers.HubPlayer;
@@ -196,7 +196,7 @@ public class Hub extends OrbitMinesServer {
                     public void onInteract(PlayerInteractEvent event, OMPlayer omp) {
                         event.setCancelled(true);
 
-                        new StatsGUI().open(omp);
+                        new StatsGUI(omp).open(omp);
                     }
                 });
 
