@@ -26,7 +26,7 @@ public abstract class ProgressAchievement extends AchievementHandler {
 
     @Override
     public String getName(OMPlayer omp) {
-        return super.getName(omp) + " §6" + NumberUtils.locale(getCurrent(omp)) + "§7/" + NumberUtils.locale(total) + " (§6" + ((int) (getProgress(omp) * 100)) + "%§7)";
+        return super.getName(omp) + " §d§l" + NumberUtils.locale(getCurrent(omp)) + " §7§l/ " + NumberUtils.locale(total) + " (§d§l" + ((int) (getProgress(omp) * 100)) + "%§7§l)";
     }
 
     public int getTotal() {

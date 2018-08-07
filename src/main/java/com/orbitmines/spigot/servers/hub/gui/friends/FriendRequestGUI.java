@@ -11,6 +11,7 @@ import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.data.FriendsData;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.api.handlers.itembuilders.PlayerSkullBuilder;
+import com.orbitmines.spigot.servers.hub.gui.discordgroup.DiscordGroupManageGUI;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -43,10 +44,10 @@ public class FriendRequestGUI extends GUI {
         List<UUID> sentRequests = data.getSentRequests();
 
         {
-            add(0, 4, new ItemInstance(new PlayerSkullBuilder(() -> omp.getName(true), 1, "§b§lBack to Friends").build()) {
+            add(0, 4, new ItemInstance(new PlayerSkullBuilder(() -> omp.getName(true), 1, omp.lang("§b§l« Terug naar Vrienden", "§b§l« Back to Friends")).build()) {
                 @Override
                 public void onClick(InventoryClickEvent event, OMPlayer omp) {
-                    new FriendGUI().open(omp);
+                    new DiscordGroupManageGUI().open(omp);
                 }
             });
         }
@@ -60,7 +61,7 @@ public class FriendRequestGUI extends GUI {
                 boolean sent = sentRequests.contains(uuid);
 
                 CachedPlayer friend = CachedPlayer.getPlayer(uuid);
-                ItemBuilder item = new ItemBuilder(sent ? Material.EMPTY_MAP : Material.PAPER, 1, 0, friend.getRankPrefixColor().getChatColor() + friend.getPlayerName());
+                ItemBuilder item = new ItemBuilder(sent ? Material.MAP : Material.PAPER, 1, friend.getRankPrefixColor().getChatColor() + friend.getPlayerName());
                 List<String> lore = item.getLore();
 
                 if (sent) {
@@ -146,7 +147,7 @@ public class FriendRequestGUI extends GUI {
                         check = (j + 1) / 9;
 
                     if (check != -1) {
-                        int next = REQUESTS_PER_PAGE + check + (NEW_PER_PAGE * i);
+                        int next = REQUESTS_PER_PAGE + check + (NEW_PER_PAGE * i) - 1;
                         pageFriends[j] = friends.size() > next ? friends.get(next) : null;
                     } else {
                         pageFriends[j] = pageFriends[j + 1];

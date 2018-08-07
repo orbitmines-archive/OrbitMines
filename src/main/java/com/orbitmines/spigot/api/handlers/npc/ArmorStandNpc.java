@@ -98,7 +98,7 @@ public class ArmorStandNpc extends Npc {
 
         armorStand.setRemoveWhenFarAway(false);
 
-        armorStand.setCustomName(customName);//TODO Might 'flicker' when changed too often>?
+        armorStand.setCustomName(customName);
         armorStand.setCustomNameVisible(customNameVisible);
     }
 
@@ -336,7 +336,7 @@ public class ArmorStandNpc extends Npc {
 
     public static ArmorStandNpc getArmorStandNpc(Entity entity) {
         for (ArmorStandNpc armorStandNpc : armorStandNpcs) {
-            if (armorStandNpc.getArmorStand() == entity) //TODO, might not work?
+            if (armorStandNpc.getArmorStand() == entity)
                 return armorStandNpc;
         }
         return null;

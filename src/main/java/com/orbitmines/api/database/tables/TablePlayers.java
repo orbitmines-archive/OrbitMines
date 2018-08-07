@@ -11,6 +11,7 @@ public class TablePlayers extends Table {
 
     public static final Column UUID = new Column("UUID", Column.Type.VARCHAR, 36);
     public static final Column NAME = new Column("Name", Column.Type.VARCHAR, 16);
+    public static final Column NICK = new Column("Nick", Column.Type.VARCHAR, 32);
     public static final Column STAFFRANK = new Column("StaffRank", Column.Type.VARCHAR, 32);
     public static final Column VIPRANK = new Column("VipRank", Column.Type.VARCHAR, 32);
     public static final Column FIRST_LOGIN = new Column("FirstLogin", Column.Type.DATETIME);
@@ -24,6 +25,6 @@ public class TablePlayers extends Table {
     public static final Column PRISMS = new Column("Prisms", Column.Type.INT);
 
     public TablePlayers() {
-        super("Players", UUID, NAME, STAFFRANK, VIPRANK, FIRST_LOGIN, LANGUAGE, SETTINGS_PRIVATE_MESSAGES, SETTINGS_PLAYER_VISIBILITY, SETTINGS_GADGETS, SETTINGS_STATS, SILENT, SOLARS, PRISMS);
+        super("Players", UUID, NAME, NICK, STAFFRANK, VIPRANK, FIRST_LOGIN, LANGUAGE, SETTINGS_PRIVATE_MESSAGES, SETTINGS_PLAYER_VISIBILITY, SETTINGS_GADGETS, SETTINGS_STATS, SILENT, SOLARS, PRISMS);
     }
 }

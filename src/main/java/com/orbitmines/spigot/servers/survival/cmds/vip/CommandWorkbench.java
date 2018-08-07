@@ -14,7 +14,7 @@ public class CommandWorkbench extends VipCommand {
     private String[] alias = { "/workbench" };
 
     public CommandWorkbench() {
-        super(Server.SURVIVAL, VipRank.DIAMOND);
+        super(Server.SURVIVAL, VipRank.GOLD);
     }
 
     @Override

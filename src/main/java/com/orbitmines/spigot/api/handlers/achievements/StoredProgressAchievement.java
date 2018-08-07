@@ -24,8 +24,12 @@ public class StoredProgressAchievement extends ProgressAchievement {
         getData(omp).progress(achievement, count, notifyOnComplete);
     }
 
+    public void setHighest(OMPlayer omp, int count, boolean notifyOnComplete) {
+        getData(omp).setHighest(achievement, count, notifyOnComplete);
+    }
+
     @Override
     public ItemBuilder getItemBuilder(OMPlayer omp) {
-        return super.getItemBuilder(omp).addLore("").addLore("§6" + NumberUtils.locale(getCurrent(omp)) + "§7/" + NumberUtils.locale(total));
+        return super.getItemBuilder(omp).addLore("").addLore("§d§l" + NumberUtils.locale(getCurrent(omp)) + " §7§l/ " + NumberUtils.locale(total));
     }
 }

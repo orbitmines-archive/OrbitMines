@@ -6,6 +6,9 @@ import com.orbitmines.api.database.Where;
 import com.orbitmines.api.database.tables.TablePlayers;
 import com.orbitmines.api.punishment.PunishmentHandler;
 import com.orbitmines.api.utils.uuid.UUIDUtils;
+import com.orbitmines.discordbot.DiscordBot;
+import com.orbitmines.discordbot.utils.BotToken;
+import net.dv8tion.jda.core.entities.User;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -57,6 +60,14 @@ public class CachedPlayer {
         return Database.get().getString(Table.PLAYERS, TablePlayers.FIRST_LOGIN, new Where(TablePlayers.UUID, getUUID().toString()));
     }
 
+    public Long getDiscordId() {
+        return DiscordBot.getInstance().getLinkedId(uuid);
+    }
+
+    public User getDiscordUser(BotToken token) {
+        return DiscordBot.getInstance().getUserById(token, getDiscordId());
+    }
+
     public String getLastOnline() {
         updateIP();
         ip.updateLastLogin();
@@ -100,32 +111,32 @@ public class CachedPlayer {
 
     public String getRankPrefix() {
         StaffRank staffRank = getStaffRank();
-        return staffRank != StaffRank.NONE ? staffRank.getPrefix() : getVipRank().getPrefix();
+        return (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getPrefix() : getVipRank().getPrefix();
     }
 
     public String getRankPrefix(Color color) {
         StaffRank staffRank = getStaffRank();
-        return staffRank != StaffRank.NONE ? staffRank.getPrefix(color) : getVipRank().getPrefix(color);
+        return (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getPrefix(color) : getVipRank().getPrefix(color);
     }
 
     public String getRankName() {
         StaffRank staffRank = getStaffRank();
-        return staffRank != StaffRank.NONE ? staffRank.getName() : getVipRank().getName();
+        return (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getName() : getVipRank().getName();
     }
 
     public String getRankDisplayName() {
         StaffRank staffRank = getStaffRank();
-        return staffRank != StaffRank.NONE ? staffRank.getDisplayName() : getVipRank().getDisplayName();
+        return (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getDisplayName() : getVipRank().getDisplayName();
     }
 
     public Color getRankPrefixColor() {
         StaffRank staffRank = getStaffRank();
-        return staffRank != StaffRank.NONE ? staffRank.getPrefixColor() : getVipRank().getPrefixColor();
+        return (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getPrefixColor() : getVipRank().getPrefixColor();
     }
 
     public Color getRankChatColor() {
         StaffRank staffRank = getStaffRank();
-        return staffRank != StaffRank.NONE ? staffRank.getChatColor() : getVipRank().getChatColor();
+        return (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getChatColor() : getVipRank().getChatColor();
     }
 
     public static CachedPlayer getPlayer(UUID uuid) {

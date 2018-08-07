@@ -2,7 +2,6 @@ package com.orbitmines.spigot.servers.hub.datapoints;
 
 import com.orbitmines.spigot.api.datapoints.DataPointLoader;
 import com.orbitmines.spigot.api.datapoints.DataPointSign;
-import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 
@@ -17,7 +16,7 @@ public class HubDataPointSpawnpoint extends DataPointSign {
     private List<Location> spawns;
 
     public HubDataPointSpawnpoint() {
-        super("SPAWNPOINT", Type.IRON_PLATE, Material.WOOL, DyeColor.LIME.getWoolData());
+        super("SPAWNPOINT", Type.IRON_PLATE, Material.LIME_WOOL);
 
         spawns = new ArrayList<>();
     }

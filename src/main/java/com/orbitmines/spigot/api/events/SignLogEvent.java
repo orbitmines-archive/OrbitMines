@@ -4,15 +4,12 @@ package com.orbitmines.spigot.api.events;
  * OrbitMines - @author Fadi Shawki - 2018
  */
 
-import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.api.Color;
-import com.orbitmines.api.StaffRank;
-import com.orbitmines.api.VipRank;
 import com.orbitmines.api.utils.DateUtils;
 import com.orbitmines.discordbot.DiscordBot;
 import com.orbitmines.discordbot.utils.BotToken;
 import com.orbitmines.discordbot.utils.ColorUtils;
-import com.orbitmines.discordbot.utils.SkinLibrary;
+import com.orbitmines.discordbot.utils.DiscordSpigotUtils;
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.utils.LocationUtils;
@@ -22,8 +19,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.SignChangeEvent;
-
-import java.util.UUID;
 
 public class SignLogEvent implements Listener {
 
@@ -43,7 +38,7 @@ public class SignLogEvent implements Listener {
 
         TextChannel channel = discord.getChannel(token, DiscordBot.ChannelType.sign_log);
 
-        channel.sendMessage(SkinLibrary.getEmote(discord.getGuild(token), omp.getUUID()).getAsMention() + getDiscordRankPrefix(omp.getUUID()) + " **" + omp.getName(true) + "** has placed a sign.").queue();
+        channel.sendMessage(DiscordSpigotUtils.getDisplay(discord, token, omp) + " has placed a sign.").queue();
 
         EmbedBuilder builder = new EmbedBuilder();
         builder.setAuthor("SIGN PLACEMENT");
@@ -62,20 +57,5 @@ public class SignLogEvent implements Listener {
 
         channel.sendMessage(builder.build()).queue();
 
-  }
-
-    private String getDiscordRankPrefix(UUID uuid) {
-        CachedPlayer player = CachedPlayer.getPlayer(uuid);
-
-        if (player == null)
-            return "";
-
-        StaffRank staffRank = player.getStaffRank();
-        VipRank vipRank = player.getVipRank();
-
-        if (staffRank == StaffRank.NONE)
-            return vipRank != VipRank.NONE ? " " + orbitMines.getServerHandler().getDiscord().getEmote(orbitMines.getServerHandler().getToken(), vipRank).getAsMention() + "**" + player.getRankName() + "**" : "";
-
-        return " **" + player.getRankName() + "**";
     }
 }

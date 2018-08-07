@@ -1,6 +1,9 @@
 package com.orbitmines.bungeecord.commands.console;
 
-import com.orbitmines.api.*;
+import com.orbitmines.api.CachedPlayer;
+import com.orbitmines.api.Color;
+import com.orbitmines.api.Donation;
+import com.orbitmines.api.Rarity;
 import com.orbitmines.api.database.Database;
 import com.orbitmines.api.database.Table;
 import com.orbitmines.bungeecord.OrbitMinesBungee;
@@ -8,7 +11,7 @@ import com.orbitmines.bungeecord.handlers.BungeePlayer;
 import com.orbitmines.bungeecord.handlers.cmd.ConsoleCommand;
 import com.orbitmines.discordbot.DiscordBot;
 import com.orbitmines.discordbot.utils.ColorUtils;
-import com.orbitmines.discordbot.utils.SkinLibrary;
+import com.orbitmines.discordbot.utils.DiscordUtils;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.md_5.bungee.api.ChatColor;
@@ -67,7 +70,7 @@ public class CommandDonation extends ConsoleCommand {
 
         TextChannel channel = discord.getChannel(bungee.getToken(), DiscordBot.ChannelType.donations);
 
-        channel.sendMessage((CachedPlayer.getPlayer(uuid) != null ? SkinLibrary.getEmote(discord.getGuild(bungee.getToken()), uuid).getAsMention() : "") + getDiscordRankPrefix(uuid) + " **" + name + "** has donated **" + String.format("%.2f", price) + " " + currency + "** to OrbitMines!").queue();
+        channel.sendMessage(DiscordUtils.getDisplay(discord, bungee.getToken(), uuid) + " has donated **" + String.format("%.2f", price) + " " + currency + "** to OrbitMines!").queue();
 
         EmbedBuilder builder = new EmbedBuilder();
         builder.setAuthor("Donation by " + name);
@@ -80,20 +83,5 @@ public class CommandDonation extends ConsoleCommand {
         builder.setThumbnail(donation.getIcon().getUrl());
 
         channel.sendMessage(builder.build()).queue();
-    }
-
-    private String getDiscordRankPrefix(UUID uuid) {
-        CachedPlayer player = CachedPlayer.getPlayer(uuid);
-
-        if (player == null)
-            return "";
-
-        StaffRank staffRank = player.getStaffRank();
-        VipRank vipRank = player.getVipRank();
-
-        if (staffRank == StaffRank.NONE)
-            return vipRank != VipRank.NONE ? " " + discord.getEmote(bungee.getToken(), vipRank).getAsMention() + "**" + player.getRankName() + "**" : "";
-
-        return " **" + player.getRankName() + "**";
     }
 }

@@ -15,6 +15,7 @@ import com.orbitmines.api.utils.NumberUtils;
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.runnables.SpigotRunnable;
+import com.orbitmines.spigot.api.handlers.timer.Timer;
 import com.orbitmines.spigot.api.utils.*;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -39,22 +40,25 @@ public class ChestShop {
     private final UUID owner;
 
     private final Location location;
-    private final int materialId;
-    private final short durability;
+    private Material material;
 
-    private final Type type;
-    private final int amount;
-    private final int price;
+    private Type type;
+    private int amount;
+    private int price;
 
+    private String itemName;
+    private int nameLength;
+    private int index;
+    private boolean scroll;
     private SpigotRunnable updateRunnable;
 
-    public ChestShop(UUID owner, Location location, int materialId, short durability, Type type, int amount, int price) {
-        this(nextId(), owner, location, materialId, durability, type, amount, price);
+    public ChestShop(UUID owner, Location location, Material material, Type type, int amount, int price) {
+        this(nextId(), owner, location, material, type, amount, price);
 
-        Database.get().insert(Table.CHEST_SHOPS, orbitMines.getServerHandler().getServer().toString(), id + "", owner.toString(), Serializer.serialize(location), materialId + "", durability + "", type.toString(), amount + "", price + "");
+        Database.get().insert(Table.CHEST_SHOPS, orbitMines.getServerHandler().getServer().toString(), id + "", owner.toString(), Serializer.serialize(location), material.toString(), type.toString(), amount + "", price + "");
     }
 
-    public ChestShop(Long id, UUID owner, Location location, int materialId, short durability, Type type, int amount, int price) {
+    public ChestShop(Long id, UUID owner, Location location, Material material, Type type, int amount, int price) {
         chestShops.add(this);
 
         this.orbitMines = OrbitMines.getInstance();
@@ -62,15 +66,46 @@ public class ChestShop {
         this.id = id;
         this.owner = owner;
         this.location = location;
-        this.materialId = materialId;
-        this.durability = durability;
+        this.material = material;
         this.type = type;
         this.amount = amount;
         this.price = price;
 
-        updateRunnable = new SpigotRunnable(SpigotRunnable.TimeUnit.SECOND, 1) {
+        this.itemName = ItemUtils.getName(material);
+        this.nameLength = itemName.length();
+        this.index = 0;
+        this.scroll = itemName.length() > 16;
+
+        updateRunnable = new SpigotRunnable(SpigotRunnable.TimeUnit.TICK, 10) {
             @Override
             public void run() {
+                if (!scroll || itemName.length() <= 16) {
+                    update();
+                    return;
+                }
+
+                int maxIndex = itemName.length() - 16;
+                index++;
+
+                if (index > maxIndex) {
+                    index = maxIndex;
+                    scroll = false;
+
+                    new Timer(new Time(SpigotRunnable.TimeUnit.SECOND, 1)) {
+                        @Override
+                        public void onFinish() {
+                            index = 0;
+                        }
+                    };
+
+                    new Timer(new Time(SpigotRunnable.TimeUnit.SECOND, 4)) {
+                        @Override
+                        public void onFinish() {
+                            scroll = true;
+                        }
+                    };
+                }
+
                 update();
             }
         };
@@ -88,16 +123,30 @@ public class ChestShop {
         return location;
     }
 
-    public int getMaterialId() {
-        return materialId;
-    }
-
     public Material getMaterial() {
-        return Material.getMaterial(this.materialId);
+        return material;
     }
 
-    public short getDurability() {
-        return durability;
+    public void save(Material material, int amount, int price, Type type) {
+        this.material = material;
+        this.amount = amount;
+        this.price = price;
+        this.type = type;
+
+        this.itemName = ItemUtils.getName(material);
+        this.nameLength = itemName.length();
+        this.index = 0;
+        this.scroll = itemName.length() > 16;
+
+        if (!chestShops.contains(this))
+            return;
+
+        Database.get().update(Table.CHEST_SHOPS, new Set[] {
+                new Set(TableChestShops.MATERIAL, material.toString()),
+                new Set(TableChestShops.AMOUNT, amount),
+                new Set(TableChestShops.PRICE, price),
+                new Set(TableChestShops.TYPE, type.toString()),
+        }, new Where(TableChestShops.SERVER, orbitMines.getServerHandler().getServer().toString()), new Where(TableChestShops.ID, id));
     }
 
     public Type getType() {
@@ -113,11 +162,11 @@ public class ChestShop {
     }
 
     public boolean canBuy() {
-        return PlayerUtils.getEmptySlotCount(WorldUtils.getChestAtSign(this.location).getInventory()) < PlayerUtils.getSlotsRequired(getMaterial(), this.amount);
+        return PlayerUtils.getAmount(WorldUtils.getChestAtSign(this.location).getInventory(), material) >= this.amount;
     }
 
     public boolean canSell() {
-        return PlayerUtils.getAmount(WorldUtils.getChestAtSign(this.location).getInventory(), getMaterial(), this.durability) >= this.amount;
+        return PlayerUtils.getEmptySlotCount(WorldUtils.getChestAtSign(this.location).getInventory()) >= PlayerUtils.getSlotsRequired(material, this.amount);
     }
 
     public boolean hasMoney() {
@@ -126,9 +175,8 @@ public class ChestShop {
 
     public void buy(OMPlayer omp) {
         Chest chest = WorldUtils.getChestAtSign(this.location);
-        Material material = getMaterial();
 
-        List<ItemStack> bought = PlayerUtils.removeItems(chest.getInventory(), material, durability);
+        List<ItemStack> bought = PlayerUtils.removeItems(chest.getInventory(), material, amount);
         omp.getPlayer().getInventory().addItem(bought.toArray(new ItemStack[bought.size()]));
 
         omp.updateInventory();
@@ -136,25 +184,23 @@ public class ChestShop {
         handler.removeMoney(omp.getUUID(), this.price);
         handler.addMoney(owner, this.price);
 
-        String name = ItemUtils.getName(material, durability, false);
         String color = orbitMines.getServerHandler().getServer().getColor().getChatColor();
         CachedPlayer owner = CachedPlayer.getPlayer(this.owner);
-        String ownerName = owner.getRankPrefixColor() + owner.getPlayerName();
-        omp.sendMessage("Shop", Color.LIME, "Je hebt " + color + "§l" + name + " §7(" + color + "§l" + this.amount + "x§7) gekocht van " + ownerName + "§7 voor " + handler.getCurrencyDisplay(this.price) + "§7.", "You've bought " + color + "§l" + name + " §7(" + color + "§l" + this.amount + "x§7) from " + ownerName + "§7 for " + handler.getCurrencyDisplay(this.price) + "§7.");
+        String ownerName = owner.getRankPrefixColor().getChatColor() + owner.getPlayerName();
+        omp.sendMessage("Shop", Color.LIME, "Je hebt " + color + "§l" + itemName + " §7(" + color + "§l" + this.amount + "x§7) gekocht van " + ownerName + "§7 voor " + handler.getCurrencyDisplay(this.price) + "§7.", "You've bought " + color + "§l" + itemName + " §7(" + color + "§l" + this.amount + "x§7) from " + ownerName + "§7 for " + handler.getCurrencyDisplay(this.price) + "§7.");
 
         OMPlayer omp2 = OMPlayer.getPlayer(this.owner);
 
         if (omp2 == null)
             return;
 
-        omp.sendMessage("Shop", Color.LIME, ownerName + " heeft " + color + "§l" + name + " §7(" + color + "§l" + this.amount + "x§7) van je gekocht voor " + handler.getCurrencyDisplay(this.price) + "§7.", ownerName + " bought " + color + "§l" + name + " §7(" + color + "§l" + this.amount + "x§7) from you for " + handler.getCurrencyDisplay(this.price) + "§7.");
+        omp2.sendMessage("Shop", Color.LIME, omp.getName() + " §7heeft " + color + "§l" + itemName + " §7(" + color + "§l" + this.amount + "x§7) van je gekocht voor " + handler.getCurrencyDisplay(this.price) + "§7.", ownerName + "§7 bought " + color + "§l" + itemName + " §7(" + color + "§l" + this.amount + "x§7) from you for " + handler.getCurrencyDisplay(this.price) + "§7.");
     }
 
     public void sell(OMPlayer omp) {
         Chest chest = WorldUtils.getChestAtSign(this.location);
-        Material material = getMaterial();
 
-        List<ItemStack> sold = PlayerUtils.removeItems(omp.getPlayer(), material, durability);
+        List<ItemStack> sold = PlayerUtils.removeItems(omp.getPlayer(), material, amount);
         chest.getInventory().addItem(sold.toArray(new ItemStack[sold.size()]));
 
         omp.updateInventory();
@@ -162,24 +208,23 @@ public class ChestShop {
         handler.removeMoney(owner, this.price);
         handler.addMoney(omp.getUUID(), this.price);
 
-        String name = ItemUtils.getName(material, durability, false);
         String color = orbitMines.getServerHandler().getServer().getColor().getChatColor();
         CachedPlayer owner = CachedPlayer.getPlayer(this.owner);
-        String ownerName = owner.getRankPrefixColor() + owner.getPlayerName();
-        omp.sendMessage("Shop", Color.LIME, "Je hebt " + color + "§l" + name + " §7(" + color + "§l" + this.amount + "x§7) verkocht aan " + ownerName + "§7 voor " + handler.getCurrencyDisplay(this.price) + "§7.", "You've sold " + color + "§l" + name + " §7(" + color + "§l" + this.amount + "x§7) to " + ownerName + "§7 for " + handler.getCurrencyDisplay(this.price) + "§7.");
+        String ownerName = owner.getRankPrefixColor().getChatColor() + owner.getPlayerName();
+        omp.sendMessage("Shop", Color.LIME, "Je hebt " + color + "§l" + itemName + " §7(" + color + "§l" + this.amount + "x§7) verkocht aan " + ownerName + "§7 voor " + handler.getCurrencyDisplay(this.price) + "§7.", "You've sold " + color + "§l" + itemName + " §7(" + color + "§l" + this.amount + "x§7) to " + ownerName + "§7 for " + handler.getCurrencyDisplay(this.price) + "§7.");
 
         OMPlayer omp2 = OMPlayer.getPlayer(this.owner);
 
         if (omp2 == null)
             return;
 
-        omp.sendMessage("Shop", Color.LIME, ownerName + " heeft " + color + "§l" + name + " §7(" + color + "§l" + this.amount + "x§7) aan je verkocht voor " + handler.getCurrencyDisplay(this.price) + "§7.", ownerName + " sold " + color + "§l" + name + " §7(" + color + "§l" + this.amount + "x§7) to you for " + handler.getCurrencyDisplay(this.price) + "§7.");
+        omp2.sendMessage("Shop", Color.LIME, omp.getName() + " §7heeft " + color + "§l" + itemName + " §7(" + color + "§l" + this.amount + "x§7) aan je verkocht voor " + handler.getCurrencyDisplay(this.price) + "§7.", ownerName + "§7 sold " + color + "§l" + itemName + " §7(" + color + "§l" + this.amount + "x§7) to you for " + handler.getCurrencyDisplay(this.price) + "§7.");
     }
 
     public void update() {
         Block block = this.location.getBlock();
 
-        if (block.getType() != Material.SIGN_POST && block.getType() != Material.WALL_SIGN) {
+        if (block.getType() != Material.SIGN && block.getType() != Material.WALL_SIGN) {
             delete();
             return;
         }
@@ -194,7 +239,7 @@ public class ChestShop {
         for (Language language : Language.values()) {
             String[] lines = new String[4];
             lines[0] = type.getDisplayName(type.useable(this), language);
-            lines[1] = ItemUtils.getName(getMaterial(), this.durability, true);
+            lines[1] = nameLength <= 16 ? itemName : itemName.substring(index, index + 16);
             lines[2] = NumberUtils.locale(this.amount) + " : " + NumberUtils.locale(this.price) + handler.getCurrencySymbol();
             lines[3] = CachedPlayer.getPlayer(this.owner).getPlayerName();
 
@@ -273,6 +318,12 @@ public class ChestShop {
 
         public boolean useable(ChestShop shop) {
             throw new IllegalStateException();
+        }
+
+        public Type next() {
+            Type[] values = Type.values();
+
+            return ordinal() == values.length - 1 ? values[0] : values[ordinal() + 1];
         }
     }
 }

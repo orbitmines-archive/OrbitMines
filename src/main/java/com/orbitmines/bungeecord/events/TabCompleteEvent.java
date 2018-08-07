@@ -2,6 +2,7 @@ package com.orbitmines.bungeecord.events;
 
 import com.orbitmines.api.StaffRank;
 import com.orbitmines.bungeecord.handlers.BungeePlayer;
+import com.orbitmines.bungeecord.utils.ConsoleUtils;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
@@ -15,6 +16,9 @@ public class TabCompleteEvent implements Listener {
     public void onTabComplete(net.md_5.bungee.api.event.TabCompleteEvent event) {
         if (!event.getSuggestions().isEmpty() || !(event.getSender() instanceof ProxiedPlayer))
             return;
+
+        ConsoleUtils.msg(event.getCursor());
+        ConsoleUtils.msg(event.getSuggestions().toString());
 
         String[] a = event.getCursor().split(" ");
 

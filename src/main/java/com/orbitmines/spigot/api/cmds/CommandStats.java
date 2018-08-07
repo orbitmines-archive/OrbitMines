@@ -46,7 +46,7 @@ public class CommandStats extends Command {
         OMPlayer omp2 = OMPlayer.getPlayer(a[1]);
 
         if (omp2 != null) {
-            SettingsType type = ((SettingsData) omp2.getData(Data.Type.SETTINGS)).getSettings().get(Settings.PRIVATE_MESSAGES);
+            SettingsType type = ((SettingsData) omp2.getData(Data.Type.SETTINGS)).getSettings().get(Settings.STATS);
 
             if (type != SettingsType.ENABLED && !omp.isEligible(StaffRank.MODERATOR)) {
                 switch (type) {

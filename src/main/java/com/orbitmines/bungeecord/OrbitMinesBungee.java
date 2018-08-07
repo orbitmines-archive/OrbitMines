@@ -17,7 +17,9 @@ import com.orbitmines.bungeecord.events.*;
 import com.orbitmines.bungeecord.handlers.*;
 import com.orbitmines.bungeecord.runnables.BungeeRunnable;
 import com.orbitmines.discordbot.DiscordBot;
+import com.orbitmines.discordbot.handlers.DiscordGroup;
 import com.orbitmines.discordbot.utils.BotToken;
+import com.orbitmines.discordbot.utils.SkinLibrary;
 import com.vexsoftware.votifier.VoteHandler;
 import com.vexsoftware.votifier.VotifierPlugin;
 import com.vexsoftware.votifier.bungee.events.VotifierEvent;
@@ -136,10 +138,16 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
         /* Setup Discord */
         try {
             token = BotToken.DEFAULT;
-            discord = new DiscordBot(token);
+            discord = new DiscordBot(true, token);
         } catch(Exception ex) {
             ex.printStackTrace();
         }
+
+        /* Clear all Player Emojis */
+        SkinLibrary.deleteAllExistingEmotes(discord.getGuild(token));
+
+        /* Setup all Discord Groups */
+        DiscordGroup.setup(discord);
 
         /* Register */
         registerCommands();
@@ -152,6 +160,8 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
         );
         registerRunnables();
         setupVotifier();
+
+        discord.getJDA(token).addEventListener(new DiscordMessageListener(this));
 
         /* */
 //        new OldDonationProcessor(configHandler, "donations").load();
@@ -228,11 +238,13 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
     private void registerCommands() {
         new CommandHelp();
         new CommandMsg();
+        new CommandDiscordLink(this);
         new CommandReply();
         new CommandHub();
         new CommandServer(this);
         new CommandList();
         new CommandWebsite();
+        new CommandDiscord();
         new CommandShop();
         new CommandReport(this);
 

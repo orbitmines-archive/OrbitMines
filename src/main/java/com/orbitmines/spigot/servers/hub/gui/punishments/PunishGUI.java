@@ -47,7 +47,7 @@ public class PunishGUI extends GUI {
             if (active != null && active.getPunishedBy().getUUID().toString().equals(omp.getUUID().toString())) {
                 CachedPlayer punishedBy = active.getPunishedBy();
 
-                ItemBuilder builder = new ItemBuilder(Material.BARRIER, 1, 0,
+                ItemBuilder builder = new ItemBuilder(Material.BARRIER, 1,
                         "§c§l" + omp.lang("Ontzeg Straf", "Pardon Player"),
                         "",
                         "§7" + omp.lang("Overtreding", "Offence") + ": §c§l" + omp.lang(offence.getName()),
@@ -155,19 +155,19 @@ public class PunishGUI extends GUI {
         switch (offence) {
 
             case GAME_PLAY:
-                return new ItemBuilder(Material.GRASS, 1, 0, "§c§l" + name);
+                return new ItemBuilder(Material.GRASS, 1, "§c§l" + name);
             case CHAT:
-                return new ItemBuilder(Material.BOOK_AND_QUILL, 1, 0, "§c§l" + name);
+                return new ItemBuilder(Material.WRITABLE_BOOK, 1, "§c§l" + name);
             case HACKING:
-                return new ItemBuilder(Material.DIAMOND_SWORD, 1, 0, "§c§l" + name).addFlag(ItemFlag.HIDE_ATTRIBUTES);
+                return new ItemBuilder(Material.DIAMOND_SWORD, 1, "§c§l" + name).addFlag(ItemFlag.HIDE_ATTRIBUTES);
             case SKIN:
-                return new PlayerSkullBuilder(() -> player.getPlayerName(), 1, "§c§l" + name);
+                return new PlayerSkullBuilder(player::getPlayerName, 1, "§c§l" + name);
             case NAME:
-                return new ItemBuilder(Material.NAME_TAG, 1, 0, "§c§l" + name);
+                return new ItemBuilder(Material.NAME_TAG, 1, "§c§l" + name);
             case NETWORK_BAN:
-                return new ItemBuilder(Material.PISTON_BASE, 1, 0, "§c§l" + name);
+                return new ItemBuilder(Material.PISTON, 1, "§c§l" + name);
             default:
-                return new ItemBuilder(Material.STONE, 1, 0, "§c§l" + name);
+                return new ItemBuilder(Material.STONE, 1, "§c§l" + name);
         }
     }
 
@@ -205,8 +205,8 @@ public class PunishGUI extends GUI {
 
     enum Type {
 
-        NORMAL(new Message("Normale Timestamps", "Normal Timestamps"), DateUtils.FORMAT, new ItemBuilder(Material.WATCH)),
-        SMALL(new Message("Kleine Timestamps", "Small Timestamps"), DateUtils.SIMPLE_FORMAT, new ItemBuilder(Material.WATCH).glow());
+        NORMAL(new Message("Normale Timestamps", "Normal Timestamps"), DateUtils.FORMAT, new ItemBuilder(Material.CLOCK)),
+        SMALL(new Message("Kleine Timestamps", "Small Timestamps"), DateUtils.SIMPLE_FORMAT, new ItemBuilder(Material.CLOCK).glow());
 
         private final Message name;
         private final SimpleDateFormat format;

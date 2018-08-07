@@ -17,6 +17,7 @@ import com.orbitmines.spigot.api.handlers.itemhandlers.ItemHoverBlockTarget;
 import com.orbitmines.spigot.api.handlers.scoreboard.DefaultScoreboard;
 import com.orbitmines.spigot.api.handlers.scoreboard.ScoreboardSet;
 import com.orbitmines.spigot.api.options.ApiOption;
+import com.orbitmines.spigot.api.utils.ConsoleUtils;
 import com.orbitmines.spigot.api.utils.Serializer;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -40,16 +41,24 @@ public abstract class ChestShopHandler implements ApiOption {
             Long id = Long.parseLong(entry.get(TableChestShops.ID));
             UUID owner = UUID.fromString(entry.get(TableChestShops.OWNER));
             Location location = Serializer.parseLocation(entry.get(TableChestShops.LOCATION));
-            int materialId = Integer.parseInt(entry.get(TableChestShops.MATERIAL_ID));
-            short durability = Short.parseShort(entry.get(TableChestShops.DURABILITY));
+
+            Material material;
+            try {
+                material = Material.valueOf(entry.get(TableChestShops.MATERIAL));
+            } catch (IllegalArgumentException ex) {
+                ConsoleUtils.warn("Did not create Chest Shop #" + id + ", material does not exist!");
+                new ChestShop(id, owner, location, Material.COBBLESTONE, ChestShop.Type.BUY, 1, 1);
+                continue;
+            }
+
             ChestShop.Type type = ChestShop.Type.valueOf(entry.get(TableChestShops.TYPE));
             int amount = Integer.parseInt(entry.get(TableChestShops.AMOUNT));
             int price = Integer.parseInt(entry.get(TableChestShops.PRICE));
 
-            new ChestShop(id, owner, location, materialId, durability, type, amount, price);
+            new ChestShop(id, owner, location, material, type, amount, price);
         }
 
-        new ItemHoverBlockTarget(new ItemBuilder(Material.SIGN), true, Material.CHEST, Material.SIGN_POST, Material.WALL_SIGN) {
+        new ItemHoverBlockTarget(new ItemBuilder(Material.SIGN), true, Material.CHEST, Material.SIGN, Material.WALL_SIGN) {
 
             @Override
             public void onTargetEnter(OMPlayer omp) {
@@ -75,6 +84,8 @@ public abstract class ChestShopHandler implements ApiOption {
 
     public abstract char getCurrencySymbol();
 
+    public abstract ItemBuilder getCurrencyIcon();
+
     public abstract String getScoreboardCurrencyName();
 
     public abstract ScoreboardSet getNewScoreboardInstance(OrbitMines orbitMines, OMPlayer omp);
@@ -86,19 +97,15 @@ public abstract class ChestShopHandler implements ApiOption {
         public ChestShopScoreboard(OrbitMines orbitMines, OMPlayer omp) {
             super(omp,
                     () -> orbitMines.getScoreboardAnimation().get(),
-                    () -> "§f§m------------------------",
+                    () -> "§m--------------",
                     () -> ChestShop.handler.getScoreboardCurrencyName(),
                     () -> " " + NumberUtils.locale(ChestShop.handler.getMoney(omp.getUUID())),
                     () -> "",
                     () -> orbitMines.getServerHandler().getServer().getColor().getChatColor() + "§lSHOP SETUP",
-                    () -> "§7Shop:Buy §8" + omp.lang("OF", "OR") + " §7Shop:Sell",
-                    () -> "§7<Item ID> : <Durability>",
-                    () -> omp.lang("§7<Hoeveelheid> : <Prijs>", "§7<Amount> : <Price>"),
+                    () -> "§7[shop]",
                     () -> " ",
-                    () -> orbitMines.getServerHandler().getServer().getColor().getChatColor() + "§lSHOP " + omp.lang("VOORBEELD", "EXAMPLE"),
-                    () -> "§7Shop:Sell",
-                    () -> "§74 : 0",
-                    () -> "§764 : 128",
+                    () -> orbitMines.getServerHandler().getServer().getColor().getChatColor() + omp.lang("§lRECHTER MUISKLIK", "§lRIGHT CLICK"),
+                    () -> "§7Open Shop GUI.",
                     () -> "  "
 
             );

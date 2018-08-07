@@ -1,12 +1,10 @@
 package com.orbitmines.spigot.api.nms.npc.chicken;
 
+/*
+ * OrbitMines - @author Fadi Shawki - 2018
+ */
+
 import com.orbitmines.spigot.api.nms.npc.MobNpcNms;
 
-/**
- * Created by Fadi on 30-4-2016.
- */
 public interface ChickenNpc extends MobNpcNms {
-
-    int Id = 93;
-
 }

@@ -40,16 +40,13 @@ public class Letters {
     }
 
     public void generate(Material material) {
-        generate(material, 0);
-    }
+        generate(material);
 
-    public void generate(Material material, int durability) {
         List<Location> locations = getLocations(getStartingLocation(location));
 
         for (Location loc : locations) {
             Block b = location.getWorld().getBlockAt(loc);
             b.setType(material);
-            b.setData((byte) durability);
         }
     }
 
@@ -58,11 +55,7 @@ public class Letters {
     }
 
     public void generate(Material material, Player... players) {
-        generate(material, 0, players);
-    }
-
-    public void generate(Material material, int durability, Player... players) {
-        generate(material, durability, Arrays.asList(players));
+        generate(material, Arrays.asList(players));
     }
 
     public void clear(List<Player> players) {
@@ -70,15 +63,11 @@ public class Letters {
     }
 
     public void generate(Material material, List<Player> players) {
-        generate(material, 0, players);
-    }
-
-    public void generate(Material material, int durability, List<Player> players) {
         List<Location> locations = getLocations(getStartingLocation(location));
 
         for (Player p : players) {
             for (Location loc : locations) {
-                p.getPlayer().sendBlockChange(loc, material, (byte) durability);
+                p.getPlayer().sendBlockChange(loc, material.createBlockData());
             }
         }
     }

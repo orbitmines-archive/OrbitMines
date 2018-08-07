@@ -122,7 +122,7 @@ public class FloatingItem extends Hologram {
     public static FloatingItem getFloatingItem(Entity entity) {
         for (FloatingItem npc : floatingItems) {
             for (Entity en : npc.getEntities()) {
-                if (en.getEntityId() == entity.getEntityId()) //TODO, might not work?
+                if (en.getEntityId() == entity.getEntityId())
                     return npc;
             }
         }

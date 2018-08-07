@@ -69,7 +69,7 @@ public abstract class ReasonGUI {
             }
         });
 
-        anvil.getItems().put(AnvilNms.AnvilSlot.INPUT_LEFT, new ItemBuilder(Material.SIGN, 1, 0, omp.lang("Reden", "Reason")).build());
+        anvil.getItems().put(AnvilNms.AnvilSlot.INPUT_LEFT, new ItemBuilder(Material.SIGN, 1, omp.lang("Reden", "Reason")).build());
 
         anvil.open();
     }

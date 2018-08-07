@@ -22,21 +22,17 @@ public enum KitPvPAchievements implements Achievement {
     private final String name;
     private final Rarity rarity;
     private final Loot.Instance[] rewards;
-    private final boolean showProgressOnComplete;
-    private final Message completedProgress;
     private final Message[] description;
 
     private AchievementHandler handler;
 
-    KitPvPAchievements(String name, Rarity rarity, Loot.Instance reward, boolean showProgressOnComplete, Message completedProgress, Message... description) {
-        this(name, rarity, new Loot.Instance[] { reward }, showProgressOnComplete, completedProgress, description);
+    KitPvPAchievements(String name, Rarity rarity, Loot.Instance reward, Message... description) {
+        this(name, rarity, new Loot.Instance[] { reward }, description);
     }
-    KitPvPAchievements(String name, Rarity rarity, Loot.Instance[] rewards, boolean showProgressOnComplete, Message completedProgress, Message... description) {
+    KitPvPAchievements(String name, Rarity rarity, Loot.Instance[] rewards, Message... description) {
         this.name = name;
         this.rarity = rarity;
         this.rewards = rewards;
-        this.showProgressOnComplete = showProgressOnComplete;
-        this.completedProgress = completedProgress;
         this.description = description;
     }
 
@@ -63,16 +59,6 @@ public enum KitPvPAchievements implements Achievement {
     @Override
     public Loot.Instance[] getRewards() {
         return rewards;
-    }
-
-    @Override
-    public boolean shouldShowProgressOnComplete() {
-        return showProgressOnComplete;
-    }
-
-    @Override
-    public Message completedProgress(int progress) {
-        return completedProgress;
     }
 
     @Override

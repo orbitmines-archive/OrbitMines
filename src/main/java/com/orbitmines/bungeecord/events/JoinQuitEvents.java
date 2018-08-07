@@ -1,7 +1,6 @@
 package com.orbitmines.bungeecord.events;
 
 import com.orbitmines.api.CachedPlayer;
-import com.orbitmines.api.StaffRank;
 import com.orbitmines.api.punishment.Punishment;
 import com.orbitmines.api.punishment.PunishmentHandler;
 import com.orbitmines.bungeecord.OrbitMinesBungee;
@@ -29,18 +28,7 @@ public class JoinQuitEvents implements Listener {
         /* Setup Discord Emote */
         SkinLibrary.setupEmote(bungee.getDiscord().getGuild(bungee.getToken()), event.getConnection().getName());
 
-        //TODO REMOVE, ONLY TEMPORARY
-
-        if (event.getConnection().getName().equals("Rush_matthias"))
-            return;
-
         CachedPlayer player = CachedPlayer.getPlayer(event.getConnection().getName());
-        if (player == null || (player.getStaffRank() == StaffRank.NONE || player.getStaffRank() == StaffRank.BUILDER)) {
-            event.setCancelled(true);
-            event.setCancelReason("§8§lOrbit§7§lMines\n§a§lWe're coming back soon!\n\n§7For more updates be sure to join us on:\n§9§lDiscord§r §7» §9https://discord.gg/QjVGJMe\n§6§lWebsite§r §7» §6https://www.orbitmines.com");
-            return;
-        }
-
         if (player == null)
             return;
 
@@ -58,8 +46,7 @@ public class JoinQuitEvents implements Listener {
     @EventHandler
     public void onLogin(PostLoginEvent event) {
         /* Otherwise login */
-        BungeePlayer bp = new BungeePlayer(event.getPlayer());
-        bp.login();
+        BungeePlayer.getPlayer(event.getPlayer());
     }
 
     @EventHandler
@@ -98,10 +85,9 @@ public class JoinQuitEvents implements Listener {
     }
 
     @EventHandler
-    public void onQuit(ServerDisconnectEvent event) {
+    public void onQuit(PlayerDisconnectEvent event) {
         ProxiedPlayer player = event.getPlayer();
-
-        if (player.getServer().getInfo() == event.getTarget())
-            BungeePlayer.getPlayer(player).logout();
+        BungeePlayer omp = BungeePlayer.getPlayer(player);
+        omp.logout();
     }
 }

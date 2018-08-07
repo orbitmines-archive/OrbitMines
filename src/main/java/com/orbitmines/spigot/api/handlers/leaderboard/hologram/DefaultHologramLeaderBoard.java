@@ -64,7 +64,7 @@ public class DefaultHologramLeaderBoard extends HologramLeaderBoard {
                 StaffRank staffRank = player.getStaffRank();
                 VipRank vipRank = player.getVipRank();
 
-                return "§7" + (index + 1) + ". " + (staffRank != StaffRank.NONE ? staffRank.getPrefixColor() : vipRank.getPrefixColor()).getChatColor() + player.getPlayerName() + "  " + getValue(player, count);
+                return "§7" + (index + 1) + ". " + ((staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getPrefixColor() : vipRank.getPrefixColor()).getChatColor() + player.getPlayerName() + "  " + getValue(player, count);
             }, true);
         }
     }

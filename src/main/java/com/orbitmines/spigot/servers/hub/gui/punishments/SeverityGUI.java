@@ -85,15 +85,15 @@ public class SeverityGUI extends GUI {
         switch (severity) {
 
             case WARNING:
-                return new ItemBuilder(Material.BOOK_AND_QUILL, 1, 0, "§c§l" + name);
+                return new ItemBuilder(Material.WRITABLE_BOOK, 1, "§c§l" + name);
             case SEV_1:
-                return new ItemBuilder(Material.INK_SACK, 1, 12, "§c§l" + name);
+                return new ItemBuilder(Material.LIGHT_BLUE_DYE, 1, "§c§l" + name);
             case SEV_2:
-                return new ItemBuilder(Material.INK_SACK, 1, 4, "§c§l" + name);
+                return new ItemBuilder(Material.LAPIS_LAZULI, 1, "§c§l" + name);
             case SEV_3:
-                return new ItemBuilder(Material.INK_SACK, 1, 1, "§c§l" + name);
+                return new ItemBuilder(Material.ROSE_RED, 1, "§c§l" + name);
             default:
-                return new ItemBuilder(Material.STONE, 1, 0, "§c§l" + name);
+                return new ItemBuilder(Material.STONE, 1, "§c§l" + name);
         }
     }
 

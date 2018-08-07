@@ -4,13 +4,13 @@ package com.orbitmines.spigot.servers.survival.gui.claim;
  * OrbitMines - @author Fadi Shawki - 2018
  */
 
+import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.api.Color;
 import com.orbitmines.api.Message;
 import com.orbitmines.api.Server;
 import com.orbitmines.api.utils.DateUtils;
 import com.orbitmines.api.utils.NumberUtils;
 import com.orbitmines.api.utils.uuid.UUIDUtils;
-import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.GUI;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
@@ -69,7 +69,7 @@ public class ClaimGUI extends GUI {
         int x = x1 > x2 ? x1 - (width / 2) : x1 + (width / 2);
         int z = z1 > z2 ? z1 - (height / 2) : z1 + (height / 2);
 
-        add(0, 4, new EmptyItemInstance(new ItemBuilder(Material.STONE_HOE, 1, 0, "§a§lClaim #" + NumberUtils.locale(claim.getId()),
+        add(0, 4, new EmptyItemInstance(new ItemBuilder(Material.STONE_HOE, 1, "§a§lClaim #" + NumberUtils.locale(claim.getId()),
                 "§7" + omp.lang("Gemaakt op", "Created on") + ": §a§l" + DateUtils.SIMPLE_FORMAT.format(claim.getCreatedOn()),
                 "",
                 "§7" + omp.lang("Oppervlak", "Area") + ": §a§l" + NumberUtils.locale(width) + " x " + NumberUtils.locale(height),
@@ -77,7 +77,7 @@ public class ClaimGUI extends GUI {
                 "§7XZ: §a§l" + x + " §7/ §a§l" + z
         ).addFlag(ItemFlag.HIDE_ATTRIBUTES).build()));
 
-        add(0, 1, new ItemInstance(new ItemBuilder(Material.BOOK_AND_QUILL, 1, 0, omp.lang("§a§lVoeg Speler Toe", "§a§lAdd Player")).build()) {
+        add(0, 1, new ItemInstance(new ItemBuilder(Material.WRITABLE_BOOK, 1, omp.lang("§a§lVoeg Speler Toe", "§a§lAdd Player")).build()) {
             @Override
             public void onClick(InventoryClickEvent e, OMPlayer omp) {
                 AnvilNms anvil = survival.getOrbitMines().getNms().anvilGui(omp.getPlayer(), (event) -> {
@@ -124,7 +124,7 @@ public class ClaimGUI extends GUI {
         });
 
         {
-            ItemBuilder item = new ItemBuilder(Material.BARRIER, 1, 0, omp.lang("§c§lVerwijder Claim", "§c§lRemove Claim"));
+            ItemBuilder item = new ItemBuilder(Material.BARRIER, 1, omp.lang("§c§lVerwijder Claim", "§c§lRemove Claim"));
 
             add(0, 7, new ItemInstance(item.build()) {
                 @Override
@@ -165,12 +165,12 @@ public class ClaimGUI extends GUI {
 
         Set<UUID> players;
         if (this.permission == null) {
-            players = claim.getMembers().keySet();
+            players = new HashSet<>(claim.getMembers().keySet());
         } else {
             players = new HashSet<>();
 
             for (UUID member : claim.getMembers().keySet()) {
-                if (claim.getMembers().get(member) == this.permission)
+                if (claim.getPermission(member) == this.permission)
                     players.add(member);
             }
         }
@@ -196,12 +196,15 @@ public class ClaimGUI extends GUI {
                 String name = member.getRankPrefixColor().getChatColor() + member.getPlayerName();
 
                 PlayerSkullBuilder item = new PlayerSkullBuilder(member::getPlayerName, 1, name, new ArrayList<>());
-                ItemBuilder offlineItem = new ItemBuilder(Material.SKULL_ITEM, 1, 1, name, new ArrayList<>());
+                ItemBuilder offlineItem = new ItemBuilder(Material.SKELETON_SKULL, 1, name, new ArrayList<>());
                 List<String> lore = item.getLore();
 
                 Server server = member.getServer();
 
-                lore.add("§7Trust: §a§l" + claim.getMembers().get(uuid).getName().lang(omp.getLanguage()));
+                Claim.Permission permission = claim.getPermission(uuid);
+
+                if (permission != null)
+                    lore.add("§7Trust: §a§l" + omp.lang(permission.getName()));
 
                 lore.add("");
 
@@ -275,7 +278,7 @@ public class ClaimGUI extends GUI {
         }
 
         for (UUID friend : new ArrayList<>(toAdd)) {
-            if (claim.getMembers().containsKey(friend) && claim.getMembers().get(friend) == this.permission)
+            if (claim.hasPermission(friend, this.permission))
                 toAdd.remove(friend);
         }
 
@@ -284,7 +287,7 @@ public class ClaimGUI extends GUI {
             return;
         }
 
-        ItemBuilder item = new ItemBuilder(Material.STAINED_GLASS_PANE, 1, ColorUtils.getWoolData(type.color), type.color.getChatColor() + "§l" + omp.lang(type.title) + " " + omp.lang("aan", "to") + " §a§l" + omp.lang(this.permission.getName()));
+        ItemBuilder item = new ItemBuilder(ColorUtils.getStainedGlassPaneMaterial(type.color), 1, type.color.getChatColor() + "§l" + omp.lang(type.title) + " " + omp.lang("aan", "to") + " §a§l" + omp.lang(this.permission.getName()));
 
         int showCount = 5;
         for (int i = 0; i < showCount; i++) {
@@ -322,7 +325,7 @@ public class ClaimGUI extends GUI {
                         check = (j + 1) / 9;
 
                     if (check != -1) {
-                        int next = PLAYERS_PER_PAGE + check + (NEW_PER_PAGE * i);
+                        int next = PLAYERS_PER_PAGE + check + (NEW_PER_PAGE * i) - 1;
                         pagePlayers[j] = players.size() > next ? players.get(next) : null;
                     } else {
                         pagePlayers[j] = pagePlayers[j + 1];

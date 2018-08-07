@@ -11,10 +11,13 @@ import com.orbitmines.api.settings.SettingsType;
 import com.orbitmines.api.utils.DateUtils;
 import com.orbitmines.api.utils.NumberUtils;
 import com.orbitmines.discordbot.DiscordBot;
-import com.orbitmines.discordbot.utils.SkinLibrary;
+import com.orbitmines.discordbot.utils.BotToken;
+import com.orbitmines.discordbot.utils.DiscordSpigotUtils;
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.Freezer;
 import com.orbitmines.spigot.api.Loot;
+import com.orbitmines.spigot.api.handlers.achievements.StoredProgressAchievement;
+import com.orbitmines.spigot.api.handlers.chat.ComponentMessage;
 import com.orbitmines.spigot.api.handlers.chat.Title;
 import com.orbitmines.spigot.api.handlers.data.*;
 import com.orbitmines.spigot.api.handlers.itembuilders.PotionBuilder;
@@ -29,8 +32,10 @@ import com.orbitmines.spigot.api.handlers.npc.PlayerFreezer;
 import com.orbitmines.spigot.api.handlers.scoreboard.OMScoreboard;
 import com.orbitmines.spigot.api.handlers.scoreboard.ScoreboardSet;
 import com.orbitmines.spigot.api.handlers.timer.Timer;
+import com.orbitmines.spigot.servers.hub.handlers.HubAchievements;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalData;
-import net.dv8tion.jda.core.entities.Guild;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -56,6 +61,7 @@ public abstract class OMPlayer {
     protected final DisplayName displayName;
 
     private boolean loggedIn;
+    private boolean firstLogin;
 
     private boolean opMode;
 
@@ -111,6 +117,9 @@ public abstract class OMPlayer {
     /* Called before the player logs out */
     protected abstract void onLogout();
 
+    /* Called when player logs into this server for the first time */
+    protected abstract void onFirstLogin();
+
     /* Called when a player receives knock back, example: gadgets */
     public abstract boolean canReceiveVelocity();
 
@@ -129,9 +138,10 @@ public abstract class OMPlayer {
         orbitMines.getServerHandler().getServer().setPlayers(Bukkit.getOnlinePlayers().size());
 
         if (!Database.get().contains(Table.PLAYERS, TablePlayers.UUID, new Where(TablePlayers.UUID, getUUID().toString()))) {
-            Database.get().insert(Table.PLAYERS, getUUID().toString(), getRealName(), staffRank.toString(), vipRank.toString(), DateUtils.FORMAT.format(DateUtils.now()), language.toString(), Settings.PRIVATE_MESSAGES.getDefaultType().toString(), Settings.PLAYER_VISIBILITY.getDefaultType().toString(), Settings.GADGETS.getDefaultType().toString(), Settings.STATS.getDefaultType().toString(), silent ? "1" : "0", solars + "", prisms + "");
+            Database.get().insert(Table.PLAYERS, getUUID().toString(), getRealName(), "", staffRank.toString(), vipRank.toString(), DateUtils.FORMAT.format(DateUtils.now()), language.toString(), Settings.PRIVATE_MESSAGES.getDefaultType().toString(), Settings.PLAYER_VISIBILITY.getDefaultType().toString(), Settings.GADGETS.getDefaultType().toString(), Settings.STATS.getDefaultType().toString(), silent ? "1" : "0", solars + "", prisms + "");
         } else {
             Map<Column, String> values = Database.get().getValues(Table.PLAYERS, new Column[]{
+                    TablePlayers.NICK,
                     TablePlayers.STAFFRANK,
                     TablePlayers.VIPRANK,
                     TablePlayers.LANGUAGE,
@@ -139,6 +149,10 @@ public abstract class OMPlayer {
                     TablePlayers.SOLARS,
                     TablePlayers.PRISMS,
             }, new Where(TablePlayers.UUID, getUUID().toString()));
+
+            String nickName = values.get(TablePlayers.NICK);
+            if (nickName != null && !nickName.equals(""))
+                this.displayName.setName("*" + nickName + "*");
 
             staffRank = StaffRank.valueOf(values.get(TablePlayers.STAFFRANK));
             vipRank = VipRank.valueOf(values.get(TablePlayers.VIPRANK));
@@ -172,6 +186,12 @@ public abstract class OMPlayer {
         /* Initiate server login */
         onLogin();
 
+        PlayTimeData data = (PlayTimeData) getData(Data.Type.PLAY_TIME);
+        if (data.getPlayTime().get(orbitMines.getServerHandler().getServer()) == 0F) {
+            firstLogin = true;
+            onFirstLogin();
+        }
+
         /* Join Message */
         if (silent) {
             orbitMines.broadcast(StaffRank.MODERATOR, " §a» " + getName() + "§a is gejoind. §7§o[Silent]", " §a» " + getName() + "§a has joined. §7§o[Silent]");
@@ -179,8 +199,8 @@ public abstract class OMPlayer {
             orbitMines.broadcast(" §a» " + getName() + "§a is gejoind.", " §a» " + getName() + "§a has joined.");
 
             DiscordBot discord = orbitMines.getServerHandler().getDiscord();
-            Guild guild = discord.getGuild(orbitMines.getServerHandler().getToken());
-            orbitMines.getServerHandler().getDiscordChannel().sendMessage(guild.getRolesByName("»", true).get(0).getAsMention() + " " + SkinLibrary.getEmote(guild, getUUID()).getAsMention() + orbitMines.getServerHandler().getDiscordRankPrefix(this) + " **" + getName(true) + "** has joined.").queue();
+            BotToken token = orbitMines.getServerHandler().getToken();
+            orbitMines.getServerHandler().getDiscordChannel().sendMessage(discord.getRole(token, DiscordBot.CustomRole.JOIN).getAsMention() + " " + DiscordSpigotUtils.getDisplay(discord, token, this) + " has joined.").queue();
         }
 
         new BukkitRunnable() {
@@ -224,8 +244,8 @@ public abstract class OMPlayer {
             orbitMines.broadcast(" §c« " + getName() + "§c is weggegaan.", " §c« " + getName() + "§c has left.");
 
             DiscordBot discord = orbitMines.getServerHandler().getDiscord();
-            Guild guild = discord.getGuild(orbitMines.getServerHandler().getToken());
-            orbitMines.getServerHandler().getDiscordChannel().sendMessage(guild.getRolesByName("«", true).get(0).getAsMention() + " " + SkinLibrary.getEmote(guild, getUUID()).getAsMention() + orbitMines.getServerHandler().getDiscordRankPrefix(this) + " **" + getName(true) + "** has left.").queue();
+            BotToken token = orbitMines.getServerHandler().getToken();
+            orbitMines.getServerHandler().getDiscordChannel().sendMessage(discord.getRole(token, DiscordBot.CustomRole.LEAVE).getAsMention() + " " + DiscordSpigotUtils.getDisplay(discord, token, this) + " has left.").queue();
         }
 
         orbitMines.getServerHandler().getServer().setPlayers(Bukkit.getOnlinePlayers().size() -1);
@@ -261,19 +281,47 @@ public abstract class OMPlayer {
     }
 
     public void defaultTabList() {
-        orbitMines.getNms().tabList().send(Collections.singletonList(player), "\n§8§lOrbit§7§lMines\n" + orbitMines.getServerHandler().getServer().getDisplayName() + "\n", "\n    §7Website: §6§lwww.orbitmines.com§r    \n    §7" + lang("Winkel", "Shop") + ": §3§lorbitmines.buycraft.net§r    \n    §7Twitter: §b§l@OrbitMines§r    \n\n    §7Vote: §9§l/vote§r    \n");
+        orbitMines.getNms().tabList().send(Collections.singletonList(player), "\n§8§lOrbit§7§lMines\n" + orbitMines.getServerHandler().getServer().getDisplayName() + "\n", "\n    §7Website: §6§lwww.orbitmines.com§r    \n    §7" + lang("Winkel", "Shop") + ": §3§lorbitmines.buycraft.net§r    \n    §7Discord: §9§lQjVGJMe    \n    §7Twitter: §b§l@OrbitMines§r    \n\n    §7Vote: §9§l/vote§r    \n");
     }
 
     public void on2FALogin() {
-        sendMessage("§7§m----------------------------------------");
-        sendMessage(" §8§lOrbit§7§lMines §8- " + orbitMines.getServerHandler().getServer().getDisplayName());
+        sendMessage("§7§m----------------------------------------------");
+        sendMessage("  §8§lOrbit§7§lMines §8- " + orbitMines.getServerHandler().getServer().getDisplayName());
         sendMessage(" ");
-        sendMessage(" §7Website: §6§lwww.orbitmines.com");
-        sendMessage(" §7" + lang("Winkel", "Shop") + ": §3§lorbitmines.buycraft.net");
-        sendMessage(" §7Twitter: §b§l@OrbitMines");
-        sendMessage(" §7" + lang("Voten", "Vote") + ": §9§l/vote");
+
+        {
+            ComponentMessage cM = new ComponentMessage();
+            cM.add(new Message("  §7Website: "));
+            cM.add(new Message("§6§lwww.orbitmines.com"), ClickEvent.Action.OPEN_URL, new Message("https://www.orbitmines.com"), HoverEvent.Action.SHOW_TEXT, new Message("§7Open §6https://www.orbitmines.com"));
+            cM.send(this);
+        }
+        {
+            ComponentMessage cM = new ComponentMessage();
+            cM.add(new Message("  §7Winkel: ", "  §7Shop: "));
+            cM.add(new Message("§3§lorbitmines.buycraft.net"), ClickEvent.Action.OPEN_URL, new Message("https://orbitmines.buycraft.net"), HoverEvent.Action.SHOW_TEXT, new Message("§7Open §3https://orbitmines.buycraft.net"));
+            cM.send(this);
+        }
+        {
+            ComponentMessage cM = new ComponentMessage();
+            cM.add(new Message("  §7Discord: "));
+            cM.add(new Message("§9§lQjVGJMe"), ClickEvent.Action.OPEN_URL, new Message("https://discord.gg/QjVGJMe"), HoverEvent.Action.SHOW_TEXT, new Message("§7Open §9https://discord.gg/QjVGJMe"));
+            cM.send(this);
+        }
+        {
+            ComponentMessage cM = new ComponentMessage();
+            cM.add(new Message("  §7Twitter: "));
+            cM.add(new Message("§b§l@OrbitMines"), ClickEvent.Action.OPEN_URL, new Message("https://twitter.com/OrbitMines"), HoverEvent.Action.SHOW_TEXT, new Message("§7Open §bhttps://twitter.com/OrbitMines"));
+            cM.send(this);
+        }
+        {
+            ComponentMessage cM = new ComponentMessage();
+            cM.add(new Message("  §7Voten: ", "  §7Vote: "));
+            cM.add(new Message("§9§l/vote"), ClickEvent.Action.RUN_COMMAND, new Message("/vote"), HoverEvent.Action.SHOW_TEXT, new Message("§9/vote"));
+            cM.send(this);
+        }
+
         sendMessage(" ");
-        sendMessage("§7§m----------------------------------------");
+        sendMessage("§7§m---------------------------------------------");
 
         checkCachedVotes();
     }
@@ -320,7 +368,9 @@ public abstract class OMPlayer {
         if (data.getVotes() >= TopVoterReward.MONTHLY_ACHIEVEMENT_VOTES && (data.getVotes() - votes) < TopVoterReward.MONTHLY_ACHIEVEMENT_VOTES)
             ((LootData) getData(Data.Type.LOOT)).add(Loot.PRISMS, Rarity.UNCOMMON, "§a§l§oMonthly Achievement " + DateUtils.getMonth() + " " + DateUtils.getYear(), TopVoterReward.MONTHLY_ACHIEVEMENT_PRISMS);
 
-        //
+        StoredProgressAchievement handler = (StoredProgressAchievement) HubAchievements.ORBITMINES_SUPPORTER.getHandler();
+        if (handler.hasCompleted(this))
+            handler.complete(this, true);
     }
 
     /*
@@ -369,6 +419,10 @@ public abstract class OMPlayer {
 
     public void setLoggedIn(boolean loggedIn) {
         this.loggedIn = loggedIn;
+    }
+
+    public boolean isFirstLogin() {
+        return firstLogin;
     }
 
     /*
@@ -562,22 +616,36 @@ public abstract class OMPlayer {
     }
 
     public void setAfk(String afk) {
-        this.afk = afk;
-
         String playerName = getName();
 
         if (afk != null) {
             if (afk.equals("null"))
-                orbitMines.broadcast("Afk", Color.BLUE, "§7 " + playerName + "§7 is nu §6AFK§7.", "§7 " + playerName + "§7 is now §6AFK§7.");
+                orbitMines.broadcast("Afk", Color.BLUE, playerName + "§7 is nu §6AFK§7.", playerName + "§7 is now §6AFK§7.");
             else
-                orbitMines.broadcast("Afk", Color.BLUE, "§7 " + playerName + "§7 is nu §6AFK§7. (§7" + afk + "§7)", "§7 " + playerName + "§7 is now §6AFK§7. (§7" + afk + "§7)");
+                orbitMines.broadcast("Afk", Color.BLUE, playerName + "§7 is nu §6AFK§7. (§7" + afk + "§7)", playerName + "§7 is now §6AFK§7. (§7" + afk + "§7)");
         } else {
             if (this.afk.equals("null"))
-                orbitMines.broadcast("Afk", Color.BLUE, "§7 " + playerName + "§7 is niet meer §6AFK§7.", "§7 " + playerName + "§7 is no longer §6AFK§7.");
+                orbitMines.broadcast("Afk", Color.BLUE, playerName + "§7 is niet meer §6AFK§7.", playerName + "§7 is no longer §6AFK§7.");
             else
-                orbitMines.broadcast("Afk", Color.BLUE, "§7 " + playerName + "§7 is niet meer §6AFK§7. (§7" + this.afk + "§7)", "§7 " + playerName + "§7 is no longer §6AFK§7. (§7" + this.afk + "§7)");
+                orbitMines.broadcast("Afk", Color.BLUE, playerName + "§7 is niet meer §6AFK§7. (§7" + this.afk + "§7)", playerName + "§7 is no longer §6AFK§7. (§7" + this.afk + "§7)");
         }
         this.afk = afk;
+    }
+
+    /*
+        Nickname
+     */
+
+    public void setNickName(String nickName) {
+        this.displayName.setName("*" + nickName + "*");
+
+        Database.get().update(Table.PLAYERS, new Set(TablePlayers.NICK, nickName), new Where(TablePlayers.UUID, getUUID().toString()));
+    }
+
+    public void clearNickName() {
+        this.displayName.setName(this.displayName.getInitialName());
+
+        Database.get().update(Table.PLAYERS, new Set(TablePlayers.NICK, ""), new Where(TablePlayers.UUID, getUUID().toString()));
     }
 
     /*
@@ -705,11 +773,17 @@ public abstract class OMPlayer {
             case FRIENDS:
                 data = new FriendsData(getUUID());
                 break;
+            case DISCORD_GROUPS:
+                data = new DiscordGroupData(getUUID());
+                break;
             case SETTINGS:
                 data = new SettingsData(getUUID());
                 break;
             case PLAY_TIME:
                 data = new PlayTimeData(getUUID());
+                break;
+            case ACHIEVEMENTS:
+                data = new AchievementsData(getUUID());
                 break;
             case LOOT:
                 data = new LootData(getUUID());
@@ -948,27 +1022,27 @@ public abstract class OMPlayer {
     }
 
     public String getRankPrefix() {
-        return staffRank != StaffRank.NONE ? staffRank.getPrefix() : vipRank.getPrefix();
+        return (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getPrefix() : vipRank.getPrefix();
     }
 
     public String getRankPrefix(Color color) {
-        return staffRank != StaffRank.NONE ? staffRank.getPrefix(color) : vipRank.getPrefix(color);
+        return (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getPrefix(color) : vipRank.getPrefix(color);
     }
 
     public String getRankName() {
-        return staffRank != StaffRank.NONE ? staffRank.getName() : vipRank.getName();
+        return (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getName() : vipRank.getName();
     }
 
     public String getRankDisplayName() {
-        return staffRank != StaffRank.NONE ? staffRank.getDisplayName() : vipRank.getDisplayName();
+        return (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getDisplayName() : vipRank.getDisplayName();
     }
 
     public Color getRankPrefixColor() {
-        return staffRank != StaffRank.NONE ? staffRank.getPrefixColor() : vipRank.getPrefixColor();
+        return (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getPrefixColor() : vipRank.getPrefixColor();
     }
 
     public Color getRankChatColor() {
-        return staffRank != StaffRank.NONE ? staffRank.getChatColor() : vipRank.getChatColor();
+        return (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getChatColor() : vipRank.getChatColor();
     }
 
     /*

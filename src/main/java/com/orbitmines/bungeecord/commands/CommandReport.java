@@ -2,8 +2,6 @@ package com.orbitmines.bungeecord.commands;
 
 import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.api.Color;
-import com.orbitmines.api.StaffRank;
-import com.orbitmines.api.VipRank;
 import com.orbitmines.api.database.Database;
 import com.orbitmines.api.database.Table;
 import com.orbitmines.api.utils.DateUtils;
@@ -11,7 +9,9 @@ import com.orbitmines.bungeecord.OrbitMinesBungee;
 import com.orbitmines.bungeecord.handlers.BungeePlayer;
 import com.orbitmines.bungeecord.handlers.cmd.Command;
 import com.orbitmines.discordbot.DiscordBot;
+import com.orbitmines.discordbot.utils.BotToken;
 import com.orbitmines.discordbot.utils.ColorUtils;
+import com.orbitmines.discordbot.utils.DiscordUtils;
 import com.orbitmines.discordbot.utils.SkinLibrary;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -77,7 +77,9 @@ public class CommandReport extends Command {
         {
             TextChannel channel = bungee.getDiscord().getChannel(bungee.getToken(), DiscordBot.ChannelType.reports);
 
-            channel.sendMessage(getDiscordName(CachedPlayer.getPlayer(omp.getUUID())) + " has reported " + getDiscordName(player) + "!").queue();
+            DiscordBot discord = bungee.getDiscord();
+            BotToken token = bungee.getToken();
+            channel.sendMessage(DiscordUtils.getDisplay(discord, token, omp.getUUID()) + " has reported " + DiscordUtils.getDisplay(discord, token, player.getUUID()) + "!").queue();
 
             EmbedBuilder builder = new EmbedBuilder();
             builder.setAuthor("REPORT");
@@ -94,16 +96,5 @@ public class CommandReport extends Command {
 
             channel.sendMessage(builder.build()).queue();
         }
-    }
-
-    private String getDiscordName(CachedPlayer player) {
-        return SkinLibrary.getEmote(bungee.getDiscord().getGuild(bungee.getToken()), player.getUUID()).getAsMention() + getDiscordRankPrefix(player) + " **" + player.getPlayerName() + "**";
-    }
-
-    private String getDiscordRankPrefix(CachedPlayer player) {
-        if (player.getStaffRank() == StaffRank.NONE)
-            return player.getVipRank() != VipRank.NONE ? " " + bungee.getDiscord().getEmote(bungee.getToken(), player.getVipRank()).getAsMention() + "**" + player.getRankName() + "**" : "";
-
-        return " **" + player.getRankName() + "**";
     }
 }

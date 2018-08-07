@@ -43,7 +43,7 @@ public class CommandHomes extends Command {
         }
 
         ComponentMessage cM = new ComponentMessage();
-        cM.add(new Message(Message.FORMAT("Home", Color.BLUE, omp.lang("§7Jouw Homes: ", "§7Your Homes: "))));
+        cM.add(new Message(Message.FORMAT("Home", Color.BLUE, omp.lang("§7Jouw Homes", "§7Your Homes") + " (§6" + omp.getHomes().size() + "§7 / " + omp.getHomesAllowed() + "): ")));
 
         for (int i = 0; i < omp.getHomes().size(); i++) {
             if (i != 0)

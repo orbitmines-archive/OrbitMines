@@ -12,9 +12,13 @@ public abstract class VipCommand extends Command {
 
     private final VipRank vipRank;
 
+    public VipCommand(VipRank vipRank) {
+        this(null, vipRank);
+    }
+
     public VipCommand(Server server, VipRank vipRank) {
         super(server);
-        
+
         this.vipRank = vipRank;
     }
 

@@ -21,10 +21,6 @@ public interface Achievement {
 
     Loot.Instance[] getRewards();
 
-    boolean shouldShowProgressOnComplete();
-
-    Message completedProgress(int progress);
-
     Message[] getDescription();
 
     AchievementHandler getHandler();

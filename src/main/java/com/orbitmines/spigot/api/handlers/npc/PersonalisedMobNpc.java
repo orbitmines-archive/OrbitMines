@@ -27,6 +27,7 @@ public abstract class PersonalisedMobNpc extends MobNpc {
     @Override
     public void update() {
         for (Hologram hologram : nameTags.values()) {
+            hologram.setYOff(getYOff());
             hologram.update();
         }
     }
@@ -50,6 +51,16 @@ public abstract class PersonalisedMobNpc extends MobNpc {
     }
 
     @Override
+    public void setMob(Mob mob) {
+        super.setMob(mob);
+
+        for (Hologram hologram : nameTags.values()) {
+            hologram.setYOff(getYOff());
+            hologram.update();
+        }
+    }
+
+    @Override
     public Hologram getNameTag() {
         throw new IllegalStateException();
     }
@@ -59,8 +70,7 @@ public abstract class PersonalisedMobNpc extends MobNpc {
     }
 
     public void onLogin(OMPlayer omp) {
-        //TODO yOff for other mobs.
-        Hologram hologram = new Hologram(spawnLocation, 1.75, Hologram.Face.UP);
+        Hologram hologram = new Hologram(spawnLocation, getYOff(), Hologram.Face.UP);
         hologram.create(omp.getPlayer());
 
         nameTags.put(omp, hologram);

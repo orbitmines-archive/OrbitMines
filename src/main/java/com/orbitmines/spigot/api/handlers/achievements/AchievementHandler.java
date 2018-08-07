@@ -5,7 +5,6 @@ package com.orbitmines.spigot.api.handlers.achievements;
  */
 
 import com.orbitmines.api.Message;
-import com.orbitmines.api.utils.NumberUtils;
 import com.orbitmines.spigot.api.Loot;
 import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
@@ -49,7 +48,10 @@ public abstract class AchievementHandler {
     public ItemBuilder getItemBuilder(OMPlayer omp) {
         boolean completed = alreadyCompletedAchievement(omp);
 
-        ItemBuilder item = new ItemBuilder(completed ? Material.EXP_BOTTLE : Material.GLASS_BOTTLE, 1, 0, (completed ? "§a§l" : "§c§l") + achievement.getName());
+        ItemBuilder item = new ItemBuilder(completed ? Material.EXPERIENCE_BOTTLE : Material.GLASS_BOTTLE, 1, (completed ? "§a§l" : "§c§l") + achievement.getName());
+        if (completed)
+            item.addLore("§a§l§o" + omp.lang("VOLTOOID", "COMPLETED"));
+
         item.addLore("");
 
         for (Message line : achievement.getDescription()) {
@@ -57,16 +59,10 @@ public abstract class AchievementHandler {
         }
 
         item.addLore("");
-        item.addLore("§7Rewards");
+        item.addLore(omp.lang("§7Beloningen", "§7Rewards"));
 
         for (Loot.Instance loot : achievement.getRewards()) {
             item.addLore("§7- " + loot.getLoot().getDisplayName(loot.getCount()));
-        }
-
-        if (completed && achievement.shouldShowProgressOnComplete()) {
-            item.addLore("");
-            AchievementsData data = getData(omp);
-            item.addLore("§7§o" + NumberUtils.locale(data.getProgress(achievement)) + " " + achievement.completedProgress(data.getProgress(achievement)));
         }
 
         return item;
@@ -85,7 +81,7 @@ public abstract class AchievementHandler {
             omp.sendMessage("  §e§l" + getName(omp));
             omp.sendMessage("    §7" + getDescription(omp));
             omp.sendMessage("");
-            omp.sendMessage("  §7Reward: " + lootToString());
+            omp.sendMessage("  §7" + omp.lang("Beloningen", "Rewards") + ": " + lootToString());
             omp.sendMessage("§5§m---------------------------------------------");
 
             omp.playSound(Sound.ENTITY_ARROW_HIT_PLAYER);
@@ -95,7 +91,7 @@ public abstract class AchievementHandler {
 
         LootData lootData = (LootData) omp.getData(Data.Type.LOOT);
         for (Loot.Instance loot : rewards) {
-            lootData.add(loot.getLoot(), achievement.getRarity(), "", loot.getCount());
+            lootData.add(loot.getLoot(), achievement.getRarity(), "§d§l§oAchievement (" + achievement.getName() + ")", loot.getCount());
         }
     }
 

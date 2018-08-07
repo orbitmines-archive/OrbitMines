@@ -9,10 +9,12 @@ import com.orbitmines.api.utils.DateUtils;
 import com.orbitmines.api.utils.NumberUtils;
 import com.orbitmines.api.utils.TimeUtils;
 import com.orbitmines.spigot.OrbitMines;
+import com.orbitmines.spigot.OrbitMinesServer;
 import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.GUI;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.achievements.Achievement;
+import com.orbitmines.spigot.api.handlers.data.AchievementsData;
 import com.orbitmines.spigot.api.handlers.data.PlayTimeData;
 import com.orbitmines.spigot.api.handlers.data.VoteData;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
@@ -21,6 +23,7 @@ import com.orbitmines.spigot.servers.survival.handlers.SurvivalData;
 import com.orbitmines.spigot.servers.survival.handlers.claim.Claim;
 import com.orbitmines.spigot.servers.survival.handlers.teleportable.Home;
 import com.orbitmines.spigot.servers.survival.handlers.teleportable.Warp;
+import net.dv8tion.jda.core.entities.User;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemFlag;
@@ -41,7 +44,7 @@ public class StatsGUI extends GUI {
 
     @Override
     protected boolean onOpen(OMPlayer omp) {
-        add(1, 3, new EmptyItemInstance(new ItemBuilder(Material.DOUBLE_PLANT, 1, 0, "§e§l" + NumberUtils.locale(player.getSolars()) + " Solar" + (player.getSolars() == 1 ? "" : "s")).build()));
+        add(1, 3, new EmptyItemInstance(new ItemBuilder(Material.SUNFLOWER, 1, "§e§l" + NumberUtils.locale(player.getSolars()) + " Solar" + (player.getSolars() == 1 ? "" : "s")).build()));
 
         add(1, 4, new ItemInstance(getItem(player, null, true)) {
             @Override
@@ -50,7 +53,7 @@ public class StatsGUI extends GUI {
             }
         });
 
-        add(1, 5, new EmptyItemInstance(new ItemBuilder(Material.PRISMARINE_SHARD, 1, 0, "§9§l" + NumberUtils.locale(player.getPrisms()) + " Prism" + (player.getPrisms() == 1 ? "" : "s")).build()));
+        add(1, 5, new EmptyItemInstance(new ItemBuilder(Material.PRISMARINE_SHARD, 1, "§9§l" + NumberUtils.locale(player.getPrisms()) + " Prism" + (player.getPrisms() == 1 ? "" : "s")).build()));
 
         add(4, 4, new ItemInstance(getItem(player, Server.SURVIVAL, true)) {
             @Override
@@ -59,7 +62,7 @@ public class StatsGUI extends GUI {
             }
         });
 
-        EmptyItemInstance item = new EmptyItemInstance(new ItemBuilder(Material.STAINED_GLASS_PANE, 1, 14, new Message("§cOnbekende Galaxies", "§cUnknown Galaxies").lang(player.getLanguage())).build());
+        EmptyItemInstance item = new EmptyItemInstance(new ItemBuilder(Material.RED_STAINED_GLASS_PANE, 1, new Message("§cOnbekende Galaxies", "§cUnknown Galaxies").lang(player.getLanguage())).build());
 
         add(3, 1, item);
         add(3, 3, item);
@@ -74,7 +77,11 @@ public class StatsGUI extends GUI {
     public static ItemStack getItem(OMPlayer player, Server server, boolean generalStats) {
         if (server == null) {
             PlayerSkullBuilder item = new PlayerSkullBuilder(() -> player.getName(true), 1, player.getName());
-            item.addLore("§7Rank: " + (player.getStaffRank() == StaffRank.NONE ? player.getVipRank().getDisplayName() : (player.getVipRank() == VipRank.NONE ? player.getStaffRank().getDisplayName() : player.getStaffRank().getDisplayName() + " §7/ " + player.getVipRank().getDisplayName())));
+            item.addLore("§7Rank: " + ((player.getStaffRank() == StaffRank.NONE || player.getStaffRank() == StaffRank.ADMIN) ? player.getVipRank().getDisplayName() : (player.getVipRank() == VipRank.NONE ? player.getStaffRank().getDisplayName() : player.getStaffRank().getDisplayName() + " §7/ " + player.getVipRank().getDisplayName())));
+
+            OrbitMinesServer handler = OrbitMines.getInstance().getServerHandler();
+            User user = handler.getDiscord().getLinkedUser(handler.getToken(), player.getUUID());
+            item.addLore("§7Discord: " + (user != null ? "§9§l" + user.getName() + "#" + user.getDiscriminator() : StaffRank.NONE.getDisplayName()));
 
             PlayTimeData data = (PlayTimeData) player.getData(Data.Type.PLAY_TIME);
             /* Update Play Time */
@@ -93,6 +100,8 @@ public class StatsGUI extends GUI {
             item.addLore("§7Votes in " + DateUtils.getMonth() + " " + DateUtils.getYear() + ": §9§l" + voteData.getVotes());
             item.addLore("§7" + player.lang("Vote Totaal", "Total Votes") +  ": §9§l" + NumberUtils.locale(voteData.getTotalVotes()));
 
+            AchievementsData achievementsData = (AchievementsData) player.getData(Data.Type.ACHIEVEMENTS);
+
             int achievementCount = 0;
             int totalAchievementCount = 0;
             for (Server server2 : Server.values()) {
@@ -100,7 +109,7 @@ public class StatsGUI extends GUI {
                 totalAchievementCount += achievements.length;
 
                 for (Achievement achievement : achievements) {
-                    if (achievement.getHandler().hasCompleted(player))
+                    if (achievementsData.hasCompleted(achievement))
                         achievementCount++;
                 }
             }
@@ -109,8 +118,9 @@ public class StatsGUI extends GUI {
             item.addLore("§7Achievements: §d§l" + achievementCount + "§7§l / " + totalAchievementCount);
             item.addLore("");
             item.addLore("§7Cosmetics");
-            item.addLore("§7  Hats: §6§l" + "0" /* TODO */ + "§7§l / " + "0");
-            item.addLore("§7  Gadgets: §b§l" + "0" /* TODO */ + "§7§l / " + "0");
+            item.addLore("§7  §a§lComing Soon");
+//            item.addLore("§7  Hats: §6§l" + "0" /* TODO */ + "§7§l / " + "0");
+//            item.addLore("§7  Gadgets: §b§l" + "0" /* TODO */ + "§7§l / " + "0");
 
             if (generalStats) {
                 item.addLore("");
@@ -122,7 +132,7 @@ public class StatsGUI extends GUI {
 
         PlayTimeData data = (PlayTimeData) player.getData(Data.Type.PLAY_TIME);
 
-        ItemBuilder item = new ItemBuilder(null, 1, 0, "§7§lOrbit§8§lMines " + server.getDisplayName());
+        ItemBuilder item = new ItemBuilder(null, 1, "§8§lOrbit§7§lMines " + server.getDisplayName());
         item.addLore("§7" + player.lang("Tijd Gespeeld", "Time Played") + ": §a§l" + TimeUtils.limitTimeUnitBy(data.getPlayTime().get(server) * 1000, TimeUnit.HOURS, player.getLanguage()));
         item.addLore("");
 
@@ -162,10 +172,12 @@ public class StatsGUI extends GUI {
                 break;
         }
 
+        AchievementsData achievementsData = (AchievementsData) player.getData(Data.Type.ACHIEVEMENTS);
+
         int achievementCount = 0;
         Achievement[] achievements = server.achievementValues();
         for (Achievement achievement : achievements) {
-            if (achievement.getHandler().hasCompleted(player))
+            if (achievementsData.hasCompleted(achievement))
                 achievementCount++;
         }
 

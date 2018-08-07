@@ -15,14 +15,15 @@ import com.orbitmines.api.utils.RandomUtils;
 import com.orbitmines.bungeecord.OrbitMinesBungee;
 import com.orbitmines.discordbot.DiscordBot;
 import com.orbitmines.discordbot.utils.ColorUtils;
+import com.orbitmines.discordbot.utils.DiscordUtils;
 import com.orbitmines.discordbot.utils.SkinLibrary;
 import com.orbitmines.spigot.api.handlers.Data;
-import com.orbitmines.spigot.api.handlers.data.PlayTimeData;
-import com.orbitmines.spigot.api.handlers.data.SettingsData;
-import com.orbitmines.spigot.api.handlers.data.VoteData;
+import com.orbitmines.spigot.api.handlers.data.*;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -79,7 +80,7 @@ public class BungeePlayer {
         players.add(this);
 
         if (!Database.get().contains(Table.PLAYERS, TablePlayers.UUID, new Where(TablePlayers.UUID, getUUID().toString()))) {
-            Database.get().insert(Table.PLAYERS, getUUID().toString(), getRealName(), staffRank.toString(), vipRank.toString(), DateUtils.FORMAT.format(DateUtils.now()), language.toString(), Settings.PRIVATE_MESSAGES.getDefaultType().toString(), Settings.PLAYER_VISIBILITY.getDefaultType().toString(), Settings.GADGETS.getDefaultType().toString(), Settings.STATS.getDefaultType().toString(), silent ? "1" : "0", "0", "0");
+            Database.get().insert(Table.PLAYERS, getUUID().toString(), getRealName(), "", staffRank.toString(), vipRank.toString(), DateUtils.FORMAT.format(DateUtils.now()), language.toString(), Settings.PRIVATE_MESSAGES.getDefaultType().toString(), Settings.PLAYER_VISIBILITY.getDefaultType().toString(), Settings.GADGETS.getDefaultType().toString(), Settings.STATS.getDefaultType().toString(), silent ? "1" : "0", "0", "0");
 
             onFirstLogin();
         } else {
@@ -112,7 +113,7 @@ public class BungeePlayer {
         updateLastOnline();
 
         /* Initiate Login */
-        if (staffRank == StaffRank.NONE || !bungee.mustLogin(this)) {
+        if (staffRank == StaffRank.NONE || staffRank == StaffRank.ADMIN || !bungee.mustLogin(this)) {
             on2FALogin();
             return;
         }
@@ -135,6 +136,8 @@ public class BungeePlayer {
         ((PlayTimeData) getData(Data.Type.PLAY_TIME)).stopSession();
 
         players.remove(this);
+
+        SkinLibrary.deleteExistingEmotes(bungee.getDiscord().getGuild(bungee.getToken()), getUUID());
     }
 
     /* Called when a player joins the network, or successfully logs in with their 2FA code */
@@ -156,11 +159,12 @@ public class BungeePlayer {
 
     private void onFirstLogin() {
         /* Give Welcome Loot */
-        Database.get().insert(Table.LOOT, "SOLARS", Rarity.RARE.toString(), "250", "&a&l&oWelcome to &7&lOrbit&8&lMines&a&l&o!");
+        Database.get().insert(Table.LOOT, getUUID().toString(), "SOLARS", Rarity.RARE.toString(), "250", "&a&l&oWelcome to &7&l&oOrbit&8&l&oMines&a&l&o!");
 
         DiscordBot discord = bungee.getDiscord();
         Guild guild = discord.getGuild(bungee.getToken());
-        discord.getChannel(bungee.getToken(), DiscordBot.ChannelType.new_players).sendMessage(SkinLibrary.getEmote(guild, getUUID()).getAsMention() + " **" + getName(true) + "** has joined OrbitMines for the first time!").queue();
+
+        bungee.getProxy().getScheduler().schedule(bungee, () -> discord.getChannel(bungee.getToken(), DiscordBot.ChannelType.new_players).sendMessage(SkinLibrary.getEmote(guild, getUUID()).getAsMention() + " **" + getName(true) + "** has joined OrbitMines for the first time!").queue(), 1, TimeUnit.SECONDS);
     }
 
     /*
@@ -292,6 +296,13 @@ public class BungeePlayer {
 
         /* PrefixColor to DisplayName */
         setPrefix(getRankPrefixColor().getChatColor());
+
+        /* Update on Discord if Linked */
+        DiscordBot discord = bungee.getDiscord();
+        User user = discord.getLinkedUser(bungee.getToken(), getUUID());
+
+        if (user != null)
+            discord.updateRanks(user);
     }
 
     /*
@@ -364,7 +375,7 @@ public class BungeePlayer {
                 //TODO MESSAGE WHEN BACK ONLINE
             }
 
-            getPunishmentChannel().sendMessage(getDiscordName(player) + " has been WARNED!").queue();
+            getPunishmentChannel().sendMessage(DiscordUtils.getDisplay(bungee.getDiscord(), bungee.getToken(), player.getUUID()) + " has been WARNED!").queue();
             {
                 EmbedBuilder builder = new EmbedBuilder();
                 builder.setAuthor("WARNING");
@@ -398,7 +409,7 @@ public class BungeePlayer {
                     //TODO MESSAGE WHEN BACK ONLINE
                 }
 
-                getPunishmentChannel().sendMessage(getDiscordName(player) + " has been MUTED!").queue();
+                getPunishmentChannel().sendMessage(DiscordUtils.getDisplay(bungee.getDiscord(), bungee.getToken(), player.getUUID()) + " has been MUTED!").queue();
 
                 break;
             case BAN:
@@ -408,7 +419,7 @@ public class BungeePlayer {
                     //TODO MESSAGE WHEN BACK ONLINE
                 }
 
-                getPunishmentChannel().sendMessage(getDiscordName(player) + " has been BANNED!").queue();
+                getPunishmentChannel().sendMessage(DiscordUtils.getDisplay(bungee.getDiscord(), bungee.getToken(), player.getUUID()) + " has been BANNED!").queue();
                 break;
         }
 
@@ -452,7 +463,7 @@ public class BungeePlayer {
 
         sendMessage("Mod", Color.LIME, "Je hebt " + color + player.getPlayerName() + "§7 succesvol ontzegd van zijn/haar straf. (Reden: " + reason + ")", "You have successfully pardoned " + color + player.getPlayerName() + "§7. (Reason: " + reason + ")");
 
-        getPunishmentChannel().sendMessage(getDiscordName(player) + " has been PARDONED!").queue();
+        getPunishmentChannel().sendMessage(DiscordUtils.getDisplay(bungee.getDiscord(), bungee.getToken(), player.getUUID()) + " has been PARDONED!").queue();
 
         {
             EmbedBuilder builder = new EmbedBuilder();
@@ -483,17 +494,6 @@ public class BungeePlayer {
 
     private TextChannel getPunishmentChannel() {
         return bungee.getDiscord().getChannel(bungee.getToken(), DiscordBot.ChannelType.punishments);
-    }
-
-    private String getDiscordName(CachedPlayer player) {
-        return SkinLibrary.getEmote(bungee.getDiscord().getGuild(bungee.getToken()), player.getUUID()).getAsMention() + getDiscordRankPrefix(player) + " **" + player.getPlayerName() + "**";
-    }
-
-    private String getDiscordRankPrefix(CachedPlayer player) {
-        if (player.getStaffRank() == StaffRank.NONE)
-            return player.getVipRank() != VipRank.NONE ? " " + bungee.getDiscord().getEmote(bungee.getToken(), player.getVipRank()).getAsMention() + "**" + player.getRankName() + "**" : "";
-
-        return " **" + player.getRankName() + "**";
     }
 
     public boolean isMuted() {
@@ -534,9 +534,9 @@ public class BungeePlayer {
             case VOTES:
                 data = new VoteData(getUUID());
                 break;
-//            case FRIENDS:
-//                data = new FriendsData(getUUID());
-//                break; -> Not avaiable in Bungee
+            case DISCORD_GROUPS:
+                data = new DiscordGroupData(getUUID());
+                break;
             case SETTINGS:
                 data = new SettingsData(getUUID());
                 break;
@@ -641,31 +641,34 @@ public class BungeePlayer {
     }
 
     public Server getServer() {
+        if (player.getServer() == null)//TODO NULLPOINTER FIX?
+            return Server.HUB;
+
         return bungee.getServer(player.getServer().getInfo());
     }
 
     public String getRankPrefix() {
-        return staffRank != StaffRank.NONE ? staffRank.getPrefix() : vipRank.getPrefix();
+        return (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getPrefix() : vipRank.getPrefix();
     }
 
     public String getRankPrefix(Color color) {
-        return staffRank != StaffRank.NONE ? staffRank.getPrefix(color) : vipRank.getPrefix(color);
+        return (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getPrefix(color) : vipRank.getPrefix(color);
     }
 
     public String getRankName() {
-        return staffRank != StaffRank.NONE ? staffRank.getName() : vipRank.getName();
+        return (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getName() : vipRank.getName();
     }
 
     public String getRankDisplayName() {
-        return staffRank != StaffRank.NONE ? staffRank.getDisplayName() : vipRank.getDisplayName();
+        return (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getDisplayName() : vipRank.getDisplayName();
     }
 
     public Color getRankPrefixColor() {
-        return staffRank != StaffRank.NONE ? staffRank.getPrefixColor() : vipRank.getPrefixColor();
+        return (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getPrefixColor() : vipRank.getPrefixColor();
     }
 
     public Color getRankChatColor() {
-        return staffRank != StaffRank.NONE ? staffRank.getChatColor() : vipRank.getChatColor();
+        return (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getChatColor() : vipRank.getChatColor();
     }
 
     /*
@@ -678,7 +681,7 @@ public class BungeePlayer {
 
     public static BungeePlayer getPlayer(ProxiedPlayer player) {
         for (BungeePlayer omp : players) {
-            if (omp.getPlayer() == player)
+            if (omp.getUUID().toString().equals(player.getUniqueId().toString()))
                 return omp;
         }
 
@@ -692,7 +695,14 @@ public class BungeePlayer {
             if (omp.getName(true).equalsIgnoreCase(name))
                 return omp;
         }
-        return null;
+
+        ProxiedPlayer player = ProxyServer.getInstance().getPlayer(name);
+        if (player == null)
+            return null;
+
+        BungeePlayer omp = new BungeePlayer(player);
+        omp.login();
+        return omp;
     }
 
     public static BungeePlayer getPlayer(UUID uuid) {
@@ -700,7 +710,14 @@ public class BungeePlayer {
             if (omp.getUUID().toString().equals(uuid.toString()))
                 return omp;
         }
-        return null;
+
+        ProxiedPlayer player = ProxyServer.getInstance().getPlayer(uuid);
+        if (player == null)
+            return null;
+
+        BungeePlayer omp = new BungeePlayer(player);
+        omp.login();
+        return omp;
     }
 
     public static List<BungeePlayer> getPlayers() {

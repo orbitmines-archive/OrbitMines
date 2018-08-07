@@ -88,8 +88,8 @@ public class CommandReply extends Command {
         }
 
         StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 2; i < a.length; i++) {
-            if (i != 2)
+        for (int i = 1; i < a.length; i++) {
+            if (i != 1)
                 stringBuilder.append(" ");
 
             stringBuilder.append(a[i]);

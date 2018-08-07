@@ -53,7 +53,7 @@ public abstract class DefaultCommandLeaderBoard extends LeaderBoard {
             @Override
             public void dispatch(OMPlayer omp, String[] a) {
                 omp.sendMessage("");
-                omp.sendMessage(" §7§lOrbit§8§lMines " + color.getChatColor() + "§l" + name);
+                omp.sendMessage(" §8§lOrbit§7§lMines " + color.getChatColor() + "§l" + name);
 
                 for (int i = 0; i < size; i++) {
                     if (ordered.size() < i + 1)
@@ -84,7 +84,7 @@ public abstract class DefaultCommandLeaderBoard extends LeaderBoard {
                             break;
                     }
 
-                    omp.sendMessage("  " + color + "§l" + (i + 1) + ". " + (staffRank != StaffRank.NONE ? staffRank.getPrefixColor() : vipRank.getPrefixColor()).getChatColor() + player.getPlayerName() + " §8- " + getValue(player, count));
+                    omp.sendMessage("  " + color + "§l" + (i + 1) + ". " + ((staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getPrefixColor() : vipRank.getPrefixColor()).getChatColor() + player.getPlayerName() + " §8- " + getValue(player, count));
                 }
 
                 DefaultCommandLeaderBoard.this.onDispatch(omp, a);

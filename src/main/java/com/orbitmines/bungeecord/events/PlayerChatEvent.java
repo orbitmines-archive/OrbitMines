@@ -1,19 +1,19 @@
 package com.orbitmines.bungeecord.events;
 
-import com.orbitmines.api.*;
+import com.orbitmines.api.Color;
 import com.orbitmines.api.Message;
+import com.orbitmines.api.StaffRank;
 import com.orbitmines.bungeecord.OrbitMinesBungee;
 import com.orbitmines.bungeecord.handlers.BungeePlayer;
 import com.orbitmines.bungeecord.handlers.cmd.Command;
 import com.orbitmines.discordbot.DiscordBot;
-import com.orbitmines.discordbot.utils.SkinLibrary;
-import net.dv8tion.jda.core.entities.*;
+import com.orbitmines.discordbot.utils.BotToken;
+import com.orbitmines.discordbot.utils.DiscordBungeeUtils;
+import com.orbitmines.discordbot.utils.DiscordUtils;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
-
-import java.util.UUID;
 
 /*
 * OrbitMines - @author Fadi Shawki - 2017
@@ -69,45 +69,13 @@ public class PlayerChatEvent implements Listener {
             event.setCancelled(true);
             command.dispatch(event, omp, a);
 
-            bungee.getDiscord().getChannel(bungee.getToken(), DiscordBot.ChannelType.command_log).sendMessage(SkinLibrary.getEmote(bungee.getDiscord().getGuild(bungee.getToken()), omp.getUUID()).getAsMention() + getDiscordRankPrefix(omp.getUUID()) + " **" + omp.getName(true) + "** executed command **" + event.getMessage() + "**.").queue();
+            bungee.getDiscord().getChannel(bungee.getToken(), DiscordBot.ChannelType.command_log).sendMessage(DiscordBungeeUtils.getDisplay(bungee.getDiscord(), bungee.getToken(), omp) + " executed command **" + event.getMessage() + "**.").queue();
         }
-    }
-
-    private String getDiscordRankPrefix(UUID uuid) {
-        CachedPlayer player = CachedPlayer.getPlayer(uuid);
-
-        if (player == null)
-            return "";
-
-        StaffRank staffRank = player.getStaffRank();
-        VipRank vipRank = player.getVipRank();
-
-        if (staffRank == StaffRank.NONE)
-            return vipRank != VipRank.NONE ? " " + bungee.getDiscord().getEmote(bungee.getToken(), vipRank).getAsMention() + "**" + player.getRankName() + "**" : "";
-
-        return " **" + player.getRankName() + "**";
     }
 
     private void toDiscord(ChatEvent event, BungeePlayer omp) {
-        Guild guild = bungee.getDiscord().getGuild(bungee.getToken());
-
-        CharSequence text = SkinLibrary.getEmote(guild, omp.getUUID()).getAsMention() + getDiscordRankPrefix(omp.getUUID()) + " **" + omp.getName(true) + "** » ";
-
-        String message = event.getMessage().substring(1);/* Remove @ */
-
-        for (Role role : guild.getRoles()) {
-            message = message.replaceAll("@" + role.getName(), role.getAsMention());
-        }
-        for (TextChannel textChannel : guild.getTextChannels()) {
-            message = message.replaceAll("#" + textChannel.getName(), textChannel.getAsMention());
-        }
-        for (Member member : guild.getMembers()) {
-            message = message.replace("@" + member.getEffectiveName() + "#" + member.getUser().getDiscriminator(), member.getAsMention()).replaceAll("@" + member.getEffectiveName(), member.getAsMention()).replaceAll("@" + member.getNickname(), member.getAsMention());
-        }
-        for (Emote emote : guild.getEmotes()) {
-            message = message.replaceAll(":" + emote.getName() + ":", emote.getAsMention());
-        }
-
-        bungee.getDiscord().getChannel(bungee.getToken(), DiscordBot.ChannelType.staff).sendMessage(text + message).queue();
+        DiscordBot discord = bungee.getDiscord();
+        BotToken token = bungee.getToken();
+        discord.getChannel(token, DiscordBot.ChannelType.staff).sendMessage(DiscordBungeeUtils.getDisplay(discord, token, omp) + " » " + DiscordUtils.filterToDiscord(discord, token, event.getMessage().substring(1))).queue();
     }
 }

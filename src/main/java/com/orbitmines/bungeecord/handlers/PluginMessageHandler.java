@@ -2,6 +2,7 @@ package com.orbitmines.bungeecord.handlers;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import com.orbitmines.api.Color;
 import com.orbitmines.api.PluginMessage;
 import com.orbitmines.api.Server;
 import com.orbitmines.api.punishment.offences.Offence;
@@ -9,6 +10,7 @@ import com.orbitmines.api.punishment.offences.Severity;
 import com.orbitmines.bungeecord.OrbitMinesBungee;
 import com.orbitmines.bungeecord.runnables.BungeeRunnable;
 import com.orbitmines.bungeecord.utils.ConsoleUtils;
+import com.orbitmines.discordbot.handlers.DiscordGroup;
 import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.data.PlayTimeData;
 import com.orbitmines.spigot.api.utils.Serializer;
@@ -217,6 +219,53 @@ public class PluginMessageHandler implements Listener {
                         omp.sendMessage(ChatColor.translateAlternateColorCodes('&', in.readUTF()));
 
                     break;
+                }
+                case DISCORD_GROUP_ACTION: {
+                    UUID owner = UUID.fromString(in.readUTF());
+                    DiscordGroup group = DiscordGroup.getGroup(owner);
+
+                    switch(in.readUTF()) {
+                        case "CREATE": {
+                            if (group != null)
+                                break;
+
+                            BungeePlayer omp = BungeePlayer.getPlayer(owner);
+
+                            if (omp == null)
+                                break;
+
+                            group = new DiscordGroup(bungee.getDiscord(), owner);
+                            group.setup(omp);
+                            break;
+                        }
+                        case "ADD": {
+                            while (in.available() > 0) {
+                                group.addMember(UUID.fromString(in.readUTF()));
+                            }
+                            break;
+                        }
+                        case "REMOVE": {
+                            group.removeMember(UUID.fromString(in.readUTF()), Boolean.parseBoolean(in.readUTF()));
+                            break;
+                        }
+                        case "NAME": {
+                            group.setName(in.readUTF());
+                            break;
+                        }
+                        case "COLOR": {
+                            group.setColor(Color.valueOf(in.readUTF()));
+                            break;
+                        }
+                    }
+
+                    break;
+                }
+                case UPDATE_DISCORD_GROUP_DATA: {
+                    BungeePlayer omp = BungeePlayer.getPlayer(UUID.fromString(in.readUTF()));
+
+                    if (omp != null)
+                        omp.getData(Data.Type.DISCORD_GROUPS).load();
+
                 }
                 case FAVORITE_FRIEND_MESSAGE: {
                     List<UUID> friends = Serializer.parseUUIDList(in.readUTF());

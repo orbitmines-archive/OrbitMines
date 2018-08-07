@@ -27,9 +27,9 @@ public class Board {
         this.scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
         this.title = ChatColor.translateAlternateColorCodes('&', title);
         this.scores = new ConcurrentHashMap<>();
-        this.teams = Collections.synchronizedList(new ArrayList<Team>());
+        this.teams = Collections.synchronizedList(new ArrayList<>());
         this.removed = Lists.newArrayList();
-        this.updated = Collections.synchronizedSet(new HashSet<String>());
+        this.updated = Collections.synchronizedSet(new HashSet<>());
     }
 
     public void add(String text, Integer score) {
@@ -127,7 +127,7 @@ public class Board {
         }
 
         if (obj == null) {
-            obj = scoreboard.registerNewObjective((title.length() > 16 ? title.substring(0, 15) : title), "dummy");
+            obj = scoreboard.registerNewObjective((title.length() > 16 ? title.substring(0, 15) : title), "dummy", "");//TODO 3RD String?
             obj.setDisplayName(title);
             obj.setDisplaySlot(DisplaySlot.SIDEBAR);
         }

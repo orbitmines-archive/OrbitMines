@@ -166,7 +166,7 @@ public class _2FA {
         } else {
             MapView mapView = Bukkit.createMap(omp.getWorld());
 
-            ItemStack item = new ItemBuilder(Material.MAP, 1, mapView.getId(), "§c§l2FA").build();
+            ItemStack item = new ItemBuilder(Material.MAP, 1, "§c§l2FA").setDamage(mapView.getId()).build();//TODO DOES THIS STILL WORK ? DAMAGE=MAPVIEW.GETID
 
             omp.getPlayer().getInventory().setItem(0, item);
             omp.getPlayer().getInventory().setHeldItemSlot(0);

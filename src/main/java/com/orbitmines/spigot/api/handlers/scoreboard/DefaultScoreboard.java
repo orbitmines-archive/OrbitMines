@@ -3,6 +3,7 @@ package com.orbitmines.spigot.api.handlers.scoreboard;
 import com.orbitmines.api.StaffRank;
 import com.orbitmines.api.VipRank;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
+import com.orbitmines.spigot.api.utils.ColorUtils;
 import org.apache.commons.lang.ArrayUtils;
 
 import java.util.ArrayList;
@@ -31,7 +32,11 @@ public class DefaultScoreboard extends ScoreboardSet {
 
         for (StaffRank rank : staffRanks) {
             ScoreboardTeam team = new ScoreboardTeam(rank.toString());
-            team.setPrefix(rank.getPrefix(rank.getPrefixColor()));
+
+            if (rank != StaffRank.NONE && rank != StaffRank.ADMIN)
+                team.setPrefix(rank.getPrefix(null) + "§r ");
+
+            team.setColor(ColorUtils.toChatColor(rank.getPrefixColor()));
 
             teams.add(team);
             staffRankTeams.put(rank, team);
@@ -42,7 +47,11 @@ public class DefaultScoreboard extends ScoreboardSet {
 
         for (VipRank rank : vipRanks) {
             ScoreboardTeam team = new ScoreboardTeam(rank.toString());
-            team.setPrefix(rank.getPrefix(rank.getPrefixColor()));
+
+            if (rank != VipRank.NONE)
+                team.setPrefix(rank.getPrefix(null) + "§r ");
+
+            team.setColor(ColorUtils.toChatColor(rank.getPrefixColor()));
 
             teams.add(team);
             vipRankTeams.put(rank, team);

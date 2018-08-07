@@ -22,22 +22,18 @@ public enum PrisonAchievements implements Achievement {
     private final String name;
     private final Rarity rarity;
     private final Loot.Instance[] rewards;
-    private final boolean showProgressOnComplete;
-    private final Message completedProgress;
     private final Message[] description;
 
     private AchievementHandler handler;
 
-    PrisonAchievements(String name, Rarity rarity, Loot.Instance reward, boolean showProgressOnComplete, Message completedProgress, Message... description) {
-        this(name, rarity, new Loot.Instance[] { reward }, showProgressOnComplete, completedProgress, description);
+    PrisonAchievements(String name, Rarity rarity, Loot.Instance reward, Message... description) {
+        this(name, rarity, new Loot.Instance[] { reward }, description);
     }
 
-    PrisonAchievements(String name, Rarity rarity, Loot.Instance[] rewards, boolean showProgressOnComplete, Message completedProgress, Message... description) {
+    PrisonAchievements(String name, Rarity rarity, Loot.Instance[] rewards, Message... description) {
         this.name = name;
         this.rarity = rarity;
         this.rewards = rewards;
-        this.showProgressOnComplete = showProgressOnComplete;
-        this.completedProgress = completedProgress;
         this.description = description;
     }
 
@@ -64,16 +60,6 @@ public enum PrisonAchievements implements Achievement {
     @Override
     public Loot.Instance[] getRewards() {
         return rewards;
-    }
-
-    @Override
-    public boolean shouldShowProgressOnComplete() {
-        return showProgressOnComplete;
-    }
-
-    @Override
-    public Message completedProgress(int progress) {
-        return completedProgress;
     }
 
     @Override

@@ -26,14 +26,19 @@ public enum PluginMessage {
     UPDATE_RANKS(Server.BUNGEECORD),
     UPDATE_LANGUAGE(Server.BUNGEECORD),
     UPDATE_SILENT(Server.BUNGEECORD),
+    CHECK_DISCORD_LINK_ACHIEVEMENT(Server.SPIGOT),
 
     FAVORITE_FRIEND_MESSAGE(Server.BUNGEECORD),
     UPDATE_FRIENDS(Server.SPIGOT),
 
+    DISCORD_GROUP_ACTION(Server.BUNGEECORD),
+    UPDATE_DISCORD_GROUPS(Server.SPIGOT),
+    UPDATE_DISCORD_GROUP_DATA(Server.BUNGEECORD),
+
     UPDATE_SETTINGS(Server.BUNGEECORD),
     SERVER_SWITCH(Server.BUNGEECORD);
 
-    public static final String CHANNEL = "OrbitMines";
+    public static final String CHANNEL = "orbitmines:main";
     public static final String CHANNEL_BUNGEECORD = "BungeeCord";
 
     private final Server target;

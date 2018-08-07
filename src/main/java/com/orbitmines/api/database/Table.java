@@ -21,6 +21,9 @@ public class Table {
     public static TableVotes VOTES;
     public static TableFriends FRIENDS;
     public static TableAchievements ACHIEVEMENTS;
+    public static TableDiscord DISCORD;
+    public static TableDiscordGroup DISCORD_GROUP;
+    public static TableDiscordGroupData DISCORD_GROUP_DATA;
     public static TableIPs IPS;
     public static TablePunishments PUNISHMENTS;
     public static TableReports REPORTS;
@@ -50,6 +53,9 @@ public class Table {
         VOTES = new TableVotes();
         FRIENDS = new TableFriends();
         ACHIEVEMENTS = new TableAchievements();
+        DISCORD = new TableDiscord();
+        DISCORD_GROUP = new TableDiscordGroup();
+        DISCORD_GROUP_DATA = new TableDiscordGroupData();
         IPS = new TableIPs();
         PUNISHMENTS = new TablePunishments();
         REPORTS = new TableReports();

@@ -4,6 +4,7 @@ package com.orbitmines.bungeecord.events;
  * OrbitMines - @author Fadi Shawki - 2018
  */
 
+import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.api.Color;
 import com.orbitmines.api.StaffRank;
 import com.orbitmines.api.VipRank;
@@ -11,6 +12,7 @@ import com.orbitmines.bungeecord.OrbitMinesBungee;
 import com.orbitmines.bungeecord.handlers.BungeePlayer;
 import com.orbitmines.bungeecord.handlers.chat.ComponentMessage;
 import com.orbitmines.discordbot.DiscordBot;
+import com.orbitmines.discordbot.handlers.Command;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
@@ -19,6 +21,7 @@ import net.md_5.bungee.api.chat.HoverEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class DiscordMessageListener extends ListenerAdapter {
 
@@ -30,9 +33,16 @@ public class DiscordMessageListener extends ListenerAdapter {
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
+        if (!bungee.getDiscord().getServerId().equals(event.getGuild().getId()))
+            return;
+
         Member member = event.getMember();
         MessageChannel channel = event.getChannel();
         Message message = event.getMessage();
+
+        /* Don't send Discord commands in Minecraft chat. */
+        if (Command.getCommandFromName(message.getContentRaw().split(" ")[0]) != null)
+            return;
 
         if (channel.getName().equals(DiscordBot.ChannelType.staff.toString()) && !isBot(member))
             fromDiscordStaff(member, message);
@@ -59,17 +69,24 @@ public class DiscordMessageListener extends ListenerAdapter {
                 } catch (IllegalArgumentException ex1) { }
             }
         }
-        //TODO DISCORD LINK GRAB CACHEDPLAYER
-
         ComponentMessage cM = new ComponentMessage();
 
-        String rankPrefix = staffRank != StaffRank.NONE ? staffRank.getPrefix(staffRank.getPrefixColor()) : vipRank.getPrefix(vipRank.getPrefixColor());
-        Color chatColor = staffRank != StaffRank.NONE ? staffRank.getChatColor() : vipRank.getChatColor();
+        String rankPrefix = (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getPrefix(staffRank.getPrefixColor()) : vipRank.getPrefix(vipRank.getPrefixColor());
+        Color chatColor = (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getChatColor() : vipRank.getChatColor();
 
         cM.add(new com.orbitmines.api.Message(com.orbitmines.api.Message.FORMAT("Staff", Color.AQUA, "")));
 
         String name = rankPrefix + "@" + member.getEffectiveName();
-        cM.add(new com.orbitmines.api.Message(name), HoverEvent.Action.SHOW_TEXT, new com.orbitmines.api.Message(rankPrefix + "@" + member.getUser().getName() + "#" + member.getUser().getDiscriminator()));
+
+        UUID uuid = bungee.getDiscord().getLinkedUUID(member.getUser());
+        String playerName = null;
+
+        if (uuid != null) {
+            CachedPlayer player = CachedPlayer.getPlayer(uuid);
+            playerName = player.getRankPrefixColor().getChatColor() + player.getPlayerName();
+        }
+
+        cM.add(new com.orbitmines.api.Message(name), HoverEvent.Action.SHOW_TEXT, new com.orbitmines.api.Message(rankPrefix + "@" + member.getUser().getName() + "#" + member.getUser().getDiscriminator() + "\n§7IGN: " + (playerName == null ? StaffRank.NONE.getDisplayName() : playerName)));
 
         String msg = message.getContentDisplay();
         for (Role role : message.getMentionedRoles()) {

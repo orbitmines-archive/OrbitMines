@@ -48,13 +48,13 @@ public class ConfirmPunishGUI extends GUI {
             return false;
         }
 
-        ItemInstance cancel = new ItemInstance(new ItemBuilder(Material.STAINED_GLASS_PANE, 1, 14, omp.lang("§c§lAnnuleren", "§c§lCancel")).build()) {
+        ItemInstance cancel = new ItemInstance(new ItemBuilder(Material.RED_STAINED_GLASS_PANE, 1, omp.lang("§c§lAnnuleren", "§c§lCancel")).build()) {
             @Override
             public void onClick(InventoryClickEvent event, OMPlayer omp) {
                 new PunishGUI(player).open(omp);
             }
         };
-        ItemInstance confirm = new ItemInstance(new ItemBuilder(Material.STAINED_GLASS_PANE, 1, 5, omp.lang("§a§lBevestigen", "§a§lConfirm")).build()) {
+        ItemInstance confirm = new ItemInstance(new ItemBuilder(Material.LIME_STAINED_GLASS_PANE, 1, omp.lang("§a§lBevestigen", "§a§lConfirm")).build()) {
             @Override
             public void onClick(InventoryClickEvent event, OMPlayer omp) {
                 omp.getPlayer().closeInventory();

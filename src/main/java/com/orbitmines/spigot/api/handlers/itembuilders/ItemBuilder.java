@@ -1,6 +1,5 @@
 package com.orbitmines.spigot.api.handlers.itembuilders;
 
-import com.orbitmines.spigot.OrbitMines;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
@@ -16,8 +15,9 @@ public class ItemBuilder {
 
     protected Material material;
     protected int amount;
-    protected short durability;
+    protected short damage;
     protected String displayName;
+    protected String localizedName;
     protected List<String> lore;
 
     protected Map<Enchantment, Integer> enchantments;
@@ -32,25 +32,21 @@ public class ItemBuilder {
     }
 
     public ItemBuilder(Material material, int amount) {
-        this(material, amount, 0);
+        this(material, amount, null);
     }
 
-    public ItemBuilder(Material material, int amount, int durability) {
-        this(material, amount, durability, null);
+    public ItemBuilder(Material material, int amount, String displayName) {
+        this(material, amount, displayName, (List<String>) null);
     }
 
-    public ItemBuilder(Material material, int amount, int durability, String displayName) {
-        this(material, amount, durability, displayName, (List<String>) null);
-    }
-
-    public ItemBuilder(Material material, int amount, int durability, String displayName, String... lore) {
-        this(material, amount, durability, displayName, new ArrayList<>(Arrays.asList(lore)));
+    public ItemBuilder(Material material, int amount, String displayName, String... lore) {
+        this(material, amount, displayName, new ArrayList<>(Arrays.asList(lore)));
     }
 
     public ItemBuilder(ItemBuilder itemBuilder) {
         this.material = itemBuilder.material;
         this.amount = itemBuilder.amount;
-        this.durability = itemBuilder.durability;
+        this.damage = itemBuilder.damage;
         this.displayName = itemBuilder.displayName;
         this.lore = itemBuilder.lore == null ? new ArrayList<>() : new ArrayList<>(itemBuilder.lore);
         this.enchantments = new HashMap<>(itemBuilder.enchantments);
@@ -59,10 +55,10 @@ public class ItemBuilder {
         this.itemFlags = itemBuilder.itemFlags;
     }
 
-    public ItemBuilder(Material material, int amount, int durability, String displayName, List<String> lore) {
+    public ItemBuilder(Material material, int amount, String displayName, List<String> lore) {
         this.material = material;
         this.amount = amount;
-        this.durability = (short) durability;
+        this.damage = (short) 0;
         this.displayName = displayName;
         this.lore = lore == null ? new ArrayList<>() : lore;
         this.enchantments = new HashMap<>();
@@ -88,12 +84,12 @@ public class ItemBuilder {
         return this;
     }
 
-    public short getDurability() {
-        return durability;
+    public short getDamage() {
+        return damage;
     }
 
-    public ItemBuilder setDurability(short durability) {
-        this.durability = durability;
+    public ItemBuilder setDamage(short damage) {
+        this.damage = damage;
         return this;
     }
 
@@ -103,6 +99,15 @@ public class ItemBuilder {
 
     public ItemBuilder setDisplayName(String displayName) {
         this.displayName = displayName;
+        return this;
+    }
+
+    public String getLocalizedName() {
+        return localizedName;
+    }
+
+    public ItemBuilder setLocalizedName(String localizedName) {
+        this.localizedName = localizedName;
         return this;
     }
 
@@ -163,9 +168,10 @@ public class ItemBuilder {
     }
 
     public ItemStack build() {
-        ItemStack itemStack = new ItemStack(material, amount, durability);
+        ItemStack itemStack = new ItemStack(material, amount, damage);
         ItemMeta meta = itemStack.getItemMeta();
         meta.setDisplayName(displayName);
+        meta.setLocalizedName(localizedName);
         meta.setLore((lore == null || lore.size() == 0) ? null : new ArrayList<>(lore));
         for (ItemFlag itemFlag : itemFlags) {
             meta.addItemFlags(itemFlag);
@@ -186,8 +192,11 @@ public class ItemBuilder {
             itemStack.setItemMeta(meta);
         }
 
-        if (unbreakable)
-            itemStack = OrbitMines.getInstance().getNms().customItem().setUnbreakable(itemStack);
+        if (unbreakable) {
+            ItemMeta meta = itemStack.getItemMeta();
+            meta.setUnbreakable(true);
+            itemStack.setItemMeta(meta);
+        }
 
         return itemStack;
     }
@@ -197,7 +206,7 @@ public class ItemBuilder {
             return material == null;
 
         ItemMeta meta = itemStack.getItemMeta();
-        return itemStack.getType() == material && (durability == -1 || itemStack.getDurability() == durability) && (displayName == null || meta != null && meta.getDisplayName() != null && meta.getDisplayName().equals(displayName)) && (lore == null || lore.size() == 0 || meta != null && meta.getLore() != null && meta.getLore().equals(lore));
+        return itemStack.getType() == material && (damage == -1 || itemStack.getDurability() == damage) && (displayName == null || meta != null && meta.getDisplayName() != null && meta.getDisplayName().equals(displayName)) && (lore == null || lore.size() == 0 || meta != null && meta.getLore() != null && meta.getLore().equals(lore));
     }
 
     public ItemBuilder clone() {

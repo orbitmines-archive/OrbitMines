@@ -40,7 +40,7 @@ public class CommandHelp extends Command {
     @Override
     public void dispatch(OMPlayer omp, String[] a) {
 //        omp.sendMessage("");
-//        omp.sendMessage(" §7§lOrbit§8§lMines §9§lCommand Help");
+//        omp.sendMessage(" §8§lOrbit§7§lMines §9§lCommand Help");
 
         List<Command> thisServer = new ArrayList<>();
         for (Command command : getCommands()) {

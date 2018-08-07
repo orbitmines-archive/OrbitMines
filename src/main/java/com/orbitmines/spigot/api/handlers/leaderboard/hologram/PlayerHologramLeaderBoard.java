@@ -13,7 +13,7 @@ import java.util.Map;
  * OrbitMines - @author Fadi Shawki - 2018
  */
 public abstract class PlayerHologramLeaderBoard extends LeaderBoard {
-    //TODO FIX AFTER SOME TIME APPEARING
+
     private Map<OMPlayer, Hologram> holograms;
 
     public PlayerHologramLeaderBoard(Location location) {

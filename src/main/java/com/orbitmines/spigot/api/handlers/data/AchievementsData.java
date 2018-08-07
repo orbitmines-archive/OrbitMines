@@ -84,8 +84,36 @@ public class AchievementsData extends Data {
 
         StoredProgressAchievement handler = ((StoredProgressAchievement) achievement.getHandler());
 
-        if (progress.get(achievement) > handler.getTotal())
-            progress.put(achievement, handler.getTotal());
+//        if (progress.get(achievement) > handler.getTotal())
+//            progress.put(achievement, handler.getTotal());
+
+        if (!alreadyCompleted && handler.hasCompleted(omp))
+            achievement.getHandler().complete(omp, notifyOnComplete);
+        else
+            updateProgress(achievement);
+    }
+
+    public void setHighest(Achievement achievement, int count, boolean notifyOnComplete) {
+        //TODO MiniGames; can receive achievements
+
+        boolean alreadyCompleted = hasCompleted(achievement);
+
+        OMPlayer omp = OMPlayer.getPlayer(uuid);
+
+        if (omp == null)
+            throw new IllegalStateException("StatsAchievements#setHighest cannot be called if the player is not online.");
+
+        if (!progress.containsKey(achievement))
+            progress.put(achievement, count);
+        else if (count > progress.get(achievement))
+            progress.put(achievement, count);
+        else if (count <= progress.get(achievement))
+            return;
+
+        StoredProgressAchievement handler = ((StoredProgressAchievement) achievement.getHandler());
+
+//        if (progress.get(achievement) > handler.getTotal())
+//            progress.put(achievement, handler.getTotal());
 
         if (!alreadyCompleted && handler.hasCompleted(omp))
             achievement.getHandler().complete(omp, notifyOnComplete);

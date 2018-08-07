@@ -7,7 +7,6 @@ import com.orbitmines.spigot.api.datapoints.DataPointLoader;
 import com.orbitmines.spigot.api.datapoints.DataPointSign;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.api.handlers.npc.FloatingItem;
-import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -26,7 +25,7 @@ public class DataPointPatchNotes extends DataPointSign {
     private List<FloatingItem> items;
 
     public DataPointPatchNotes() {
-        super("PATCH_NOTES", Type.IRON_PLATE, Material.WOOL, DyeColor.BROWN.getWoolData());
+        super("PATCH_NOTES", Type.IRON_PLATE, Material.BROWN_WOOL);
 
         orbitMines = OrbitMines.getInstance();
         items = new ArrayList<>();
@@ -37,7 +36,7 @@ public class DataPointPatchNotes extends DataPointSign {
         new BukkitRunnable() {
             @Override
             public void run() {
-                FloatingItem item = new FloatingItem(new ItemBuilder(Material.BOOK_AND_QUILL), location.add(0.5, 0, 0.5));
+                FloatingItem item = new FloatingItem(new ItemBuilder(Material.WRITABLE_BOOK), location.add(0.5, 0, 0.5));
 
                 item.addLine(() -> "§c§lPATCH NOTES", false);
 

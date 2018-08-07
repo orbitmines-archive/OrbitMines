@@ -4,6 +4,7 @@ import com.orbitmines.api.database.Column;
 import com.orbitmines.api.database.Database;
 import com.orbitmines.api.database.Table;
 import com.orbitmines.api.database.tables.TableMaps;
+import com.orbitmines.api.utils.DirectoryUtils;
 import com.orbitmines.spigot.api.handlers.worlds.flatgenerator.WorldCreatorFlat;
 import com.orbitmines.spigot.api.handlers.worlds.voidgenerator.WorldCreatorVoid;
 import com.orbitmines.spigot.api.utils.WorldUtils;
@@ -49,7 +50,7 @@ public class WorldLoader {
             File file = new File(worldContainer + "/" + entry.get(TableMaps.WORLD_NAME));
 
             if (file.exists())
-                deleteDirectory(file);
+                DirectoryUtils.deleteDirectory(file);
         }
     }
 
@@ -66,7 +67,7 @@ public class WorldLoader {
 
     public World loadWorld(String worldFile, boolean removeEntities, Type type) {
         try {
-            World world = Bukkit.createWorld(type.getWorldCreator().getConstructor(String.class).newInstance(worldFile));
+            World world = Bukkit.createWorld(type.getWorldCreator().getConstructor(String.class).newInstance(worldFile).environment(type.environment));
             world.setAutoSave(true);
             normalWorlds.add(world);
 
@@ -109,7 +110,7 @@ public class WorldLoader {
     public World fromZip(String worldFile, boolean removeEntities, Type type) {
         try {
             extractZip(new File(resourceFolder + "/" + worldFile + ".zip"), Bukkit.getWorldContainer().getAbsoluteFile());
-            World world = Bukkit.createWorld(type.getWorldCreator().getConstructor(String.class).newInstance(worldFile));
+            World world = Bukkit.createWorld(type.getWorldCreator().getConstructor(String.class).newInstance(worldFile).environment(type.environment));
             worlds.add(world);
 
             if (removeEntities)
@@ -189,28 +190,12 @@ public class WorldLoader {
             deletePlayerData("world_nether");
             deletePlayerData("world_the_end");
         }
-        deleteDirectory(new File(Bukkit.getWorldContainer().getAbsoluteFile().getPath() + "/__MACOSX"));
+        DirectoryUtils.deleteDirectory(new File(Bukkit.getWorldContainer().getAbsoluteFile().getPath() + "/__MACOSX"));
     }
 
     public void cleanUp(World world) {
         Bukkit.unloadWorld(world, false);
-        deleteDirectory(world.getWorldFolder());
-    }
-
-    private boolean deleteDirectory(File path) {
-        if (path.exists()) {
-            File files[] = path.listFiles();
-            assert files != null;
-
-            for (int i = 0; i < files.length; i++) {
-                if (files[i].isDirectory()) {
-                    deleteDirectory(files[i]);
-                } else {
-                    files[i].delete();
-                }
-            }
-        }
-        return (path.delete());
+        DirectoryUtils.deleteDirectory(world.getWorldFolder());
     }
 
     private void deletePlayerData(String worldName) {
@@ -231,18 +216,26 @@ public class WorldLoader {
 
     public enum Type {
 
-        NORMAL(WorldCreator.class),
-        FLAT(WorldCreatorFlat.class),
-        VOID(WorldCreatorVoid.class);
+        NORMAL(WorldCreator.class, World.Environment.NORMAL),
+        NETHER(WorldCreator.class, World.Environment.NETHER),
+        END(WorldCreator.class, World.Environment.THE_END),
+        FLAT(WorldCreatorFlat.class, World.Environment.NORMAL),
+        VOID(WorldCreatorVoid.class, World.Environment.NORMAL);
 
         private final Class<? extends WorldCreator> worldCreator;
+        private final World.Environment environment;
 
-        Type(Class<? extends WorldCreator> worldCreator) {
+        Type(Class<? extends WorldCreator> worldCreator, World.Environment environment) {
             this.worldCreator = worldCreator;
+            this.environment = environment;
         }
 
         public Class<? extends WorldCreator> getWorldCreator() {
             return worldCreator;
+        }
+
+        public World.Environment getEnvironment() {
+            return environment;
         }
     }
 }

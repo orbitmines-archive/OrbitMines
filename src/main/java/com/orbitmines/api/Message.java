@@ -9,7 +9,7 @@ public class Message {
         return prefix == null ? message : prefixColor.getChatColor() + prefix + " » §7" + message;
     }
 
-    public static final Message UNKNOWN_COMMAND = new Message("Commands", Color.RED, "Die command bestaat niet. Gebruik §6/help §7voor help.", "Unknown Command. Use §6/help §7for help.");
+    public static final Message UNKNOWN_COMMAND = new Message("Commands", Color.RED, "Die command bestaat niet. Gebruik §9/help §7voor help.", "Unknown Command. Use §9/help §7for help.");
 
     public static Message REQUIRE_RANK(VipRank vipRank) {
         return new Message("Rank", Color.RED, "§7Je moet een " + vipRank.getDisplayName() + " VIP§7 zijn om dit te doen!", "§7You have to be " + (vipRank == VipRank.IRON || vipRank == VipRank.EMERALD ? "an" : "a") + " " + vipRank.getDisplayName() + " VIP§7 to do this!");

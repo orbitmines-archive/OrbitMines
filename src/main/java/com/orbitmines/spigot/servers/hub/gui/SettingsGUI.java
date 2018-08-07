@@ -4,6 +4,7 @@ package com.orbitmines.spigot.servers.hub.gui;
  * OrbitMines - @author Fadi Shawki - 2018
  */
 
+import com.orbitmines.api.Color;
 import com.orbitmines.api.Message;
 import com.orbitmines.api.settings.Settings;
 import com.orbitmines.api.settings.SettingsType;
@@ -38,7 +39,7 @@ public class SettingsGUI extends GUI {
             add(1, 1 + index, new EmptyItemInstance(getItemBuilder(settings).setDisplayName("§7§l" + omp.lang(settings.getName())).build()));
 
             SettingsType settingsType = data.getSettings().get(settings);
-            add(2, 1 + index, new ItemInstance(new ItemBuilder(Material.STAINED_GLASS_PANE, 1, ColorUtils.getWoolData(settingsType.getColor()), settingsType.getDisplayName(omp.getLanguage())).build()) {
+            add(2, 1 + index, new ItemInstance(new ItemBuilder(ColorUtils.getStainedGlassPaneMaterial(settingsType.getColor()), 1, settingsType.getDisplayName(omp.getLanguage())).build()) {
                 @Override
                 public void onClick(InventoryClickEvent event, OMPlayer omp) {
                     omp.updateSettings(settings, settingsType.next());
@@ -52,7 +53,7 @@ public class SettingsGUI extends GUI {
 
         add(1, 7, new EmptyItemInstance(BannerBuilder.getBuilder(omp.getLanguage()).setDisplayName(omp.lang(new Message("§7§lTaal", "§7§lLanguage"))).addFlag(ItemFlag.HIDE_POTION_EFFECTS).build()));
 
-        add(2, 7, new ItemInstance(new ItemBuilder(Material.STAINED_GLASS_PANE, 1, 11, omp.lang(new Message("§9Dutch §7/ §9Nederlands", "§9English"))).build()) {
+        add(2, 7, new ItemInstance(new ItemBuilder(ColorUtils.getStainedGlassPaneMaterial(Color.BLUE), 1, omp.lang(new Message("§9Dutch §7/ §9Nederlands", "§9English"))).build()) {
             @Override
             public void onClick(InventoryClickEvent event, OMPlayer omp) {
                 omp.setLanguage(omp.getLanguage().next());
@@ -68,9 +69,9 @@ public class SettingsGUI extends GUI {
         switch (settings) {
 
             case PRIVATE_MESSAGES:
-                return new ItemBuilder(Material.BOOK_AND_QUILL);
+                return new ItemBuilder(Material.WRITABLE_BOOK);
             case PLAYER_VISIBILITY:
-                return new ItemBuilder(Material.EYE_OF_ENDER);
+                return new ItemBuilder(Material.ENDER_EYE);
             case GADGETS:
                 return new ItemBuilder(Material.COMPASS);
             case STATS:

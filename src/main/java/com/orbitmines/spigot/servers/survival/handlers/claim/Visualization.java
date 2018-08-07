@@ -1,13 +1,13 @@
 package com.orbitmines.spigot.servers.survival.handlers.claim;
 
 import com.orbitmines.spigot.OrbitMines;
-import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalPlayer;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
@@ -75,7 +75,7 @@ public class Visualization {
                         if (!element.location.getChunk().isLoaded())
                             continue;
 
-                        omp.getPlayer().sendBlockChange(element.location, element.visualizedMaterial, element.visualizedData);
+                        omp.getPlayer().sendBlockChange(element.location, element.visualizedData);
                     }
 
                     omp.setVisualization(visualization);
@@ -118,7 +118,7 @@ public class Visualization {
                     return;
             }
 
-            omp.getPlayer().sendBlockChange(element.location, element.realMaterial, element.realData);
+            omp.getPlayer().sendBlockChange(element.location, element.realData);
         }
 
         omp.setVisualization(null);
@@ -128,15 +128,15 @@ public class Visualization {
         Location corner1 = claim.getCorner1();
         Location corner2 = claim.getCorner2();
         World world = corner1.getWorld();
-        boolean waterIsTransparent = location.getBlock().getType() == Material.STATIONARY_WATER;
+        boolean waterIsTransparent = location.getBlock().getType() == Material.WATER;
 
         int smallX = corner1.getBlockX();
         int smallZ = corner1.getBlockZ();
         int bigX = corner2.getBlockX();
         int bigZ = corner2.getBlockZ();
 
-        ItemBuilder corner = type.getCorner();
-        ItemBuilder accent = type.getAccent();
+        BlockData corner = type.getCorner().createBlockData();
+        BlockData accent = type.getAccent().createBlockData();
 
         List<Element> newElements = new ArrayList<>();
 
@@ -148,40 +148,40 @@ public class Visualization {
         final int STEP = 10;
 
         //top line
-        newElements.add(new Element(new Location(world, smallX, 0, bigZ), corner.getMaterial(), (byte) corner.getDurability(), Material.AIR, (byte) 0));
-        newElements.add(new Element(new Location(world, smallX + 1, 0, bigZ), accent.getMaterial(), (byte) accent.getDurability(), Material.AIR, (byte) 0));
+        newElements.add(new Element(new Location(world, smallX, 0, bigZ), corner, Material.AIR.createBlockData()));
+        newElements.add(new Element(new Location(world, smallX + 1, 0, bigZ), accent, Material.AIR.createBlockData()));
         for (int x = smallX + STEP; x < bigX - STEP / 2; x += STEP) {
             if (x > minX && x < maxX)
-                newElements.add(new Element(new Location(world, x, 0, bigZ), accent.getMaterial(), (byte) accent.getDurability(), Material.AIR, (byte) 0));
+                newElements.add(new Element(new Location(world, x, 0, bigZ), accent, Material.AIR.createBlockData()));
         }
-        newElements.add(new Element(new Location(world, bigX - 1, 0, bigZ), accent.getMaterial(), (byte) accent.getDurability(), Material.AIR, (byte) 0));
+        newElements.add(new Element(new Location(world, bigX - 1, 0, bigZ), accent, Material.AIR.createBlockData()));
 
         //bottom line
-        newElements.add(new Element(new Location(world, smallX + 1, 0, smallZ), accent.getMaterial(), (byte) accent.getDurability(), Material.AIR, (byte) 0));
+        newElements.add(new Element(new Location(world, smallX + 1, 0, smallZ), accent, Material.AIR.createBlockData()));
         for (int x = smallX + STEP; x < bigX - STEP / 2; x += STEP) {
             if (x > minX && x < maxX)
-                newElements.add(new Element(new Location(world, x, 0, smallZ), accent.getMaterial(), (byte) accent.getDurability(), Material.AIR, (byte) 0));
+                newElements.add(new Element(new Location(world, x, 0, smallZ), accent, Material.AIR.createBlockData()));
         }
-        newElements.add(new Element(new Location(world, bigX - 1, 0, smallZ), accent.getMaterial(), (byte) accent.getDurability(), Material.AIR, (byte) 0));
+        newElements.add(new Element(new Location(world, bigX - 1, 0, smallZ), accent, Material.AIR.createBlockData()));
 
         //left line
-        newElements.add(new Element(new Location(world, smallX, 0, smallZ), corner.getMaterial(), (byte) corner.getDurability(), Material.AIR, (byte) 0));
-        newElements.add(new Element(new Location(world, smallX, 0, smallZ + 1), accent.getMaterial(), (byte) accent.getDurability(), Material.AIR, (byte) 0));
+        newElements.add(new Element(new Location(world, smallX, 0, smallZ), corner, Material.AIR.createBlockData()));
+        newElements.add(new Element(new Location(world, smallX, 0, smallZ + 1), accent, Material.AIR.createBlockData()));
         for (int z = smallZ + STEP; z < bigZ - STEP / 2; z += STEP) {
             if (z > minZ && z < maxZ)
-                newElements.add(new Element(new Location(world, smallX, 0, z), accent.getMaterial(), (byte) accent.getDurability(), Material.AIR, (byte) 0));
+                newElements.add(new Element(new Location(world, smallX, 0, z), accent, Material.AIR.createBlockData()));
         }
-        newElements.add(new Element(new Location(world, smallX, 0, bigZ - 1), accent.getMaterial(), (byte) accent.getDurability(), Material.AIR, (byte) 0));
+        newElements.add(new Element(new Location(world, smallX, 0, bigZ - 1), accent, Material.AIR.createBlockData()));
 
         //right line
-        newElements.add(new Element(new Location(world, bigX, 0, smallZ), corner.getMaterial(), (byte) corner.getDurability(), Material.AIR, (byte) 0));
-        newElements.add(new Element(new Location(world, bigX, 0, smallZ + 1), accent.getMaterial(), (byte) accent.getDurability(), Material.AIR, (byte) 0));
+        newElements.add(new Element(new Location(world, bigX, 0, smallZ), corner, Material.AIR.createBlockData()));
+        newElements.add(new Element(new Location(world, bigX, 0, smallZ + 1), accent, Material.AIR.createBlockData()));
         for (int z = smallZ + STEP; z < bigZ - STEP / 2; z += STEP) {
             if (z > minZ && z < maxZ)
-                newElements.add(new Element(new Location(world, bigX, 0, z), accent.getMaterial(), (byte) accent.getDurability(), Material.AIR, (byte) 0));
+                newElements.add(new Element(new Location(world, bigX, 0, z), accent, Material.AIR.createBlockData()));
         }
-        newElements.add(new Element(new Location(world, bigX, 0, bigZ - 1), accent.getMaterial(), (byte) accent.getDurability(), Material.AIR, (byte) 0));
-        newElements.add(new Element(new Location(world, bigX, 0, bigZ), corner.getMaterial(), (byte) corner.getDurability(), Material.AIR, (byte) 0));
+        newElements.add(new Element(new Location(world, bigX, 0, bigZ - 1), accent, Material.AIR.createBlockData()));
+        newElements.add(new Element(new Location(world, bigX, 0, bigZ), corner, Material.AIR.createBlockData()));
 
         this.removeElementsOutOfRange(minX, minZ, maxX, maxZ);
 
@@ -197,8 +197,7 @@ public class Visualization {
             element.location = getVisibleLocation(tempLocation.getWorld(), tempLocation.getBlockX(), height, tempLocation.getBlockZ(), waterIsTransparent);
             height = element.location.getBlockY();
             
-            element.realMaterial = element.location.getBlock().getType();
-            element.realData = element.location.getBlock().getData();
+            element.realData = element.location.getBlock().getBlockData();
         }
 
         this.elements.addAll(newElements);
@@ -234,27 +233,29 @@ public class Visualization {
         //Whitelist
         switch (block.getType()) {
             case AIR:
-            case FENCE:
+
+            case OAK_FENCE:
             case ACACIA_FENCE:
             case BIRCH_FENCE:
             case DARK_OAK_FENCE:
             case JUNGLE_FENCE:
-            case NETHER_FENCE:
             case SPRUCE_FENCE:
-            case FENCE_GATE:
+            case NETHER_BRICK_FENCE:
+
+            case OAK_FENCE_GATE:
             case ACACIA_FENCE_GATE:
             case BIRCH_FENCE_GATE:
             case DARK_OAK_FENCE_GATE:
             case SPRUCE_FENCE_GATE:
             case JUNGLE_FENCE_GATE:
+
             case SIGN:
-            case SIGN_POST:
             case WALL_SIGN:
                 return true;
         }
 
-        if ((waterIsTransparent && block.getType() == Material.STATIONARY_WATER) || block.getType().isTransparent())
-            return true;
+        if (/*(waterIsTransparent &&*/ block.getType() == Material.WATER/*) || !block.getType().isSolid()*/)
+            return /*true*/false;
 
         return false;
     }
@@ -263,61 +264,49 @@ public class Visualization {
     public class Element {
 
         private Location location;
-        private final Material visualizedMaterial;
-        private final byte visualizedData;
-        private Material realMaterial;
-        private byte realData;
+        private final BlockData visualizedData;
+        private BlockData realData;
 
-        public Element(Location location, Material visualizedMaterial, byte visualizedData, Material realMaterial, byte realData) {
+        public Element(Location location, BlockData visualizedData, BlockData realData) {
             this.location = location;
-            this.visualizedMaterial = visualizedMaterial;
             this.visualizedData = visualizedData;
             this.realData = realData;
-            this.realMaterial = realMaterial;
         }
 
         public Location getLocation() {
             return location;
         }
 
-        public Material getVisualizedMaterial() {
-            return visualizedMaterial;
-        }
-
-        public byte getVisualizedData() {
+        public BlockData getVisualizedData() {
             return visualizedData;
         }
 
-        public Material getRealMaterial() {
-            return realMaterial;
-        }
-
-        public byte getRealData() {
+        public BlockData getRealData() {
             return realData;
         }
     }
 
     public enum Type {
 
-        CLAIM(new ItemBuilder(Material.SEA_LANTERN), new ItemBuilder(Material.STAINED_CLAY, 1, 4)),
-        CHILDREN(new ItemBuilder(Material.SEA_LANTERN), new ItemBuilder(Material.STAINED_CLAY, 1, 3)),
-        DISPLAY(new ItemBuilder(Material.GLOWSTONE), new ItemBuilder(Material.STAINED_CLAY, 1, 2)),
-        NONE(new ItemBuilder(Material.SEA_LANTERN), new ItemBuilder(Material.STAINED_CLAY, 1, 15)),
-        INVALID(new ItemBuilder(Material.SEA_LANTERN), new ItemBuilder(Material.STAINED_CLAY, 1, 14));
+        CLAIM(Material.SEA_LANTERN, Material.YELLOW_TERRACOTTA),
+        CHILDREN(Material.SEA_LANTERN, Material.LIGHT_BLUE_TERRACOTTA),
+        DISPLAY(Material.GLOWSTONE, Material.MAGENTA_TERRACOTTA),
+        NONE(Material.SEA_LANTERN, Material.BLACK_TERRACOTTA),
+        INVALID(Material.SEA_LANTERN, Material.RED_TERRACOTTA);
 
-        private final ItemBuilder corner;
-        private final ItemBuilder accent;
+        private final Material corner;
+        private final Material accent;
 
-        Type(ItemBuilder corner, ItemBuilder accent) {
+        Type(Material corner, Material accent) {
             this.corner = corner;
             this.accent = accent;
         }
 
-        public ItemBuilder getCorner() {
+        public Material getCorner() {
             return corner;
         }
 
-        public ItemBuilder getAccent() {
+        public Material getAccent() {
             return accent;
         }
     }

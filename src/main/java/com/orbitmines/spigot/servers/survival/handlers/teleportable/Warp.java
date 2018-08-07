@@ -188,51 +188,49 @@ public class Warp extends Teleportable {
     public enum Icon {
 
         POWERED_RAIL(new ItemBuilder(Material.POWERED_RAIL)),
-        HORN_CORAL(new ItemBuilder(Material.STONE)),//
+        HORN_CORAL(new ItemBuilder(Material.HORN_CORAL)),
         IRON_CHESTPLATE(new ItemBuilder(Material.IRON_CHESTPLATE).addFlag(ItemFlag.HIDE_ATTRIBUTES)),
-        STICKY_PISTON(new ItemBuilder(Material.PISTON_STICKY_BASE)),
-        GLISTERING_MELON_SLICE(new ItemBuilder(Material.STONE)),//
-        BLUE_ICE(new ItemBuilder(Material.STONE)),//
-        FIREWORK_ROCKET(new ItemBuilder(Material.FIREWORK)),
+        STICKY_PISTON(new ItemBuilder(Material.STICKY_PISTON)),
+        GLISTERING_MELON_SLICE(new ItemBuilder(Material.GLISTERING_MELON_SLICE)),
+        BLUE_ICE(new ItemBuilder(Material.STONE)),
+        FIREWORK_ROCKET(new ItemBuilder(Material.FIREWORK_ROCKET)),
         BLACK_GLAZED_TERRACOTTA(new ItemBuilder(Material.BLACK_GLAZED_TERRACOTTA)),
-        GUN_POWDER(new ItemBuilder(Material.SULPHUR)),
-        DARK_OAK_SAPLING(new ItemBuilder(Material.STONE)),//
-        LIGHT_BLUE_CONCRETE_POWDER(new ItemBuilder(Material.STONE)),//
-        ORANGE_TERRACOTTA(new ItemBuilder(Material.STONE)),//
+        GUN_POWDER(new ItemBuilder(Material.GUNPOWDER)),
+        DARK_OAK_SAPLING(new ItemBuilder(Material.DARK_OAK_SAPLING)),
+        LIGHT_BLUE_CONCRETE_POWDER(new ItemBuilder(Material.LIGHT_BLUE_CONCRETE_POWDER)),
+        ORANGE_TERRACOTTA(new ItemBuilder(Material.ORANGE_TERRACOTTA)),
         BOOKSHELF(new ItemBuilder(Material.BOOKSHELF)),
         ELYTRA(new ItemBuilder(Material.ELYTRA)),
-        TOTEM_OF_UNDYING(new ItemBuilder(Material.TOTEM)),
-        PUFFERFISH_BUCKET(new ItemBuilder(Material.STONE)),//
+        TOTEM_OF_UNDYING(new ItemBuilder(Material.TOTEM_OF_UNDYING)),
+        PUFFERFISH_BUCKET(new ItemBuilder(Material.PUFFERFISH_BUCKET)),
         GRASS_BLOCK(new ItemBuilder(Material.GRASS)),
         HAY_BALE(new ItemBuilder(Material.HAY_BLOCK)),
         GRAY_GLAZED_TERRACOTTA(new ItemBuilder(Material.GRAY_GLAZED_TERRACOTTA)),
         LEATHER(new ItemBuilder(Material.LEATHER)),
         PUMPKIN_PIE(new ItemBuilder(Material.PUMPKIN_PIE)),
-        RED_WOOL(new ItemBuilder(Material.STONE)),//
-        POPPY(new ItemBuilder(Material.RED_ROSE)),
-        TRIDENT(new ItemBuilder(Material.STONE).addFlag(ItemFlag.HIDE_ATTRIBUTES)),//
-        FIRE_CORAL(new ItemBuilder(Material.STONE)),//
-        DARK_PRISMARINE(new ItemBuilder(Material.STONE)),//
+        RED_WOOL(new ItemBuilder(Material.RED_WOOL)),
+        POPPY(new ItemBuilder(Material.POPPY)),
+        TRIDENT(new ItemBuilder(Material.TRIDENT).addFlag(ItemFlag.HIDE_ATTRIBUTES)),
+        FIRE_CORAL(new ItemBuilder(Material.FIRE_CORAL)),
+        DARK_PRISMARINE(new ItemBuilder(Material.DARK_PRISMARINE)),
         TNT(new ItemBuilder(Material.TNT)),
         SIGN(new ItemBuilder(Material.SIGN)),
         PURPUR_BLOCK(new ItemBuilder(Material.PURPUR_BLOCK)),
-        MELON(new ItemBuilder(Material.MELON_BLOCK)),
+        MELON(new ItemBuilder(Material.MELON)),
         PAINTING(new ItemBuilder(Material.PAINTING)),
         COOKIE(new ItemBuilder(Material.COOKIE)),
-        YELLOW_WOOL(new ItemBuilder(Material.STONE)),//
-        TURTLE_EGG(new ItemBuilder(Material.STONE)),//
+        YELLOW_WOOL(new ItemBuilder(Material.YELLOW_WOOL)),
+        TURTLE_EGG(new ItemBuilder(Material.TURTLE_EGG)),
         OBSIDIAN(new ItemBuilder(Material.OBSIDIAN)),
-        TUBE_CORAL_BLOCK(new ItemBuilder(Material.STONE)),//
+        TUBE_CORAL_BLOCK(new ItemBuilder(Material.TUBE_CORAL_BLOCK)),
         ARMOR_STAND(new ItemBuilder(Material.ARMOR_STAND)),
         BEACON(new ItemBuilder(Material.BEACON)),
-        LIME_STAINED_GLASS(new ItemBuilder(Material.STONE)),//
+        LIME_STAINED_GLASS(new ItemBuilder(Material.LIME_STAINED_GLASS)),
         BLAZE_POWDER(new ItemBuilder(Material.BLAZE_POWDER)),
-        ROSE_BUSH(new ItemBuilder(Material.STONE)),//
-        MAGMA_BLOCK(new ItemBuilder(Material.STONE)),//
+        ROSE_BUSH(new ItemBuilder(Material.ROSE_BUSH)),
+        MAGMA_BLOCK(new ItemBuilder(Material.MAGMA_BLOCK)),
         CACTUS(new ItemBuilder(Material.CACTUS)),
-        TROPICAL_FISH(new ItemBuilder(Material.STONE))//
-
-        ;//TODO 1.13
+        TROPICAL_FISH(new ItemBuilder(Material.TROPICAL_FISH));
 
         private final ItemBuilder itemBuilder;
 

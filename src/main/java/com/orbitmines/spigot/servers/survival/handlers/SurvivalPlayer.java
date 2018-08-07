@@ -7,8 +7,11 @@ import com.orbitmines.spigot.servers.survival.Survival;
 import com.orbitmines.spigot.servers.survival.handlers.claim.Claim;
 import com.orbitmines.spigot.servers.survival.handlers.claim.Visualization;
 import com.orbitmines.spigot.servers.survival.handlers.teleportable.Home;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -25,6 +28,9 @@ public class SurvivalPlayer extends OMPlayer {
     private final Survival survival;
 
     private List<Home> homes;
+
+    private List<String> tpRequests;
+    private List<String> tpHereRequests;
 
     private java.util.Set<Survival.Settings> settings;
 
@@ -48,18 +54,40 @@ public class SurvivalPlayer extends OMPlayer {
     protected void onLogin() {
         players.add(this);
 
+        player.setGameMode(GameMode.SURVIVAL);
+
+        Location logOutLocation = getData().getLogoutLocation();
+        if (logOutLocation != null && (logOutLocation.getWorld().getName().equals(survival.getWorld_nether().getName()) || logOutLocation.getWorld().getName().equals(survival.getWorld_the_end().getName())))
+            player.teleport(logOutLocation);
+
+        if (getData().hasLogoutFly()) {
+            player.setAllowFlight(true);
+            player.setFlying(true);
+        }
+
         homes = Home.getHomesFor(getUUID());
 
-        setScoreboard(new Survival.Scoreboard(orbitMines, this));
+        this.tpRequests = new ArrayList<>();
+        this.tpHereRequests = new ArrayList<>();
 
-        //TODO remove
-        player.getInventory().setItem(0, Claim.CLAIMING_TOOL.build());
+        setScoreboard(new Survival.Scoreboard(orbitMines, this));
     }
 
     @Override
     protected void onLogout() {
+        updateLogoutLocation();
+        updateLogoutFly();
 
         players.remove(this);
+    }
+
+    @Override
+    protected void onFirstLogin() {
+        if (player.getInventory().getItem(8) == null)
+            player.getInventory().setItem(8, Claim.CLAIMING_TOOL.build());
+
+        if (player.getInventory().getItem(7) == null)
+            player.getInventory().setItem(7, new ItemStack(Material.COOKED_BEEF, 3));
     }
 
     @Override
@@ -105,6 +133,20 @@ public class SurvivalPlayer extends OMPlayer {
 
     public int getRemainingClaimBlocks() {
         return survival.getClaimHandler().getRemaining(getUUID(), getClaimBlocks());
+    }
+
+    /*
+        LogoutLocation
+     */
+    public void updateLogoutLocation() {
+        getData().setLogoutLocation(player.getLocation());
+    }
+
+    /*
+        LogoutFly
+     */
+    public void updateLogoutFly() {
+        getData().setLogoutFly(player.isFlying());
     }
 
     /*
@@ -196,6 +238,26 @@ public class SurvivalPlayer extends OMPlayer {
 
         home.setLocation(player.getLocation());
         sendMessage("Home", Color.LIME, "§7Home " + color + "neergezet§7! (" + color + name + "§7)", "§7Home " + color + "set§7! (" + color + name + "§7)");
+    }
+
+    /*
+        Tp Requests
+     */
+
+    public List<String> getTpRequests() {
+        return tpRequests;
+    }
+
+    public boolean hasTpRequestFrom(String name) {
+        return tpRequests.contains(name);
+    }
+
+    public List<String> getTpHereRequests() {
+        return tpHereRequests;
+    }
+
+    public boolean hasTpHereRequestFrom(String name) {
+        return tpHereRequests.contains(name);
     }
 
     /*
@@ -296,7 +358,7 @@ public class SurvivalPlayer extends OMPlayer {
             if (omp.getPlayer() == player)
                 return omp;
         }
-        throw new IllegalStateException();
+        return null;
     }
 
     public static SurvivalPlayer getPlayer(String name) {
@@ -304,7 +366,7 @@ public class SurvivalPlayer extends OMPlayer {
             if (omp.getName(true).equalsIgnoreCase(name))
                 return omp;
         }
-        throw new IllegalStateException();
+        return null;
     }
 
     public static SurvivalPlayer getPlayer(UUID uuid) {
@@ -312,7 +374,7 @@ public class SurvivalPlayer extends OMPlayer {
             if (omp.getUUID().toString().equals(uuid.toString()))
                 return omp;
         }
-        throw new IllegalStateException();
+        return null;
     }
 
     public static List<SurvivalPlayer> getSurvivalPlayers() {

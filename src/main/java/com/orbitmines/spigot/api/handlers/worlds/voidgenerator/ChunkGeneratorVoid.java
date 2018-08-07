@@ -23,32 +23,7 @@ public class ChunkGeneratorVoid extends ChunkGenerator {
     }
 
     @Override
-    public short[][] generateExtBlockSections(World w, Random r, int xC, int zC, BiomeGrid biomes) {
-        short[][] res = new short[w.getMaxHeight() / 16][];
-
-        int x;
-        int z;
-
-        for (x = 0; x < 16; x++) {
-            for (z = 0; z < 16; z++) {
-                setBlock(res, x, 0, z, (short) 0);
-            }
-        }
-
-        return res;
-    }
-
-    private void setBlock(byte[][] res, int x, int y, int z, byte b) {
-        if (res[y >> 4] == null) {
-            res[y >> 4] = new byte[4096];
-        }
-        res[y >> 4][((y & 0xF) << 8) | (z << 4) | x] = b;
-    }
-
-    private void setBlock(short[][] res, int x, int y, int z, short s) {
-        if (res[y >> 4] == null) {
-            res[y >> 4] = new short[4096];
-        }
-        res[y >> 4][((y & 0xF) << 8) | (z << 4) | x] = s;
+    public ChunkData generateChunkData(World world, Random random, int x, int z, BiomeGrid biome) {
+        return createChunkData(world);
     }
 }

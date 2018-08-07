@@ -39,7 +39,7 @@ public class WrittenBookBuilder extends ItemBuilder {
     }
 
     public WrittenBookBuilder(int amount, String displayName, List<String> lore, String author, TextComponent... pages) {
-        super(Material.WRITTEN_BOOK, amount, 0, displayName, lore);
+        super(Material.WRITTEN_BOOK, amount, displayName, lore);
 
         this.author = author;
         this.pages = new ArrayList<>(Arrays.asList(pages));

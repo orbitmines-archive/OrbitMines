@@ -5,10 +5,13 @@ package com.orbitmines.spigot.api;
 
 import com.orbitmines.api.*;
 import com.orbitmines.api.utils.NumberUtils;
+import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
+import com.orbitmines.spigot.api.handlers.achievements.StoredProgressAchievement;
 import com.orbitmines.spigot.api.handlers.data.LootData;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
+import com.orbitmines.spigot.servers.survival.handlers.SurvivalAchievements;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalPlayer;
 import com.orbitmines.spigot.servers.survival.handlers.teleportable.Warp;
 import org.bukkit.Material;
@@ -48,7 +51,7 @@ public enum Loot {
                 case SOLARS_1000:
                 case SOLARS_2500:
                 case SOLARS_7500:
-                    return new ItemBuilder(Material.DOUBLE_PLANT);
+                    return new ItemBuilder(Material.SUNFLOWER);
                 case SURVIVAL_CLAIMBLOCKS_10000:
                 case SURVIVAL_CLAIMBLOCKS_25000:
                 case SURVIVAL_CLAIMBLOCKS_75000:
@@ -56,7 +59,7 @@ public enum Loot {
                     return new ItemBuilder(Material.STONE_HOE);
                 case SURVIVAL_HOMES_25:
                 case SURVIVAL_HOMES_100:
-                    return new ItemBuilder(Material.SPRUCE_DOOR_ITEM);
+                    return new ItemBuilder(Material.SPRUCE_DOOR);
                 case SURVIVAL_WARP_1:
                     return new ItemBuilder(Material.ENDER_PEARL);
             }
@@ -222,7 +225,7 @@ public enum Loot {
 
         @Override
         public ItemBuilder getIcon(int count) {
-            return new ItemBuilder(Material.DOUBLE_PLANT);//TODO
+            return new ItemBuilder(Material.SUNFLOWER);
         }
 
         @Override
@@ -236,6 +239,61 @@ public enum Loot {
 
             omp.playSound(Sound.ENTITY_PLAYER_LEVELUP);
             omp.sendMessage("Solars", Color.BLUE, "§7Je hebt §e§l" + NumberUtils.locale(count) + " " + (count == 1 ? "Solar" : "Solars") + "§7 ontvangen.", "§7You have received §e§l" + NumberUtils.locale(count) + " " + (count == 1 ? "Solar" : "Solars") + "§7.");
+        }
+    },
+    SURVIVAL_CREDITS(Server.SURVIVAL) {
+        @Override
+        public String getDisplayName(int count) {
+            return "§2§l" + NumberUtils.locale(count) + " " + (count == 1 ? "Credit" : "Credits");
+        }
+
+        @Override
+        public ItemBuilder getIcon(int count) {
+            return new ItemBuilder(Material.SCUTE);
+        }
+
+        @Override
+        public void onInteract(OMPlayer player, Rarity rarity, String description, int count) {
+            SurvivalPlayer omp = (SurvivalPlayer) player;
+
+            omp.getPlayer().closeInventory();
+
+            LootData data = ((LootData) omp.getData(Data.Type.LOOT));
+            data.remove(this, rarity, description);
+
+            omp.addEarthMoney(count);
+
+            omp.playSound(Sound.ENTITY_PLAYER_LEVELUP);
+            omp.sendMessage("Credits", Color.BLUE, "§7Je hebt §2§l" + NumberUtils.locale(count) + " " + (count == 1 ? "Credit" : "Credits") + "§7 ontvangen.", "§7You have received §2§l" + NumberUtils.locale(count) + " " + (count == 1 ? "Credit" : "Credits") + "§7.");
+
+            if (!description.equals(OrbitMines.getInstance().getServerHandler().getServer().getColor().getChatColor() + "§l§oChest Shops"))
+                return;
+
+            StoredProgressAchievement handler = (StoredProgressAchievement) SurvivalAchievements.SALESMAN.getHandler();
+            handler.progress(omp, count, true);
+        }
+    },
+    STAFF_RANK() {
+        @Override
+        public String getDisplayName(int count) {
+            return StaffRank.getById(count).getDisplayName();
+        }
+
+        @Override
+        public ItemBuilder getIcon(int count) {
+            return new ItemBuilder(Material.FILLED_MAP);
+        }
+
+        @Override
+        public void onInteract(OMPlayer omp, Rarity rarity, String description, int count) {
+            omp.getPlayer().closeInventory();
+
+            LootData data = ((LootData) omp.getData(Data.Type.LOOT));
+            data.remove(this, rarity, description);
+
+            StaffRank staffRank = StaffRank.getById(count);
+
+            omp.setStaffRank(staffRank);
         }
     };
 

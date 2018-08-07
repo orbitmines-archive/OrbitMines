@@ -12,11 +12,14 @@ import com.orbitmines.api.utils.DateUtils;
 import com.orbitmines.discordbot.utils.ColorUtils;
 import com.orbitmines.spigot.api._2fa._2FA;
 import com.orbitmines.spigot.api.cmds.*;
-import com.orbitmines.spigot.api.cmds.moderator.CommandPunish;
+import com.orbitmines.spigot.api.cmds.moderator.*;
+import com.orbitmines.spigot.api.cmds.vip.CommandAfk;
+import com.orbitmines.spigot.api.cmds.vip.CommandNick;
 import com.orbitmines.spigot.api.datapoints.DataPointHandler;
 import com.orbitmines.spigot.api.events.*;
 import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.spigot.api.handlers.ConfigHandler;
+import com.orbitmines.spigot.api.handlers.NewsHologram;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.OrbitMinesMap;
 import com.orbitmines.spigot.api.handlers.leaderboard.LeaderBoard;
@@ -240,6 +243,9 @@ public class OrbitMines extends JavaPlugin {
         /* Discord Message Listener Message */
         serverHandler.getDiscord().getJDA(serverHandler.getToken()).addEventListener(new DiscordMessageListener(this));
 
+        /* News Holograms */
+        NewsHologram.setup();
+
         /* Setup Patch Notes */
         patchNotes = new PatchNotes(this);
         patchNotes.build();
@@ -322,13 +328,22 @@ public class OrbitMines extends JavaPlugin {
 
         new CommandLoot();
         new CommandFriends();
+        new CommandDiscordServer();
         new CommandStats();
         new CommandSettings();
 
         new CommandPrisms();
         new CommandSolars();
 
+        new CommandAfk();
+        new CommandNick();
+
+        new CommandOpMode();
         new CommandPunish();
+        new CommandHologram();
+        new CommandInvSee();
+        new CommandTeleport();
+        new CommandFly();
     }
 
     private void registerEvents(Listener... listeners) {

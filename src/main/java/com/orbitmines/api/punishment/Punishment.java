@@ -101,7 +101,7 @@ public class Punishment {
 
     public String getBanString(Language language) {//TODO COMPONENT
         CachedPlayer punishedBy = getPunishedBy();
-        return "§7§lOrbit§8§lMines§r\n" +
+        return "§8§lOrbit§7§lMines§r\n" +
                 new Message("§7Je bent §c§lGEBANNED§r§7!\n", "§7You have been §c§lBANNED§r§7!\n").lang(language) +
                 "\n" +
                 (severity.getDuration() == Duration.PERMANENT ? "§c§lPERMANENT§r" : "§c" + getExpireInString(language)) + "\n" +

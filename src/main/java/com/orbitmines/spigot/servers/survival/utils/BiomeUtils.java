@@ -1,6 +1,6 @@
 package com.orbitmines.spigot.servers.survival.utils;
 
-import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
+import com.orbitmines.api.Color;
 import org.bukkit.Material;
 import org.bukkit.block.Biome;
 
@@ -9,211 +9,257 @@ import org.bukkit.block.Biome;
 */
 public class BiomeUtils {
 
-    public static ItemBuilder item(Biome biome) {
+    public static boolean isOcean(Biome biome) {
+        switch (biome) {
+            case OCEAN:
+            case DEEP_OCEAN:
+            case WARM_OCEAN:
+            case FROZEN_OCEAN:
+            case LUKEWARM_OCEAN:
+            case COLD_OCEAN:
+            case DEEP_COLD_OCEAN:
+            case DEEP_WARM_OCEAN:
+            case DEEP_FROZEN_OCEAN:
+            case DEEP_LUKEWARM_OCEAN:
+                return true;
+        }
+        return false;
+    }
+
+    public static boolean isOceanNotFrozen(Biome biome) {
+        switch (biome) {
+            case OCEAN:
+            case DEEP_OCEAN:
+            case WARM_OCEAN:
+            case LUKEWARM_OCEAN:
+            case COLD_OCEAN:
+            case DEEP_COLD_OCEAN:
+            case DEEP_WARM_OCEAN:
+            case DEEP_LUKEWARM_OCEAN:
+                return true;
+        }
+        return false;
+    }
+
+    public static Material material(Biome biome) {
         switch (biome) {
 
+            case RIVER:
+                return Material.WATER_BUCKET;
+            case OCEAN:
+            case DEEP_OCEAN:
+                return Material.SEAGRASS;
             case PLAINS:
-                return new ItemBuilder(Material.GRASS);
-            case EXTREME_HILLS:
-            case EXTREME_HILLS_WITH_TREES:
-            case SMALLER_EXTREME_HILLS:
-            case MUTATED_EXTREME_HILLS:
-            case MUTATED_EXTREME_HILLS_WITH_TREES:
-            case STONE_BEACH:
-                return new ItemBuilder(Material.STONE);
-            case FOREST:
-            case FOREST_HILLS:
-                return new ItemBuilder(Material.SAPLING);
-            case SWAMPLAND:
-            case MUTATED_SWAMPLAND:
-                return new ItemBuilder(Material.VINE);
-            case HELL:
-                return new ItemBuilder(Material.NETHERRACK);
-            case SKY:
-                return new ItemBuilder(Material.SNOW_BLOCK);
-            case ICE_FLATS:
-            case ICE_MOUNTAINS:
-            case MUTATED_ICE_FLATS:
-                return new ItemBuilder(Material.PACKED_ICE);
-            case MUSHROOM_ISLAND:
-            case MUSHROOM_ISLAND_SHORE:
-                return new ItemBuilder(Material.HUGE_MUSHROOM_2);
-            case BEACHES:
+                return Material.GRASS_BLOCK;
             case DESERT:
+            case BEACH:
             case DESERT_HILLS:
-            case MUTATED_DESERT:
-                return new ItemBuilder(Material.SAND);
-            case COLD_BEACH:
-            case FROZEN_OCEAN:
+            case DESERT_LAKES:
+                return Material.SAND;
+            case MOUNTAINS:
+            case MOUNTAIN_EDGE:
+            case STONE_SHORE:
+                return Material.STONE;
+            case FOREST:
+            case WOODED_HILLS:
+            case WOODED_MOUNTAINS:
+                return Material.OAK_SAPLING;
+            case TAIGA:
+            case TAIGA_HILLS:
+            case SNOWY_TAIGA:
+            case SNOWY_TAIGA_HILLS:
+            case GIANT_TREE_TAIGA:
+            case GIANT_TREE_TAIGA_HILLS:
+            case TAIGA_MOUNTAINS:
+            case SNOWY_TAIGA_MOUNTAINS:
+            case GIANT_SPRUCE_TAIGA:
+            case GIANT_SPRUCE_TAIGA_HILLS:
+                return Material.SPRUCE_SAPLING;
+            case SWAMP:
+            case SWAMP_HILLS:
+                return Material.VINE;
+            case NETHER:
+                return Material.NETHERRACK;
+            case THE_END:
+            case SMALL_END_ISLANDS:
+            case END_MIDLANDS:
+            case END_HIGHLANDS:
+            case END_BARRENS:
+                return Material.END_STONE;
             case FROZEN_RIVER:
-                return new ItemBuilder(Material.ICE);
+            case COLD_OCEAN:
+            case DEEP_COLD_OCEAN:
+                return Material.ICE;
+            case SNOWY_TUNDRA:
+            case SNOWY_MOUNTAINS:
+            case SNOWY_BEACH:
+                return Material.SNOW_BLOCK;
+            case MUSHROOM_FIELDS:
+            case MUSHROOM_FIELD_SHORE:
+                return Material.RED_MUSHROOM_BLOCK;
             case JUNGLE:
             case JUNGLE_HILLS:
             case JUNGLE_EDGE:
-            case MUTATED_JUNGLE:
-            case MUTATED_JUNGLE_EDGE:
-                return new ItemBuilder(Material.SAPLING, 1, 3);
-            case OCEAN:
-            case RIVER:
-            case DEEP_OCEAN:
-                return new ItemBuilder(Material.WATER_BUCKET);
+            case MODIFIED_JUNGLE:
+            case MODIFIED_JUNGLE_EDGE:
+                return Material.JUNGLE_SAPLING;
             case BIRCH_FOREST:
             case BIRCH_FOREST_HILLS:
-            case MUTATED_BIRCH_FOREST:
-            case MUTATED_BIRCH_FOREST_HILLS:
-                return new ItemBuilder(Material.SAPLING, 1, 2);
-            case ROOFED_FOREST:
-            case MUTATED_ROOFED_FOREST:
-                return new ItemBuilder(Material.SAPLING, 1, 5);
-            case TAIGA:
-            case TAIGA_HILLS:
-            case MUTATED_TAIGA:
-            case TAIGA_COLD:
-            case TAIGA_COLD_HILLS:
-            case MUTATED_TAIGA_COLD:
-                return new ItemBuilder(Material.SAPLING, 1, 1);
-            case REDWOOD_TAIGA:
-            case REDWOOD_TAIGA_HILLS:
-            case MUTATED_REDWOOD_TAIGA:
-            case MUTATED_REDWOOD_TAIGA_HILLS:
-                return new ItemBuilder(Material.DIRT, 1, 2);
+            case TALL_BIRCH_FOREST:
+            case TALL_BIRCH_HILLS:
+                return Material.BIRCH_SAPLING;
+            case DARK_FOREST:
+            case DARK_FOREST_HILLS:
+                return Material.DARK_OAK_SAPLING;
             case SAVANNA:
-            case SAVANNA_ROCK:
-            case MUTATED_SAVANNA:
-            case MUTATED_SAVANNA_ROCK:
-                return new ItemBuilder(Material.SAPLING, 1, 4);
-            case MESA:
-            case MESA_ROCK:
-            case MESA_CLEAR_ROCK:
-            case MUTATED_MESA:
-            case MUTATED_MESA_ROCK:
-            case MUTATED_MESA_CLEAR_ROCK:
-                return new ItemBuilder(Material.STAINED_CLAY, 1, 4);
-            case VOID:
-                return new ItemBuilder(Material.BEDROCK);
-            case MUTATED_FOREST:
-            case MUTATED_PLAINS:
-                return new ItemBuilder(Material.RED_ROSE);
-            default:
-                throw new IllegalStateException();
+            case SAVANNA_PLATEAU:
+            case SHATTERED_SAVANNA:
+            case SHATTERED_SAVANNA_PLATEAU:
+                return Material.ACACIA_SAPLING;
+            case BADLANDS:
+            case WOODED_BADLANDS_PLATEAU:
+            case BADLANDS_PLATEAU:
+            case ERODED_BADLANDS:
+            case MODIFIED_BADLANDS_PLATEAU:
+            case MODIFIED_WOODED_BADLANDS_PLATEAU:
+                return Material.YELLOW_TERRACOTTA;
+            case WARM_OCEAN:
+            case LUKEWARM_OCEAN:
+            case DEEP_WARM_OCEAN:
+            case DEEP_LUKEWARM_OCEAN:
+                return Material.HORN_CORAL;
+            case THE_VOID:
+                return Material.BEDROCK;
+            case SUNFLOWER_PLAINS:
+                return Material.SUNFLOWER;
+            case GRAVELLY_MOUNTAINS:
+            case MODIFIED_GRAVELLY_MOUNTAINS:
+                return Material.GRAVEL;
+            case FLOWER_FOREST:
+                return Material.ROSE_BUSH;
+            case ICE_SPIKES:
+            case FROZEN_OCEAN:
+            case DEEP_FROZEN_OCEAN:
+                return Material.PACKED_ICE;
         }
+        throw new IllegalArgumentException();
     }
 
     public static String name(Biome biome) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        String[] parts = biome.toString().split("_");
+        for (int i = 0; i < parts.length; i++) {
+            if (i != 0)
+                stringBuilder.append(" ");
+
+            stringBuilder.append(parts[i].substring(0, 1).toUpperCase());
+            stringBuilder.append(parts[i].substring(1).toLowerCase());
+        }
+
+        return color(biome).getChatColor() + stringBuilder.toString();
+    }
+
+    private static Color color(Biome biome) {
         switch (biome) {
 
             case OCEAN:
-                return "§9Ocean";
-            case PLAINS:
-                return "§aPlains";
-            case DESERT:
-                return "§eDesert";
-            case EXTREME_HILLS:
-            case EXTREME_HILLS_WITH_TREES:
-                return "§7Extreme Hills";
-            case FOREST:
-                return "§aForest";
-            case TAIGA:
-                return "§2Taiga";
-            case SWAMPLAND:
-            case MUTATED_SWAMPLAND:
-                return "§8Swampland";
             case RIVER:
-                return "§9River";
-            case HELL:
-                return "§cNether";
-            case SKY:
-                return "§fSky";
-            case FROZEN_OCEAN:
-                return "§bFrozen Ocean";
-            case FROZEN_RIVER:
-                return "§fFrozen River";
-            case ICE_FLATS:
-                return "§bIce Plains";
-            case ICE_MOUNTAINS:
-                return "§bCold Mountains";
-            case MUSHROOM_ISLAND:
-            case MUSHROOM_ISLAND_SHORE:
-                return "§cMushroom Island";
-            case BEACHES:
-                return "§eBeach";
-            case DESERT_HILLS:
-                return "§eDesert Hills";
-            case FOREST_HILLS:
-                return "§aForest Hills";
-            case TAIGA_HILLS:
-                return "§2Taiga Hills";
-            case SMALLER_EXTREME_HILLS:
-                return "§7Mountains";
-            case JUNGLE:
-                return "§2Jungle";
-            case JUNGLE_EDGE:
-                return "§2Jungle Mountains";
-            case JUNGLE_HILLS:
-                return "§2Jungle Hills";
             case DEEP_OCEAN:
-                return "§9Deep Ocean";
-            case STONE_BEACH:
-                return "§7Stone Beach";
-            case COLD_BEACH:
-                return "§bCold Beach";
+                return Color.BLUE;
+            case PLAINS:
+                return Color.LIME;
+            case DESERT:
+            case BEACH:
+            case DESERT_HILLS:
+            case DESERT_LAKES:
+                return Color.YELLOW;
+            case MOUNTAINS:
+            case MOUNTAIN_EDGE:
+            case STONE_SHORE:
+                return Color.SILVER;
+            case FOREST:
+            case WOODED_HILLS:
+            case WOODED_MOUNTAINS:
+                return Color.LIME;
+            case TAIGA:
+            case TAIGA_HILLS:
+            case SNOWY_TAIGA:
+            case SNOWY_TAIGA_HILLS:
+            case GIANT_TREE_TAIGA:
+            case GIANT_TREE_TAIGA_HILLS:
+            case TAIGA_MOUNTAINS:
+            case SNOWY_TAIGA_MOUNTAINS:
+            case GIANT_SPRUCE_TAIGA:
+            case GIANT_SPRUCE_TAIGA_HILLS:
+                return Color.GREEN;
+            case SWAMP:
+            case SWAMP_HILLS:
+                return Color.GREEN;
+            case NETHER:
+                return Color.RED;
+            case THE_END:
+            case SMALL_END_ISLANDS:
+            case END_MIDLANDS:
+            case END_HIGHLANDS:
+            case END_BARRENS:
+                return Color.YELLOW;
+            case FROZEN_OCEAN:
+            case FROZEN_RIVER:
+            case COLD_OCEAN:
+            case DEEP_COLD_OCEAN:
+            case DEEP_FROZEN_OCEAN:
+                return Color.AQUA;
+            case SNOWY_TUNDRA:
+            case SNOWY_MOUNTAINS:
+            case SNOWY_BEACH:
+                return Color.WHITE;
+            case MUSHROOM_FIELDS:
+            case MUSHROOM_FIELD_SHORE:
+                return Color.RED;
+            case JUNGLE:
+            case JUNGLE_HILLS:
+            case JUNGLE_EDGE:
+            case MODIFIED_JUNGLE:
+            case MODIFIED_JUNGLE_EDGE:
+                return Color.GREEN;
             case BIRCH_FOREST:
-                return "§fBirch Forest";
             case BIRCH_FOREST_HILLS:
-                return "§fBirch Forest Hills";
-            case ROOFED_FOREST:
-                return "§2Roofed Forest";
-            case TAIGA_COLD:
-                return "§2Cold Taiga";
-            case TAIGA_COLD_HILLS:
-                return "§2Cold Taiga Hills";
-            case REDWOOD_TAIGA:
-            case MUTATED_REDWOOD_TAIGA:
-                return "§2Mega Taiga";
-            case REDWOOD_TAIGA_HILLS:
-            case MUTATED_REDWOOD_TAIGA_HILLS:
-                return "§2Mega Taiga Hills";
+            case TALL_BIRCH_FOREST:
+            case TALL_BIRCH_HILLS:
+                return Color.WHITE;
+            case DARK_FOREST:
+            case DARK_FOREST_HILLS:
+                return Color.GREEN;
             case SAVANNA:
-            case MUTATED_SAVANNA:
-                return "§eSavanna";
-            case SAVANNA_ROCK:
-            case MUTATED_SAVANNA_ROCK:
-                return "§eSavanna Mountains";
-            case MESA:
-            case MESA_ROCK:
-            case MESA_CLEAR_ROCK:
-            case MUTATED_MESA:
-            case MUTATED_MESA_ROCK:
-            case MUTATED_MESA_CLEAR_ROCK:
-                return "§6Mesa";
-            case VOID:
-                return "§8Void";
-            case MUTATED_PLAINS:
-                return "§6Sunflower Plains";
-            case MUTATED_DESERT:
-                return "§eDesert Mountains";
-            case MUTATED_EXTREME_HILLS:
-            case MUTATED_EXTREME_HILLS_WITH_TREES:
-                return "§7Extreme Mountain Hills";
-            case MUTATED_FOREST:
-                return "§cFlower Forest";
-            case MUTATED_TAIGA:
-                return "§2Mega Taiga";
-            case MUTATED_ICE_FLATS:
-                return "§bIce Spike Plains";
-            case MUTATED_JUNGLE:
-            case MUTATED_JUNGLE_EDGE:
-                return "§2Jungle Mountains";
-            case MUTATED_BIRCH_FOREST:
-                return "§fBirch Forest Mountains";
-            case MUTATED_BIRCH_FOREST_HILLS:
-                return "§fBirch Forest Mountain Hills";
-            case MUTATED_ROOFED_FOREST:
-                return "§2Roofed Mountain Forest";
-            case MUTATED_TAIGA_COLD:
-                return "§2Cold Taiga Mountains";
-            default:
-                throw new IllegalStateException();
+            case SAVANNA_PLATEAU:
+            case SHATTERED_SAVANNA:
+            case SHATTERED_SAVANNA_PLATEAU:
+                return Color.ORANGE;
+            case BADLANDS:
+            case WOODED_BADLANDS_PLATEAU:
+            case BADLANDS_PLATEAU:
+            case ERODED_BADLANDS:
+            case MODIFIED_BADLANDS_PLATEAU:
+            case MODIFIED_WOODED_BADLANDS_PLATEAU:
+                return Color.ORANGE;
+            case WARM_OCEAN:
+            case LUKEWARM_OCEAN:
+            case DEEP_WARM_OCEAN:
+            case DEEP_LUKEWARM_OCEAN:
+                return Color.BLUE;
+            case THE_VOID:
+                return Color.GRAY;
+            case SUNFLOWER_PLAINS:
+                return Color.YELLOW;
+            case GRAVELLY_MOUNTAINS:
+            case MODIFIED_GRAVELLY_MOUNTAINS:
+                return Color.SILVER;
+            case FLOWER_FOREST:
+                return Color.RED;
+            case ICE_SPIKES:
+                return Color.AQUA;
         }
+        throw new IllegalArgumentException();
     }
 }

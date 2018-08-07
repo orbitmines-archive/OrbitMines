@@ -4,6 +4,7 @@ import com.orbitmines.spigot.OrbitMines;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -27,8 +28,8 @@ public class PlayerUtils {
         }.runTaskLater(OrbitMines.getInstance(), 1);
     }
 
-    public static Block getTargetBlock(Player player, int range) {
-        BlockIterator blockIterator = new BlockIterator(player, range);
+    public static Block getTargetBlock(LivingEntity livingEntity, int range) {
+        BlockIterator blockIterator = new BlockIterator(livingEntity, range);
         Block lastBlock = blockIterator.next();
         while (blockIterator.hasNext()) {
             lastBlock = blockIterator.next();
@@ -70,37 +71,29 @@ public class PlayerUtils {
     }
 
     public static boolean hasItems(Player player, Material material, int amount) {
-        return hasItems(player, material, -1, amount);
-    }
-
-    public static boolean hasItems(Player player, Material material, int durability, int amount) {
-        return getAmount(player, material, durability) >= amount;
+        return getAmount(player, material) >= amount;
     }
 
     public static List<ItemStack> removeItems(Player player, Material material, int amount) {
-        return removeItems(player, material, -1, amount);
-    }
-
-    public static List<ItemStack> removeItems(Player player, Material material, int durability, int amount) {
-        return removeItems(player.getInventory(), material, durability, amount);
+        return removeItems(player.getInventory(), material, amount);
     }
 
     public static List<ItemStack> removeItems(Inventory inventory, Material material, int amount) {
-        return removeItems(inventory, material, -1, amount);
-    }
-
-    public static List<ItemStack> removeItems(Inventory inventory, Material material, int durability, int amount) {
         List<ItemStack> removed = new ArrayList<>();
 
         int count = 0;
         for (ItemStack item : inventory.getContents()) {
-            if (item == null || item.getType() != material || !(durability == -1 || item.getDurability() == durability))
+            if (item == null || item.getType() != material)
                 continue;
 
             if (count + item.getAmount() <= amount) {
                 count += item.getAmount();
-                inventory.remove(item);
+                inventory.setItem(inventory.first(item), null);
                 removed.add(item);
+
+                if (count == amount)
+                    return removed;
+
             } else {
                 /* LeftOvers */
                 ItemStack newItem = new ItemStack(item);

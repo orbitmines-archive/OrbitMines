@@ -3,7 +3,6 @@ package com.orbitmines.spigot.api.utils;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -13,15 +12,12 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /*
 * OrbitMines - @author Fadi Shawki - 2017
 */
 public class WorldUtils {
-
-    public static final List<Material> CANNOT_TRANSFORM = Arrays.asList(Material.LONG_GRASS, Material.YELLOW_FLOWER, Material.RED_ROSE, Material.DOUBLE_PLANT, Material.WOOD_STEP, Material.WOOD_STAIRS, Material.COBBLESTONE_STAIRS, Material.TRAP_DOOR, Material.IRON_TRAPDOOR, Material.IRON_TRAPDOOR, Material.SKULL, Material.WATER_LILY, Material.SIGN_POST, Material.WALL_SIGN, Material.TORCH, Material.FENCE, Material.WATER, Material.STATIONARY_WATER);
 
     private static final BlockFace[] signFaces = new BlockFace[] { BlockFace.DOWN, BlockFace.UP, BlockFace.EAST, BlockFace.NORTH, BlockFace.WEST, BlockFace.SOUTH };
 
@@ -78,6 +74,14 @@ public class WorldUtils {
         location.setPitch((float) pitch);
 
         entity.teleport(location);
+    }
+
+    public static double yawToDegree(LivingEntity livingEntity) {
+        return ((livingEntity.getLocation().getYaw() + 90) * Math.PI) / 180;
+    }
+
+    public static double pitchToDegree(LivingEntity livingEntity) {
+        return ((livingEntity.getLocation().getPitch() + 90) * Math.PI) / 180;
     }
 
     public static OMPlayer getClosestPlayer(Location location) {

@@ -1,5 +1,6 @@
 package com.orbitmines.spigot.api.handlers.scoreboard;
 
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
@@ -14,6 +15,7 @@ public class ScoreboardTeam {
     private List<Player> players;
     private String prefix;
     private String suffix;
+    private ChatColor color;
     private boolean allowFriendlyFire;
     private boolean canSeeFriendlyInvisibles;
     private Map<Team.Option, Team.OptionStatus> options;
@@ -25,6 +27,7 @@ public class ScoreboardTeam {
     public ScoreboardTeam(String name, List<Player> players) {
         this.name = name;
         this.players = players;
+        this.color = ChatColor.WHITE;
         this.allowFriendlyFire = true;
         this.canSeeFriendlyInvisibles = false;
         this.options = new HashMap<>();
@@ -46,6 +49,10 @@ public class ScoreboardTeam {
 
     public void setSuffix(String suffix) {
         this.suffix = suffix;
+    }
+
+    public void setColor(ChatColor color) {
+        this.color = color;
     }
 
     public void setAllowFriendlyFire(boolean allowFriendlyFire) {
@@ -73,6 +80,8 @@ public class ScoreboardTeam {
             t.setPrefix(prefix);
         if (suffix != null)
             t.setSuffix(suffix);
+
+        t.setColor(color);
 
         t.setAllowFriendlyFire(allowFriendlyFire);
         t.setCanSeeFriendlyInvisibles(canSeeFriendlyInvisibles);

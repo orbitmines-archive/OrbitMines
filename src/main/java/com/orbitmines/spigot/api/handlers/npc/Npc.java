@@ -165,7 +165,7 @@ public abstract class Npc {
     public static Npc getNpc(Entity entity) {
         for (Npc npc : npcs) {
             for (Entity en : npc.getEntities()) {
-                if (en == entity) //TODO, might not work?
+                if (en == entity)
                     return npc;
             }
         }
