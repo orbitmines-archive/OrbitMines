@@ -2,10 +2,14 @@ package com.orbitmines.spigot.servers.uhsurvival2.handlers;
 
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.servers.uhsurvival2.UHSurvival;
+import com.orbitmines.spigot.servers.uhsurvival2.handlers.item.tool.Tool;
+import com.orbitmines.spigot.servers.uhsurvival2.handlers.item.tool.ToolInventory;
+import com.orbitmines.spigot.servers.uhsurvival2.handlers.item.tool.enchantments.Enchantments;
 import com.orbitmines.spigot.servers.uhsurvival2.handlers.map.Map;
 import com.orbitmines.spigot.servers.uhsurvival2.handlers.map.MapSection;
 import com.orbitmines.spigot.servers.uhsurvival2.handlers.mob.Attacker;
-import com.orbitmines.spigot.servers.uhsurvival2.handlers.tool.ToolInventory;
+import com.orbitmines.spigot.servers.uhsurvival2.handlers.mob.Mob;
+import com.orbitmines.spigot.servers.uhsurvival2.utils.Enchantment;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
@@ -63,23 +67,61 @@ public class UHPlayer extends OMPlayer implements Attacker {
 
     /* ATTACKER METHODS TODO!*/
     @Override
-    public boolean attack(Attacker attacker) {
-        if(attacker instanceof UHPlayer){
-            UHPlayer p = (UHPlayer) attacker;
-            if(p.getMapLocation().canPvP() && getMapLocation().canPvP()){
-                return p.defend(attacker);
-            } else {
+    public boolean attack(Attacker defender) {
+        if (defender instanceof UHPlayer) {
+            UHPlayer p = (UHPlayer) defender;
+            if (p.getMapLocation().canPvP() && getMapLocation().canPvP()) {
                 return true;
             }
-        } else {
-            return attacker.defend(attacker);
         }
+        boolean cancelled = defender.defend(this);
+        if (!cancelled) {
+            Tool mainHand = getToolInventory().getMainHand();
+            if (mainHand != null) {
+                if (defender instanceof Mob) {
+                    Mob mob = (Mob) defender;
+                    if (mob.hasMobType()) {
+                        mainHand.addExp(mob.getType().getItemExp());
+                    }
+                }
+                for (Enchantment enchantment : mainHand.getEnchantments().keySet()) {
+                    if(!cancelled && enchantment.getOutput() instanceof Enchantments.AttackEnchantment) {
+                        cancelled = ((Enchantments.AttackEnchantment) enchantment.getOutput()).output(this, defender, mainHand.getLevel(enchantment));
+                    }
+                }
+            }
+        }
+        return cancelled;
     }
 
     @Override
     public boolean defend(Attacker attacker) {
-        //TODO: ADD BLOCK CHANCES IN THE TOOLS & ADD ENCHANTMENTS!
-        return false;
+        HashMap<Enchantment, Integer> enchantments = new HashMap<>();
+        for(Tool tool : getToolInventory().getArmor()){
+            if(tool != null){
+                if(attacker instanceof Mob){
+                    Mob mob = (Mob) attacker;
+                    if(mob.hasMobType()){
+                        tool.addExp(mob.getType().getArmorExp());
+                    }
+                }
+                for(Enchantment enchantment : tool.getEnchantments().keySet()){
+                    if(enchantments.containsKey(enchantment)){
+                        enchantments.put(enchantment, tool.getLevel(enchantment) + enchantments.get(enchantment));
+                    } else {
+                        enchantments.put(enchantment, tool.getLevel(enchantment));
+                    }
+                }
+            }
+        }
+        boolean cancelled = false;
+        for(Enchantment enchantment : enchantments.keySet()){
+            if(cancelled) break;
+            if(enchantment.getOutput() instanceof Enchantments.AttackEnchantment) {
+                cancelled = ((Enchantments.AttackEnchantment) enchantment.getOutput()).output(attacker, this, enchantments.get(enchantment));
+            }
+        }
+        return cancelled;
     }
 
     @Override

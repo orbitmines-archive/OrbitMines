@@ -1,6 +1,7 @@
 package com.orbitmines.spigot.servers.uhsurvival2.handlers.mob;
 
-import com.orbitmines.spigot.servers.uhsurvival2.handlers.tool.ToolInventory;
+import com.orbitmines.spigot.servers.uhsurvival2.handlers.item.tool.ToolInventory;
+import org.bukkit.Location;
 
 public interface Attacker {
 
@@ -8,9 +9,11 @@ public interface Attacker {
 
     boolean defend(Attacker attacker);
 
+    boolean hasInventory();
+
     ToolInventory getToolInventory();
 
-    boolean hasInventory();
+    Location getLocation();
 
 //    void use();
 //      TODO:

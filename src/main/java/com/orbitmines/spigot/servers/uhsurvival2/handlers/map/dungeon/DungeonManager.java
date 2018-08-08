@@ -30,12 +30,16 @@ public class DungeonManager {
     private String directory;
     private String directoryFiles;
 
-    public DungeonManager(Map map){
+    public DungeonManager(Map map) {
         this.map = map;
         this.dungeonFiles = new HashMap<>();
         this.dungeons = new HashMap<>();
-        this.directory = map.getWorld().getWorldFolder().getAbsolutePath() + "/dungeons";
+        this.directory = map.getWorld().getWorldFolder().getName() + "/dungeons";
         this.directoryFiles = directory + "/files";
+        File file = new File(directory);
+        if (!file.exists()) {
+            file.mkdir();
+        }
         this.init();
     }
 
@@ -48,7 +52,7 @@ public class DungeonManager {
             Location lowestCorner = getLowest(corner, corner1);
             DungeonFile dungeonFile = new DungeonFile(name, loottable, highestCorner, lowestCorner);
             for(Block b : blocks){
-                dungeonFile.addBlock(new FileBlock(b.getLocation(), lowestCorner));
+                dungeonFile.addBlock(new FileBlock(lowestCorner, b.getLocation()));
             }
             FileBuilder file = new FileBuilder(directoryFiles, "dungeon_" + name);
             dungeonFiles.put(dungeonFile, file);
@@ -90,10 +94,20 @@ public class DungeonManager {
     }
 
         /* public */
-        public boolean buildDungeon(UHPlayer player, String type){
-        DungeonFile file = getDungeonFile(type);
-        return file != null && this.buildDungeon(player.getLocation(), file);
-    }
+        public boolean buildDungeon(UHPlayer player, String type) {
+            DungeonFile file = getDungeonFile(type);
+            return file != null && this.buildDungeon(player.getLocation(), file);
+        }
+
+        public boolean deleteDungeon(String name) {
+            DungeonFile file = getDungeonFile(name);
+            if (file != null) {
+                dungeonFiles.remove(file).deleteFile();
+                return true;
+            } else {
+                return false;
+            }
+        }
 
         public boolean buildDungeonRandomly(){
         MapSection mapSection = map.getMapSections().get(MathUtils.randomInteger(map.getTiles()));
@@ -129,9 +143,10 @@ public class DungeonManager {
     }
 
     /* GETTERS */
-    private DungeonFile getDungeonFile(String type){
+    public DungeonFile getDungeonFile(String type){
         for(DungeonFile dungeonFile : allDungeons){
-            if(dungeonFile.getName().equalsIgnoreCase(type)){
+            System.out.println(dungeonFile.getName());
+            if(dungeonFile.getName().equalsIgnoreCase(type)){ ;
                 return dungeonFile;
             }
         }
@@ -189,7 +204,9 @@ public class DungeonManager {
                         if (!f.isDirectory()) {
                             if (f.getName().startsWith("dungeon_")) {
                                 FileBuilder fileBuilder = new FileBuilder(f);
-                                dungeonFiles.put(new DungeonFile(fileBuilder), fileBuilder);
+                                DungeonFile f1 = new DungeonFile(fileBuilder);
+                                dungeonFiles.put(f1, fileBuilder);
+                                allDungeons.add(f1);
                             }
                         }
                     }

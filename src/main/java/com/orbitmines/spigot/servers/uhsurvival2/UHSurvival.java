@@ -7,10 +7,10 @@ import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.OrbitMinesServer;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.PluginMessageHandler;
-import com.orbitmines.spigot.servers.uhsurvival2.event.BreakBlockEvent;
-import com.orbitmines.spigot.servers.uhsurvival2.event.PlayerInteractEvent;
-import com.orbitmines.spigot.servers.uhsurvival2.event.PlayerMoveEvent;
+import com.orbitmines.spigot.servers.uhsurvival2.commands.DungeonCommand;
+import com.orbitmines.spigot.servers.uhsurvival2.event.*;
 import com.orbitmines.spigot.servers.uhsurvival2.handlers.UHPlayer;
+import com.orbitmines.spigot.servers.uhsurvival2.handlers.item.ItemManager;
 import com.orbitmines.spigot.servers.uhsurvival2.handlers.map.Map;
 import com.orbitmines.spigot.servers.uhsurvival2.handlers.map.block.BlockManager;
 import com.orbitmines.spigot.servers.uhsurvival2.handlers.map.dungeon.loottable.LootTableManager;
@@ -26,6 +26,7 @@ public class UHSurvival extends OrbitMinesServer {
 
     private List<Map> maps;
 
+    private ItemManager itemManager;
     private BlockManager  blockManager;
     private static LootTableManager lootTableManager;
 
@@ -36,10 +37,12 @@ public class UHSurvival extends OrbitMinesServer {
 
             }
         });
+        lootTableManager = new LootTableManager(this);
+
         this.maps = new ArrayList<>();
         this.maps.add(new Map(Bukkit.getWorlds().get(0), -10000, 10000, -10000, 10000));
         this.blockManager = new BlockManager(this);
-        lootTableManager = new LootTableManager(this);
+        this.itemManager = new ItemManager(this);
     }
 
     @Override
@@ -74,13 +77,15 @@ public class UHSurvival extends OrbitMinesServer {
     protected void registerEvents() {
         registerEvents(new BreakBlockEvent(this),
                 new PlayerMoveEvent(),
-                new PlayerInteractEvent());
-
+                new PlayerInteractEvent(),
+                new SpawnEvent(this),
+                new AttackEvent(this),
+                new EnchantmentEvent());
     }
 
     @Override
     protected void registerCommands() {
-
+        new DungeonCommand();
     }
 
     @Override

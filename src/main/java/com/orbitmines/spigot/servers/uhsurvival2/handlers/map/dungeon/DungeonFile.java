@@ -66,15 +66,21 @@ public class DungeonFile {
         for(int i = 0; i < index; i++){
             this.blocks.add(FileBlock.fromString((String) f.get("block." + i)));
         }
+        this.adWidth = width;
+        this.adDepth = depth;
     }
 
     /* DUNGEON METHODS */
     Dungeon buildDungeon(Location location){
         amount++;
-        Location loc1 = location.add(adWidth, height, adDepth);
-        Dungeon dungeon = new Dungeon(name, location, loc1, amount);
+        Location loc1 = new Location(location.getWorld(), location.getBlockX() + adWidth, location.getBlockY() + height, location.getBlockZ() + adDepth);
+        location = location.subtract(adWidth, height, adDepth);
+        Dungeon dungeon = new Dungeon(name, loc1, location, amount);
         for(Block block : LocationUtils.getBlocksBetween(location, loc1)){
             dungeon.addReplaceBlocks(new ReplacedBlock(block.getLocation()));
+        }
+        for(FileBlock block : blocks) {
+            block.build(location, lootTable);
         }
         return dungeon;
     }
@@ -84,7 +90,7 @@ public class DungeonFile {
         this.blocks.add(fileBlock);
     }
 
-    public void rotate(int degrees){
+    void rotate(int degrees){
         for(int i = 0; i < degrees / 90; i++){
             int width = adWidth;
             this.adWidth = adDepth;
@@ -95,10 +101,12 @@ public class DungeonFile {
         }
     }
 
-    public void reset(){
+    void reset(){
         for(FileBlock block : blocks){
             block.reset();
         }
+        this.adWidth = width;
+        this.adDepth = depth;
     }
 
     /* FILE METHODS */
@@ -111,7 +119,7 @@ public class DungeonFile {
         f.set("surface", String.valueOf(surface));
         f.set("minY", minY);
         f.set("maxY", maxY);
-        f.set("loottable", lootTable.getName());
+        f.set("loottable", lootTable == null ? "null" : lootTable.getName());
         int index = 0;
         for(FileBlock block : blocks){
             f.set("block." + index, block.toString());

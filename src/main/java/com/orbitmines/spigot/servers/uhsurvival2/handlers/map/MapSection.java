@@ -3,7 +3,9 @@ package com.orbitmines.spigot.servers.uhsurvival2.handlers.map;
 import com.orbitmines.spigot.api.utils.LocationUtils;
 import com.orbitmines.spigot.servers.uhsurvival2.handlers.UHPlayer;
 import com.orbitmines.spigot.servers.uhsurvival2.handlers.map.dungeon.Dungeon;
+import com.orbitmines.spigot.servers.uhsurvival2.handlers.mob.Mob;
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +14,7 @@ public class MapSection {
 
     private Map map;
 
+    private List<Mob> mobs;
     private List<UHPlayer> players;
     private List<Dungeon> dungeons;
 
@@ -33,9 +36,29 @@ public class MapSection {
         this.maxX = minX + xOffSet;
         this.minZ = minZ;
         this.maxZ = minZ + zOffSet;
+        this.mobs = new ArrayList<>();
         this.players = new ArrayList<>();
         this.dungeons = new ArrayList<>();
         this.pvp = false;
+    }
+    /* MOB */
+    void addMob(Mob mob){
+        this.mobs.add(mob);
+    }
+
+    Mob getMob(Entity entity){
+        for(Mob mob : mobs){
+            if(mob.equals(entity)){
+                return mob;
+            }
+        }
+        return null;
+    }
+
+    Mob removeMob(Entity entity){
+        Mob mob = getMob(entity);
+        mobs.remove(mob);
+        return mob;
     }
 
     /* DUNGEON */

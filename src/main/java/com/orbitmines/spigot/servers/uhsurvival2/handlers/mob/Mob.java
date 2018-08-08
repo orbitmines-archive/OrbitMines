@@ -1,50 +1,74 @@
 package com.orbitmines.spigot.servers.uhsurvival2.handlers.mob;
 
-import com.orbitmines.spigot.servers.uhsurvival2.handlers.map.MapSection;
-import com.orbitmines.spigot.servers.uhsurvival2.handlers.tool.ToolInventory;
+import com.orbitmines.spigot.servers.uhsurvival2.handlers.item.tool.Tool;
+import com.orbitmines.spigot.servers.uhsurvival2.handlers.item.tool.ToolInventory;
+import com.orbitmines.spigot.servers.uhsurvival2.handlers.item.tool.enchantments.Enchantments;
+import com.orbitmines.spigot.servers.uhsurvival2.utils.Enchantment;
+import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
-public abstract class Mob implements Attacker {
+import java.util.HashMap;
 
-    private MapSection location;
+public class Mob implements Attacker {
 
+    private Entity entity;
     private ToolInventory inventory;
-    private LivingEntity entity;
 
-    private Attacker target;
+    private MobType type;
 
-    public Mob(LivingEntity entity, MapSection location){
+    Mob(MobType type, Entity entity){
+        this.type = type;
         this.entity = entity;
-        this.location = location;
-        this.inventory = new ToolInventory(entity.getEquipment());
-        this.target = null;
+        if(entity instanceof LivingEntity) this.inventory = new ToolInventory(((LivingEntity) entity).getEquipment());
     }
 
     @Override
-    public boolean attack(Attacker attacker) {
-        /* acquiring new target */
-        if(attacker != target){
-            this.target = attacker;
+    public boolean attack(Attacker defender) {
+        /* determining if type has been initialized and running default procedure  */
+        boolean cancelled = defender.defend(this);
+        if(!cancelled && type != null){
+            cancelled = type.attack(defender, this);
         }
-
-        /* calling defend method */
-        return attacker.defend(this);
+        if(hasInventory()) {
+            Tool mainHand = inventory.getMainHand();
+            if (mainHand != null && mainHand.isEnchanted()) {
+                for (Enchantment enchantment : mainHand.getEnchantments().keySet()) {
+                    if (!cancelled && enchantment.getOutput() instanceof Enchantments.AttackEnchantment) {
+                        cancelled = ((Enchantments.AttackEnchantment) enchantment.getOutput()).output(this, defender, mainHand.getLevel(enchantment));
+                    }
+                }
+            }
+        }
+        return cancelled;
     }
 
     @Override
     public boolean defend(Attacker attacker) {
-        //TODO: USE ENCHANTMENTS & ADD BLOCKING CHANCE!
-        return false;
-    }
-
-
-    /* GETTERS */
-    public MapSection getLocation() {
-        return location;
-    }
-
-    public LivingEntity getEntity() {
-        return entity;
+        HashMap<Enchantment, Integer> enchantments = new HashMap<>();
+        if(inventory != null){
+            for(Tool tool : inventory.getArmor()){
+                if(tool != null){
+                    for(Enchantment enchantment : tool.getEnchantments().keySet()){
+                        if(enchantments.containsKey(enchantment)){
+                            enchantments.put(enchantment, tool.getLevel(enchantment) + enchantments.get(enchantment));
+                        } else {
+                            enchantments.put(enchantment, tool.getLevel(enchantment));
+                        }
+                    }
+                }
+            }
+        }
+        boolean cancelled = false;
+        if(type != null){
+            cancelled = type.defend(attacker, this);
+        }
+        for(Enchantment enchantment : enchantments.keySet()){
+            if(!cancelled && enchantment.getOutput() instanceof Enchantments.AttackEnchantment){
+                cancelled = ((Enchantments.AttackEnchantment) enchantment.getOutput()).output(attacker, this, enchantments.get(enchantment));
+            }
+        }
+        return cancelled;
     }
 
     @Override
@@ -52,17 +76,26 @@ public abstract class Mob implements Attacker {
         return inventory;
     }
 
-    public Attacker getTarget() {
-        return target;
+    @Override
+    public Location getLocation() {
+        return entity.getLocation();
     }
 
-    /* BOOLEANS */
+    public MobType getType() {
+        return type;
+    }
+
     @Override
     public boolean hasInventory() {
         return inventory != null;
     }
 
-    public boolean hasTarget(){
-        return target != null;
+    public boolean hasMobType(){
+        return type != null;
+    }
+
+    @Override
+    public boolean equals(Object entity) {
+        return (entity instanceof Entity) && entity == this.entity;
     }
 }

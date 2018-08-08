@@ -34,7 +34,7 @@ public class ReplacedBlock {
     /* FILE METHODS */
     @Override
     public String toString(){
-        return m.name() + "|" + data + "|" + x + "|" + y + "|" + "|" + z;
+        return m.name() + "|" + data + "|" + x + "|" + y + "|" + z;
     }
 
     public static ReplacedBlock fromString(String data){

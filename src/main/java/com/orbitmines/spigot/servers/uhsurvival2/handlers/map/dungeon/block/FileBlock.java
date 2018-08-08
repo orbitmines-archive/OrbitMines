@@ -1,8 +1,10 @@
 package com.orbitmines.spigot.servers.uhsurvival2.handlers.map.dungeon.block;
 
 import com.orbitmines.spigot.api.utils.MathUtils;
+import com.orbitmines.spigot.servers.uhsurvival2.handlers.map.dungeon.loottable.LootTable;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Chest;
 
 public class FileBlock {
 
@@ -51,10 +53,20 @@ public class FileBlock {
         this.addedZ = z;
     }
 
+    public void build(Location org, LootTable lootTable){
+        Location loc = org.add(addedX, y, addedZ);
+        loc.getBlock().setType(m);
+        loc.getBlock().setData(data);
+        if(m == Material.CHEST && lootTable != null){
+            lootTable.randomizeInventory(((Chest) loc).getBlockInventory());
+        }
+        org.subtract(addedX, y, addedZ);
+    }
+
     /* FILE METHODS */
     @Override
     public String toString(){
-        return m.name() + "|" + data + "|" + x + "|" + y + "|" + "|" + z;
+        return m.name() + "|" + data + "|" + x + "|" + y + "|" + z;
     }
 
     public static FileBlock fromString(String data){

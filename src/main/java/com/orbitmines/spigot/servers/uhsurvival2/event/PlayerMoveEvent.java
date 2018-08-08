@@ -11,10 +11,12 @@ public class PlayerMoveEvent implements Listener {
     public void onMove(org.bukkit.event.player.PlayerMoveEvent event) {
         UHPlayer player = UHPlayer.getUHPlayer(event.getPlayer());
         if (player != null) {
-            MapSection mapSection = player.getMapLocation();
-            if (mapSection.isTransfering(event.getFrom())) {
-                if (!mapSection.isLocation(event.getTo())) {
-                    player.updateMapLocation();
+            if (player.getMapLocation() != null) {
+                MapSection mapSection = player.getMapLocation();
+                if (mapSection.isTransfering(event.getFrom())) {
+                    if (!mapSection.isLocation(event.getTo())) {
+                        player.updateMapLocation();
+                    }
                 }
             }
         }

@@ -33,7 +33,7 @@ public class MathUtils {
 
     public static boolean randomize(int min, int max, int x){
         int r = random.nextInt(max);
-        return min <= x && x <= r;
+        return min <= r && r <= x;
     }
 
     public static int randomInteger(int i) {

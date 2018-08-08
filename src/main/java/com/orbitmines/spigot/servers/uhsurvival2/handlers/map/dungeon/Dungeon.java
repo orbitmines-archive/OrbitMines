@@ -18,6 +18,7 @@ public class Dungeon {
 
     private int index;
 
+    //TODO: FIX THE BUILDING MECHANISM!!!!!! LIKE THE COPYING OF THE REPLACED BLOCKS!
     Dungeon(String type, Location corner, Location corner1, int index){
         this.type = type;
         this.corner = corner;
@@ -59,6 +60,7 @@ public class Dungeon {
         int index = 0;
         for(ReplacedBlock block : blocks){
             f.set("block." + index, block.toString());
+            index++;
         }
         f.set("blocks", index);
         f.save();

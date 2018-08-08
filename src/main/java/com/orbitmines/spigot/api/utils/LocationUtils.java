@@ -97,17 +97,17 @@ public class LocationUtils {
         return blocks;
     }
 
-    public static boolean isBetween(Location l1, Location l2, Location l3){
-        int minX = l1.getBlockX() > l2.getBlockX() ? l2.getBlockX() : l1.getBlockX();
-        int maxX = l1.getBlockX() < l2.getBlockX() ? l2.getBlockX() : l1.getBlockX();
+    public static boolean isBetween(Location loc, Location loc1, Location loc2){
+        int minX = (int) Math.min(loc.getX(), loc1.getX());
+        int maxX = (int) Math.max(loc.getX(), loc1.getX());
+        int minY = (int) Math.min(loc.getY(), loc1.getY());
+        int maxY = (int) Math.max(loc.getY(), loc1.getY());
+        int minZ = (int) Math.min(loc.getZ(), loc1.getZ());
+        int maxZ = (int) Math.max(loc.getZ(), loc1.getZ());
 
-        int minY = l1.getBlockY() > l2.getBlockY() ? l2.getBlockY() : l1.getBlockY();
-        int maxY = l1.getBlockY() < l2.getBlockY() ? l2.getBlockY() : l1.getBlockY();
 
-        int minZ = l1.getBlockZ() > l2.getBlockZ() ? l2.getBlockZ() : l1.getBlockZ();
-        int maxZ = l1.getBlockZ() > l2.getBlockZ() ? l2.getBlockZ() : l1.getBlockZ();
 
-        return (minX <= l3.getBlockX() && l3.getBlockX() <= maxX) && (minY <= l3.getBlockY() && l3.getBlockY() <= maxY) && (minZ <= l3.getBlockZ() && l3.getBlockZ() <= maxZ);
+        return (minX <= loc2.getX() && loc2.getX() <= maxX) && (minY <= loc2.getY() && loc2.getY() <= maxY) && (minZ <= loc2.getZ() && loc2.getZ() <= maxZ);
     }
 
     public static void addIdenticalBlocksTouching(Block block, List<Block> blocks) {

@@ -3,7 +3,9 @@ package com.orbitmines.spigot.servers.uhsurvival2.handlers.map.block;
 import com.orbitmines.spigot.api.utils.MathUtils;
 import com.orbitmines.spigot.servers.uhsurvival2.UHSurvival;
 import com.orbitmines.spigot.servers.uhsurvival2.handlers.UHPlayer;
-import com.orbitmines.spigot.servers.uhsurvival2.handlers.tool.Tool;
+import com.orbitmines.spigot.servers.uhsurvival2.handlers.item.tool.Tool;
+import com.orbitmines.spigot.servers.uhsurvival2.handlers.item.tool.enchantments.Enchantments;
+import com.orbitmines.spigot.servers.uhsurvival2.utils.Enchantment;
 import com.orbitmines.spigot.servers.uhsurvival2.utils.ToolType;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -31,15 +33,21 @@ public class BlockManager {
     public boolean breakBlock(UHPlayer player, org.bukkit.block.Block block){
         Tool tool = player.getToolInventory().getMainHand();
         Block b = getBlock(block);
-        if(b != null){
-            if(tool != null) {
+        if(tool != null) {
+            if (b != null) {
                 if (b.canBreakBlock(tool)) {
                     if (b.canOutput()) {
                         b.output(player, block.getLocation());
+
                     }
                     tool.addExp(b.getExp());
                 } else {
                     return true;
+                }
+            }
+            for (Enchantment enchantment : tool.getEnchantments().keySet()) {
+                if (enchantment.getOutput() instanceof Enchantments.BreakEnchantment) {
+                    ((Enchantments.BreakEnchantment) enchantment.getOutput()).output(player, block, tool.getLevel(enchantment));
                 }
             }
         }

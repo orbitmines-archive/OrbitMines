@@ -41,10 +41,19 @@ public enum ToolType {
 
     public enum Type {
 
-        WEAPON,
-        TOOL,
-        ARMOR;
+        WEAPON(SWORD, BOW),
+        TOOL(AXE, SPADE, PICKAXE),
+        ARMOR(HELMET, CHESTPLATE, LEGGINGS, BOOTS);
 
+        private ToolType[] types;
+
+        Type(ToolType... types){
+            this.types = types;
+        }
+
+        public ToolType[] getTypes() {
+            return types;
+        }
     }
 
     public enum Material {

@@ -1,22 +1,27 @@
-package com.orbitmines.spigot.servers.uhsurvival2.handlers.tool;
+package com.orbitmines.spigot.servers.uhsurvival2.handlers.item.tool;
 
 import com.orbitmines.spigot.api.utils.MathUtils;
+import com.orbitmines.spigot.servers.uhsurvival2.utils.Enchantment;
 import com.orbitmines.spigot.servers.uhsurvival2.utils.ToolType;
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class Tool {
 
     private static final int LEVEL_INDEX = 1;
     private static final int EXP_INDEX = 3;
+    private static final int ENCHANTMENT_INDEX = 5;
 
     private static final String LEVEL = " §fLevel§8: §b%d ";
     private static final String EXP = " §fExp§8: §b%.1f§9/§b%.1f ";
     private static final String MAXED_OUT = " §4Maxed Out ";
+    private static final String ENCHANTMENT = " §b%s %d ";
     private static final String LINE = "§8§m-----------------------";
 
     private static final int OFFSET_EXP_LEFT = 12;
@@ -24,9 +29,14 @@ public class Tool {
 
     private static final int OFFSET_LEVEL_LEFT = 14;
     private static final int OFFSET_LEVEL_RIGHT = 1;
+
+    private static final int OFFSET_ENCHANTMENT_LEFT = 3;
+    private static final int OFFSET_ENCHANTMENT_RIGHT = 1;
     //WHEN EDITING THIS, DON'T FORGET TO EDIT THE / ASWELL IN THE updateTool(boolean) METHOD!
 
     private static int MAX_LEVEL = 20;
+
+    private HashMap<Enchantment, Integer> enchantments;
 
     private List<String> lore;
 
@@ -43,6 +53,7 @@ public class Tool {
     private Tool(ItemStack item, ToolType type) {
         this.item = item;
         this.type = type;
+        this.enchantments = new HashMap<>();
         this.material = ToolType.Material.getMaterial(item.getType());
         this.lore = !item.hasItemMeta() ? new ArrayList<>() : !item.getItemMeta().hasLore() ? new ArrayList<>() : item.getItemMeta().getLore();
         if (lore.isEmpty()) {
@@ -50,6 +61,7 @@ public class Tool {
         } else {
             initTool();
         }
+        this.getItem().getItemMeta().addItemFlags(ItemFlag.HIDE_ENCHANTS);
     }
 
     /* TOOL METHODS */
@@ -71,6 +83,15 @@ public class Tool {
                 lore.add(EXP_INDEX, MAXED_OUT);
             }
             lore.add(4, LINE);
+            int index = ENCHANTMENT_INDEX;
+            for(Enchantment enchantment : enchantments.keySet()){
+                lore.add(index, String.format(ENCHANTMENT, enchantment.getName(), enchantments.get(enchantment)));
+                index++;
+            }
+            if(ENCHANTMENT_INDEX < index) {
+                lore.add(index, LINE);
+            }
+            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         }
 
         /* UPDATING LORE */
@@ -81,6 +102,29 @@ public class Tool {
             if (maxedOut) {
                 lore.set(LEVEL_INDEX, String.format(LEVEL, MAX_LEVEL));
                 lore.set(EXP_INDEX, MAXED_OUT);
+            }
+        }
+        if(update) {
+            int index = ENCHANTMENT_INDEX;
+            for (Enchantment enchantment : enchantments.keySet()) {
+                String format = String.format(ENCHANTMENT, enchantment.getName(), enchantments.get(enchantment));
+                if(lore.size() > index) {
+                    lore.set(index, format);
+                } else {
+                    lore.add(format);
+                }
+                index++;
+            }
+            if (ENCHANTMENT_INDEX < index) {
+                if (lore.size() > index) {
+                    lore.set(index, LINE);
+                } else {
+                    lore.add(index, LINE);
+                }
+                index++;
+            }
+            for (int i = index; i < lore.size(); i++) {
+                lore.remove(i);
             }
         }
 
@@ -95,14 +139,25 @@ public class Tool {
                 String s = lore.get(EXP_INDEX).substring(OFFSET_EXP_LEFT, lore.get(EXP_INDEX).length() - OFFSET_EXP_RIGHT);
                 String[] str = s.split("/");
                 exp = MathUtils.getDouble(str[0].substring(0, str[0].length() - 2));
-                maxExp = MathUtils.getDouble(str[1]);
+                maxExp = MathUtils.getDouble(str[1].substring(2));
+                for(int i = ENCHANTMENT_INDEX; i < lore.size(); i++){
+                    String lore = this.lore.get(i);
+                    String[] ench = lore.substring(OFFSET_ENCHANTMENT_LEFT, lore.length() - OFFSET_ENCHANTMENT_RIGHT).split(" ");
+                    Enchantment e = Enchantment.getEnchantment(ench[0]);
+                    if(e != null){
+                        int level = MathUtils.getInteger(ench[1]);
+                        if(level > 0 && level <= e.getMaxLevel()){
+                            enchantments.put(e, level);
+                        }
+                    }
+                }
             } else {
                 setMaxedOut();
             }
         }
     }
 
-    static Tool getTool(ItemStack item) {
+    public static Tool getTool(ItemStack item) {
         if (item != null && item.getType() != Material.AIR) {
             ToolType type = ToolType.getType(item.getType());
             if (type != null) {
@@ -159,6 +214,33 @@ public class Tool {
         if (isMaxedOut()) {
             setMaxedOut();
         }
+    }
+
+    /* ENCHANTMENTS */
+    public void addEnchantment(Enchantment enchantment, int level){
+        this.enchantments.put(enchantment, level);
+        updateTool(true);
+    }
+
+    public HashMap<Enchantment, Integer> getEnchantments(){
+        return enchantments;
+    }
+
+    public boolean isEnchanted(){
+        return !enchantments.isEmpty();
+    }
+
+    public boolean isEnchanted(Enchantment enchantment){
+        return enchantments.containsKey(enchantment);
+    }
+
+    public void removeEnchantment(Enchantment enchantment){
+        enchantments.remove(enchantment);
+        updateTool(false);
+    }
+
+    public int getLevel(Enchantment enchantment){
+        return enchantments.getOrDefault(enchantment, 0);
     }
 
     /* GETTERS */

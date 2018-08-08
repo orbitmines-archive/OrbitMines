@@ -1,4 +1,4 @@
-package com.orbitmines.spigot.servers.uhsurvival2.handlers.tool;
+package com.orbitmines.spigot.servers.uhsurvival2.handlers.item.tool;
 
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
