@@ -28,7 +28,7 @@ public class CommandHelp extends Command {
     @Override
     public void dispatch(ChatEvent event, BungeePlayer omp, String[] a) {
         omp.sendMessage("");
-        omp.sendMessage(" §7§lOrbit§8§lMines §9§lCommand Help");
+        omp.sendMessage(" §8§lOrbit§7§lMines §9§lCommand Help");
 
         for (Command command : getCommands()) {
             if (command instanceof CommandHelp || command instanceof StaffCommand && !omp.isEligible(((StaffCommand) command).getStaffRank()))

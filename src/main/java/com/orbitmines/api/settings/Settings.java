@@ -10,23 +10,48 @@ import com.orbitmines.api.database.tables.TablePlayers;
 
 public enum Settings {
 
-    PRIVATE_MESSAGES(new Message("Privéberichten", "Private Messages"), TablePlayers.SETTINGS_PRIVATE_MESSAGES),
-    PLAYER_VISIBILITY(new Message("Speler Zichtbaarheid", "Player Visibility"), TablePlayers.SETTINGS_PLAYER_VISIBILITY),
-    GADGETS(new Message("Gadgets"), TablePlayers.SETTINGS_GADGETS);
+    PRIVATE_MESSAGES(new Message("Privéberichten", "Private Messages"), SettingsType.ENABLED) {
+        @Override
+        public Column getColumn() {
+            return TablePlayers.SETTINGS_PRIVATE_MESSAGES;
+        }
+    },
+    PLAYER_VISIBILITY(new Message("Speler Zichtbaarheid", "Player Visibility"), SettingsType.ENABLED) {
+        @Override
+        public Column getColumn() {
+            return TablePlayers.SETTINGS_PLAYER_VISIBILITY;
+        }
+    },
+    GADGETS(new Message("Gadgets"), SettingsType.ENABLED) {
+        @Override
+        public Column getColumn() {
+            return TablePlayers.SETTINGS_GADGETS;
+        }
+    },
+    STATS(new Message("Stats"), SettingsType.ONLY_FRIENDS) {
+        @Override
+        public Column getColumn() {
+            return TablePlayers.SETTINGS_STATS;
+        }
+    };
 
     private final Message name;
-    private final Column column;
+    private final SettingsType defaultType;
 
-    Settings(Message name, Column column) {
+    Settings(Message name, SettingsType defaultType) {
         this.name = name;
-        this.column = column;
+        this.defaultType = defaultType;
     }
 
     public Message getName() {
         return name;
     }
 
+    public SettingsType getDefaultType() {
+        return defaultType;
+    }
+
     public Column getColumn() {
-        return column;
+        throw new IllegalStateException();
     }
 }

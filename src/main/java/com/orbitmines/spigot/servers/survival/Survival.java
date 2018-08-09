@@ -1,7 +1,7 @@
 package com.orbitmines.spigot.servers.survival;
 
 import com.google.common.io.ByteArrayDataInput;
-import com.orbitmines.api.PluginMessage;
+import com.orbitmines.api.*;
 import com.orbitmines.api.Server;
 import com.orbitmines.api.database.Column;
 import com.orbitmines.api.database.Database;
@@ -12,29 +12,42 @@ import com.orbitmines.api.database.tables.survival.TableSurvivalClaim;
 import com.orbitmines.api.database.tables.survival.TableSurvivalPlayers;
 import com.orbitmines.api.utils.DateUtils;
 import com.orbitmines.api.utils.NumberUtils;
+import com.orbitmines.api.utils.RandomUtils;
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.OrbitMinesServer;
+import com.orbitmines.spigot.api.Loot;
+import com.orbitmines.spigot.api.events.VoidDamageEvent;
+import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.PluginMessageHandler;
 import com.orbitmines.spigot.api.handlers.PreventionSet;
 import com.orbitmines.spigot.api.handlers.chat.ActionBar;
+import com.orbitmines.spigot.api.handlers.cmd.Command;
+import com.orbitmines.spigot.api.handlers.data.LootData;
+import com.orbitmines.spigot.api.handlers.data.PlayTimeData;
+import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.api.handlers.itemhandlers.ItemHoverActionBar;
 import com.orbitmines.spigot.api.handlers.itemhandlers.ItemInteraction;
 import com.orbitmines.spigot.api.handlers.leaderboard.LeaderBoard;
 import com.orbitmines.spigot.api.handlers.leaderboard.hologram.DefaultHologramLeaderBoard;
+import com.orbitmines.spigot.api.handlers.npc.Hologram;
 import com.orbitmines.spigot.api.handlers.scoreboard.DefaultScoreboard;
+import com.orbitmines.spigot.api.handlers.scoreboard.ScoreboardSet;
+import com.orbitmines.spigot.api.options.chestshops.ChestShopHandler;
 import com.orbitmines.spigot.api.utils.ConsoleUtils;
 import com.orbitmines.spigot.api.utils.LocationUtils;
 import com.orbitmines.spigot.api.utils.PlayerUtils;
 import com.orbitmines.spigot.api.utils.Serializer;
+import com.orbitmines.spigot.servers.hub.datapoints.HubDataPointSpawnpoint;
 import com.orbitmines.spigot.servers.survival.cmds.*;
-import com.orbitmines.spigot.servers.survival.cmds.vip.CommandEnderchest;
-import com.orbitmines.spigot.servers.survival.cmds.vip.CommandWorkbench;
-import com.orbitmines.spigot.servers.survival.events.ClaimEvents;
-import com.orbitmines.spigot.servers.survival.events.DeathEvent;
-import com.orbitmines.spigot.servers.survival.events.FlyEvent;
-import com.orbitmines.spigot.servers.survival.events.SignEvent;
+import com.orbitmines.spigot.servers.survival.cmds.vip.*;
+import com.orbitmines.spigot.servers.survival.datapoints.SurvivalDataPointEndReset;
+import com.orbitmines.spigot.servers.survival.datapoints.SurvivalDataPointNetherReset;
+import com.orbitmines.spigot.servers.survival.events.*;
 import com.orbitmines.spigot.servers.survival.gui.claim.ClaimGUI;
+import com.orbitmines.spigot.servers.survival.handlers.ResetTimer;
+import com.orbitmines.spigot.servers.survival.handlers.SurvivalData;
+import com.orbitmines.spigot.servers.survival.handlers.SurvivalDataPointHandler;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalPlayer;
 import com.orbitmines.spigot.servers.survival.handlers.claim.Claim;
 import com.orbitmines.spigot.servers.survival.handlers.claim.ClaimHandler;
@@ -43,8 +56,10 @@ import com.orbitmines.spigot.servers.survival.handlers.region.Region;
 import com.orbitmines.spigot.servers.survival.handlers.region.RegionBuilder;
 import com.orbitmines.spigot.servers.survival.handlers.teleportable.SurvivalSpawn;
 import com.orbitmines.spigot.servers.survival.handlers.teleportable.Warp;
+import com.orbitmines.spigot.servers.survival.runnables.ClaimAchievementRunnable;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -61,7 +76,7 @@ public class Survival extends OrbitMinesServer {
     private World world_nether;
     private World world_the_end;
 
-    private Location lobbySpawn;
+    private List<Location> spawnLocations;
     private SurvivalSpawn spawnTp;
 
     private ClaimHandler claimHandler;
@@ -70,7 +85,12 @@ public class Survival extends OrbitMinesServer {
         new LeaderBoard.Instantiator("EARTH_MONEY") {
             @Override
             public LeaderBoard instantiate(Location location, String[] data) {
-                return new DefaultHologramLeaderBoard(location, 0, () -> "§7§lRichest Players", 10, Table.SURVIVAL_PLAYERS, TableSurvivalPlayers.UUID, TableSurvivalPlayers.EARTH_MONEY);
+                return new DefaultHologramLeaderBoard(location, 0, () -> "§7§lRichest Players", 10, Table.SURVIVAL_PLAYERS, TableSurvivalPlayers.UUID, TableSurvivalPlayers.EARTH_MONEY) {
+                    @Override
+                    public String getValue(CachedPlayer player, int count) {
+                        return "§2§l" + count + " " + (count == 1 ? "Credit" : "Credits");
+                    }
+                };
             }
         };
         new LeaderBoard.Instantiator("CLAIM_BLOCKS") {
@@ -88,33 +108,36 @@ public class Survival extends OrbitMinesServer {
 
             }
         });
+    }
+
+    @Override
+    public void onEnable() {
+        orbitMines.getConfigHandler().setup("survival_regions");
 
         preventionSet.prevent(orbitMines.getLobby().getWorld(),
                 PreventionSet.Prevention.BLOCK_BREAK,
                 PreventionSet.Prevention.BLOCK_INTERACTING,
                 PreventionSet.Prevention.BLOCK_PLACE,
-                PreventionSet.Prevention.FOOD_CHANGE,
                 PreventionSet.Prevention.CHUNK_UNLOAD,
                 PreventionSet.Prevention.ENTITY_INTERACTING,
                 PreventionSet.Prevention.LEAF_DECAY,
                 PreventionSet.Prevention.PLAYER_DAMAGE,
                 PreventionSet.Prevention.WEATHER_CHANGE
         );
+        orbitMines.getLobby().getWorld().setPVP(false);
 
         world = Bukkit.getWorld("world");
-        preventionSet.prevent(world,
-                PreventionSet.Prevention.PVP
-        );
+        world.getWorldBorder().setCenter(0.5, 0.5);
+        world.getWorldBorder().setSize(Region.WORLD_BORDER);
+        world.setPVP(false);
 
         world_nether = Bukkit.getWorld("world_nether");
-        preventionSet.prevent(world_nether,
-                PreventionSet.Prevention.PVP
-        );
+        world_nether.setPVP(false);
 
         world_the_end = Bukkit.getWorld("world_the_end");
-        preventionSet.prevent(world_the_end,
-                PreventionSet.Prevention.PVP
-        );
+        world_the_end.setPVP(false);
+
+        orbitMines.getLobby().getWorld().setTime(6000);
 
         claimHandler = new ClaimHandler(this);
 
@@ -125,12 +148,111 @@ public class Survival extends OrbitMinesServer {
         setupClaimTool();
 
         Warp.setupWarps();
-    }
 
-    @Override
-    public void onEnable() {
-        world.getWorldBorder().setCenter(0.5, 0.5);
-        world.getWorldBorder().setSize(Region.WORLD_BORDER);
+        setup(new ChestShopHandler() {
+            @Override
+            public int getMoney(UUID uuid) {
+                SurvivalPlayer omp = SurvivalPlayer.getPlayer(uuid);
+
+                if (omp != null)
+                    return omp.getEarthMoney();
+
+                SurvivalData data = new SurvivalData(uuid);
+                data.load();
+
+                return data.getEarthMoney();
+            }
+
+            @Override
+            public void addMoney(UUID uuid, int count) {
+                SurvivalPlayer omp = SurvivalPlayer.getPlayer(uuid);
+
+                LootData data;
+
+                if (omp != null) {
+                    data = (LootData) omp.getData(Data.Type.LOOT);
+                } else {
+                    data = new LootData(uuid);
+                    data.load();
+                }
+
+                data.add(Loot.SURVIVAL_CREDITS, Rarity.COMMON, server.getColor().getChatColor() + "§l§oChest Shops", count);
+            }
+
+            @Override
+            public void removeMoney(UUID uuid, int count) {
+                SurvivalPlayer omp = SurvivalPlayer.getPlayer(uuid);
+
+                if (omp != null) {
+                    omp.removeEarthMoney(count);
+                    return;
+                }
+
+                SurvivalData data = new SurvivalData(uuid);
+                data.load();
+
+                data.removeEarthMoney(count);
+            }
+
+            @Override
+            public String getCurrencyDisplay(int count) {
+                return "§2§l" + NumberUtils.locale(count) + " " + (count == 1 ? "Credit" : "Credits");
+            }
+
+            @Override
+            public char getCurrencySymbol() {
+                return 'C';
+            }
+
+            @Override
+            public ItemBuilder getCurrencyIcon() {
+                return new ItemBuilder(Material.SCUTE);
+            }
+
+            @Override
+            public String getScoreboardCurrencyName() {
+                return "§2§lCredits";
+            }
+
+            @Override
+            public ScoreboardSet getNewScoreboardInstance(OrbitMines orbitMines, OMPlayer omp) {
+                return new Survival.Scoreboard(orbitMines, (SurvivalPlayer) omp);
+            }
+
+            @Override
+            public List<World> getWorlds() {
+                return Collections.singletonList(world);
+            }
+        });
+
+        /* DataPoints */
+        spawnLocations = ((HubDataPointSpawnpoint) (orbitMines.getLobby().getHandler().getDataPoint(SurvivalDataPointHandler.Type.SPAWNPOINT))).getSpawns();
+
+        for (Location location : ((SurvivalDataPointNetherReset) (orbitMines.getLobby().getHandler().getDataPoint(SurvivalDataPointHandler.Type.NETHER_RESET))).getLocations()) {
+            ResetTimer timer = ResetTimer.NETHER_RESET;
+
+            Hologram hologram = new Hologram(location, 1, Hologram.Face.UP);
+            hologram.addLine(() -> timer.getDisplayName() + " Reset", false);
+            hologram.addLine(() -> "§7" + timer.getResetInString(Language.ENGLISH), false);
+            hologram.create();
+
+            timer.getHolograms().add(hologram);
+        }
+        for (Location location : ((SurvivalDataPointEndReset) (orbitMines.getLobby().getHandler().getDataPoint(SurvivalDataPointHandler.Type.END_RESET))).getLocations()) {
+            ResetTimer timer = ResetTimer.END_RESET;
+
+            Hologram hologram = new Hologram(location, 0, Hologram.Face.UP);
+            hologram.addLine(() -> timer.getDisplayName() + " Reset", false);
+            hologram.addLine(() -> "§7" + timer.getResetInString(Language.ENGLISH), false);
+            hologram.create();
+
+            timer.getHolograms().add(hologram);
+        }
+
+        /* Setup Nether/End Reset Timers */
+        for (ResetTimer timer : ResetTimer.values()) {
+            timer.setup(this);
+        }
     }
 
     @Override
@@ -145,12 +267,15 @@ public class Survival extends OrbitMinesServer {
 
     @Override
     public boolean teleportToSpawn(Player player) {
-        return false;
+        PlayTimeData data = new PlayTimeData(player.getUniqueId());
+        data.load();
+
+        return data.getPlayTime().get(server) == 0F;
     }
 
     @Override
     public Location getSpawnLocation(Player player) {
-        return null;
+        return getLobbySpawn();
     }
 
     @Override
@@ -159,14 +284,29 @@ public class Survival extends OrbitMinesServer {
                 new ClaimEvents(this),
                 new DeathEvent(this),
                 new FlyEvent(this),
-                new SignEvent()
+                new SignEvent(),
+                new AchievementEvents(orbitMines),
+                new VoidDamageEvent(orbitMines.getLobby().getWorld()) {
+                    @Override
+                    public Location getRespawnLocation(Player player) {
+                        return getLobbySpawn();
+                    }
+                }
         );
     }
 
     @Override
     protected void registerCommands() {
+        Command.getCommand("/fly").unregister();
+        Command.getCommand("/tp").unregister();
+
         new CommandSpawn(this);
         new CommandRegion(this);
+
+        new CommandClaim();
+        new CommandCredits();
+        new CommandPay();
+        new CommandPrismShop();
 
         new CommandHome();
         new CommandHomes();
@@ -176,13 +316,18 @@ public class Survival extends OrbitMinesServer {
         new CommandWarps(this);
         new CommandMyWarps(this);
 
+        new CommandAccept();
+
+        new CommandTeleport();
+        new CommandFly();
         new CommandWorkbench();
         new CommandEnderchest();
+        new CommandTpHere();
     }
 
     @Override
     protected void registerRunnables() {
-
+        new ClaimAchievementRunnable(this);
     }
 
     @Override
@@ -198,12 +343,20 @@ public class Survival extends OrbitMinesServer {
         return world_nether;
     }
 
+    public void setWorld_nether(World world_nether) {
+        this.world_nether = world_nether;
+    }
+
     public World getWorld_the_end() {
         return world_the_end;
     }
 
+    public void setWorld_the_end(World world_the_end) {
+        this.world_the_end = world_the_end;
+    }
+
     public Location getLobbySpawn() {
-        return lobbySpawn;
+        return RandomUtils.randomFrom(spawnLocations);
     }
 
     public SurvivalSpawn getSpawnTp() {
@@ -215,16 +368,23 @@ public class Survival extends OrbitMinesServer {
     }
 
     private void setupRegions() {
-        if (!Database.get().contains(Table.SERVER_DATA, TableServerData.DATA, new Where(TableServerData.SERVER, getServer().toString()), new Where(TableServerData.TYPE, "TELEPORTABLE")))
-            Database.get().insert(Table.SERVER_DATA, Table.SERVER_DATA.values(getServer().toString(), "TELEPORTABLE", Region.TELEPORTABLE + ""));
+        if (!Database.get().contains(Table.SERVER_DATA, TableServerData.DATA, new Where(TableServerData.SERVER, server.toString()), new Where(TableServerData.TYPE, "TELEPORTABLE")))
+            Database.get().insert(Table.SERVER_DATA, server.toString(), "TELEPORTABLE", Region.TELEPORTABLE + "");
         else
-            Region.TELEPORTABLE = Database.get().getInt(Table.SERVER_DATA, TableServerData.DATA, new Where(TableServerData.SERVER, getServer().toString()), new Where(TableServerData.TYPE, "TELEPORTABLE"));
+            Region.TELEPORTABLE = Database.get().getInt(Table.SERVER_DATA, TableServerData.DATA, new Where(TableServerData.SERVER, server.toString()), new Where(TableServerData.TYPE, "TELEPORTABLE"));
+
+        List<Integer> generated;
+        FileConfiguration configuration = orbitMines.getConfigHandler().get("survival_regions");
+        if (configuration.contains("regions"))
+            generated = configuration.getIntegerList("regions");
+        else
+            generated = new ArrayList<>();
 
         for (int i = 0; i < Region.REGION_COUNT; i++) {
             RegionBuilder builder = new RegionBuilder(world, i);
-            builder.build();
+            builder.build(generated);
 
-            new Region(i, builder.getFixedSpawnLocation(), builder.getInventoryX(), builder.getInventoryY());
+            new Region(i, builder.getFixedSpawnLocation(), builder.getInventoryX(), builder.getInventoryY(), builder.isUnderWaterRegion());
         }
     }
 

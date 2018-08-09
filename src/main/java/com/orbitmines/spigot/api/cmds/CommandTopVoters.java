@@ -77,19 +77,9 @@ public class CommandTopVoters extends DefaultCommandLeaderBoard {
 
             ComponentMessage cM = new ComponentMessage();
             cM.add(new Message("  " + color + "§l" + (i + 1) + ".§r "));
-            cM.add(new Message("§3§l" + reward.getStep() + "€/" + TopVoterReward.STEP_VOTES + " Votes§r §7(OrbitMines Shop Voucher)"), HoverEvent.Action.SHOW_TEXT, new Message(
-                    "§3§l" + reward.getStep() + "€/" + TopVoterReward.STEP_VOTES + " Votes\n" +
-                            "§7§oOrbitMines Shop Voucher\n" +
-                            "\n" +
-                            omp.lang("§7Je krijgt " + reward.getStep() + "€ per " + TopVoterReward.STEP_VOTES + " Votes.\n", "§7You'll receive " + reward.getStep() + "€ per " + TopVoterReward.STEP_VOTES + " Votes.\n") +
-                            omp.lang(
-                                    "\n§7§oVoorbeeld:\nAls je deze maand de top voter bent,\n",
-                                    "\n§7§oExample:\nIf you are the top voter this month,\n"
-                            ) +
-                            omp.lang(
-                                    "§7§oen je hebt 100 votes, krijg je 100/" + TopVoterReward.STEP_VOTES + " = " + (reward.getStep() * 4) + "€.",
-                                    "§7§oand you have 100 votes, then you'll\nreceive 100/"  + TopVoterReward.STEP_VOTES + " = " + (reward.getStep() * 4) + "€."
-                            )
+            cM.add(new Message("§3§l" + reward.getStep() + "€§r §7(OrbitMines Shop Voucher)"), HoverEvent.Action.SHOW_TEXT, new Message(
+                    "§3§l" + reward.getStep() + "€\n" +
+                            "§7§oOrbitMines Shop Voucher"
             ));
             cM.send(omp);
         }
@@ -162,7 +152,7 @@ public class CommandTopVoters extends DefaultCommandLeaderBoard {
             data.updateVoteTimeStamps();
 
             omp.sendMessage("");
-            omp.sendMessage(" §7§lOrbit§8§lMines §9§lVote Links");
+            omp.sendMessage(" §8§lOrbit§7§lMines §9§lVote Links");
 
             ServerList[] serverLists = ServerList.values();
             for (int i = 0; i < serverLists.length; i++) {

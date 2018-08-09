@@ -18,33 +18,27 @@
 
 package com.orbitmines.spigot.servers.survival.griefprevention;
 
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.util.BlockIterator;
 
 class PlayerEventHandler implements Listener {
 
-
-	static Block getTargetBlock(Player player, int maxDistance) throws IllegalStateException {
-		Location eye = player.getEyeLocation();
-		Material eyeMaterial = eye.getBlock().getType();
-		boolean passThroughWater = (eyeMaterial == Material.WATER || eyeMaterial == Material.STATIONARY_WATER);
-		BlockIterator iterator = new BlockIterator(player.getLocation(), player.getEyeHeight(), maxDistance);
-		Block result = player.getLocation().getBlock().getRelative(BlockFace.UP);
-		while (iterator.hasNext()) {
-			result = iterator.next();
-			Material type = result.getType();
-			if (type != Material.AIR &&
-					(!passThroughWater || type != Material.STATIONARY_WATER) &&
-					(!passThroughWater || type != Material.WATER) &&
-					type != Material.LONG_GRASS &&
-					type != Material.SNOW) return result;
-		}
-
-		return result;
-	}
+//
+//	static Block getTargetBlock(Player player, int maxDistance) throws IllegalStateException {
+//		Location eye = player.getEyeLocation();
+//		Material eyeMaterial = eye.getBlock().getType();
+//		boolean passThroughWater = (eyeMaterial == Material.WATER || eyeMaterial == Material.STATIONARY_WATER);
+//		BlockIterator iterator = new BlockIterator(player.getLocation(), player.getEyeHeight(), maxDistance);
+//		Block result = player.getLocation().getBlock().getRelative(BlockFace.UP);
+//		while (iterator.hasNext()) {
+//			result = iterator.next();
+//			Material type = result.getType();
+//			if (type != Material.AIR &&
+//					(!passThroughWater || type != Material.STATIONARY_WATER) &&
+//					(!passThroughWater || type != Material.WATER) &&
+//					type != Material.LONG_GRASS &&
+//					type != Material.SNOW) return result;
+//		}
+//
+//		return result;
+//	}
 }

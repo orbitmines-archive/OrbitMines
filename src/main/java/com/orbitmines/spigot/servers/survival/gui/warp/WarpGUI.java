@@ -48,7 +48,7 @@ public class WarpGUI extends GUI {
 
         {
             int warps = Warp.getWarpsFor(omp.getUUID()).size();
-            ItemBuilder item = new ItemBuilder(Material.BOOK_AND_QUILL, 1, 0, "§7§l" + omp.lang("Jouw Warps", "Your Warps") + " " + Warp.COLOR.getChatColor() + "§l" + warps + " §7§l/ " + Warp.Type.values().length);
+            ItemBuilder item = new ItemBuilder(Material.WRITABLE_BOOK, 1, "§7§l" + omp.lang("Jouw Warps", "Your Warps") + " " + Warp.COLOR.getChatColor() + "§l" + warps + " §7§l/ " + Warp.Type.values().length);
 
             if (warps < omp.getWarpsAllowed())
                 item.glow();
@@ -62,7 +62,7 @@ public class WarpGUI extends GUI {
         }
 
         {
-            ItemBuilder item = new ItemBuilder(Material.DIAMOND, 1, 0, omp.lang("§6§lVoeg toe aan Favorieten", "§6§lFavorite Warp"));
+            ItemBuilder item = new ItemBuilder(Material.DIAMOND, 1, omp.lang("§6§lVoeg toe aan Favorieten", "§6§lFavorite Warp"));
 
             if (type == Type.FAVORITE)
                 item.glow();
@@ -111,8 +111,7 @@ public class WarpGUI extends GUI {
                 ItemBuilder item = warp.getIcon().getItemBuilder();
 
                 if (!warp.isEnabled()) {
-                    item.setMaterial(Material.STAINED_GLASS_PANE);
-                    item.setDurability((short) 15);
+                    item.setMaterial(Material.BLACK_STAINED_GLASS_PANE);
                 }
 
                 item.setDisplayName("§7§lWarp " + Warp.COLOR.getChatColor() + "§l" + warp.getName());
@@ -235,7 +234,7 @@ public class WarpGUI extends GUI {
                         check = (j + 1) / 9;
 
                     if (check != -1) {
-                        int next = WARPS_PER_PAGE + check + (NEW_PER_PAGE * i);
+                        int next = WARPS_PER_PAGE + check + (NEW_PER_PAGE * i) - 1;
                         pageWarps[j] = warps.size() > next ? warps.get(next) : null;
                     } else {
                         pageWarps[j] = pageWarps[j + 1];

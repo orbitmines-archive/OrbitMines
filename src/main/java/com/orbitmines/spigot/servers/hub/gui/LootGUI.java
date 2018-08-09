@@ -4,9 +4,7 @@ package com.orbitmines.spigot.servers.hub.gui;
  * OrbitMines - @author Fadi Shawki - 2018
  */
 
-import com.orbitmines.api.Message;
-import com.orbitmines.api.ServerList;
-import com.orbitmines.api.VipRank;
+import com.orbitmines.api.*;
 import com.orbitmines.api.utils.TimeUtils;
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.Loot;
@@ -51,6 +49,7 @@ public class LootGUI extends GUI {
         VoteData voteData = (VoteData) omp.getData(Data.Type.VOTES);
         voteData.updateVoteTimeStamps();
         LootData lootData = (LootData) omp.getData(Data.Type.LOOT);
+        lootData.load();
 
         ServerList[] serverLists = ServerList.values();
         for (int i = 0; i < serverLists.length; i++) {
@@ -58,9 +57,9 @@ public class LootGUI extends GUI {
 
             boolean canVote = !voteData.getVoteTimeStamps().containsKey(serverList);
 
-            ItemBuilder item = new ItemBuilder(canVote ? Material.EGG /* TODO: TURTLE_EGG*/ : Material.EGG, serverList.ordinal() + 1, 0, (canVote ? "§9" : "§c") + "§lVote Link " + (serverList.ordinal() + 1));
+            ItemBuilder item = new ItemBuilder(canVote ? Material.TURTLE_EGG : Material.EGG, serverList.ordinal() + 1, (canVote ? "§9" : "§c") + "§lVote Link " + (serverList.ordinal() + 1));
 
-            item.addLore("§7§o" + serverList.getDomainName());
+            item.addLore("§7§o" + serverList.getDisplayName());
             item.addLore("");
             item.addLore("§7- §9§l250 Prisms");
             item.addLore("§7");
@@ -78,11 +77,11 @@ public class LootGUI extends GUI {
                 public void onClick(InventoryClickEvent event, OMPlayer omp) {
                     omp.getPlayer().closeInventory();
 
-                    omp.sendMessage(" §7§lOrbit§8§lMines §9§lVote Link " + (serverList.ordinal() + 1));
+                    omp.sendMessage(" §8§lOrbit§7§lMines §9§lVote Link " + (serverList.ordinal() + 1));
 
                     ComponentMessage cM = new ComponentMessage();
                     cM.add(new Message("  §7- "));
-                    cM.add(new Message("§7Klik hier om naar §9§l" + serverList.getDomainName() + "§r§7 te gaan§7.", "§7Click here to go to §9§l" + serverList.getDomainName() + "§r§7."), ClickEvent.Action.OPEN_URL, new Message(serverList.getUrl()), HoverEvent.Action.SHOW_TEXT, new Message("§7Klik hier om §9Vote Link " + (serverList.ordinal() + 1) + "§7 te openen.", "§7Click here to open §9Vote Link " + (serverList.ordinal() + 1) + "§7."));
+                    cM.add(new Message("§7Klik hier om naar §9§l" + serverList.getDisplayName() + "§r§7 te gaan§7.", "§7Click here to go to §9§l" + serverList.getDisplayName() + "§r§7."), ClickEvent.Action.OPEN_URL, new Message(serverList.getUrl()), HoverEvent.Action.SHOW_TEXT, new Message("§7Klik hier om §9Vote Link " + (serverList.ordinal() + 1) + "§7 te openen.", "§7Click here to open §9Vote Link " + (serverList.ordinal() + 1) + "§7."));
                     cM.send(omp);
 
                     omp.playSound(Sound.UI_BUTTON_CLICK);
@@ -134,7 +133,7 @@ public class LootGUI extends GUI {
 
         int slot = 36;
 
-        for (LootData.LootInstance instance : getLootForPage(lootData.getLoot())) {
+        for (Loot.Instance instance : getLootForPage(lootData.getLoot())) {
             if (instance != null) {
                 Loot loot = instance.getLoot();
                 int count = instance.getCount();
@@ -144,7 +143,9 @@ public class LootGUI extends GUI {
 
                 item.addLore("§7" + omp.lang("Zeldzaamheid", "Rarity") + ": " + instance.getRarity().getDisplayName());
 
-                if (loot.getServer(count) != null)
+                Server server = loot.getServer(count);
+
+                if (server != null)
                     item.addLore("§7Server: " + loot.getServer(count).getDisplayName());
 
                 item.addLore("");
@@ -153,7 +154,10 @@ public class LootGUI extends GUI {
                 add(slot, new ItemInstance(item.build()) {
                     @Override
                     public void onClick(InventoryClickEvent event, OMPlayer omp) {
-                        loot.onInteract(omp, instance.getRarity(), instance.getDescription(), count);
+                        if (server == null || server == orbitMines.getServerHandler().getServer())
+                            loot.onInteract(omp, instance.getRarity(), instance.getDescription(), count);
+                        else
+                            omp.sendMessage("Loot", Color.RED, "§7Je kan dit item alleen gebruiken in " + server.getDisplayName() + "§7.", "§7You can only use this item in " + server.getDisplayName() + "§7.");
                     }
                 });
             }
@@ -190,8 +194,8 @@ public class LootGUI extends GUI {
     }
 
 
-    private LootData.LootInstance[] getLootForPage(List<LootData.LootInstance> loot) {
-        LootData.LootInstance[] pageLoot = new LootData.LootInstance[LOOT_PER_PAGE];
+    private Loot.Instance[] getLootForPage(List<Loot.Instance> loot) {
+        Loot.Instance[] pageLoot = new Loot.Instance[LOOT_PER_PAGE];
 
         for (int i = 0; i < LOOT_PER_PAGE; i++) {
             if (loot.size() > i)
@@ -206,7 +210,7 @@ public class LootGUI extends GUI {
                         check = (j + 1) / 9;
 
                     if (check != -1) {
-                        int next = LOOT_PER_PAGE + check + (NEW_PER_PAGE * i);
+                        int next = LOOT_PER_PAGE + check + (NEW_PER_PAGE * i) - 1;
                         pageLoot[j] = loot.size() > next ? loot.get(next) : null;
                     } else {
                         pageLoot[j] = pageLoot[j + 1];
@@ -218,7 +222,7 @@ public class LootGUI extends GUI {
         return pageLoot;
     }
 
-    private boolean canHaveMorePages(List<LootData.LootInstance> loot) {
+    private boolean canHaveMorePages(List<Loot.Instance> loot) {
         int lootAmount = loot.size();
 
         if (lootAmount <= LOOT_PER_PAGE)

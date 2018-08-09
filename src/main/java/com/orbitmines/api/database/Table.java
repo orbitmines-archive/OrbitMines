@@ -20,12 +20,20 @@ public class Table {
     public static TablePlayers PLAYERS;
     public static TableVotes VOTES;
     public static TableFriends FRIENDS;
+    public static TableAchievements ACHIEVEMENTS;
+    public static TableDiscord DISCORD;
+    public static TableDiscordGroup DISCORD_GROUP;
+    public static TableDiscordGroupData DISCORD_GROUP_DATA;
     public static TableIPs IPS;
+    public static TablePunishments PUNISHMENTS;
+    public static TableReports REPORTS;
     public static Table2FA _2FA;
     public static TableDonations DONATIONS;
     public static TablePlayTime PLAY_TIME;
     public static TableLoot LOOT;
     public static TablePeriodLoot PERIOD_LOOT;
+
+    public static TableChestShops CHEST_SHOPS;
 
     public static TableServerData SERVER_DATA;
     public static TableServers SERVERS;
@@ -44,12 +52,20 @@ public class Table {
         PLAYERS = new TablePlayers();
         VOTES = new TableVotes();
         FRIENDS = new TableFriends();
+        ACHIEVEMENTS = new TableAchievements();
+        DISCORD = new TableDiscord();
+        DISCORD_GROUP = new TableDiscordGroup();
+        DISCORD_GROUP_DATA = new TableDiscordGroupData();
         IPS = new TableIPs();
+        PUNISHMENTS = new TablePunishments();
+        REPORTS = new TableReports();
         _2FA = new Table2FA();
         DONATIONS = new TableDonations();
         PLAY_TIME = new TablePlayTime();
         LOOT = new TableLoot();
         PERIOD_LOOT = new TablePeriodLoot();
+
+        CHEST_SHOPS = new TableChestShops();
 
         SERVER_DATA = new TableServerData();
         SERVERS = new TableServers();

@@ -41,11 +41,13 @@ public class CommandRegion extends Command {
             new RegionGUI(survival).open(omp);
         } else if (a.length == 2) {
             if (a[1].equalsIgnoreCase("random")) {
-                Region region = Region.randomTeleportable();
-                if (omp.getWorld() == survival.getOrbitMines().getLobby().getWorld())
+                Region region = Region.randomTeleportable(omp.isFirstLogin()); /* We don't want new players to be spawning in regions under water, after that it's fine. */
+                if (omp.getWorld() == survival.getOrbitMines().getLobby().getWorld()) {
                     omp.getPlayer().teleport(region.getLocation());
-                else
+                    omp.sendMessage("Teleporter", Color.LIME, "§7" + omp.lang("Geteleporteerd naar", "Teleported to") + " " + region.getColor().getChatColor() + region.getName() + "§7.");
+                } else {
                     region.teleport(omp);
+                }
                 return;
             }
             int id;
@@ -59,10 +61,12 @@ public class CommandRegion extends Command {
 
             if (id > 0 && id <= Region.TELEPORTABLE) {
                 Region region = Region.getRegion(id - 1);
-                if (omp.getWorld() == survival.getOrbitMines().getLobby().getWorld())
+                if (omp.getWorld() == survival.getOrbitMines().getLobby().getWorld()) {
                     omp.getPlayer().teleport(region.getLocation());
-                else
+                    omp.sendMessage("Teleporter", Color.LIME, "§7" + omp.lang("Geteleporteerd naar", "Teleported to") + " " + region.getColor().getChatColor() + region.getName() + "§7.");
+                } else {
                     region.teleport(omp);
+                }
                 return;
             }
 

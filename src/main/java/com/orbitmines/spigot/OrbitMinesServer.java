@@ -1,19 +1,22 @@
 package com.orbitmines.spigot;
 
 import com.orbitmines.api.*;
-import com.orbitmines.api.Message;
 import com.orbitmines.discordbot.DiscordBot;
 import com.orbitmines.discordbot.utils.BotToken;
-import com.orbitmines.discordbot.utils.SkinLibrary;
+import com.orbitmines.discordbot.utils.DiscordSpigotUtils;
+import com.orbitmines.discordbot.utils.DiscordUtils;
+import com.orbitmines.spigot.api.cmds.discord.CommandList;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.PluginMessageHandler;
 import com.orbitmines.spigot.api.handlers.PreventionSet;
 import com.orbitmines.spigot.api.handlers.chat.ComponentMessage;
+import com.orbitmines.spigot.api.options.ApiOption;
 import com.orbitmines.spigot.api.runnables.SpigotRunnable;
 import com.orbitmines.spigot.servers.hub.Hub;
 import com.orbitmines.spigot.servers.survival.Survival;
-import com.orbitmines.spigot.servers.uhsurvival2.UHSurvival;
-import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import org.bukkit.Bukkit;
@@ -25,6 +28,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.PluginManager;
+
+import java.util.UUID;
 
 /*
 * OrbitMines - @author Fadi Shawki - 2017
@@ -49,8 +54,20 @@ public abstract class OrbitMinesServer {
         this.preventionSet = new PreventionSet();
         this.maintenanceBossBar = Bukkit.createBossBar(server.getDisplayName() + " §7§l| " + Server.Status.MAINTENANCE.getDisplayName(), BarColor.PINK, BarStyle.SOLID);
 
+        /* Setup Discord */
+        try {
+            token = BotToken.from(server);
+            discord = new DiscordBot(false, token);
+        } catch(Exception ex) {
+            ex.printStackTrace();
+        }
+
         registerEvents();
+
+        /* register commands */
+        new CommandList(discord, token);
         registerCommands();
+
         registerRunnables();
 
         new SpigotRunnable(SpigotRunnable.TimeUnit.SECOND, 2) {
@@ -67,14 +84,6 @@ public abstract class OrbitMinesServer {
                 }
             }
         };
-
-        /* Setup Discord */
-        try {
-            token = BotToken.from(server);
-            discord = new DiscordBot(token);
-        } catch(Exception ex) {
-            ex.printStackTrace();
-        }
     }
 
     public abstract void onEnable();
@@ -97,6 +106,12 @@ public abstract class OrbitMinesServer {
 
     public abstract void setupNpc(String npcName, Location location);
 
+    protected void setup(ApiOption... options) {
+        for (ApiOption option : options) {
+            option.setup(orbitMines);
+        }
+    }
+
     public void format(AsyncPlayerChatEvent event, OMPlayer omp) {
         event.setFormat(omp.getRankPrefix() + omp.getName() + "§7 » " + omp.getRankChatColor().getChatColor() + "%2$s");
     }
@@ -114,34 +129,28 @@ public abstract class OrbitMinesServer {
                 } catch (IllegalArgumentException ex1) { }
             }
         }
-        //TODO DISCORD LINK GRAB CACHEDPLAYER
 
         ComponentMessage cM = new ComponentMessage();
 
-        String rankPrefix = staffRank != StaffRank.NONE ? staffRank.getPrefix(staffRank.getPrefixColor()) : vipRank.getPrefix(vipRank.getPrefixColor());
-        Color chatColor = staffRank != StaffRank.NONE ? staffRank.getChatColor() : vipRank.getChatColor();
+        String rankPrefix = (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getPrefix(staffRank.getPrefixColor()) : vipRank.getPrefix(vipRank.getPrefixColor());
+        Color chatColor = (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getChatColor() : vipRank.getChatColor();
 
         cM.add(new Message("§9§lDISCORD§r"));
         cM.add(new Message(" §7» "));
 
         String name = rankPrefix + "@" + member.getEffectiveName();
-        cM.add(new Message(name), HoverEvent.Action.SHOW_TEXT, new Message(rankPrefix + "@" + member.getUser().getName() + "#" + member.getUser().getDiscriminator()));
 
-        String msg = message.getContentDisplay();
-        for (Role role : message.getMentionedRoles()) {
-            msg = msg.replaceAll(role.getAsMention(), "@" + role.getName());
-        }
-        for (TextChannel textChannel : message.getMentionedChannels()) {
-            msg = msg.replaceAll(textChannel.getAsMention(), "#" + textChannel.getName());
-        }
-        for (Member mem : message.getMentionedMembers()) {
-            msg = msg.replaceAll(mem.getAsMention(), "@" + mem.getEffectiveName());
-        }
-        for (Emote emote : message.getEmotes()) {
-            msg = msg.replaceAll(emote.getAsMention(), emote.getName());
+        UUID uuid = discord.getLinkedUUID(member.getUser());
+        String playerName = null;
+
+        if (uuid != null) {
+            CachedPlayer player = CachedPlayer.getPlayer(uuid);
+            playerName = player.getRankPrefixColor().getChatColor() + player.getPlayerName();
         }
 
-        cM.add(new Message(" §7» " + chatColor.getChatColor() + msg));
+        cM.add(new Message(name), HoverEvent.Action.SHOW_TEXT, new Message(rankPrefix + "@" + member.getUser().getName() + "#" + member.getUser().getDiscriminator() + "\n§7IGN: " + (playerName == null ? StaffRank.NONE.getDisplayName() : playerName)));
+
+        cM.add(new Message(" §7» " + chatColor.getChatColor() + DiscordUtils.filterFromDiscord(message)));
 
         if (message.getAttachments().size() != 0) {
             net.dv8tion.jda.core.entities.Message.Attachment attachment = message.getAttachments().get(0);
@@ -152,33 +161,7 @@ public abstract class OrbitMinesServer {
     }
 
     public void toDiscord(AsyncPlayerChatEvent event, OMPlayer omp) {
-        Guild guild = discord.getGuild(token);
-
-        CharSequence text = SkinLibrary.getEmote(guild, omp.getUUID()).getAsMention() + getDiscordRankPrefix(omp) + " **" + omp.getName(true) + "** » ";
-
-        String message = event.getMessage();
-
-        for (Role role : guild.getRoles()) {
-            message = message.replaceAll("@" + role.getName(), role.getAsMention());
-        }
-        for (TextChannel textChannel : guild.getTextChannels()) {
-            message = message.replaceAll("#" + textChannel.getName(), textChannel.getAsMention());
-        }
-        for (Member member : guild.getMembers()) {
-            message = message.replace("@" + member.getEffectiveName() + "#" + member.getUser().getDiscriminator(), member.getAsMention()).replaceAll("@" + member.getEffectiveName(), member.getAsMention()).replaceAll("@" + member.getNickname(), member.getAsMention());
-        }
-        for (Emote emote : guild.getEmotes()) {
-            message = message.replaceAll(":" + emote.getName() + ":", emote.getAsMention());
-        }
-
-        getDiscordChannel().sendMessage(text + message).queue();
-    }
-
-    public String getDiscordRankPrefix(OMPlayer omp) {
-        if (omp.getStaffRank() == StaffRank.NONE)
-            return omp.getVipRank() != VipRank.NONE ? " " + discord.getEmote(token, omp.getVipRank()).getAsMention() + "**" + omp.getRankName() + "**" : "";
-
-        return " **" + omp.getRankName() + "**";
+        getDiscordChannel().sendMessage(DiscordSpigotUtils.getDisplay(discord, token, omp) + " » " + event.getMessage()).queue();
     }
 
     protected void registerEvents(Listener... listeners) {
@@ -207,8 +190,6 @@ public abstract class OrbitMinesServer {
                 return null;
             case MINIGAMES:
                 return null;
-            case UHSURVIVAL:
-                return new UHSurvival(orbitMines);
             default:
                 throw new IllegalStateException();
         }

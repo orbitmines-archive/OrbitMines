@@ -1,8 +1,8 @@
 package com.orbitmines.spigot.api.handlers.itembuilders;
 
 import com.orbitmines.api.Language;
+import com.orbitmines.spigot.api.utils.ColorUtils;
 import org.bukkit.DyeColor;
-import org.bukkit.Material;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
 import org.bukkit.inventory.ItemFlag;
@@ -18,7 +18,6 @@ import java.util.List;
 */
 public class BannerBuilder extends ItemBuilder {
 
-    private DyeColor baseColor;
     private ArrayList<Pattern> patterns;
 
     public BannerBuilder(DyeColor baseColor) {
@@ -46,18 +45,13 @@ public class BannerBuilder extends ItemBuilder {
     }
 
     public BannerBuilder(DyeColor baseColor, ArrayList<Pattern> patterns, int amount, String displayName, List<String> lore) {
-        super(Material.BANNER, amount, 0, displayName, lore);
+        super(ColorUtils.getBannerMaterial(baseColor), amount, displayName, lore);
 
-        this.baseColor = baseColor;
         this.patterns = patterns;
     }
 
-    public DyeColor getBaseColor() {
-        return baseColor;
-    }
-
     public void setBaseColor(DyeColor baseColor) {
-        this.baseColor = baseColor;
+        this.material = ColorUtils.getBannerMaterial(baseColor);
     }
 
     public ArrayList<Pattern> getPatterns() {
@@ -77,11 +71,10 @@ public class BannerBuilder extends ItemBuilder {
 
     @Override
     public ItemStack build() {
-        ItemStack itemStack = new ItemStack(material, amount, durability);
+        ItemStack itemStack = new ItemStack(material, amount, damage);
         BannerMeta meta = (BannerMeta) itemStack.getItemMeta();
         meta.setDisplayName(displayName);
         meta.setLore((lore == null || lore.size() == 0) ? null : new ArrayList<>(lore));
-        meta.setBaseColor(baseColor);
         meta.setPatterns(new ArrayList<>(patterns));
         for (ItemFlag itemFlag : itemFlags) {
             meta.addItemFlags(itemFlag);

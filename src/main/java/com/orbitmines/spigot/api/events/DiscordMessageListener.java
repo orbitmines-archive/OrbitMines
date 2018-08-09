@@ -4,6 +4,7 @@ package com.orbitmines.spigot.api.events;
  * OrbitMines - @author Fadi Shawki - 2018
  */
 
+import com.orbitmines.discordbot.handlers.Command;
 import com.orbitmines.spigot.OrbitMines;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
@@ -22,9 +23,12 @@ public class DiscordMessageListener extends ListenerAdapter {
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
+        if (!orbitMines.getServerHandler().getDiscord().getServerId().equals(event.getGuild().getId()))
+            return;
+
         Member member = event.getMember();
 
-        if (isBot(member))
+        if (member == null || isBot(member))
             return;
 
         MessageChannel channel = event.getChannel();
@@ -33,6 +37,10 @@ public class DiscordMessageListener extends ListenerAdapter {
             return;
 
         Message message = event.getMessage();
+
+        /* Don't send Discord commands in Minecraft chat. */
+        if (Command.getCommandFromName(message.getContentRaw().split(" ")[0]) != null)
+            return;
 
         orbitMines.getServerHandler().fromDiscord(member, message);
     }

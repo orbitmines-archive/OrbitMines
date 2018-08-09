@@ -16,7 +16,7 @@ import static com.orbitmines.api.database.tables.TableLoot.*;
 */
 public class LootData extends Data {
 
-    private List<LootInstance> loot;
+    private List<Loot.Instance> loot;
 
     public LootData(UUID uuid) {
         super(Table.LOOT, Type.LOOT, uuid);
@@ -36,16 +36,16 @@ public class LootData extends Data {
             int count = Integer.parseInt(entry.get(COUNT));
             String description = ChatColor.translateAlternateColorCodes('&', entry.get(DESCRIPTION));
 
-            this.loot.add(new LootInstance(loot, rarity, count, description));
+            this.loot.add(new Loot.Instance(loot, rarity, count, description));
         }
     }
 
-    public List<LootInstance> getLoot() {
+    public List<Loot.Instance> getLoot() {
         return loot;
     }
 
     public int getCount(Loot loot, Rarity rarity, String description) {
-        LootInstance instance = getInstance(loot, rarity, description);
+        Loot.Instance instance = getInstance(loot, rarity, description);
         return instance == null ? 0 : instance.getCount();
     }
 
@@ -59,11 +59,11 @@ public class LootData extends Data {
             return;
         }
 
-        LootInstance instance = getInstance(loot, rarity, description);
+        Loot.Instance instance = getInstance(loot, rarity, description);
 
         if (instance == null) {
             Database.get().insert(table, getUUID().toString(), loot.toString(), rarity.toString(), count + "", description.replaceAll("§", "&"));
-            this.loot.add(new LootInstance(loot, rarity, count, description));
+            this.loot.add(new Loot.Instance(loot, rarity, count, description));
         } else {
             Database.get().update(table, new Set(COUNT, count), new Where(UUID, getUUID().toString()), new Where(LOOT, loot.toString()), new Where(RARITY, rarity.toString()), new Where(DESCRIPTION, description.replaceAll("§", "&")));
             instance.setCount(count);
@@ -76,46 +76,11 @@ public class LootData extends Data {
         Database.get().delete(table, new Where(UUID, getUUID().toString()), new Where(LOOT, loot.toString()), new Where(RARITY, rarity.toString()), new Where(DESCRIPTION, description.replaceAll("§", "&")));
     }
 
-    private LootInstance getInstance(Loot loot, Rarity rarity, String description) {
-        for (LootInstance instance : this.loot) {
+    private Loot.Instance getInstance(Loot loot, Rarity rarity, String description) {
+        for (Loot.Instance instance : this.loot) {
             if (instance.getLoot() == loot && instance.getRarity() == rarity && instance.getDescription().equals(description))
                 return instance;
         }
         return null;
-    }
-
-    public class LootInstance {
-
-        private final Loot loot;
-        private final Rarity rarity;
-        private int count;
-        private final String description;
-
-        public LootInstance(Loot loot, Rarity rarity, int count, String description) {
-            this.loot = loot;
-            this.rarity = rarity;
-            this.count = count;
-            this.description = description;
-        }
-
-        public Loot getLoot() {
-            return loot;
-        }
-
-        public Rarity getRarity() {
-            return rarity;
-        }
-
-        public int getCount() {
-            return count;
-        }
-
-        public void setCount(int count) {
-            this.count = count;
-        }
-
-        public String getDescription() {
-            return description;
-        }
     }
 }

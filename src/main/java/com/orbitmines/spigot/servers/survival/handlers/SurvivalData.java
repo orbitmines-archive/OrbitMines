@@ -10,6 +10,7 @@ import com.orbitmines.api.database.tables.survival.TableSurvivalPlayers;
 import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.utils.Serializer;
+import org.bukkit.Location;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,9 @@ public class SurvivalData extends Data {
     private int earthMoney;
     private int claimBlocks;
 
+    private Location logoutLocation;
+    private boolean logoutFly;
+
     private int extraHomes;
     private boolean warpSlotShop;
     private boolean warpSlotPrisms;
@@ -32,8 +36,10 @@ public class SurvivalData extends Data {
     public SurvivalData(UUID uuid) {
         super(Table.SURVIVAL_PLAYERS, Type.SURVIVAL, uuid);
 
-        earthMoney = 0;
+        earthMoney = 175;
         claimBlocks = 250;
+        logoutLocation = null;
+        logoutFly = false;
         extraHomes = 0;
         warpSlotShop = false;
         warpSlotPrisms = false;
@@ -43,11 +49,13 @@ public class SurvivalData extends Data {
     @Override
     public void load() {
         if (!Database.get().contains(table, new Column[] { TableSurvivalPlayers.UUID }, new Where(TableSurvivalPlayers.UUID, getUUID().toString()))) {
-            Database.get().insert(table, uuid.toString(), earthMoney + "", claimBlocks + "", extraHomes + "", warpSlotShop ? "1" : "0", warpSlotPrisms ? "1" : "0", Serializer.serializeLongList(favoriteWarps));
+            Database.get().insert(table, uuid.toString(), earthMoney + "", claimBlocks + "", "", logoutFly ? "1" : "0", extraHomes + "", warpSlotShop ? "1" : "0", warpSlotPrisms ? "1" : "0", Serializer.serializeLongList(favoriteWarps));
         } else {
             Map<Column, String> values = Database.get().getValues(table, new Column[] {
                     EARTH_MONEY,
                     CLAIM_BLOCKS,
+                    LOGOUT_LOCATION,
+                    LOGOUT_FLY,
                     EXTRA_HOMES,
                     WARP_SLOT_SHOP,
                     WARP_SLOT_PRISMS
@@ -55,6 +63,9 @@ public class SurvivalData extends Data {
 
             earthMoney = Integer.parseInt(values.get(EARTH_MONEY));
             claimBlocks = Integer.parseInt(values.get(CLAIM_BLOCKS));
+
+            logoutLocation = Serializer.parseLocation(values.get(LOGOUT_LOCATION));
+            logoutFly = values.get(LOGOUT_FLY).equals("1");
 
             extraHomes = Integer.parseInt(values.get(EXTRA_HOMES));
             warpSlotShop = values.get(WARP_SLOT_SHOP).equals("1");
@@ -108,6 +119,30 @@ public class SurvivalData extends Data {
 
     private void updateClaimBlocks() {
         Database.get().update(Table.SURVIVAL_PLAYERS, new Set(TableSurvivalPlayers.CLAIM_BLOCKS, this.claimBlocks), new Where(TableSurvivalPlayers.UUID, getUUID().toString()));
+    }
+
+    /*
+        LogoutLocation
+     */
+
+    public Location getLogoutLocation() {
+        return logoutLocation;
+    }
+
+    public void setLogoutLocation(Location logoutLocation) {
+        Database.get().update(Table.SURVIVAL_PLAYERS, new Set(TableSurvivalPlayers.LOGOUT_LOCATION, Serializer.serialize(logoutLocation)), new Where(TableSurvivalPlayers.UUID, getUUID().toString()));
+    }
+
+    /*
+        LogoutFly
+     */
+
+    public boolean hasLogoutFly() {
+        return logoutFly;
+    }
+
+    public void setLogoutFly(boolean logoutFly) {
+        Database.get().update(Table.SURVIVAL_PLAYERS, new Set(TableSurvivalPlayers.LOGOUT_FLY, logoutFly), new Where(TableSurvivalPlayers.UUID, getUUID().toString()));
     }
 
     /*

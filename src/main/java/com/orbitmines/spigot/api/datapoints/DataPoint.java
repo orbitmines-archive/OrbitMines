@@ -12,19 +12,13 @@ public abstract class DataPoint {
     protected final Type type;
 
     protected final Material material;
-    protected final byte data;
 
     /* Used for testing */
     protected String failureMessage;
 
     public DataPoint(Type type, Material material) {
-        this(type, material, 0);
-    }
-
-    public DataPoint(Type type, Material material, int data) {
         this.type = type;
         this.material = material;
-        this.data = (byte) data;
     }
 
     /* Returns whether or not the datapoint successfully loaded */
@@ -41,22 +35,18 @@ public abstract class DataPoint {
         return material;
     }
 
-    public byte getData() {
-        return data;
-    }
-
     public String getFailureMessage() {
         return failureMessage;
     }
 
     public boolean equals(BlockState blockState) {
-        return blockState.getType() == material && blockState.getData().getData() == data;
+        return blockState.getType() == material;
     }
 
     public enum Type {
 
-        GOLD_PLATE(Material.GOLD_PLATE),
-        IRON_PLATE(Material.IRON_PLATE);
+        GOLD_PLATE(Material.LIGHT_WEIGHTED_PRESSURE_PLATE),
+        IRON_PLATE(Material.HEAVY_WEIGHTED_PRESSURE_PLATE);
 
         private final Material material;
 

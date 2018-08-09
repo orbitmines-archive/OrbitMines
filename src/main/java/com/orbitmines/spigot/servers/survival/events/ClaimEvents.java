@@ -3,6 +3,7 @@ package com.orbitmines.spigot.servers.survival.events;
 import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.api.Color;
 import com.orbitmines.spigot.api.handlers.chat.ActionBar;
+import com.orbitmines.spigot.api.utils.ItemUtils;
 import com.orbitmines.spigot.servers.survival.Survival;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalPlayer;
 import com.orbitmines.spigot.servers.survival.handlers.claim.Claim;
@@ -38,9 +39,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /*
 * OrbitMines - @author Fadi Shawki - 2017
@@ -110,7 +109,7 @@ public class ClaimEvents implements Listener {
         }
 
         /* Not a new portal */
-        if (to.getBlock().getType() == Material.PORTAL)
+        if (to.getBlock().getType() == Material.NETHER_PORTAL)
             return;
 
         SurvivalPlayer omp = SurvivalPlayer.getPlayer(event.getPlayer());
@@ -123,7 +122,7 @@ public class ClaimEvents implements Listener {
 
         Claim claim = survival.getClaimHandler().getClaimAt(to, false, null);
 
-        if (claim != null && !claim.canBuild(omp, Material.PORTAL)) {
+        if (claim != null && !claim.canBuild(omp, Material.NETHER_PORTAL)) {
             event.setCancelled(true);
             new ActionBar(omp, () -> omp.lang("§c§lJe kan deze portal niet gebruiken omdat hij in een claim komt.", "§c§lYou can't use this portal as it ends up in a claim."), 60).send();
        }
@@ -199,7 +198,7 @@ public class ClaimEvents implements Listener {
             }
         }
 
-        if (entity instanceof Creature && omp.getItemInMainHand() != null && omp.getItemInMainHand().getType() == Material.LEASH) {
+        if (entity instanceof Creature && omp.getItemInMainHand() != null && omp.getItemInMainHand().getType() == Material.LEAD) {
             Claim claim = survival.getClaimHandler().getClaimAt(entity.getLocation(), false, omp.getLastClaim());
 
             if (claim != null && !claim.canInteract(omp)) {
@@ -340,7 +339,7 @@ public class ClaimEvents implements Listener {
                 if (lightLevel == 15 && adjacent.getType() == Material.FIRE) {
                     if (Region.isInRegion(omp, block.getLocation())) {
                         event.setCancelled(true);
-                        omp.getPlayer().sendBlockChange(adjacent.getLocation(), adjacent.getTypeId(), adjacent.getData());
+                        omp.getPlayer().sendBlockChange(adjacent.getLocation(), adjacent.getBlockData());
                         return;
                     }
 
@@ -349,7 +348,7 @@ public class ClaimEvents implements Listener {
 
                     if (claim != null && !claim.canBuild(omp, Material.AIR)) {
                         event.setCancelled(true);
-                        omp.getPlayer().sendBlockChange(adjacent.getLocation(), adjacent.getTypeId(), adjacent.getData());
+                        omp.getPlayer().sendBlockChange(adjacent.getLocation(), adjacent.getBlockData());
                         return;
                     }
                 }
@@ -364,7 +363,7 @@ public class ClaimEvents implements Listener {
             case CAULDRON:
             case JUKEBOX:
             case ANVIL:
-            case CAKE_BLOCK: {
+            case CAKE: {
                 Claim claim = survival.getClaimHandler().getClaimAt(block.getLocation(), false, omp.getLastClaim());
                 omp.setLastClaim(claim);
 
@@ -375,20 +374,48 @@ public class ClaimEvents implements Listener {
             }
             /* Access */
             case STONE_BUTTON:
-            case WOOD_BUTTON:
+
+            case OAK_BUTTON:
+            case ACACIA_BUTTON:
+            case BIRCH_BUTTON:
+            case JUNGLE_BUTTON:
+            case SPRUCE_BUTTON:
+            case DARK_OAK_BUTTON:
+
             case LEVER:
 
-            case WOOD_DOOR:
+            case OAK_DOOR:
             case ACACIA_DOOR:
             case BIRCH_DOOR:
             case JUNGLE_DOOR:
             case SPRUCE_DOOR:
             case DARK_OAK_DOOR:
 
-            case BED_BLOCK:
-            case TRAP_DOOR:
+            case WHITE_BED:
+            case ORANGE_BED:
+            case MAGENTA_BED:
+            case LIGHT_BLUE_BED:
+            case YELLOW_BED:
+            case LIME_BED:
+            case PINK_BED:
+            case GRAY_BED:
+            case LIGHT_GRAY_BED:
+            case CYAN_BED:
+            case PURPLE_BED:
+            case BLUE_BED:
+            case BROWN_BED:
+            case GREEN_BED:
+            case RED_BED:
+            case BLACK_BED:
 
-            case FENCE_GATE:
+            case OAK_TRAPDOOR:
+            case ACACIA_TRAPDOOR:
+            case BIRCH_TRAPDOOR:
+            case JUNGLE_TRAPDOOR:
+            case SPRUCE_TRAPDOOR:
+            case DARK_OAK_TRAPDOOR:
+
+            case OAK_FENCE_GATE:
             case ACACIA_FENCE_GATE:
             case BIRCH_FENCE_GATE:
             case JUNGLE_FENCE_GATE:
@@ -405,13 +432,10 @@ public class ClaimEvents implements Listener {
             }
             /* Build */
             case NOTE_BLOCK:
-            case DIODE_BLOCK_ON:
-            case DIODE_BLOCK_OFF:
+            case REPEATER:
             case DRAGON_EGG:
             case DAYLIGHT_DETECTOR:
-            case DAYLIGHT_DETECTOR_INVERTED:
-            case REDSTONE_COMPARATOR_ON:
-            case REDSTONE_COMPARATOR_OFF:
+            case COMPARATOR:
             case FLOWER_POT: {
 
                 Claim claim = survival.getClaimHandler().getClaimAt(block.getLocation(), false, omp.getLastClaim());
@@ -432,22 +456,39 @@ public class ClaimEvents implements Listener {
 
         switch (item.getType()) {
             /* Build */
-            case INK_SACK:
+            case INK_SAC:
+            case ROSE_RED:
+            case CACTUS_GREEN:
+            case COCOA_BEANS:
+            case LAPIS_LAZULI:
+            case PURPLE_DYE:
+            case CYAN_DYE:
+            case LIGHT_GRAY_DYE:
+            case GRAY_DYE:
+            case PINK_DYE:
+            case LIME_DYE:
+            case DANDELION_YELLOW:
+            case LIGHT_BLUE_DYE:
+            case MAGENTA_DYE:
+            case ORANGE_DYE:
+            case BONE_MEAL:
+
             case ARMOR_STAND:
-            case MONSTER_EGG:
+
             case END_CRYSTAL:
 
-            case BOAT:
-            case BOAT_ACACIA:
-            case BOAT_BIRCH:
-            case BOAT_DARK_OAK:
-            case BOAT_JUNGLE:
-            case BOAT_SPRUCE:
+            case OAK_BOAT:
+            case ACACIA_BOAT:
+            case BIRCH_BOAT:
+            case DARK_OAK_BOAT:
+            case JUNGLE_BOAT:
+            case SPRUCE_BOAT:
 
             case MINECART:
-            case POWERED_MINECART:
-            case STORAGE_MINECART:
-            case EXPLOSIVE_MINECART:
+            case CHEST_MINECART:
+            case COMMAND_BLOCK_MINECART:
+            case FURNACE_MINECART:
+            case TNT_MINECART:
             case HOPPER_MINECART: {
                 Claim claim = survival.getClaimHandler().getClaimAt(block.getLocation(), false, omp.getLastClaim());
                 omp.setLastClaim(claim);
@@ -457,6 +498,14 @@ public class ClaimEvents implements Listener {
 
                 return;
             }
+        }
+
+        if (ItemUtils.EGGS.contains(item.getType())) {
+            Claim claim = survival.getClaimHandler().getClaimAt(block.getLocation(), false, omp.getLastClaim());
+            omp.setLastClaim(claim);
+
+            if (claim != null && !claim.canBuild(omp, item.getType()))
+                event.setCancelled(true);
         }
     }
 
@@ -614,7 +663,7 @@ public class ClaimEvents implements Listener {
         for (Block block : event.getBlocks()) {
             if (Region.isInRegion(block.getLocation())) {
                 event.setCancelled(true);
-                destroyPiston(piston, Material.PISTON_STICKY_BASE);
+                destroyPiston(piston, Material.STICKY_PISTON);
                 return;
             }
 
@@ -626,7 +675,7 @@ public class ClaimEvents implements Listener {
 
             if (!nextOwnerName.equals(pistomOwner)) {
                 event.setCancelled(true);
-                destroyPiston(piston, Material.PISTON_STICKY_BASE);
+                destroyPiston(piston, Material.PISTON);
                 return;
             }
         }
@@ -1140,10 +1189,10 @@ public class ClaimEvents implements Listener {
             if (Region.isInRegion(block.getLocation()) || survival.getClaimHandler().getClaimAt(block.getLocation(), false, null) != null)
                 event.setCancelled(true);
 
-        } else if (event.getTo() == Material.DIRT && block.getType() == Material.SOIL) {
+        } else if (event.getTo() == Material.DIRT && block.getType() == Material.FARMLAND) {
 
             /* Trampled crops */
-            if (event.getEntity() instanceof Player) {
+            if (!(event.getEntity() instanceof Player)) {
                 if (Region.isInRegion(block.getLocation()) || survival.getClaimHandler().getClaimAt(block.getLocation(), false, null) != null)
                     event.setCancelled(true);
             } else {
@@ -1174,7 +1223,7 @@ public class ClaimEvents implements Listener {
                     if (Region.isInRegion(next) || !claim.inClaim(start, false, false)) {
                         event.setCancelled(true);
 
-                        ItemStack itemStack = new ItemStack(entity.getMaterial(), 1, entity.getBlockData());
+                        ItemStack itemStack = new ItemStack(entity.getBlockData().getMaterial(), 1);
                         Item item = block.getWorld().dropItem(entity.getLocation(), itemStack);
                         item.setVelocity(new Vector());
                     }
@@ -1201,7 +1250,7 @@ public class ClaimEvents implements Listener {
 
     @EventHandler
     public void onInteract(EntityInteractEvent event) {
-        if (event.getBlock().getType() != Material.SOIL)
+        if (event.getBlock().getType() != Material.FARMLAND)
             return;
 
         if (!event.getBlock().getWorld().getName().equals(survival.getWorld().getName()))
@@ -1222,20 +1271,38 @@ public class ClaimEvents implements Listener {
 
     @EventHandler
     public void onExplode(EntityExplodeEvent event) {
-        handleExplosion(event.getLocation(), event.blockList());
+        handleExplosion(event.getEntity(), event.getLocation(), event.blockList());
     }
 
     @EventHandler
     public void onExplode(BlockExplodeEvent event) {
-        handleExplosion(event.getBlock().getLocation(), event.blockList());
+        handleExplosion(null, event.getBlock().getLocation(), event.blockList());
     }
 
-    private void handleExplosion(Location location, List<Block> blocks) {
+    @EventHandler
+    public void onIgnite(BlockIgniteEvent event) {
+        if (!(event.getIgnitingEntity() instanceof TNTPrimed))
+            return;
+
+        if (event.getPlayer() != null) {
+            SurvivalPlayer omp = SurvivalPlayer.getPlayer(event.getPlayer());
+            tnt.put((TNTPrimed) event.getIgnitingEntity(), omp);
+        } else if (toIgnite.containsKey(event.getIgnitingBlock())) {
+            tnt.put((TNTPrimed) event.getIgnitingEntity(), toIgnite.get(event.getIgnitingBlock()));
+            toIgnite.remove(event.getIgnitingBlock());
+        }
+    }
+
+    private Map<TNTPrimed, SurvivalPlayer> tnt = new HashMap<>();
+    private Map<Block, SurvivalPlayer> toIgnite = new HashMap<>();
+
+    private void handleExplosion(Entity en, Location location, List<Block> blocks) {
         if (!location.getWorld().getName().equals(survival.getWorld().getName()))
             return;
 
         Claim cached = null;
 
+        loop:
         for (Block block : new ArrayList<>(blocks)) {
             if (block.getType() == Material.AIR)
                 continue;
@@ -1245,12 +1312,43 @@ public class ClaimEvents implements Listener {
                 continue;
             }
 
-            Claim claim = survival.getClaimHandler().getClaimAt(block.getLocation(), false, cached);
+            Claim claim = survival.getClaimHandler().getClaimAt(block.getLocation(), true, cached);
 
             if (claim != null) {
                 cached = claim;
+
+                if (en != null) {
+                    if (en instanceof Creeper) {
+                        for (Entity entity : en.getNearbyEntities(10, 10, 10)) {
+                            if (!(entity instanceof Player))
+                                continue;
+
+                            Player player = (Player) entity;
+
+                            if (claim.getPermission(player.getUniqueId()) != Claim.Permission.BUILD) {
+                                blocks.remove(block);
+                                continue loop;
+                            }
+                        }
+
+                        continue;
+                    } else if (en instanceof TNTPrimed && this.tnt.containsKey(en)) {
+                        if (claim.canBuild(this.tnt.get(en), Material.TNT)) {
+                            blocks.remove(block);
+                        } else {
+                            if (block.getType() == Material.TNT)
+                                this.toIgnite.put(block, this.tnt.get(en));
+
+                            continue;
+                        }
+                    }
+                }
+
                 blocks.remove(block);
             }
         }
+
+        if (en instanceof TNTPrimed)
+            tnt.remove(en);
     }
 }

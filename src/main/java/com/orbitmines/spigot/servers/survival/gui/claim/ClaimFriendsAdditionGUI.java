@@ -40,7 +40,7 @@ public class ClaimFriendsAdditionGUI extends GUI {
     protected boolean onOpen(OMPlayer player) {
         SurvivalPlayer omp = (SurvivalPlayer) player;
 
-        add(2, 4, new EmptyItemInstance(new ItemBuilder(Material.STAINED_GLASS_PANE, 1, ColorUtils.getWoolData(type.getColor()), type.getColor().getChatColor() + "§l" + type.getTitle().lang(omp.getLanguage())).build()));
+        add(2, 4, new EmptyItemInstance(new ItemBuilder(ColorUtils.getStainedGlassPaneMaterial(type.getColor()), 1, type.getColor().getChatColor() + "§l" + type.getTitle().lang(omp.getLanguage())).build()));
 
         {
             ItemBuilder item = permission.getIcon().setDisplayName("§7§l" + permission.getName().lang(omp.getLanguage()));
@@ -52,7 +52,7 @@ public class ClaimFriendsAdditionGUI extends GUI {
             add(3, 4, new EmptyItemInstance(item.build()));
         }
 
-        ItemInstance confirm = new ItemInstance(new ItemBuilder(Material.STAINED_GLASS_PANE, 1, 5, omp.lang("§a§lBevestigen", "§a§lConfirm")).build()) {
+        ItemInstance confirm = new ItemInstance(new ItemBuilder(Material.LIME_STAINED_GLASS_PANE, 1, omp.lang("§a§lBevestigen", "§a§lConfirm")).build()) {
             @Override
             public void onClick(InventoryClickEvent event, OMPlayer omp) {
                 for (UUID uuid : toAdd) {
@@ -64,7 +64,7 @@ public class ClaimFriendsAdditionGUI extends GUI {
                 new ClaimGUI(survival, claim).open(omp);
             }
         };
-        ItemInstance cancel = new ItemInstance(new ItemBuilder(Material.STAINED_GLASS_PANE, 1, 14, omp.lang("§c§lAnnuleer", "§c§lCancel")).build()) {
+        ItemInstance cancel = new ItemInstance(new ItemBuilder(Material.RED_STAINED_GLASS_PANE, 1, omp.lang("§c§lAnnuleer", "§c§lCancel")).build()) {
             @Override
             public void onClick(InventoryClickEvent event, OMPlayer omp) {
                 new ClaimGUI(survival, claim).open(omp);

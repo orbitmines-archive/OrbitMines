@@ -65,7 +65,6 @@ public abstract class Command {
         return cM;
     }
 
-
     public static Command getCommand(String cmd) {
         for (Command command : commands) {
             for (String alias : command.getAlias()) {

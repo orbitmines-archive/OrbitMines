@@ -7,10 +7,6 @@ import org.bukkit.entity.Entity;
  */
 public interface NpcNms {
 
-    void setClassFields();
-
-    void addCustomEntity(Class entityClass, String name, int id);
-
     void setNoAI(Entity entity);
 
     float[] handleMovement(Entity rideable, float speed, float backMultiplier, float sideMultiplier, float walkHeight);

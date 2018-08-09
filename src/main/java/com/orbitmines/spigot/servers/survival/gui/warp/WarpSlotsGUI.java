@@ -51,7 +51,7 @@ public class WarpSlotsGUI extends GUI {
 
             if (warp == null) {
                 if (type.hasUnlocked(omp)) {
-                    instance = new ItemInstance(new ItemBuilder(Material.BOOK_AND_QUILL, i + 1, 0,
+                    instance = new ItemInstance(new ItemBuilder(Material.WRITABLE_BOOK, i + 1,
                             omp.lang(type.getSlotName()) + " §7§lSlot",
                             " " + omp.lang(type.getDescription()),
                             "",
@@ -68,7 +68,7 @@ public class WarpSlotsGUI extends GUI {
                         }
                     };
                 } else {
-                    instance = new EmptyItemInstance(new ItemBuilder(Material.BOOK, i + 1, 0, omp.lang(type.getSlotName()) + " §7§lSlot", " " + omp.lang(type.getDescription())).build());
+                    instance = new EmptyItemInstance(new ItemBuilder(Material.BOOK, i + 1, omp.lang(type.getSlotName()) + " §7§lSlot", " " + omp.lang(type.getDescription())).build());
                 }
             } else {
                 ItemBuilder item = warp.getIcon().getItemBuilder().setAmount(i + 1);

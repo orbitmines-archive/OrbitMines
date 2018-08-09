@@ -17,11 +17,7 @@ public  abstract class DataPointSign extends DataPoint {
     private final String firstLine;
 
     public DataPointSign(String firstLine, Type type, Material material) {
-        this(firstLine, type, material, 0);
-    }
-
-    public DataPointSign(String firstLine, Type type, Material material, int data) {
-        super(type, material, data);
+        super(type, material);
 
         this.firstLine = firstLine;
     }

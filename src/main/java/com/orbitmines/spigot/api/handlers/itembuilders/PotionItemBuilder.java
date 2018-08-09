@@ -13,10 +13,6 @@ import java.util.List;
 * OrbitMines - @author Fadi Shawki - 29-7-2017
 */
 public class PotionItemBuilder extends ItemBuilder {
-//    1.8
-//    if (splash) {
-//        durability = (short) (durability | 16384);
-//    }
 
     private ArrayList<PotionBuilder> potionBuilders;
     private boolean effectHidden;
@@ -46,7 +42,7 @@ public class PotionItemBuilder extends ItemBuilder {
     }
 
     public PotionItemBuilder(Type type, PotionBuilder potionBuilder, boolean effectHidden, int amount, String displayName, List<String> lore) {
-        super(type.material, amount, 0, displayName, lore);
+        super(type.material, amount, displayName, lore);
 
         this.potionBuilders = new ArrayList<>();
         this.potionBuilders.add(potionBuilder);
@@ -71,7 +67,7 @@ public class PotionItemBuilder extends ItemBuilder {
 
     @Override
     public ItemStack build() {
-        ItemStack itemStack = new ItemStack(material, amount, durability);
+        ItemStack itemStack = new ItemStack(material, amount, damage);
         PotionMeta meta = (PotionMeta) itemStack.getItemMeta();
         meta.setDisplayName(displayName);
         meta.setLore((lore == null || lore.size() == 0) ? null : new ArrayList<>(lore));

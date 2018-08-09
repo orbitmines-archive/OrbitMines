@@ -40,7 +40,7 @@ public class CommandMaintenance extends StaffCommand {
 //            bossBar.setColor(2);
 //            bossBar.setHealth(getProgress());
 //
-//            bossBar.setTitle(ComponentSerializer.toString(new TextComponent("§7§lOrbit§8§lMines §c§lRestarting in " + TimeUtils.fromTimeStamp(getRemainingSeconds() * 1000, Language.ENGLISH) + "...")));
+//            bossBar.setTitle(ComponentSerializer.toString(new TextComponent("§8§lOrbit§7§lMines §c§lRestarting in " + TimeUtils.fromTimeStamp(getRemainingSeconds() * 1000, Language.ENGLISH) + "...")));
 //
 //            BungeePlayer.getPlayers().forEach(omp -> omp.getPlayer().unsafe().sendPacket(bossBar));
         }

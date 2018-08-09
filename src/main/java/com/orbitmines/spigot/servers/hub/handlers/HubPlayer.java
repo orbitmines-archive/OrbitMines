@@ -43,13 +43,13 @@ public class HubPlayer extends OMPlayer {
 //        new BukkitRunnable() {
 //            @Override
 //            public void run() {
-//                AdvancementMessage a = new AdvancementMessage("redstone_block", "§7§lOrbit§8§lMines §7Advancement Message :D");
+//                AdvancementMessage a = new AdvancementMessage("redstone_block", "§8§lOrbit§7§lMines §7Advancement Message :D");
 //                a.send(HubPlayer.this);
 //            }
 //        }.runTaskLater(orbitMines, 40);
 
         //TODO COSMETIC HELMET
-        player.getInventory().setHelmet(new ItemBuilder(Material.STAINED_GLASS, 1, 0, "§7Helmet").build());
+        player.getInventory().setHelmet(new ItemBuilder(Material.WHITE_STAINED_GLASS, 1, "§7Helmet").build());
 
 //        {
 //            Location location = new Location(hub.getVoidWorld(), 0, 70, 0);
@@ -145,6 +145,11 @@ public class HubPlayer extends OMPlayer {
     }
 
     @Override
+    protected void onFirstLogin() {
+
+    }
+
+    @Override
     public boolean canReceiveVelocity() {
         return false;
     }
@@ -182,8 +187,8 @@ public class HubPlayer extends OMPlayer {
                 for (OMPlayer omp : players) {
                     if (omp == this)
                         continue;
-
-                    if (omp.getStaffRank() != StaffRank.NONE || friends.contains(omp.getUUID()))
+                    //TODO DEPRECATED
+                    if ((omp.getStaffRank() != StaffRank.NONE && omp.getStaffRank() != StaffRank.ADMIN) || friends.contains(omp.getUUID()))
                         this.player.showPlayer(omp.getPlayer());
                     else
                         this.player.hidePlayer(omp.getPlayer());
@@ -196,7 +201,7 @@ public class HubPlayer extends OMPlayer {
                     if (omp == this)
                         continue;
 
-                    if (omp.getStaffRank() != StaffRank.NONE || friends.contains(omp.getUUID()))
+                    if ((omp.getStaffRank() != StaffRank.NONE && omp.getStaffRank() != StaffRank.ADMIN) || friends.contains(omp.getUUID()))
                         this.player.showPlayer(omp.getPlayer());
                     else
                         this.player.hidePlayer(omp.getPlayer());
@@ -208,7 +213,7 @@ public class HubPlayer extends OMPlayer {
                     if (omp == this)
                         continue;
 
-                    if (omp.getStaffRank() != StaffRank.NONE)
+                    if ((omp.getStaffRank() != StaffRank.NONE && omp.getStaffRank() != StaffRank.ADMIN))
                         this.player.showPlayer(omp.getPlayer());
                     else
                         this.player.hidePlayer(omp.getPlayer());

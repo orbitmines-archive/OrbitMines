@@ -41,7 +41,7 @@ public class WarpEditorGUI extends GUI {
             }
         });
 
-        add(1, 4, new ItemInstance(new ItemBuilder(Material.BOOK_AND_QUILL, 1, 0, omp.lang("§7§lHernoem Warp", "§7§lRename Warp")).build()) {
+        add(1, 4, new ItemInstance(new ItemBuilder(Material.WRITABLE_BOOK, 1, omp.lang("§7§lHernoem Warp", "§7§lRename Warp")).build()) {
             @Override
             public void onClick(InventoryClickEvent e, OMPlayer omp) {
                 AnvilNms anvil = survival.getOrbitMines().getNms().anvilGui(omp.getPlayer(), (event) -> {
@@ -100,7 +100,7 @@ public class WarpEditorGUI extends GUI {
         });
 
         {
-            ItemBuilder item = new ItemBuilder(warp.getLocation() == null ? Material.EMPTY_MAP : Material.MAP, 1, 0, omp.lang("§7§lZet Warp Locatie", "§7§lSet Warp Location"));
+            ItemBuilder item = new ItemBuilder(warp.getLocation() == null ? Material.MAP : Material.FILLED_MAP, 1, omp.lang("§7§lZet Warp Locatie", "§7§lSet Warp Location"));
 
             if (warp.getLocation() == null)
                 item.glow();
@@ -129,7 +129,7 @@ public class WarpEditorGUI extends GUI {
             }
         });
 
-        add(1, 7, new ItemInstance(new ItemBuilder(warp.isEnabled() ? Material.EYE_OF_ENDER : Material.ENDER_PEARL, 1, 0, warp.isEnabled() ? omp.lang("§7§lTeleporteren §a§lINGESCHAKELD", "§7§lTeleporting §a§lENABLED") : omp.lang("§7§lTeleporteren §c§lUITGESCHAKELD", "§7§lTeleporting §c§lDISABLED")).build()) {
+        add(1, 7, new ItemInstance(new ItemBuilder(warp.isEnabled() ? Material.ENDER_EYE : Material.ENDER_PEARL, 1, warp.isEnabled() ? omp.lang("§7§lTeleporteren §a§lINGESCHAKELD", "§7§lTeleporting §a§lENABLED") : omp.lang("§7§lTeleporteren §c§lUITGESCHAKELD", "§7§lTeleporting §c§lDISABLED")).build()) {
             @Override
             public void onClick(InventoryClickEvent event, OMPlayer omp) {
                 if (warp.getLocation() == null)

@@ -20,7 +20,7 @@ public class Serializer {
     }
 
     public static Location parseLocation(String string) {
-        if (string == null)
+        if (string == null || string.equals("") || string.equals("null"))
             return null;
 
         String[] data = string.split("\\|");

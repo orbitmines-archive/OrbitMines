@@ -6,10 +6,8 @@ package com.orbitmines.api;
 public enum TopVoterReward {
 
     FIRST_PLACE("BUYCRAFT_VOUCHER", 5),
-    SECOND_PLACE("BUYCRAFT_VOUCHER", 2),
-    THIRD_PLACE("BUYCRAFT_VOUCHER", 1);
-
-    public static final int STEP_VOTES = 25;
+    SECOND_PLACE("BUYCRAFT_VOUCHER", 3),
+    THIRD_PLACE("BUYCRAFT_VOUCHER", 2);
 
     public static final int COMMUNITY_GOAL = 1000;
     public static final int COMMUNITY_GOAL_SOLARS_PER_VOTE = 2;

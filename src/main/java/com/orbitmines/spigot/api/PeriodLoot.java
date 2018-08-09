@@ -22,7 +22,7 @@ public enum PeriodLoot {
             omp.addPrisms(250);
         }
     },
-    MONTHLY(TimeUnit.DAYS.toSeconds(30), TablePeriodLoot.MONTHLY, new MobEggBuilder(Mob.CHICKEN /* TODO: PUFFERFISH */, 1), new ItemBuilder(Material.EGG), new Message("Maandelijkse Beloningen", "Monthly Rewards"), new Message("§7- §9§l2,500 Prisms"), new Message("§7- §e§l50 Solars")) {
+    MONTHLY(TimeUnit.DAYS.toSeconds(30), TablePeriodLoot.MONTHLY, new MobEggBuilder(Mob.PUFFERFISH, 1), new ItemBuilder(Material.EGG), new Message("Maandelijkse Beloningen", "Monthly Rewards"), new Message("§7- §9§l2,500 Prisms"), new Message("§7- §e§l50 Solars")) {
         @Override
         public void receive(OMPlayer omp) {
             omp.addPrisms(2500);

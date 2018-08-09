@@ -1,20 +1,35 @@
 package com.orbitmines.spigot.datapoints;
 
 import com.orbitmines.api.Server;
+import com.orbitmines.api.ServerList;
+import com.orbitmines.api.VipRank;
+import com.orbitmines.api.utils.TimeUtils;
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.Mob;
+import com.orbitmines.spigot.api.PeriodLoot;
 import com.orbitmines.spigot.api.datapoints.DataPointLoader;
 import com.orbitmines.spigot.api.datapoints.DataPointSign;
+import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
+import com.orbitmines.spigot.api.handlers.data.LootData;
+import com.orbitmines.spigot.api.handlers.data.PeriodLootData;
+import com.orbitmines.spigot.api.handlers.data.VoteData;
+import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
+import com.orbitmines.spigot.api.handlers.npc.ArmorStandNpc;
 import com.orbitmines.spigot.api.handlers.npc.MobNpc;
 import com.orbitmines.spigot.api.handlers.npc.PersonalisedMobNpc;
 import com.orbitmines.spigot.api.handlers.scoreboard.ScoreboardString;
 import com.orbitmines.spigot.api.runnables.SpigotRunnable;
-import org.bukkit.DyeColor;
+import com.orbitmines.spigot.api.utils.PlayerUtils;
+import com.orbitmines.spigot.api.utils.VectorUtils;
+import com.orbitmines.spigot.api.utils.WorldUtils;
+import com.orbitmines.spigot.servers.hub.gui.LootGUI;
+import com.orbitmines.spigot.servers.survival.gui.SurvivalPrismSolarShopGUI;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.EulerAngle;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,7 +44,7 @@ public class DataPointNpc extends DataPointSign {
     private Map<String, List<Location>> npcLocations;
 
     public DataPointNpc() {
-        super("NPC", Type.IRON_PLATE, Material.WOOL, DyeColor.YELLOW.getWoolData());
+        super("NPC", Type.IRON_PLATE, Material.YELLOW_WOOL);
 
         npcLocations = new HashMap<>();
     }
@@ -103,11 +118,10 @@ public class DataPointNpc extends DataPointSign {
         switch (string.toUpperCase()) {
             /* Check any global Npcs */
             case "SURVIVAL": {
-                MobNpc npc = new MobNpc(Mob.SKELETON, location, getNpcDisplayName(Server.SURVIVAL));
+                MobNpc npc = new MobNpc(Mob.DOLPHIN, location, getNpcDisplayName(Server.SURVIVAL));
                 npc.setInteractAction((event, omp) -> omp.connect(Server.SURVIVAL, true));
 
                 npc.create();
-                npc.setItemInMainHand(new ItemStack(Material.STONE_HOE));
 
                 startUpdate(npc);
                 break;
@@ -134,20 +148,94 @@ public class DataPointNpc extends DataPointSign {
                 npc.create();
                 break;
             }
+            case "SURVIVAL_SHOP": {
+                MobNpc npc = new MobNpc(Mob.DOLPHIN, location, () -> "§8§lOrbit§7§lMines " + Server.SURVIVAL.getDisplayName(), () -> "§9§lPrism §7§l& §e§lSolar §3§lShop");
+                npc.setInteractAction((event, omp) -> new SurvivalPrismSolarShopGUI().open(omp));
+
+                npc.create();
+                break;
+            }
+            case "BACK_TO_HUB": {
+                MobNpc npc = new MobNpc(Mob.WITHER_SKELETON, location, () -> "§7§lBack to " + Server.HUB.getDisplayName());
+                npc.setInteractAction((event, omp) -> omp.connect(Server.HUB, true));
+
+                npc.create();
+
+                npc.setHelmet(new ItemBuilder(Material.WHITE_STAINED_GLASS).build());
+                npc.setItemInMainHand(new ItemBuilder(Material.ENDER_PEARL).build());
+
+                break;
+            }
             case "LOOT": {
-                //TODO SPACE TURTLE?XD
-                PersonalisedMobNpc npc = new PersonalisedMobNpc(Mob.WITHER_SKELETON, location) {
+                PersonalisedMobNpc npc = new PersonalisedMobNpc(Mob.TURTLE, location.clone().add(0, 1, 0)) {
                     @Override
                     public ScoreboardString[] getLines(OMPlayer omp) {
+                        VoteData voteData = (VoteData) omp.getData(Data.Type.VOTES);
+                        voteData.updateVoteTimeStamps();
+                        LootData lootData = (LootData) omp.getData(Data.Type.LOOT);
+                        PeriodLootData periodLootData = (PeriodLootData) omp.getData(Data.Type.PERIOD_LOOT);
+
+                        int maxVotes = ServerList.values().length;
+                        PeriodLoot[] values = PeriodLoot.values();
+
                         return new ScoreboardString[] {
                                 () -> "§a§lSpace§2§lTurtle",
-                                () -> ""
+                                () -> {
+                                    int lootCount = lootData.getLoot().size();
+
+                                    PeriodLoot shortestDuration = null;
+                                    long duration = 0;
+
+                                    for (PeriodLoot loot : values) {
+                                        if ((loot != PeriodLoot.MONTHLY_VIP || omp.getVipRank() != VipRank.NONE) && periodLootData.canCollect(loot)) {
+                                            lootCount++;
+                                            continue;
+                                        }
+
+                                        if (loot == PeriodLoot.MONTHLY_VIP && omp.getVipRank() == VipRank.NONE)
+                                            continue;
+
+                                        long d = periodLootData.getCooldown(loot);
+
+                                        if (shortestDuration != null && duration < d)
+                                            continue;
+
+                                        shortestDuration = loot;
+                                        duration = d;
+                                    }
+
+                                    return lootCount != 0 ? (color ? "§a" : "§2") + "§l" + omp.lang("VERZAMEL", "COLLECT") + " " + lootCount + " " + (lootCount == 1 ? "ITEM" : "ITEMS") : "§7" + omp.lang("Meer loot over", "More loot in") + " §a§l" + TimeUtils.fromTimeStamp(duration * 1000L, omp.getLanguage());
+                                },
+                                () -> {
+                                    int votes = maxVotes - voteData.getVoteTimeStamps().size();
+                                    return votes == 0 ? null : omp.lang("§9§l" + votes + " " + (votes == 1 ? "VOTE" : "VOTES") + " OVER", "§9§l" + votes + " " + (votes == 1 ? "VOTE" : "VOTES") + " LEFT");
+                                }
                         };
                     }
                 };
+
+                npc.setInteractAction((event, omp) -> new LootGUI().open(omp));
+
                 npc.create();
 
+                startLootUpdate(npc);
 
+                {
+                    LivingEntity entity = (LivingEntity) npc.getEntity();
+                    Location inFront = PlayerUtils.getTargetBlock(entity, 2).getLocation().add(0.5, 0, 0.5);
+
+                    Location helmetLoc = npc.getSpawnLocation().clone().add(VectorUtils.point2D(npc.getSpawnLocation().toVector(), inFront.toVector()).multiply(0.35)).subtract(0, 0.5, 0);
+
+                    ArmorStandNpc helmet = new ArmorStandNpc(helmetLoc.clone());
+                    helmet.setGravity(false);
+                    helmet.setVisible(false);
+                    helmet.setSmall(true);
+                    helmet.setInteractAction(npc.getInteractAction());
+                    helmet.setHelmet(new ItemBuilder(Material.LIME_STAINED_GLASS).build());
+                    helmet.setHeadPose(new EulerAngle(WorldUtils.pitchToDegree(entity), 0, 0));
+
+                    helmet.create();
+                }
                 break;
             }
             default:
@@ -166,9 +254,33 @@ public class DataPointNpc extends DataPointSign {
         };
     }
 
+    private List<PersonalisedMobNpc> lootNpcs = new ArrayList<>();
+    private boolean startedLoot = false;
+    private boolean color = false;
+
+    private void startLootUpdate(PersonalisedMobNpc npc) {
+        lootNpcs.add(npc);
+
+        if (startedLoot)
+            return;
+
+        startedLoot = true;
+
+        new SpigotRunnable(SpigotRunnable.TimeUnit.TICK, 5) {
+            @Override
+            public void run() {
+                color = !color;
+
+                for (PersonalisedMobNpc npc : lootNpcs) {
+                    npc.update();
+                }
+            }
+        };
+    }
+
     private ScoreboardString[] getNpcDisplayName(Server server) {
         return new ScoreboardString[]{
-                () -> "§7§lOrbit§8§lMines " + server.getDisplayName(),
+                () -> "§8§lOrbit§7§lMines " + server.getDisplayName(),
                 () -> {
                     Server.Status status = server.getStatus();
                     return status != Server.Status.ONLINE ? status.getColor().getChatColor() + "§l" + status.getName() : server.getColor().getChatColor() + "§l" + server.getPlayers() + " §7§l/ " + server.getMaxPlayers();

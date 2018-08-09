@@ -12,6 +12,10 @@ public abstract class StaffCommand extends Command {
 
     private final StaffRank staffRank;
 
+    public StaffCommand(StaffRank rank) {
+        this(null, rank);
+    }
+
     public StaffCommand(Server server, StaffRank rank) {
         super(server);
 

@@ -29,6 +29,8 @@ public abstract class Data {
 
         VOTES,
         FRIENDS,
+        DISCORD_GROUPS,
+        ACHIEVEMENTS,
         SETTINGS,
         PLAY_TIME,
         LOOT,

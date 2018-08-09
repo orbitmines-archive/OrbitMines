@@ -109,7 +109,7 @@ public abstract class GUI {
 
     public abstract class ItemInstance {
 
-        protected final ItemStack itemStack;
+        protected ItemStack itemStack;
 
         public ItemInstance(ItemStack itemStack) {
             this.itemStack = itemStack;

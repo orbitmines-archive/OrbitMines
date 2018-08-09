@@ -1,9 +1,6 @@
 package com.orbitmines.spigot.api.handlers.itembuilders;
 
-import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.Mob;
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 
@@ -12,50 +9,29 @@ import java.util.List;
 */
 public class MobEggBuilder extends ItemBuilder {
 
-    private Mob mob;
-
     public MobEggBuilder(Mob mob, int amount) {
-        super(Material.MONSTER_EGG, amount);
-
-        this.mob = mob;
+        super(mob.getSpawnEggMaterial(), amount);
     }
 
     public MobEggBuilder(Mob mob, int amount, String displayName) {
-        super(Material.MONSTER_EGG, amount, 0, displayName);
-
-        this.mob = mob;
+        super(mob.getSpawnEggMaterial(), amount, displayName);
     }
 
     public MobEggBuilder(Mob mob, int amount, String displayName, String... lore) {
-        super(Material.MONSTER_EGG, amount, 0, displayName, lore);
-
-        this.mob = mob;
+        super(mob.getSpawnEggMaterial(), amount, displayName, lore);
     }
 
     public MobEggBuilder(Mob mob, MobEggBuilder itemBuilder) {
         super(itemBuilder);
-
-        this.mob = mob;
     }
 
     public MobEggBuilder(Mob mob, int amount, String displayName, List<String> lore) {
-        super(Material.MONSTER_EGG, amount, 0, displayName, lore);
-
-        this.mob = mob;
-    }
-
-    public Mob getMob() {
-        return mob;
+        super(mob.getSpawnEggMaterial(), amount, displayName, lore);
     }
 
     public MobEggBuilder setMob(Mob mob) {
-        this.mob = mob;
+        this.material = mob.getSpawnEggMaterial();
 
         return this;
-    }
-
-    @Override
-    protected ItemStack modify(ItemStack itemStack) {
-        return OrbitMines.getInstance().getNms().customItem().setEggId(super.modify(itemStack), mob.getType());
     }
 }

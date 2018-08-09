@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.orbitmines.api.database.tables.TablePlayers.*;
+import static com.orbitmines.api.database.tables.TablePlayers.UUID;
 
 /*
 * OrbitMines - @author Fadi Shawki - 2017
@@ -24,19 +24,22 @@ public class SettingsData extends Data {
         this.settings = new HashMap<>();
 
         for (Settings settings : Settings.values()) {
-            this.settings.put(settings, SettingsType.ENABLED);
+            this.settings.put(settings, settings.getDefaultType());
         }
     }
 
     @Override
     public void load() {
-        Map<Column, String> values = Database.get().getValues(table, new Column[] {
-                SETTINGS_PRIVATE_MESSAGES,
-                SETTINGS_PLAYER_VISIBILITY,
-                SETTINGS_GADGETS,
-        }, new Where(UUID, uuid.toString()));
+        Settings[] array = Settings.values();
 
-        for (Settings settings : Settings.values()) {
+        Column[] columns = new Column[array.length];
+        for (int i = 0; i < array.length; i++) {
+            columns[i] = array[i].getColumn();
+        }
+
+        Map<Column, String> values = Database.get().getValues(table, columns, new Where(UUID, uuid.toString()));
+
+        for (Settings settings : array) {
             this.settings.put(settings, SettingsType.valueOf(values.get(settings.getColumn())));
         }
     }

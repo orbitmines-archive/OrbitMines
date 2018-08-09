@@ -3,32 +3,44 @@ package com.orbitmines.api;
 import com.orbitmines.api.database.*;
 import com.orbitmines.api.database.tables.TablePlayTime;
 import com.orbitmines.api.database.tables.TableServers;
+import com.orbitmines.spigot.api.handlers.achievements.Achievement;
+import com.orbitmines.spigot.servers.creative.handlers.CreativeAchievements;
+import com.orbitmines.spigot.servers.fog.handlers.FoGAchievements;
+import com.orbitmines.spigot.servers.hub.handlers.HubAchievements;
+import com.orbitmines.spigot.servers.kitpvp.handlers.KitPvPAchievements;
+import com.orbitmines.spigot.servers.minigames.handlers.MiniGamesAchievements;
+import com.orbitmines.spigot.servers.prison.handlers.PrisonAchievements;
+import com.orbitmines.spigot.servers.skyblock.handlers.SkyBlockAchievements;
+import com.orbitmines.spigot.servers.survival.handlers.SurvivalAchievements;
+import com.orbitmines.spigot.servers.uhsurvival.handlers.UHSurvivalAchievements;
 
 /*
 * OrbitMines - @author Fadi Shawki - 2017
 */
 public enum Server {
 
-    HUB("Hub", Color.TEAL, true, TablePlayTime.HUB),
-    SURVIVAL("Survival", Color.LIME, false, TablePlayTime.SURVIVAL),
-    KITPVP("KitPvP", Color.RED, true, TablePlayTime.KITPVP),
+    HUB("Hub", Color.TEAL, true, HubAchievements.class, TablePlayTime.HUB),
+    SURVIVAL("Survival", Color.LIME, false, SurvivalAchievements.class, TablePlayTime.SURVIVAL),
+    KITPVP("KitPvP", Color.RED, true, KitPvPAchievements.class, TablePlayTime.KITPVP),
 
-    PRISON("Prison", Color.MAROON, false, TablePlayTime.PRISON),
-    CREATIVE("Creative", Color.FUCHSIA, false, TablePlayTime.CREATIVE),
-    SKYBLOCK("SkyBlock", Color.PURPLE, false, TablePlayTime.SKYBLOCK),
-    FOG("FoG", Color.YELLOW, false, TablePlayTime.FOG),
-    MINIGAMES("MiniGames", Color.WHITE, true, TablePlayTime.MINIGAMES),
-    UHSURVIVAL("UHSurvival", Color.GREEN, false, TablePlayTime.UHSURVIVAL);
+    PRISON("Prison", Color.MAROON, false, PrisonAchievements.class, TablePlayTime.PRISON),
+    CREATIVE("Creative", Color.FUCHSIA, false, CreativeAchievements.class, TablePlayTime.CREATIVE),
+    SKYBLOCK("SkyBlock", Color.PURPLE, false, SkyBlockAchievements.class, TablePlayTime.SKYBLOCK),
+    FOG("FoG", Color.YELLOW, false, FoGAchievements.class, TablePlayTime.FOG),
+    MINIGAMES("MiniGames", Color.WHITE, true, MiniGamesAchievements.class, TablePlayTime.MINIGAMES),
+    UHSURVIVAL("UHSurvival", Color.GREEN, false, UHSurvivalAchievements.class, TablePlayTime.UHSURVIVAL);
 
     private final String name;
     private final Color color;
     private final boolean cleanUpPlayerData;
+    private final Class<? extends Enum> achievementClass;
     private final Column playTimeColumn;
 
-    Server(String name, Color color, boolean cleanUpPlayerData, Column playTimeColumn) {
+    Server(String name, Color color, boolean cleanUpPlayerData, Class<? extends Enum> achievementClass, Column playTimeColumn) {
         this.name = name;
         this.color = color;
         this.cleanUpPlayerData = cleanUpPlayerData;
+        this.achievementClass = achievementClass;
         this.playTimeColumn = playTimeColumn;
     }
 
@@ -89,6 +101,14 @@ public enum Server {
 
     public long getLastUpdate() {
         return Database.get().contains(Table.SERVERS, TableServers.SERVER, new Where(TableServers.SERVER, toString())) ? Database.get().getLong(Table.SERVERS, TableServers.LAST_UPDATE, new Where(TableServers.SERVER, toString())) : -1;
+    }
+
+    public Achievement achievementValueOf(String value) {
+        return (Achievement) Enum.valueOf(achievementClass, value);
+    }
+
+    public Achievement[] achievementValues() {
+        return (Achievement[]) achievementClass.getEnumConstants();
     }
 
     public enum Status {

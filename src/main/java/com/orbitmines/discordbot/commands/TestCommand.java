@@ -21,7 +21,7 @@ public class TestCommand extends Command {
     private String[] alias = { "testcmd" };
 
     public TestCommand() {
-        super(BotToken.DEFAULT);
+        super(BotToken.DEFAULT, "Test");
     }
 
     @Override

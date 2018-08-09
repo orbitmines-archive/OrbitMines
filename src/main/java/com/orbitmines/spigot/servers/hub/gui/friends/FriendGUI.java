@@ -53,7 +53,7 @@ public class FriendGUI extends GUI {
         List<UUID> favorites = data.getFavoriteFriends();
 
         {
-            ItemBuilder item = new ItemBuilder(Material.BOOK, 1, 0, omp.lang("§7§lVriendschapsverzoeken", "§7§lPending Requests"), "§7  " + omp.lang("Inkomend", "Incoming") + " (§b§l" + data.getInvites().size() + "§7)", "§7  " + omp.lang("Uitgaand", "Outgoing") + " (§b§l" + data.getSentRequests().size() + "§7)");
+            ItemBuilder item = new ItemBuilder(Material.BOOK, 1, omp.lang("§7§lVriendschapsverzoeken", "§7§lPending Requests"), "§7  " + omp.lang("Inkomend", "Incoming") + " (§b§l" + data.getInvites().size() + "§7)", "§7  " + omp.lang("Uitgaand", "Outgoing") + " (§b§l" + data.getSentRequests().size() + "§7)");
 
             if (data.getInvites().size() != 0 || data.getSentRequests().size() != 0) {
                 item.glow();
@@ -69,7 +69,7 @@ public class FriendGUI extends GUI {
             }
         }
 
-        add(0, 3, new ItemInstance(new ItemBuilder(Material.BOOK_AND_QUILL, 1, 0, omp.lang("§b§lStuur een Vriendschapsverzoek", "§b§lSend Friend Request")).build()) {
+        add(0, 3, new ItemInstance(new ItemBuilder(Material.WRITABLE_BOOK, 1, omp.lang("§b§lStuur een Vriendschapsverzoek", "§b§lSend Friend Request")).build()) {
             @Override
             public void onClick(InventoryClickEvent e, OMPlayer omp) {
                 AnvilNms anvil = orbitMines.getNms().anvilGui(omp.getPlayer(), (event) -> {
@@ -111,7 +111,7 @@ public class FriendGUI extends GUI {
         });
 
         {
-            ItemBuilder item = new ItemBuilder(Material.DIAMOND, 1, 0, omp.lang("§6§lVoeg toe aan Favorieten", "§6§lFavorite Friend"));
+            ItemBuilder item = new ItemBuilder(Material.DIAMOND, 1, omp.lang("§6§lVoeg toe aan Favorieten", "§6§lFavorite Friend"));
 
             if (type == Type.FAVORITE)
                 item.glow();
@@ -130,7 +130,7 @@ public class FriendGUI extends GUI {
         }
 
         {
-            ItemBuilder item = new ItemBuilder(Material.BARRIER, 1, 0, omp.lang("§c§lVerwijder Vriend", "§c§lRemove Friend"));
+            ItemBuilder item = new ItemBuilder(Material.BARRIER, 1, omp.lang("§c§lVerwijder Vriend", "§c§lRemove Friend"));
 
             if (type == Type.REMOVE)
                 item.glow();
@@ -173,7 +173,7 @@ public class FriendGUI extends GUI {
                 String name = friend.getRankPrefixColor().getChatColor() + friend.getPlayerName();
 
                 PlayerSkullBuilder item = new PlayerSkullBuilder(friend::getPlayerName, 1, name, new ArrayList<>());
-                ItemBuilder offlineItem = new ItemBuilder(Material.SKULL_ITEM, 1, 0, name, new ArrayList<>());
+                ItemBuilder offlineItem = new ItemBuilder(Material.SKELETON_SKULL, 1, name, new ArrayList<>());
                 List<String> lore = item.getLore();
 
                 Server server = type == Type.NORMAL ? friend.getServer() : null;
@@ -183,7 +183,7 @@ public class FriendGUI extends GUI {
                     case NORMAL:
                         if (favorites.contains(uuid)) {
                             lore.add(omp.lang("§6§lFavoriete Vriend", "§6§lFavorite Friend"));
-                            offlineItem.setDurability((short) 1);
+                            offlineItem.setMaterial(Material.WITHER_SKELETON_SKULL);
                         }
 
                         lore.add("");
@@ -304,7 +304,7 @@ public class FriendGUI extends GUI {
                         check = (j + 1) / 9;
 
                     if (check != -1) {
-                        int next = FRIENDS_PER_PAGE + check + (NEW_PER_PAGE * i);
+                        int next = FRIENDS_PER_PAGE + check + (NEW_PER_PAGE * i) - 1;
                         pageFriends[j] = friends.size() > next ? friends.get(next) : null;
                     } else {
                         pageFriends[j] = pageFriends[j + 1];

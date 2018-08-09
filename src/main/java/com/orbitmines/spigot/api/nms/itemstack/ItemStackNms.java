@@ -1,6 +1,7 @@
 package com.orbitmines.spigot.api.nms.itemstack;
 
-import org.bukkit.entity.EntityType;
+import com.orbitmines.spigot.api.handlers.itembuilders.WrittenBookBuilder;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -8,10 +9,8 @@ import org.bukkit.inventory.ItemStack;
  */
 public interface ItemStackNms {
 
-    ItemStack setUnbreakable(ItemStack item);
-
-    ItemStack setEggId(ItemStack item, EntityType entityType);
-
     ItemStack setCustomSkullTexture(ItemStack item, String name, String value);
+
+    void openBook(Player player, WrittenBookBuilder builder);
     
 }

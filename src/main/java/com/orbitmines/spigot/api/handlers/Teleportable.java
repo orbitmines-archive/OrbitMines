@@ -44,8 +44,11 @@ public abstract class Teleportable {
                 omp.setTeleportingTo(null);
                 omp.setTeleportingTimer(null);
 
-                omp.getPlayer().teleport(getLocation());
-                omp.playSound(Sound.ENTITY_ENDERMEN_TELEPORT);
+                Location location = getLocation();
+                location.getChunk().load();
+
+                omp.getPlayer().teleport(location);
+                omp.playSound(Sound.ENTITY_ENDERMAN_TELEPORT);
 
                 new Title(new Message(""), new Message("§7§l" + omp.lang("Geteleporteerd naar", "Teleported to") + " " + getColor().getChatColor() + "§l" + getName() + "§7§l."), 0, 40, 0).send(omp);
             }

@@ -32,7 +32,6 @@ public class PlayerFreezer extends ArmorStandNpc {
         runnable = new SpigotRunnable(SpigotRunnable.TimeUnit.TICK, 1) {
             @Override
             public void run() {
-                //TODO also for 1.8 -> setPassenger
                 if (!armorStand.getPassengers().contains(player))
                     armorStand.addPassenger(player);
             }

@@ -14,8 +14,8 @@ public class NPCRunnable extends SpigotRunnable {
     @Override
     public void run() {
 //        /* Destroy hidden items */
-//        for (FloatingItem floatingItem : FloatingItem.getFloatingItems()) {
-//            for (FloatingItem.ItemInstance itemInstance : floatingItem.getItemInstances()) {
+//        for (DEPRECATED_FloatingItem floatingItem : DEPRECATED_FloatingItem.getFloatingItems()) {
+//            for (DEPRECATED_FloatingItem.ItemInstance itemInstance : floatingItem.getItemInstances()) {
 //                if (itemInstance.hideOnJoin())
 //                    itemInstance.createForWatchers();
 //            }

@@ -6,7 +6,10 @@ import com.orbitmines.api.StaffRank;
 import com.orbitmines.bungeecord.OrbitMinesBungee;
 import com.orbitmines.bungeecord.handlers.BungeePlayer;
 import com.orbitmines.bungeecord.handlers.cmd.Command;
-import com.orbitmines.bungeecord.handlers.cmd.ConsoleCommand;
+import com.orbitmines.discordbot.DiscordBot;
+import com.orbitmines.discordbot.utils.BotToken;
+import com.orbitmines.discordbot.utils.DiscordBungeeUtils;
+import com.orbitmines.discordbot.utils.DiscordUtils;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -27,20 +30,8 @@ public class PlayerChatEvent implements Listener {
     public void onChat(ChatEvent event) {
         String[] a = event.getMessage().split(" ");
 
-        if (!(event.getSender() instanceof ProxiedPlayer)) {
-            if (a[0].startsWith("/")) {
-                /* Message is a command */
-                ConsoleCommand command = ConsoleCommand.getCommand(a[0]);
-
-                if (command == null)
-                    return;
-
-                event.setCancelled(true);
-                command.dispatch(event, a);
-            }
-
+        if (!(event.getSender() instanceof ProxiedPlayer))
             return;
-        }
 
         ProxiedPlayer player = (ProxiedPlayer) event.getSender();
         BungeePlayer omp = BungeePlayer.getPlayer(player);
@@ -63,7 +54,7 @@ public class PlayerChatEvent implements Listener {
                     omp.sendMessage("Staff", Color.RED, "§7Use §9@<message>§7.");
                 }
 
-                //TODO DISCORD STAFF CHAT
+                toDiscord(event, omp);
             }
         } else if (!omp.isLoggedIn()) {
             event.setCancelled(true);
@@ -77,6 +68,14 @@ public class PlayerChatEvent implements Listener {
 
             event.setCancelled(true);
             command.dispatch(event, omp, a);
+
+            bungee.getDiscord().getChannel(bungee.getToken(), DiscordBot.ChannelType.command_log).sendMessage(DiscordBungeeUtils.getDisplay(bungee.getDiscord(), bungee.getToken(), omp) + " executed command **" + event.getMessage() + "**.").queue();
         }
+    }
+
+    private void toDiscord(ChatEvent event, BungeePlayer omp) {
+        DiscordBot discord = bungee.getDiscord();
+        BotToken token = bungee.getToken();
+        discord.getChannel(token, DiscordBot.ChannelType.staff).sendMessage(DiscordBungeeUtils.getDisplay(discord, token, omp) + " » " + DiscordUtils.filterToDiscord(discord, token, event.getMessage().substring(1))).queue();
     }
 }

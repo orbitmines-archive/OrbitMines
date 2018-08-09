@@ -39,6 +39,11 @@ public class KitPvPPlayer extends OMPlayer {
     }
 
     @Override
+    protected void onFirstLogin() {
+
+    }
+
+    @Override
     public boolean canReceiveVelocity() {
         return false;
     }

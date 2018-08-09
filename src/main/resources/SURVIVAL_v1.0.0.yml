@@ -1,0 +1,75 @@
+v1.0.0:
+  Server: SURVIVAL
+  Name: 'Survival Release'
+  Description: 'The first Survival release, presenting new systems for claiming and warps and many other features!'
+  Date: '2018-07-23'
+  Features:
+    'SURVIVAL':
+      Color: LIME
+      Description: 'We have an amazing Lobby fitting our OrbitMines lore for Survival created by the entire OrbitMines Team.'
+      Image: 'https://i.imgur.com/dBAPVie.jpg'
+    'LAND CLAIMING':
+      Color: ORANGE
+      Description: 'We have completely redesigned Land Claiming and it is easy to use and easy to keep an oversight over your claims.'
+      Image: 'https://i.imgur.com/zSt7Ekl.jpg'
+    'REGIONS':
+      Color: RED
+      Description: 'We have added two types of regions, Under Water and Above Water. 100 Regions have been made teleportable in this update. (125 more that aren''t)'
+      Image: 'https://i.imgur.com/eMMywzQ.jpg'
+    'NETHER & END RESETS':
+      Color: RED
+      Description: 'We have a system that automatically resets the Nether & End on a certain interval.'
+      Image: 'https://i.imgur.com/IVduJdP.jpg'
+    'WARPS':
+      Color: TEAL
+      Description: 'We have created a new Warp System which allows you to have up to 3 Warps.'
+      Image: 'https://i.imgur.com/PPnBupx.jpg'
+    'CHEST SHOPS':
+      Color: LIME
+      Description: 'Buy and sell items through Chest Shops.'
+      Image: 'https://i.imgur.com/TnHMHEG.jpg'
+    '/spawn':
+      Color: BLUE
+      Description: 'Teleport to Spawn.'
+    '/region (number)|random':
+      Color: BLUE
+      Description: 'Open the Region GUI, teleport to a Region or teleport to a Random Region.'
+    '/claim':
+      Color: BLUE
+      Description: 'Receive the Claiming Tool.'
+    '/home (name)':
+      Color: BLUE
+      Description: 'Teleport to one of your Homes.'
+    '/homes':
+      Color: BLUE
+      Description: 'Display all your Homes.'
+    '/sethome (name)':
+      Color: BLUE
+      Description: 'Set a new Home.'
+    '/delhome <name>':
+      Color: BLUE
+      Description: 'Delete a Home.'
+    '/warps':
+      Color: BLUE
+      Description: 'Open the Warps GUI.'
+    '/mywarps':
+      Color: BLUE
+      Description: 'Open the Your Warp Slots.'
+    '/accept':
+      Color: BLUE
+      Description: 'Accept an incoming Teleport Request.'
+    '/tp <player>':
+      Color: BLUE
+      Description: 'Send a teleport request to a player, this feature is for GOLD+.'
+    '/fly':
+      Color: BLUE
+      Description: 'Enable fly, this only works in your claims and claims where you have Access, this feature is for DIAMOND+.'
+    '/workbench':
+      Color: BLUE
+      Description: 'Open a workbench, this feature is for DIAMOND+.'
+    '/enderchest':
+      Color: BLUE
+      Description: 'Open an encherchest, this feature is for EMERALD+.'
+    '/tphere <player>':
+      Color: BLUE
+      Description: 'Send a teleport here request to a player, this feature is for EMERALD+.'

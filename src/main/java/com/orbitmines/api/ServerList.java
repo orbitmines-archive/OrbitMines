@@ -7,19 +7,26 @@ import java.util.concurrent.TimeUnit;
 */
 public enum ServerList {
 
-    //TODO
-    MINECRAFT_SERVERS_ORG("MinecraftServers.org", ""),
-    SERVER_PACT("ServerPact.com", "https://serverpact.nl/vote-8503"),
-    MINECRAFT_SERVER_NET("Minecraft-Server.net", "https://minecraft-server.net/vote/orbitmines/"),
-    MINECRAFT_MP_COM("Minecraft-MP.com", ""),
-    TOP_G_ORG("TopG.org", "");
+    MINECRAFT_SERVERS_ORG("MinecraftServers.org", "MinecraftServers.org", "https://minecraftservers.org/vote/508746"),
+//    SERVER_PACT("ServerPact.com", "ServerPact.com", "https://serverpact.nl/vote-8503"),
+    MINECRAFT_SERVERS_LIST_ORG("Minecraft-Servers-List.org", "http://www.minecraft-servers-list.org", "http://www.minecraft-servers-list.org/index.php?a=in&u=OrbitMines"),
+    MINECRAFT_SERVER_NET("Minecraft-Server.net", "Minecraft-Server.net", "https://minecraft-server.net/vote/orbitmines/"),
+    MINECRAFT_MP_COM("Minecraft-MP.com", "Minecraft-MP.com", "https://minecraft-mp.com/server/201145/vote/"),
+    TOPMINECRAFTSERVERS_ORG("TopMinecraftServers.org", "TopMinecraftServers", "https://topminecraftservers.org/vote/4030");
+//    TOP_G_ORG("TopG.org", "TopG.org", "https://topg.org/Minecraft/in-495521");
 
+    private final String displayName;
     private final String domainName;
     private final String url;
 
-    ServerList(String domainName, String url) {
+    ServerList(String displayName, String domainName, String url) {
+        this.displayName = displayName;
         this.domainName = domainName;
         this.url = url;
+    }
+
+    public String getDisplayName() {
+        return displayName;
     }
 
     public String getDomainName() {

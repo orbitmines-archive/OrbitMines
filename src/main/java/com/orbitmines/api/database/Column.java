@@ -39,7 +39,7 @@ public class Column {
     }
 
     public String toTypeString() {
-        return "`" + toString() + "` " + type.toString(args) + (defaultValue == null ? "" : " DEFAULT " + defaultValue);
+        return "`" + toString() + "` " + type.toString(args);
     }
 
     public enum Type {
