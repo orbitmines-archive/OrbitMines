@@ -10,6 +10,7 @@ import com.orbitmines.spigot.servers.hub.datapoints.HubDataPointSpawnpoint;
 import com.orbitmines.spigot.servers.hub.datapoints.HubDataPointStaffHologram;
 import com.orbitmines.spigot.servers.survival.datapoints.SurvivalDataPointEndReset;
 import com.orbitmines.spigot.servers.survival.datapoints.SurvivalDataPointNetherReset;
+import com.orbitmines.spigot.servers.survival.datapoints.SurvivalDataPointSpawnShop;
 
 /*
  * OrbitMines - @author Fadi Shawki - 2018
@@ -64,6 +65,12 @@ public class SurvivalDataPointHandler extends DataPointHandler {
             @Override
             public DataPoint newInstance() {
                 return new SurvivalDataPointEndReset();
+            }
+        },
+        SPAWN_SHOP() {
+            @Override
+            public DataPoint newInstance() {
+                return new SurvivalDataPointSpawnShop();
             }
         };
 

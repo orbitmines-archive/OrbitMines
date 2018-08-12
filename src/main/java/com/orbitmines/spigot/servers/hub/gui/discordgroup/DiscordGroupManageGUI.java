@@ -4,13 +4,12 @@ package com.orbitmines.spigot.servers.hub.gui.discordgroup;
  * OrbitMines - @author Fadi Shawki - 2018
  */
 
-import com.orbitmines.api.CachedPlayer;
-import com.orbitmines.api.Color;
-import com.orbitmines.api.Server;
+import com.orbitmines.api.*;
 import com.orbitmines.api.utils.uuid.UUIDUtils;
 import com.orbitmines.discordbot.DiscordBot;
 import com.orbitmines.discordbot.handlers.DiscordGroup;
 import com.orbitmines.spigot.OrbitMines;
+import com.orbitmines.spigot.OrbitMinesServer;
 import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.GUI;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
@@ -18,6 +17,7 @@ import com.orbitmines.spigot.api.handlers.data.DiscordGroupData;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.api.handlers.itembuilders.PlayerSkullBuilder;
 import com.orbitmines.spigot.api.nms.anvilgui.AnvilNms;
+import net.dv8tion.jda.core.entities.User;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -143,16 +143,22 @@ public class DiscordGroupManageGUI extends GUI {
                         if (!Character.isAlphabetic(c) && !Character.isDigit(c) && c != '_') {
                             event.setWillClose(false);
                             event.setWillDestroy(false);
-                            omp.sendMessage("Discord", Color.RED, "§7Je privé Discord server naam kan alleen maar bestaan uit letters en nummers.", "§7Your privateDiscord server name can only contain alphabetic and numeric characters.");
+                            omp.sendMessage("Discord", Color.RED, "§7Je privé Discord server naam kan alleen maar bestaan uit letters en nummers.", "§7Your private Discord server name can only contain alphabetic and numeric characters.");
                             return;
                         }
                     }
 
-                    if (!DiscordGroup.exists(name)) {
+                    if (!DiscordGroup.exists(orbitMines.getServerHandler().getDiscord(), orbitMines.getServerHandler().getToken(), name)) {
                         event.setWillClose(true);
                         event.setWillDestroy(true);
 
-                        group.setName(name);
+                        OrbitMines.getInstance().getServerHandler().getMessageHandler().dataTransfer(PluginMessage.DISCORD_GROUP_ACTION, omp.getUUID().toString(), "NAME", name);
+                        new BukkitRunnable() {
+                            @Override
+                            public void run() {
+                                omp.getPlayer().closeInventory();
+                            }
+                        }.runTaskLater(orbitMines, 2);
                     } else {
                         event.setWillClose(false);
                         event.setWillDestroy(false);
@@ -216,6 +222,12 @@ public class DiscordGroupManageGUI extends GUI {
 
                 Server server = player.getServer();
 
+                OrbitMinesServer handler = orbitMines.getServerHandler();
+                User user = handler.getDiscord().getLinkedUser(handler.getToken(), player.getUUID());
+                item.addLore("§7Discord: " + (user != null ? "§9§l" + user.getName() + "#" + user.getDiscriminator() : StaffRank.NONE.getDisplayName()));
+
+                lore.add("");
+
                 if (server != null) {
                     lore.add("§7Status: " + Server.Status.ONLINE.getDisplayName());
                     lore.add("§7Server: " + server.getDisplayName());
@@ -226,13 +238,14 @@ public class DiscordGroupManageGUI extends GUI {
                     lore.add("§7" + omp.lang("Laatst gezien", "Last seen") + ": §9§l" + player.getLastOnlineInTimeUnit(omp.getLanguage()) + " " + omp.lang("geleden", "ago"));
                 }
                 lore.add("");
-                lore.add(omp.lang("§cKlik hier om te verwijderen.", "§aClick here to remove."));
+                lore.add(omp.lang("§cKlik hier om te verwijderen.", "§cClick here to remove."));
 
                 add(slot, new ItemInstance(server != null ? item.build() : offlineItem.build()) {
                     @Override
                     public void onClick(InventoryClickEvent event, OMPlayer omp) {
+                        omp.getPlayer().closeInventory();
+
                         data.onMemberRemoval(player, true);
-                        reopen(omp);
                     }
                 });
             } else {

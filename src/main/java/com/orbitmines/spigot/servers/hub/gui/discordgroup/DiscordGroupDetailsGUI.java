@@ -15,7 +15,7 @@ import com.orbitmines.spigot.api.handlers.itembuilders.PlayerSkullBuilder;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
-public class DiscordGroupDetailsGUI extends GUI {
+public class DiscordGroupDetailsGUI extends GUI implements DiscordGroupGUIInstance {
 
     private CachedPlayer owner;
     private String name;
@@ -31,12 +31,14 @@ public class DiscordGroupDetailsGUI extends GUI {
     protected boolean onOpen(OMPlayer omp) {
         DiscordGroupData data = (DiscordGroupData) omp.getData(Data.Type.DISCORD_GROUPS);
 
-        boolean isOwner = owner.getUUID().toString().equals(omp.getUUID().toString());
+        /* Don't open if player is Owner */
+        if (owner.getUUID().toString().equals(omp.getUUID().toString()))
+            return false;
 
         boolean isSelected = data.getSelected() != null && data.getSelected().toString().equals(owner.getUUID().toString());
 
         if (!isSelected)
-            add(1, 1, new ItemInstance(new ItemBuilder(Material.EMERALD, 1, omp.lang("§c§lZet als Geselecteerd", "§c§lSet as Selected")).build()) {
+            add(1, 1, new ItemInstance(new ItemBuilder(Material.EMERALD, 1, omp.lang("§a§lZet als Geselecteerd", "§a§lSet as Selected")).build()) {
                 @Override
                 public void onClick(InventoryClickEvent event, OMPlayer omp) {
                     data.setSelected(owner.getUUID());
@@ -47,14 +49,14 @@ public class DiscordGroupDetailsGUI extends GUI {
         else
             add(1, 1, new EmptyItemInstance(new ItemBuilder(Material.EMERALD, 1, omp.lang("§a§lZet als Geselecteerd", "§a§lSet as Selected")).glow().build()));
 
-        add(1, 4, new ItemInstance(new PlayerSkullBuilder(() -> "Discord Skull", 1, omp.lang("§9« Terug naar Private Discord Servers", "§9« Back to Private Discord Servers")).setTexture(DiscordBot.SKULL_TEXTURE).build()) {
+        add(1, 4, new ItemInstance(new PlayerSkullBuilder(() -> "Discord Skull", 1, omp.lang("§9« Terug naar Overzicht", "§9« Back to Overview")).setTexture(DiscordBot.SKULL_TEXTURE).build()) {
             @Override
             public void onClick(InventoryClickEvent event, OMPlayer omp) {
                 new DiscordGroupGUI().open(omp);
             }
         });
 
-        add(1, 7, new ItemInstance(new ItemBuilder(Material.BARRIER, 1, omp.lang("§c§lWeiger Verzoek §7(Om " + name + " §7te joinen)", "§c§lDeny Request §7(To join " + name + "§7)")).build()) {
+        add(1, 7, new ItemInstance(new ItemBuilder(Material.BARRIER, 1, omp.lang("§c§lVerlaat Server", "§c§lLeave Server")).build()) {
             @Override
             public void onClick(InventoryClickEvent event, OMPlayer omp) {
                 omp.getPlayer().closeInventory();

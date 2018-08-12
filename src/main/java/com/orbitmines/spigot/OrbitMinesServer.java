@@ -5,7 +5,6 @@ import com.orbitmines.discordbot.DiscordBot;
 import com.orbitmines.discordbot.utils.BotToken;
 import com.orbitmines.discordbot.utils.DiscordSpigotUtils;
 import com.orbitmines.discordbot.utils.DiscordUtils;
-import com.orbitmines.spigot.api.cmds.discord.CommandList;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.PluginMessageHandler;
 import com.orbitmines.spigot.api.handlers.PreventionSet;
@@ -20,6 +19,7 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
@@ -65,7 +65,6 @@ public abstract class OrbitMinesServer {
         registerEvents();
 
         /* register commands */
-        new CommandList(discord, token);
         registerCommands();
 
         registerRunnables();
@@ -97,6 +96,8 @@ public abstract class OrbitMinesServer {
 
     /* OMPlayer is not yet initiated here */
     public abstract Location getSpawnLocation(Player player);
+
+    public abstract GameMode getGameMode();
 
     protected abstract void registerEvents();
 
@@ -161,7 +162,7 @@ public abstract class OrbitMinesServer {
     }
 
     public void toDiscord(AsyncPlayerChatEvent event, OMPlayer omp) {
-        getDiscordChannel().sendMessage(DiscordSpigotUtils.getDisplay(discord, token, omp) + " » " + event.getMessage()).queue();
+        getDiscordChannel().sendMessage(DiscordSpigotUtils.getDisplay(discord, token, omp) + " » " + DiscordUtils.filterToDiscord(discord, token, event.getMessage())).queue();
     }
 
     protected void registerEvents(Listener... listeners) {

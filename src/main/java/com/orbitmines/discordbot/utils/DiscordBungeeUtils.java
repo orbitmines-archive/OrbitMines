@@ -13,6 +13,10 @@ import net.dv8tion.jda.core.entities.Guild;
 public class DiscordBungeeUtils {
 
     public static String getDisplay(DiscordBot discord, BotToken token, BungeePlayer omp) {
+        return getDisplay(discord, token, omp, false);
+    }
+
+    public static String getDisplay(DiscordBot discord, BotToken token, BungeePlayer omp, boolean withServerIcon) {
         Guild guild = discord.getGuild(token);
 
         String prefix;
@@ -22,6 +26,6 @@ public class DiscordBungeeUtils {
         else
             prefix = " **" + omp.getRankName() + "**";
 
-        return SkinLibrary.getEmote(guild, omp.getUUID()).getAsMention() + prefix + " **" + omp.getName(true) + "**";
+        return (withServerIcon ? discord.getEmote(token, DiscordBot.CustomEmote.from(omp.getServer())).getAsMention() : "") + SkinLibrary.getEmote(guild, omp.getUUID()).getAsMention() + prefix + " **" + omp.getName(true) + "**";
     }
 }

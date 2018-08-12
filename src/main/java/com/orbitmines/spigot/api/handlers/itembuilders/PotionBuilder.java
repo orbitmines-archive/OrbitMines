@@ -1,6 +1,5 @@
 package com.orbitmines.spigot.api.handlers.itembuilders;
 
-import org.bukkit.Color;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -14,7 +13,7 @@ public class PotionBuilder {
     private int amplifier;
     private boolean ambient;
     private boolean particles;
-    private Color color;
+    private boolean icon;
 
     public PotionBuilder(PotionEffectType type, int duration, int amplifier) {
         this(type, duration, amplifier, true);
@@ -25,20 +24,16 @@ public class PotionBuilder {
     }
 
     public PotionBuilder(PotionEffectType type, int duration, int amplifier, boolean ambient, boolean particles) {
-        this.type = type;
-        this.duration = duration;
-        this.amplifier = amplifier;
-        this.ambient = ambient;
-        this.particles = particles;
+        this(type, duration, amplifier, ambient, particles, true);
     }
 
-    public PotionBuilder(PotionEffectType type, int duration, int amplifier, boolean ambient, boolean particles, Color color) {
+    public PotionBuilder(PotionEffectType type, int duration, int amplifier, boolean ambient, boolean particles, boolean icon) {
         this.type = type;
         this.duration = duration;
         this.amplifier = amplifier;
         this.ambient = ambient;
         this.particles = particles;
-        this.color = color;
+        this.icon = icon;
     }
 
     public PotionEffectType getType() {
@@ -81,15 +76,7 @@ public class PotionBuilder {
         this.particles = particles;
     }
 
-    public Color getColor() {
-        return color;
-    }
-
-    public void setColor(Color color) {
-        this.color = color;
-    }
-
     public PotionEffect build() {
-        return new PotionEffect(type, duration, amplifier, ambient, particles, color);
+        return new PotionEffect(type, duration, amplifier, ambient, particles, icon);
     }
 }

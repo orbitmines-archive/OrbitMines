@@ -34,16 +34,18 @@ public class CommandTeleport extends VipCommand {
     }
 
     @Override
-    public void onDispatch(OMPlayer omp, String[] a) {
+    public void onDispatch(OMPlayer player, String[] a) {
+        SurvivalPlayer omp = (SurvivalPlayer) player;
         Player p = omp.getPlayer();
 
         if (omp.isEligible(StaffRank.MODERATOR) && omp.isOpMode()) {
             if (a.length == 2) {
                 Player p2 = Bukkit.getPlayer(a[1]);
-                OMPlayer omp2 = OMPlayer.getPlayer(p2);
+                SurvivalPlayer omp2 = SurvivalPlayer.getPlayer(p2);
 
                 if (p2 != null) {
                     if (p2 != p) {
+                        omp.setBackLocation(p.getLocation());
                         p.teleport(p2);
                         omp.sendMessage("Teleport", Color.LIME, "§7Geteleporteerd naar " + omp2.getName() + "§7!", "§7Teleported to " + omp2.getName() + "§7!");
                     } else {
@@ -55,11 +57,12 @@ public class CommandTeleport extends VipCommand {
             } else if (a.length == 3) {
                 Player p2 = Bukkit.getPlayer(a[1]);
                 Player p3 = Bukkit.getPlayer(a[2]);
-                OMPlayer omp2 = OMPlayer.getPlayer(p2);
-                OMPlayer omp3 = OMPlayer.getPlayer(p3);
+                SurvivalPlayer omp2 = SurvivalPlayer.getPlayer(p2);
+                SurvivalPlayer omp3 = SurvivalPlayer.getPlayer(p3);
 
                 if (p2 != null) {
                     if (p3 != null) {
+                        omp2.setBackLocation(p2.getLocation());
                         p2.teleport(p3);
                         omp.sendMessage("Teleport", Color.LIME, "§7Je hebt " + omp2.getName() + "§7 naar " + omp3.getName() + "§7 geteleporteerd!", "§7Teleported " + omp2.getName() + "§7 to " + omp3.getName() + "§7!");
                     } else {
@@ -70,7 +73,7 @@ public class CommandTeleport extends VipCommand {
                 }
             } else if (a.length == 5) {
                 Player p2 = Bukkit.getPlayer(a[1]);
-                OMPlayer omp2 = OMPlayer.getPlayer(p2);
+                SurvivalPlayer omp2 = SurvivalPlayer.getPlayer(p2);
 
                 if (p2 != null) {
                     try {
@@ -80,6 +83,7 @@ public class CommandTeleport extends VipCommand {
 
                         Location l = new Location(p2.getWorld(), x, y, z, p2.getLocation().getYaw(), p2.getLocation().getPitch());
 
+                        omp2.setBackLocation(p2.getLocation());
                         p2.teleport(l);
 
                         if (p2 != p) {

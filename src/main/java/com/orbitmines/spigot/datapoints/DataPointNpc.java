@@ -187,12 +187,27 @@ public class DataPointNpc extends DataPointSign {
                                     long duration = 0;
 
                                     for (PeriodLoot loot : values) {
-                                        if ((loot != PeriodLoot.MONTHLY_VIP || omp.getVipRank() != VipRank.NONE) && periodLootData.canCollect(loot)) {
+                                        /* Dont display loot specificly for a server */
+                                        if (loot.getServer() != null && loot.getServer() != OrbitMines.getInstance().getServerHandler().getServer())
+                                            continue;
+
+                                        boolean hasRank = true;
+                                        switch (loot) {
+                                            case MONTHLY_VIP:
+                                            case SURVIVAL_BACK_CHARGES:
+                                                hasRank = omp.getVipRank() != VipRank.NONE;
+                                                break;
+                                            case SURVIVAL_SPAWNER_ITEM:
+                                                hasRank = omp.getVipRank() == VipRank.EMERALD;
+                                                break;
+                                        }
+
+                                        if (hasRank && periodLootData.canCollect(loot)) {
                                             lootCount++;
                                             continue;
                                         }
 
-                                        if (loot == PeriodLoot.MONTHLY_VIP && omp.getVipRank() == VipRank.NONE)
+                                        if (!hasRank)
                                             continue;
 
                                         long d = periodLootData.getCooldown(loot);

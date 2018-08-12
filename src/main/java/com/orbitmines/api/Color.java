@@ -8,7 +8,7 @@ import com.orbitmines.api.utils.RandomUtils;
 public enum Color {
 
     AQUA("§b", "Light Blue", 85, 255, 255),
-    BLACK("§0", "Black", 0, 0, 0),
+    BLACK("§0", "Black", 1, 1, 1),/* Discord uses 0,0,0 as default color */
     BLUE("§9", "Blue", 85, 85, 255),
     FUCHSIA("§d", "Pink", 255, 85, 255),
     GRAY("§8", "Dark Gray", 85, 85, 85),

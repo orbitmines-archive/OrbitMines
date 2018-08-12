@@ -49,6 +49,11 @@ public class ClaimFriendsAdditionGUI extends GUI {
                 item.addLore("§7- " + desc.lang(omp.getLanguage()));
             }
 
+            for (Claim.Permission perm : Claim.Permission.values()) {
+                if (permission.ordinal() > perm.ordinal())
+                    item.addLore("§7- §l" + perm.getName().lang(omp.getLanguage()));
+            }
+
             add(3, 4, new EmptyItemInstance(item.build()));
         }
 

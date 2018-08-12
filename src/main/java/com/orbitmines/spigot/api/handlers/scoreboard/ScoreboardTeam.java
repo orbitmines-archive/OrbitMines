@@ -73,20 +73,27 @@ public class ScoreboardTeam {
             t = scoreboard.registerNewTeam(name);
 
         for (Player player : players) {
-            t.addEntry(player.getName());
+            if (!t.hasEntry(player.getName()))
+                t.addEntry(player.getName());
         }
 
-        if (prefix != null)
+        if (prefix != null && !t.getPrefix().equals(prefix))
             t.setPrefix(prefix);
-        if (suffix != null)
+        if (suffix != null && !t.getSuffix().equals(suffix))
             t.setSuffix(suffix);
 
-        t.setColor(color);
+        if (t.getColor() != color)
+            t.setColor(color);
 
-        t.setAllowFriendlyFire(allowFriendlyFire);
-        t.setCanSeeFriendlyInvisibles(canSeeFriendlyInvisibles);
+        if (t.allowFriendlyFire() != allowFriendlyFire)
+            t.setAllowFriendlyFire(allowFriendlyFire);
+
+        if (t.canSeeFriendlyInvisibles() != canSeeFriendlyInvisibles)
+            t.setCanSeeFriendlyInvisibles(canSeeFriendlyInvisibles);
+
         for (Team.Option option : options.keySet()) {
-            t.setOption(option, options.get(option));
+            if (t.getOption(option) != options.get(option))
+                t.setOption(option, options.get(option));
         }
     }
 }

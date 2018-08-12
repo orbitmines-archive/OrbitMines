@@ -76,6 +76,39 @@ public class WorldUtils {
         entity.teleport(location);
     }
 
+    public static float getYaw(Location loc1, Location loc2) {
+        double vX = loc1.getX() - loc2.getX();
+        double vY = loc1.getY() - loc2.getY();
+        double vZ = loc1.getZ() - loc2.getZ();
+
+        double d = Math.sqrt(vX * vX + vY * vY + vZ * vZ);
+
+        vX /= d;
+        vY /= d;
+        vZ /= d;
+
+        return (float) (Math.toDegrees(Math.atan2(vZ, vX)) + 90);
+    }
+
+    public static BlockFace fromYaw(float yaw) {
+        if (yaw >= -22.5 && yaw <= 22.5)
+            return BlockFace.SOUTH;
+        else if (yaw >= 22.5 && yaw <= 67.5)
+            return BlockFace.SOUTH_WEST;
+        else if (yaw >= 67.5 && yaw <= 112.5)
+            return BlockFace.WEST;
+        else if (yaw >= 112.5 && yaw <= 157.5)
+            return BlockFace.NORTH_WEST;
+        else if (yaw >= -112.5 && yaw <= -67.5)
+            return BlockFace.EAST;
+        else if (yaw >= -67.5 && yaw <= -22.5)
+            return BlockFace.SOUTH_EAST;
+        else if (yaw >= -157.5 && yaw <= -112.5 || yaw >= 202.5) /* ? */
+            return BlockFace.NORTH_EAST;
+        else
+            return BlockFace.NORTH;
+    }
+
     public static double yawToDegree(LivingEntity livingEntity) {
         return ((livingEntity.getLocation().getYaw() + 90) * Math.PI) / 180;
     }

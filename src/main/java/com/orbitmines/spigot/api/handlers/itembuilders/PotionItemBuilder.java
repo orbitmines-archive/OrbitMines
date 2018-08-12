@@ -75,7 +75,6 @@ public class PotionItemBuilder extends ItemBuilder {
         for (PotionBuilder potionBuilder : potionBuilders) {
             meta.addCustomEffect(potionBuilder.build(), true);
         }
-        meta.setColor(potionBuilders.get(0).getColor());
 
         if (effectHidden)
             addFlag(ItemFlag.HIDE_POTION_EFFECTS);

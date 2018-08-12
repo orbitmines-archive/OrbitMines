@@ -39,6 +39,11 @@ public class CommandVote extends Command {
     }
 
     @Override
+    public boolean isBungeeCommand() {
+        return true;
+    }
+
+    @Override
     public void dispatch(MessageReceivedEvent event, User user, MessageChannel channel, Message msg, String[] a) {
         EmbedBuilder builder = new EmbedBuilder();
         builder.setAuthor("OrbitMines Vote Links");

@@ -1,9 +1,6 @@
 package com.orbitmines.discordbot;
 
-import com.orbitmines.api.CachedPlayer;
-import com.orbitmines.api.Server;
-import com.orbitmines.api.StaffRank;
-import com.orbitmines.api.VipRank;
+import com.orbitmines.api.*;
 import com.orbitmines.api.database.Database;
 import com.orbitmines.api.database.Set;
 import com.orbitmines.api.database.Table;
@@ -20,8 +17,14 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.managers.GuildController;
 
+import javax.imageio.ImageIO;
 import javax.security.auth.login.LoginException;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.*;
 
 /*
@@ -70,7 +73,7 @@ public class DiscordBot {
 
         /* Register */
         registerEvents();
-        registerCommands();
+        registerCommands(tokens[0]);
     }
 
     public static DiscordBot getInstance() {
@@ -95,7 +98,7 @@ public class DiscordBot {
         }
     }
 
-    private void registerCommands() {
+    private void registerCommands(BotToken token) {
         new CommandHelp(this);
 
         new CommandVote(this);
@@ -103,6 +106,8 @@ public class DiscordBot {
         new CommandStats(this);
         new CommandSite(this);
         new CommandShop(this);
+        new CommandList(this);
+        new CommandListServer(this, token);
     }
 
     public Guild getGuild(BotToken token) {
@@ -110,27 +115,37 @@ public class DiscordBot {
     }
 
     public TextChannel getChannelFor(BotToken token) {
-        return getGuild(token).getTextChannelsByName(token.getChannel(), true).get(0);
+        List<TextChannel> list = getGuild(token).getTextChannelsByName(token.getChannel(), true);
+        return list.size() > 0 ? list.get(0) : null;
+    }
+    public TextChannel getChannelFor(Guild guild, BotToken token) {
+        List<TextChannel> list = guild.getTextChannelsByName(token.getChannel(), true);
+        return list.size() > 0 ? list.get(0) : null;
     }
 
     public TextChannel getChannel(BotToken token, ChannelType channelType) {
-        return getGuild(token).getTextChannelsByName(channelType.toString(), true).get(0);
+        List<TextChannel> list = getGuild(token).getTextChannelsByName(channelType.toString(), true);
+        return list.size() > 0 ? list.get(0) : null;
     }
 
     public Role getRole(BotToken token, StaffRank staffRank) {
-        return getGuild(token).getRolesByName(staffRank.toString().toLowerCase(), true).get(0);
+        List<Role> list = getGuild(token).getRolesByName(staffRank.toString().toLowerCase(), true);
+        return list.size() > 0 ? list.get(0) : null;
     }
 
     public Role getRole(BotToken token, VipRank vipRank) {
-        return getGuild(token).getRolesByName(vipRank.toString().toLowerCase(), true).get(0);
+        List<Role> list = getGuild(token).getRolesByName(vipRank.toString().toLowerCase(), true);
+        return list.size() > 0 ? list.get(0) : null;
     }
 
     public Role getRole(BotToken token, CustomRole customRole) {
-        return getGuild(token).getRolesByName(customRole.toString(), true).get(0);
+        List<Role> list = getGuild(token).getRolesByName(customRole.toString(), true);
+        return list.size() > 0 ? list.get(0) : null;
     }
 
     public Emote getEmote(BotToken token, VipRank vipRank) {
-        return getGuild(token).getEmotesByName(vipRank.toString().toLowerCase(), true).get(0);
+        List<Emote> list = getGuild(token).getEmotesByName(vipRank.toString().toLowerCase(), true);
+        return list.size() > 0 ? list.get(0) : null;
     }
 
     public Emote getEmote(BotToken token, CustomEmote emote) {
@@ -138,7 +153,8 @@ public class DiscordBot {
     }
 
     public Emote getEmote(Guild guild, CustomEmote emote) {
-        return guild.getEmotesByName(emote.toString(), true).get(emote.index);
+        List<Emote> list = guild.getEmotesByName(emote.toString(), true);
+        return list.size() > emote.index ? list.get(emote.index) : null;
     }
 
     private void setupToken(BotToken token) {
@@ -164,6 +180,18 @@ public class DiscordBot {
 
     public void setupCustomEmojis() {
 
+    }
+
+    public void setupCustomRoles(BotToken token) {
+        Guild guild = getGuild(token);
+        GuildController controller = guild.getController();
+        
+        for (CustomRole customRole : CustomRole.values()) {
+            Role role = getRole(token, customRole);
+            
+            if (role == null)
+                controller.createRole().setName(customRole.role).setColor(customRole.color.getAwtColor()).setMentionable(customRole.mentionable).queue();
+        }
     }
 
     public MinecraftLinkResult discordLink(User user, String minecraftName) {
@@ -339,6 +367,8 @@ public class DiscordBot {
         patch_notes(false),
 
         new_players(true),
+        name_change(true),
+
         donations(true),
         votes(true),
 
@@ -401,27 +431,57 @@ public class DiscordBot {
             try {
                 return CustomEmote.valueOf(server.toString().toLowerCase());
             } catch(IllegalArgumentException ex) {
-                return null;
+                return orbitmines;
             }
         }
     }
 
     public enum CustomRole {
 
-        STAFF("staff"),
-        VIP("vip"),
+        STAFF("staff", Color.SILVER, true),
+        VIP("vip", Color.SILVER, true),
 
-        JOIN("»"),
-        LEAVE("«"),
+        JOIN("»", Color.LIME, true),
+        LEAVE("«", Color.RED, true),
 
-        TOP_VOTER_1("#1"),
-        TOP_VOTER_2("#2"),
-        TOP_VOTER_3("#3");
+        TOP_VOTER_1("#1", Color.ORANGE, true),
+        TOP_VOTER_2("#2", Color.SILVER, true),
+        TOP_VOTER_3("#3", Color.MAROON, true),
+
+        AQUA(Color.AQUA.getName(), Color.AQUA, true),
+        BLACK(Color.BLACK.getName(), Color.BLACK, true),
+        BLUE(Color.BLUE.getName(), Color.BLUE, true),
+        FUCHSIA(Color.FUCHSIA.getName(), Color.FUCHSIA, true),
+        GRAY(Color.GRAY.getName(), Color.GRAY, true),
+        GREEN(Color.GREEN.getName(), Color.GREEN, true),
+        LIME(Color.LIME.getName(), Color.LIME, true),
+        MAROON(Color.MAROON.getName(), Color.MAROON, true),
+        NAVY(Color.NAVY.getName(), Color.NAVY, true),
+        ORANGE(Color.ORANGE.getName(), Color.ORANGE, true),
+        PURPLE(Color.PURPLE.getName(), Color.PURPLE, true),
+        RED(Color.RED.getName(), Color.RED, true),
+        SILVER(Color.SILVER.getName(), Color.SILVER, true),
+        TEAL(Color.TEAL.getName(), Color.TEAL, true),
+        WHITE(Color.WHITE.getName(), Color.WHITE, true),
+        YELLOW(Color.YELLOW.getName(), Color.YELLOW, true),
+        ;
 
         private final String role;
+        private final Color color;
+        private final boolean mentionable;
 
-        CustomRole(String role) {
+        CustomRole(String role, Color color, boolean mentionable) {
             this.role = role;
+            this.color = color;
+            this.mentionable = mentionable;
+        }
+
+        public Color getColor() {
+            return color;
+        }
+
+        public boolean isMentionable() {
+            return mentionable;
         }
 
         @Override
@@ -431,6 +491,8 @@ public class DiscordBot {
     }
 
     public enum Images {
+
+        /* Only PNG */
 
         SIGN("https://i.imgur.com/bw8AOr8.png"),
         PRISMARINE_SHARD("https://i.imgur.com/NVGeZkz.png"),
@@ -455,6 +517,21 @@ public class DiscordBot {
 
         public String getUrl() {
             return url;
+        }
+
+        public File getFile(String fileName) {
+            if (url == null)
+                return null;
+
+            try {
+                BufferedImage img = ImageIO.read(new URL(url));
+                File file = new File(fileName + ".png");
+                ImageIO.write(img, "png", file);
+
+                return file;
+            } catch (IOException e) {
+                return null;
+            }
         }
     }
 }

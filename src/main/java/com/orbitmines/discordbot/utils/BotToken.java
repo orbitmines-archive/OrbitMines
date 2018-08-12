@@ -7,6 +7,7 @@ package com.orbitmines.discordbot.utils;
 import com.orbitmines.api.Server;
 import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.TextChannel;
 
 public enum BotToken {
 
@@ -49,5 +50,14 @@ public enum BotToken {
         }
 
         return BotToken.DEFAULT;
+    }
+
+    public static BotToken from(TextChannel textChannel) {
+        for (BotToken token : values()) {
+            if (token.getChannel().equals(textChannel.getName()))
+                return token;
+        }
+
+        return null;
     }
 }

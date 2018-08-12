@@ -4,14 +4,20 @@ package com.orbitmines.spigot.api;
  */
 
 import com.orbitmines.api.Message;
+import com.orbitmines.api.Server;
 import com.orbitmines.api.VipRank;
 import com.orbitmines.api.database.Column;
 import com.orbitmines.api.database.tables.TablePeriodLoot;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.api.handlers.itembuilders.MobEggBuilder;
+import com.orbitmines.spigot.servers.survival.Survival;
+import com.orbitmines.spigot.servers.survival.handlers.SurvivalPlayer;
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemFlag;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public enum PeriodLoot {
@@ -81,7 +87,70 @@ public enum PeriodLoot {
                     break;
             }
         }
+    },
+    SURVIVAL_BACK_CHARGES(Server.SURVIVAL, TimeUnit.DAYS.toSeconds(30), TablePeriodLoot.SURVIVAL_BACK_CHARGES, new ItemBuilder(Material.ENDER_EYE), new ItemBuilder(Material.EGG), new Message("Maandelijkse Back Charges", "Monthly Back Charges")) {
+
+        @Override
+        public Message[] getDescription(OMPlayer omp) {
+            return new Message[] {
+                    new Message(omp.getVipRank() == VipRank.IRON ? VipRank.IRON.getDisplayName() : "§8§l" + VipRank.IRON.getName()),
+                    new Message(omp.getVipRank() == VipRank.IRON ? "§7- §6§l50 Back Charges" : "§8- §l50 Back Charges"),
+                    new Message(omp.getVipRank() == VipRank.GOLD ? VipRank.GOLD.getDisplayName() : "§8§l" + VipRank.GOLD.getName()),
+                    new Message(omp.getVipRank() == VipRank.GOLD ? "§7- §6§l125 Back Charges" : "§8- §l125 Back Charges"),
+                    new Message(omp.getVipRank() == VipRank.DIAMOND ? VipRank.DIAMOND.getDisplayName() : "§8§l" + VipRank.DIAMOND.getName()),
+                    new Message(omp.getVipRank() == VipRank.DIAMOND ? "§7- §6§200 Back Charges" : "§8- §l200 Back Charges"),
+                    new Message(omp.getVipRank() == VipRank.EMERALD ? VipRank.EMERALD.getDisplayName() : "§8§l" + VipRank.EMERALD.getName()),
+                    new Message(omp.getVipRank() == VipRank.EMERALD ? "§7- §6§l300 Back Charges" : "§8- §l300 Back Charges"),
+            };
+        }
+
+        @Override
+        public void receive(OMPlayer player) {
+            SurvivalPlayer omp = (SurvivalPlayer) player;
+
+            switch (omp.getVipRank()) {
+
+                case NONE:
+                    break;
+                case IRON:
+                    omp.addBackCharges(50);
+                    break;
+                case GOLD:
+                    omp.addBackCharges(125);
+                    break;
+                case DIAMOND:
+                    omp.addBackCharges(200);
+                    break;
+                case EMERALD:
+                    omp.addBackCharges(300);
+                    break;
+            }
+        }
+    },
+    SURVIVAL_SPAWNER_ITEM(Server.SURVIVAL, TimeUnit.DAYS.toSeconds(30), TablePeriodLoot.SURVIVAL_SPAWNER_ITEM, new ItemBuilder(Material.DIAMOND_PICKAXE).addFlag(ItemFlag.HIDE_ATTRIBUTES), new ItemBuilder(Material.EGG), new Message("Maandelijkse Spawner Miner", "Monthly Spawner Miner")) {
+
+        @Override
+        public Message[] getDescription(OMPlayer omp) {
+            return new Message[] {
+                    new Message(omp.getVipRank() == VipRank.EMERALD ? VipRank.EMERALD.getDisplayName() : "§8§l" + VipRank.EMERALD.getName()),
+                    new Message(omp.getVipRank() == VipRank.EMERALD ? "§7- §5§l1 Spawner Miner" : "§8- §l1 Spawner Miner"),
+            };
+        }
+
+        @Override
+        public void receive(OMPlayer player) {
+            SurvivalPlayer omp = (SurvivalPlayer) player;
+
+            switch (omp.getVipRank()) {
+
+                case EMERALD:
+                    omp.getInventory().addItem(Survival.SPAWNER_MINER.build());
+                    break;
+            }
+        }
     };
+
+    private final Server server;
 
     private final long delay;
     private final Column column;
@@ -93,12 +162,21 @@ public enum PeriodLoot {
     private final Message[] description;
 
     PeriodLoot(long delay, Column column, ItemBuilder claimable, ItemBuilder claimed, Message title, Message... description) {
+        this(null, delay, column, claimable, claimed, title, description);
+    }
+
+    PeriodLoot(Server server, long delay, Column column, ItemBuilder claimable, ItemBuilder claimed, Message title, Message... description) {
+        this.server = server;
         this.delay = delay;
         this.column = column;
         this.claimable = claimable;
         this.claimed = claimed;
         this.title = title;
         this.description = description;
+    }
+
+    public Server getServer() {
+        return server;
     }
 
     public long getDelay() {
@@ -127,5 +205,16 @@ public enum PeriodLoot {
 
     public void receive(OMPlayer omp) {
         throw new IllegalStateException();
+    }
+
+    public static List<PeriodLoot> from(Server server){
+        List<PeriodLoot> list = new ArrayList<>();
+
+        for (PeriodLoot loot : values()) {
+            if (loot.server == server)
+                list.add(loot);
+        }
+
+        return list;
     }
 }

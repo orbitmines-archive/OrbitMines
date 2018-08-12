@@ -12,9 +12,8 @@ import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.handlers.achievements.EmptyAchievementHandler;
 import com.orbitmines.spigot.api.handlers.data.FriendsData;
 import com.orbitmines.spigot.api.utils.ConsoleUtils;
-import com.orbitmines.spigot.servers.hub.gui.friends.FriendGUI;
-import com.orbitmines.spigot.servers.hub.gui.friends.FriendRequestDetailsGUI;
-import com.orbitmines.spigot.servers.hub.gui.friends.FriendRequestGUI;
+import com.orbitmines.spigot.servers.hub.gui.discordgroup.DiscordGroupGUIInstance;
+import com.orbitmines.spigot.servers.hub.gui.friends.FriendGUIInstance;
 import com.orbitmines.spigot.servers.hub.handlers.HubAchievements;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -77,7 +76,7 @@ public abstract class PluginMessageHandler implements PluginMessageListener {
 
         if (channel.equals(PluginMessage.CHANNEL)) {
             String msg = in.readUTF();
-            ConsoleUtils.warn(msg);
+            ConsoleUtils.msg(msg);//debug
 
             PluginMessage message;
             try {
@@ -117,7 +116,7 @@ public abstract class PluginMessageHandler implements PluginMessageListener {
 
                     break;
                 }
-                case UPDATE_DISCORD_GROUPS: {
+                case UPDATE_DISCORD_GROUP_DATA: {
                     OMPlayer omp = OMPlayer.getPlayer(UUID.fromString(in.readUTF()));
 
                     if (omp == null)
@@ -129,7 +128,7 @@ public abstract class PluginMessageHandler implements PluginMessageListener {
                     GUI gui = omp.getLastInventory();
                     if (gui == null)
                         break;
-                    else if ((gui instanceof FriendGUI || gui instanceof FriendRequestDetailsGUI || gui instanceof FriendRequestGUI) && gui.hasOpened(omp))
+                    else if (gui instanceof DiscordGroupGUIInstance && gui.hasOpened(omp))
                         gui.reopen(omp);
 
                     break;
@@ -146,7 +145,7 @@ public abstract class PluginMessageHandler implements PluginMessageListener {
                     GUI gui = omp.getLastInventory();
                     if (gui == null)
                         break;
-                    else if ((gui instanceof FriendGUI || gui instanceof FriendRequestDetailsGUI || gui instanceof FriendRequestGUI) && gui.hasOpened(omp))
+                    else if (gui instanceof FriendGUIInstance && gui.hasOpened(omp))
                         gui.reopen(omp);
 
                     break;

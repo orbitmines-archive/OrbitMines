@@ -29,6 +29,8 @@ public abstract class ScoreboardSet {
 
     public abstract List<ScoreboardTeam> getTeams();
 
+    public abstract boolean canBypassSettings();
+
     public OMPlayer getPlayer() {
         return omp;
     }

@@ -56,6 +56,9 @@ public abstract class OMPlayer {
 
     protected static List<OMPlayer> players = new ArrayList<>();
 
+    protected static Map<StaffRank, List<Player>> staff = new HashMap<>();
+    protected static Map<VipRank, List<Player>> vips = new HashMap<>();
+
     protected OrbitMines orbitMines;
     protected final Player player;
     protected final DisplayName displayName;
@@ -68,6 +71,7 @@ public abstract class OMPlayer {
     protected StaffRank staffRank;
     protected VipRank vipRank;
     protected Language language;
+    protected boolean hasScoreboard;
     protected boolean muted;
     protected boolean silent;
     protected int solars;
@@ -100,6 +104,7 @@ public abstract class OMPlayer {
         this.staffRank = StaffRank.NONE;
         this.vipRank = VipRank.NONE;
         this.language = Language.ENGLISH;
+        this.hasScoreboard = true;
         this.muted = false;
         this.silent = false;
         this.solars = 0;
@@ -138,13 +143,14 @@ public abstract class OMPlayer {
         orbitMines.getServerHandler().getServer().setPlayers(Bukkit.getOnlinePlayers().size());
 
         if (!Database.get().contains(Table.PLAYERS, TablePlayers.UUID, new Where(TablePlayers.UUID, getUUID().toString()))) {
-            Database.get().insert(Table.PLAYERS, getUUID().toString(), getRealName(), "", staffRank.toString(), vipRank.toString(), DateUtils.FORMAT.format(DateUtils.now()), language.toString(), Settings.PRIVATE_MESSAGES.getDefaultType().toString(), Settings.PLAYER_VISIBILITY.getDefaultType().toString(), Settings.GADGETS.getDefaultType().toString(), Settings.STATS.getDefaultType().toString(), silent ? "1" : "0", solars + "", prisms + "");
+            Database.get().insert(Table.PLAYERS, getUUID().toString(), getRealName(), "", staffRank.toString(), vipRank.toString(), DateUtils.FORMAT.format(DateUtils.now()), language.toString(), hasScoreboard ? "1" : "0", Settings.PRIVATE_MESSAGES.getDefaultType().toString(), Settings.PLAYER_VISIBILITY.getDefaultType().toString(), Settings.GADGETS.getDefaultType().toString(), Settings.STATS.getDefaultType().toString(), silent ? "1" : "0", solars + "", prisms + "");
         } else {
             Map<Column, String> values = Database.get().getValues(Table.PLAYERS, new Column[]{
                     TablePlayers.NICK,
                     TablePlayers.STAFFRANK,
                     TablePlayers.VIPRANK,
                     TablePlayers.LANGUAGE,
+                    TablePlayers.SCOREBOARD,
                     TablePlayers.SILENT,
                     TablePlayers.SOLARS,
                     TablePlayers.PRISMS,
@@ -157,6 +163,7 @@ public abstract class OMPlayer {
             staffRank = StaffRank.valueOf(values.get(TablePlayers.STAFFRANK));
             vipRank = VipRank.valueOf(values.get(TablePlayers.VIPRANK));
             language = Language.valueOf(values.get(TablePlayers.LANGUAGE));
+            hasScoreboard = "1".equals(values.get(TablePlayers.SCOREBOARD));
             silent = "1".equals(values.get(TablePlayers.SILENT));
             solars = Integer.parseInt(values.get(TablePlayers.SOLARS));
             prisms = Integer.parseInt(values.get(TablePlayers.PRISMS));
@@ -202,6 +209,9 @@ public abstract class OMPlayer {
             BotToken token = orbitMines.getServerHandler().getToken();
             orbitMines.getServerHandler().getDiscordChannel().sendMessage(discord.getRole(token, DiscordBot.CustomRole.JOIN).getAsMention() + " " + DiscordSpigotUtils.getDisplay(discord, token, this) + " has joined.").queue();
         }
+
+        /* Update Silent */
+        updateSilent();
 
         new BukkitRunnable() {
             @Override
@@ -477,7 +487,7 @@ public abstract class OMPlayer {
     }
 
     public boolean isEligible(VipRank vipRank) {
-        return this.vipRank.ordinal() >= vipRank.ordinal() || opMode;
+        return this.vipRank.ordinal() >= vipRank.ordinal() || opMode || this.staffRank.ordinal() >= StaffRank.ADMIN.ordinal();
     }
 
     public void updateRanks() {
@@ -545,6 +555,11 @@ public abstract class OMPlayer {
 
     public void updateSilent() {
         this.silent = Database.get().getBoolean(Table.PLAYERS, TablePlayers.SILENT, new Where(TablePlayers.UUID, getUUID().toString()));
+
+        if (silent)
+            player.setGameMode(GameMode.SPECTATOR);
+        else
+            player.setGameMode(orbitMines.getServerHandler().getGameMode());
     }
 
     /*
@@ -651,6 +666,18 @@ public abstract class OMPlayer {
     /*
         Scoreboard
      */
+
+    public boolean hasScoreboard() {
+        return hasScoreboard;
+    }
+
+    public void setHasScoreboard(boolean hasScoreboard) {
+        this.hasScoreboard = hasScoreboard;
+
+        updateScoreboard();
+
+        Database.get().update(Table.PLAYERS, new Set(TablePlayers.SCOREBOARD, hasScoreboard), new Where(TablePlayers.UUID, getUUID().toString()));
+    }
 
     public OMScoreboard getScoreboard() {
         return scoreboard;

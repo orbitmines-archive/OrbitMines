@@ -9,6 +9,7 @@ import com.orbitmines.spigot.api.handlers.chat.ActionBar;
 import com.orbitmines.spigot.servers.survival.Survival;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalPlayer;
 import com.orbitmines.spigot.servers.survival.handlers.claim.Claim;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -37,7 +38,7 @@ public class FlyEvent implements Listener {
         SurvivalPlayer omp = SurvivalPlayer.getPlayer(p);
 
         /* OpMode can fly anywhere */
-        if (omp.isOpMode())
+        if (omp.isOpMode() || omp.getGameMode() == GameMode.SPECTATOR)
             return;
 
         if (p.getWorld() == survival.getWorld()) {

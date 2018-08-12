@@ -21,16 +21,32 @@ public class ComponentMessage {
         tcs = new ArrayList<>();
     }
 
+    public void add(String component) {
+        add(new Message(component), null, null, null, null);
+    }
+
     public void add(Message component) {
         add(component, null, null, null, null);
+    }
+
+    public void add(String component, ClickEvent.Action clickAction, String clickEvent) {
+        add(new Message(component), clickAction, new Message(clickEvent), null, null);
     }
 
     public void add(Message component, ClickEvent.Action clickAction, Message clickEvent) {
         add(component, clickAction, clickEvent, null, null);
     }
 
+    public void add(String component, HoverEvent.Action hoverAction, String hoverEvent) {
+        add(new Message(component), null, null, hoverAction, new Message(hoverEvent));
+    }
+
     public void add(Message component, HoverEvent.Action hoverAction, Message hoverEvent) {
         add(component, null, null, hoverAction, hoverEvent);
+    }
+
+    public void add(String component, ClickEvent.Action clickAction, String clickEvent, HoverEvent.Action hoverAction, String hoverEvent) {
+        add(new Message(component), clickAction, new Message(clickEvent), hoverAction, new Message(hoverEvent));
     }
 
     public void add(Message component, ClickEvent.Action clickAction, Message clickEvent, HoverEvent.Action hoverAction, Message hoverEvent) {

@@ -54,6 +54,11 @@ public class CommandStats extends Command {
     }
 
     @Override
+    public boolean isBungeeCommand() {
+        return true;
+    }
+
+    @Override
     public void dispatch(MessageReceivedEvent event, User user, MessageChannel channel, Message msg, String[] a) {
         if (a.length != 2) {
             channel.sendMessage(user.getAsMention() + " Use " + Command.PREFIX + alias[0] + " " + getHelp()).queue();

@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class FriendRequestGUI extends GUI {
+public class FriendRequestGUI extends GUI implements FriendGUIInstance {
 
     private final int REQUESTS_PER_PAGE = 36;
     private final int NEW_PER_PAGE = REQUESTS_PER_PAGE / 9;

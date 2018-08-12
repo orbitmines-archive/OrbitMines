@@ -35,6 +35,11 @@ public class CommandSite extends Command {
     }
 
     @Override
+    public boolean isBungeeCommand() {
+        return true;
+    }
+
+    @Override
     public void dispatch(MessageReceivedEvent event, User user, MessageChannel channel, Message msg, String[] a) {
         channel.sendMessage(user.getAsMention() + " https://www.orbitmines.com").queue();
     }

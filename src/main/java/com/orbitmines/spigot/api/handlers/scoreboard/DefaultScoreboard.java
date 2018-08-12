@@ -14,7 +14,7 @@ import java.util.Map;
 /*
 * OrbitMines - @author Fadi Shawki - 29-7-2017
 */
-public class DefaultScoreboard extends ScoreboardSet {
+public abstract class DefaultScoreboard extends ScoreboardSet {
 
     private List<ScoreboardTeam> teams;
     private Map<StaffRank, ScoreboardTeam> staffRankTeams;

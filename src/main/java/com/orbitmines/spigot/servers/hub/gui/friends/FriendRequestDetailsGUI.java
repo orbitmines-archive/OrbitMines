@@ -15,7 +15,7 @@ import com.orbitmines.spigot.servers.hub.handlers.HubPlayer;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
-public class FriendRequestDetailsGUI extends GUI {
+public class FriendRequestDetailsGUI extends GUI implements FriendGUIInstance {
 
     private CachedPlayer friend;
 

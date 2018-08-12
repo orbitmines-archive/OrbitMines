@@ -22,9 +22,9 @@ public enum Donation {
     VIP_UPGRADE_GOLD_EMERALD(10, 40.00, Icon.VIP_UPGRADE_GOLD_EMERALD, VipRank.GOLD.getDisplayName() + "§r §7» " + VipRank.EMERALD.getDisplayName(), ""),
     VIP_UPGRADE_DIAMOND_EMERALD(11, 25.00, Icon.VIP_UPGRADE_DIAMOND_EMERALD, VipRank.DIAMOND.getDisplayName() + "§r §7» " + VipRank.EMERALD.getDisplayName(), ""),
 
-    SOLARS_1000(12, 5.00, Icon.OM_ICON, "§e§l1,000 Solars", ""),
-    SOLARS_2500(13, 10.00, Icon.OM_ICON, "§e§l2,500 Solars", ""),
-    SOLARS_7500(14, 25.00, Icon.OM_ICON, "§e§l17,500 Solars", ""),
+    SOLARS_1500(12, 5.00, Icon.OM_ICON, "§e§l1,500 Solars", ""),
+    SOLARS_4000(13, 10.00, Icon.OM_ICON, "§e§l4,000 Solars", ""),
+    SOLARS_12500(14, 25.00, Icon.OM_ICON, "§e§l112,500 Solars", ""),
 
     SURVIVAL_CLAIMBLOCKS_10000(15, 5.00, Server.SURVIVAL, Icon.SURVIVAL, "§9§l10,000 Claimblocks", ""),
     SURVIVAL_CLAIMBLOCKS_25000(16, 10.00, Server.SURVIVAL, Icon.SURVIVAL, "§9§l25,000 Claimblocks", ""),

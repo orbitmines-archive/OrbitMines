@@ -24,6 +24,8 @@ public abstract class Teleportable {
 
     public abstract String getName();
 
+    public abstract void onTeleport(OMPlayer omp, Location from, Location to);
+
     public void teleport(OMPlayer omp) {
         if (omp.getTeleportingTo() != null)
             omp.getTeleportingTimer().cancel();
@@ -41,11 +43,13 @@ public abstract class Teleportable {
 
             @Override
             public void onFinish() {
-                omp.setTeleportingTo(null);
-                omp.setTeleportingTimer(null);
-
                 Location location = getLocation();
                 location.getChunk().load();
+
+                onTeleport(omp, omp.getLocation(), location);
+
+                omp.setTeleportingTo(null);
+                omp.setTeleportingTimer(null);
 
                 omp.getPlayer().teleport(location);
                 omp.playSound(Sound.ENTITY_ENDERMAN_TELEPORT);

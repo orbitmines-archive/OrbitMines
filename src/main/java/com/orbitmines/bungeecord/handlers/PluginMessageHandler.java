@@ -74,7 +74,7 @@ public class PluginMessageHandler implements Listener {
         try {
             String msg = in.readUTF();
             PluginMessage message;
-            ConsoleUtils.warn(msg);
+            ConsoleUtils.msg(msg);
 
             try {
                 message = PluginMessage.valueOf(msg);
@@ -239,8 +239,13 @@ public class PluginMessageHandler implements Listener {
                             break;
                         }
                         case "ADD": {
-                            while (in.available() > 0) {
-                                group.addMember(UUID.fromString(in.readUTF()));
+                            boolean next = true;
+                            while (next) {
+                                try {
+                                    group.addMember(UUID.fromString(in.readUTF()));
+                                } catch(IOException ex) {
+                                    next = false;
+                                }
                             }
                             break;
                         }
@@ -259,13 +264,6 @@ public class PluginMessageHandler implements Listener {
                     }
 
                     break;
-                }
-                case UPDATE_DISCORD_GROUP_DATA: {
-                    BungeePlayer omp = BungeePlayer.getPlayer(UUID.fromString(in.readUTF()));
-
-                    if (omp != null)
-                        omp.getData(Data.Type.DISCORD_GROUPS).load();
-
                 }
                 case FAVORITE_FRIEND_MESSAGE: {
                     List<UUID> friends = Serializer.parseUUIDList(in.readUTF());

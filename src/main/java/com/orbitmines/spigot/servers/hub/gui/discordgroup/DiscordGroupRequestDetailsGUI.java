@@ -15,7 +15,7 @@ import com.orbitmines.spigot.api.handlers.itembuilders.PlayerSkullBuilder;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
-public class DiscordGroupRequestDetailsGUI extends GUI {
+public class DiscordGroupRequestDetailsGUI extends GUI implements DiscordGroupGUIInstance {
 
     private CachedPlayer owner;
     private String name;
@@ -41,7 +41,7 @@ public class DiscordGroupRequestDetailsGUI extends GUI {
             }
         });
 
-        add(1, 4, new ItemInstance(new PlayerSkullBuilder(() -> "Discord Skull", 1, omp.lang("§9« Terug naar Private Discord Servers", "§9« Back to Private Discord Servers")).setTexture(DiscordBot.SKULL_TEXTURE).build()) {
+        add(1, 4, new ItemInstance(new PlayerSkullBuilder(() -> "Discord Skull", 1, omp.lang("§9« Terug naar Overzicht", "§9« Back to Overview")).setTexture(DiscordBot.SKULL_TEXTURE).build()) {
             @Override
             public void onClick(InventoryClickEvent event, OMPlayer omp) {
                 new DiscordGroupGUI().open(omp);

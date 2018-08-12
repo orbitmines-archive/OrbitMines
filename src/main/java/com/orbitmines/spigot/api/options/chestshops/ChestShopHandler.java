@@ -110,5 +110,10 @@ public abstract class ChestShopHandler implements ApiOption {
 
             );
         }
+
+        @Override
+        public boolean canBypassSettings() {
+            return false;
+        }
     }
 }

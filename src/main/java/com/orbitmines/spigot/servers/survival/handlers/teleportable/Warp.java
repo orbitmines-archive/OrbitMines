@@ -72,6 +72,12 @@ public class Warp extends Teleportable {
         return name;
     }
 
+    @Override
+    public void onTeleport(OMPlayer player, Location from, Location to) {
+        SurvivalPlayer omp = (SurvivalPlayer) player;
+        omp.setBackLocation(from);
+    }
+
     public long getId() {
         return id;
     }

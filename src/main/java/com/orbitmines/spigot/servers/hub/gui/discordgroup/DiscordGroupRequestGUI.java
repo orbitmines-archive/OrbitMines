@@ -18,7 +18,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import java.util.List;
 import java.util.UUID;
 
-public class DiscordGroupRequestGUI extends GUI {
+public class DiscordGroupRequestGUI extends GUI implements DiscordGroupGUIInstance {
 
     private final int REQUESTS_PER_PAGE = 36;
     private final int NEW_PER_PAGE = REQUESTS_PER_PAGE / 9;
@@ -38,7 +38,7 @@ public class DiscordGroupRequestGUI extends GUI {
     @Override
     protected boolean onOpen(OMPlayer omp) {
         DiscordGroupData data = (DiscordGroupData) omp.getData(Data.Type.DISCORD_GROUPS);
-        List<UUID> invites = data.getInvites();
+        List<UUID> sentRequests = data.getSentRequests();
 
         {
             add(0, 4, new ItemInstance(new PlayerSkullBuilder(() -> omp.getName(true), 1, "§9§l« Back to Manage").build()) {
@@ -50,7 +50,7 @@ public class DiscordGroupRequestGUI extends GUI {
         }
 
         int slot = 18;
-        for (UUID uuid : getInvitesForPage(invites)) {
+        for (UUID uuid : getInvitesForPage(sentRequests)) {
             if (uuid != null) {
                 CachedPlayer member = CachedPlayer.getPlayer(uuid);
                 ItemBuilder item = new ItemBuilder(Material.MAP, 1, member.getRankPrefixColor().getChatColor() + member.getPlayerName());
@@ -90,7 +90,7 @@ public class DiscordGroupRequestGUI extends GUI {
         else
             clear(5, 0);
 
-        if (canHaveMorePages(invites.size()))
+        if (canHaveMorePages(sentRequests.size()))
             add(5, 8, new ItemInstance(new PlayerSkullBuilder(() -> "Blue Arrow Right", 1, omp.lang("§7Meer Uitnodigingen »", "§7More Invites »")).setTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTE3ZjM2NjZkM2NlZGZhZTU3Nzc4Yzc4MjMwZDQ4MGM3MTlmZDVmNjVmZmEyYWQzMjU1Mzg1ZTQzM2I4NmUifX19").build()) {
                 @Override
                 public void onClick(InventoryClickEvent event, OMPlayer omp) {

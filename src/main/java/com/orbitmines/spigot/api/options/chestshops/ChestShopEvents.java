@@ -41,7 +41,7 @@ public class ChestShopEvents implements Listener {
 
         OMPlayer omp = OMPlayer.getPlayer(event.getPlayer());
 
-        if (shop.getOwner().toString().equals(omp.getUUID().toString())) {
+        if (shop.getOwner() != null && shop.getOwner().toString().equals(omp.getUUID().toString())) {
             if (event.getAction() == Action.RIGHT_CLICK_BLOCK)
                 new ChestShopEditorGUI(shop).open(omp);
 
@@ -76,7 +76,7 @@ public class ChestShopEvents implements Listener {
                                 }
                             } else {
                                 int needed = shop.getPrice() - money;
-                                omp.sendMessage("Shop", Color.RED, "Je hebt nog " + ChestShop.handler.getCurrencyDisplay(needed) + " §7nodig!", "You need " + ChestShop.handler.getCurrencyDisplay(needed) + " more in order to buy this.");
+                                omp.sendMessage("Shop", Color.RED, "Je hebt nog " + ChestShop.handler.getCurrencyDisplay(needed) + " §7nodig!", "You need " + ChestShop.handler.getCurrencyDisplay(needed) + " §7more in order to buy this.");
                             }
                         } else {
                             omp.sendMessage("Shop", Color.RED, "Je kan hier niks meer kopen, het is §cuitverkocht§7!", "You can no longer buy here, it's §csold out§7!");

@@ -6,23 +6,22 @@ package com.orbitmines.discordbot.handlers;
 
 import com.orbitmines.api.*;
 import com.orbitmines.api.database.*;
+import com.orbitmines.api.database.Set;
 import com.orbitmines.api.database.tables.TableDiscordGroup;
+import com.orbitmines.api.database.tables.TableDiscordGroupData;
 import com.orbitmines.bungeecord.OrbitMinesBungee;
 import com.orbitmines.bungeecord.handlers.BungeePlayer;
 import com.orbitmines.discordbot.DiscordBot;
 import com.orbitmines.discordbot.utils.BotToken;
 import com.orbitmines.discordbot.utils.DiscordUtils;
-import com.orbitmines.spigot.api.handlers.Data;
-import com.orbitmines.spigot.api.handlers.data.DiscordGroupData;
 import com.orbitmines.spigot.api.utils.Serializer;
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.managers.GuildController;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.io.File;
+import java.util.*;
 
 public class DiscordGroup {
 
@@ -100,9 +99,26 @@ public class DiscordGroup {
         return this.color.getChatColor() + "@" + this.name;
     }
 
+    public void updateCategoryName() {
+        Category category = getCategory();
+        String categoryName = generateCategoryName();
+
+        /* Only update when the category name changed */
+        if (!category.getName().equals(categoryName))
+            category.getManager().setName(categoryName).queue(channel -> discord.getChannel(BotToken.DEFAULT, DiscordBot.ChannelType.private_server_log).sendMessage("Successfully changed " + DiscordUtils.getDisplay(discord, BotToken.DEFAULT, this.owner) + "'s Discord Server Category to » **" + categoryName + "**.").queue());
+    }
+
     public void setName(String name) {
         this.name = name;
-        getRole().getManager().setName(name).queue();
+        getRole().getManager().setName(name).queue(role -> {
+            getTextChannel().getManager().setName(name.toLowerCase()).queue(channel -> {
+                getVoiceChannel().getManager().setName(name).queue(channel2 -> {
+                    discord.getChannel(BotToken.DEFAULT, DiscordBot.ChannelType.private_server_log).sendMessage("Successfully changed " + DiscordUtils.getDisplay(discord, BotToken.DEFAULT, this.owner) + "'s Discord Server Name to " + getRole().getAsMention() + " » " + getTextChannel().getAsMention() + ".").queue();
+                    getTextChannel().sendMessage("Successfully changed name to " + getRole().getAsMention() + " » " + getTextChannel().getAsMention() + ".").queue();
+                });
+            });
+        });
+
         Database.get().update(Table.DISCORD_GROUP, new Set(TableDiscordGroup.NAME, this.name), new Where(TableDiscordGroup.UUID, this.owner.toString()));
     }
 
@@ -112,7 +128,11 @@ public class DiscordGroup {
 
     public void setColor(Color color) {
         this.color = color;
-        getRole().getManager().setColor(color.getAwtColor()).queue();
+        getRole().getManager().setColor(color.getAwtColor()).queue(role -> {
+            String mention = discord.getRole(BotToken.DEFAULT, DiscordBot.CustomRole.valueOf(color.toString())).getAsMention();
+            discord.getChannel(BotToken.DEFAULT, DiscordBot.ChannelType.private_server_log).sendMessage("Successfully changed " + DiscordUtils.getDisplay(discord, BotToken.DEFAULT, this.owner) + "'s Discord Server Color to " + mention + " » " + getRole().getAsMention() + ".").queue();
+            getTextChannel().sendMessage("Successfully changed color to " + mention + " » " + getRole().getAsMention() + ".").queue();
+        });
         Database.get().update(Table.DISCORD_GROUP, new Set(TableDiscordGroup.COLOR, this.color.toString()), new Where(TableDiscordGroup.UUID, this.owner.toString()));
     }
 
@@ -122,8 +142,8 @@ public class DiscordGroup {
 
     public void addMember(UUID member) {
         String memberName = getName(member);
-        sendMessage(Color.LIME, memberName + " §7is toegevoegd aan " + getDisplayName() + "§7.", memberName + " §7has joined " + getDisplayName() + "§7.");
-        sendMessage(member, Color.LIME, "Je bent " + getDisplayName() + "§7 gejoined.", "You have joined " + getDisplayName() + "§7.");
+        sendMessage("Discord", Color.LIME, memberName + " §7is toegevoegd aan " + getDisplayName() + "§7.", memberName + " §7has joined " + getDisplayName() + "§7.");
+        sendMessage("Discord", member, Color.LIME, "Je bent " + getDisplayName() + "§7 gejoined.", "You have joined " + getDisplayName() + "§7.");
 
         String name = DiscordUtils.getDisplay(discord, BotToken.DEFAULT, member);
         User user = discord.getLinkedUser(BotToken.DEFAULT, member);
@@ -137,13 +157,16 @@ public class DiscordGroup {
     }
 
     public void removeMember(UUID member, boolean forced) {
+        /* Remove first so player doesn't get two leave messages */
+        this.members.remove(member);
+
         String memberName = getName(member);
         if (forced) {
-            sendMessage(Color.LIME, memberName + " §7is verwijderd van " + getDisplayName() + "§7.", memberName + " §7has been removed from " + getDisplayName() + "§7.");
-            sendMessage(member, Color.LIME, "Je bent van " + getDisplayName() + "§7 verwijderd.", "You have been removed from " + getDisplayName() + "§7.");
+            sendMessage("Discord", Color.LIME, memberName + " §7is verwijderd van " + getDisplayName() + "§7.", memberName + " §7has been removed from " + getDisplayName() + "§7.");
+            sendMessage("Discord", member, Color.LIME, "Je bent van " + getDisplayName() + "§7 verwijderd.", "You have been removed from " + getDisplayName() + "§7.");
         } else {
-            sendMessage(Color.LIME, memberName + " §7heeft " + getDisplayName() + "§7 verlaten.", memberName + " §7has left " + getDisplayName() + "§7.");
-            sendMessage(member, Color.LIME, "Je bent " + getDisplayName() + "§7 verlaten.", "You have left " + getDisplayName() + "§7.");
+            sendMessage("Discord", Color.LIME, memberName + " §7heeft " + getDisplayName() + "§7 verlaten.", memberName + " §7has left " + getDisplayName() + "§7.");
+            sendMessage("Discord", member, Color.LIME, "Je bent " + getDisplayName() + "§7 verlaten.", "You have left " + getDisplayName() + "§7.");
         }
 
         String name = DiscordUtils.getDisplay(discord, BotToken.DEFAULT, member);
@@ -153,7 +176,6 @@ public class DiscordGroup {
 
         getTextChannel().sendMessage(discord.getRole(BotToken.DEFAULT, DiscordBot.CustomRole.LEAVE).getAsMention() + " " + name + " has left " + getRole().getAsMention() + ".").queue();
 
-        this.members.remove(member);
         updateMembers(member);
     }
 
@@ -165,19 +187,35 @@ public class DiscordGroup {
         Database.get().update(Table.DISCORD_GROUP, new Set(TableDiscordGroup.MEMBERS, Serializer.serializeUUIDList(this.members)), new Where(TableDiscordGroup.UUID, this.owner.toString()));
     }
 
-    private void sendMessage(Color color, String... messages) {
-        sendMessage(owner, color, messages);
+    public void sendMessage(String prefix, Color color, String... messages) {
+        sendMessage(prefix, owner, color, messages);
 
         for (UUID member : members) {
-            sendMessage(member, color, messages);
+            sendMessage(prefix, member, color, messages);
         }
     }
 
-    private void sendMessage(UUID uuid, Color color, String... messages) {
+    public void sendMessage(String prefix, UUID uuid, Color color, String... messages) {
         BungeePlayer omp = BungeePlayer.getPlayer(uuid);
 
         if (omp != null)
-            omp.sendMessage("Discord", color, messages);
+            omp.sendMessage(prefix, color, messages);
+    }
+
+    public List<BungeePlayer> getPlayers() {
+        List<BungeePlayer> list = new ArrayList<>();
+
+        BungeePlayer owner = BungeePlayer.getPlayer(this.owner);
+        if (owner != null)
+            list.add(owner);
+
+        for (UUID uuid : members) {
+            BungeePlayer member = BungeePlayer.getPlayer(uuid);
+            if (member != null)
+                list.add(member);
+        }
+
+        return list;
     }
 
     private String getName(UUID uuid) {
@@ -198,9 +236,21 @@ public class DiscordGroup {
 
         controller.createRole().setName(this.name).setColor(this.color.getAwtColor()).setMentionable(true).queue(role -> {
             roleId = role.getIdLong();
+
             omp.sendMessage("Discord", Color.LIME, "Rol gemaakt.", "Successfully created Role.");
 
-            controller.createCategory(generateCategoryName()).queue(channel -> {
+            Collection<Permission> everyone = Collections.singletonList(Permission.MESSAGE_READ);
+            Collection<Permission> read = Collections.singletonList(Permission.MESSAGE_READ);
+
+            controller.createCategory(generateCategoryName())
+                    .addPermissionOverride(role, read, new ArrayList<>())
+                    .addPermissionOverride(discord.getRole(BotToken.DEFAULT, StaffRank.OWNER), read, new ArrayList<>())
+                    .addPermissionOverride(discord.getRole(BotToken.DEFAULT, StaffRank.ADMIN), read, new ArrayList<>())
+                    .addPermissionOverride(discord.getRole(BotToken.DEFAULT, StaffRank.MODERATOR), read, new ArrayList<>())
+
+                    .addPermissionOverride(guild.getPublicRole(), new ArrayList<>(), everyone)
+
+                    .queue(channel -> {
                 categoryId = channel.getIdLong();
                 Category category = getCategory();
 
@@ -211,21 +261,37 @@ public class DiscordGroup {
                     omp.sendMessage("Discord", Color.LIME, "Text Channel gemaakt.", "Successfully created Text Channel.");
 
                     controller.createVoiceChannel(this.name).setParent(category).queue(channel2 -> {
-                        Database.get().insert(Table.DISCORD_GROUP, this.owner.toString(), categoryId + "", textChannelId + "", voiceChannelId + "", roleId + "", this.name, this.color.toString(), Serializer.serializeUUIDList(members));
-
+                        voiceChannelId = channel2.getIdLong();
                         omp.sendMessage("Discord", Color.LIME, "Voice Channel gemaakt.", "Successfully created Voice Channel.");
+
+                        Database.get().insert(Table.DISCORD_GROUP, this.owner.toString(), categoryId + "", textChannelId + "", voiceChannelId + "", roleId + "", this.name, this.color.toString(), Serializer.serializeUUIDList(members));
 
                         this.setup = true;
                         omp.updateRanks();
 
-                        /* Set Selected if none selected. */
-                        DiscordGroupData data = (DiscordGroupData) omp.getData(Data.Type.DISCORD_GROUPS);
-                        if (data.getSelected() == null) {
-                            data.setSelected(omp.getUUID());
+                        String stringUuid = Database.get().getString(Table.DISCORD_GROUP_DATA, TableDiscordGroupData.SELECTED, new Where(TableDiscordGroupData.UUID, omp.getUUID().toString()));
+
+                        if (!stringUuid.equals("")) {
+                            Database.get().update(Table.DISCORD_GROUP_DATA, new Set(TableDiscordGroupData.SELECTED, omp.getUUID().toString()), new Where(TableDiscordGroupData.UUID, omp.getUUID().toString()));
                             OrbitMinesBungee.getBungee().getMessageHandler().dataTransfer(PluginMessage.UPDATE_DISCORD_GROUP_DATA, omp.getPlayer(), omp.getUUID().toString());
                         }
 
-                        discord.getChannel(BotToken.DEFAULT, DiscordBot.ChannelType.private_server_log).sendMessage("Successfully created **Private Discord Server** for " + DiscordUtils.getDisplay(discord, BotToken.DEFAULT, this.owner) + " » " + getTextChannel().getAsMention() + ", " + getRole().getAsMention()).queue();
+                        discord.getChannel(BotToken.DEFAULT, DiscordBot.ChannelType.private_server_log).sendMessage("Successfully created **Private Discord Server** for " + DiscordUtils.getDisplay(discord, BotToken.DEFAULT, this.owner) + " » " + role.getAsMention() + " » " + getTextChannel().getAsMention() + ".").queue();
+
+                        TextChannel server = getTextChannel();
+
+                        File file = DiscordBot.Images.ORBITMINES_LOGO.getFile("orbitmines_logo");
+                        if (file != null)
+                           server.sendFile(file).queue();
+
+                        User user = discord.getLinkedUser(BotToken.DEFAULT, omp.getUUID());
+
+                        server.sendMessage("Welcome to " + role.getAsMention() + " " + user.getAsMention() + "!").queue();
+                        server.sendMessage(" • Use **/discordserver** in game to manage your server").queue();
+                        server.sendMessage(" • In order to type in your server type **!<message>** in game.").queue();
+                        server.sendMessage(" • Use **!list** in Discord to view all online players in game.").queue();
+
+                        omp.sendMessage("Discord", Color.BLUE, "Je §9§lPrivé Discord Server§7 staat klaar!", "Your §9§lPrivate Discord Server§7 is ready for use!");
                     }, throwable -> {
                         throwable.printStackTrace();
                         omp.sendMessage("Discord", Color.RED, "Er is een probleem met het maken van je Discord server.", "An error occurred while creating your Discord server.");
@@ -285,7 +351,7 @@ public class DiscordGroup {
 
     public static DiscordGroup getGroup(UUID owner) {
         for (DiscordGroup group : groups) {
-            if (group.getOwner().toString().equals(owner.toString()))
+            if (group.getOwnerUUID().toString().equals(owner.toString()))
                 return group;
         }
         return null;
@@ -300,6 +366,23 @@ public class DiscordGroup {
         }
 
         return list;
+    }
+
+    public static DiscordGroup getGroup(TextChannel textChannel) {
+        for (DiscordGroup group : groups) {
+            if (group.getTextChannel().getId().equals(textChannel.getId()))
+                return group;
+        }
+        return null;
+    }
+
+    public static DiscordGroup getSelected(UUID member) {
+        String selectedString = Database.get().getString(Table.DISCORD_GROUP_DATA, TableDiscordGroupData.SELECTED, new Where(TableDiscordGroupData.UUID, member.toString()));
+
+        if (selectedString.equals(""))
+            return null;
+
+        return getGroup(UUID.fromString(selectedString));
     }
 
     public static void setup(DiscordBot discord) {
@@ -336,7 +419,11 @@ public class DiscordGroup {
         return group;
     }
 
-    public static boolean exists(String name) {
+    public static boolean exists(DiscordBot discord, BotToken token, String name) {
+        if (name.equalsIgnoreCase("everyone") || name.equalsIgnoreCase("here") || discord.getGuild(token).getRolesByName(name, true).size() != 0)
+            return true;
+
+        /* As backup, but shouldn't happen */
         for (Map<Column, String> entry : Database.get().getEntries(Table.DISCORD_GROUP, TableDiscordGroup.NAME)) {
             if (entry.get(TableDiscordGroup.NAME).equalsIgnoreCase(name))
                 return true;

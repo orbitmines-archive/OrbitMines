@@ -458,7 +458,7 @@ public class Claim {
 
     public enum Permission {
 
-        ACCESS(new ItemBuilder(Material.DARK_OAK_DOOR), new Message("Toegang", "Access"), new Message("Fly"), new Message("Ender Pearls"), new Message("Doors"), new Message("Buttons"), new Message("Gates"), new Message("Beds")), /* Use Doors, Buttons, Fly etc. */
+        ACCESS(new ItemBuilder(Material.DARK_OAK_DOOR), new Message("Toegang", "Access"), new Message("Fly"), new Message("Setting Homes"), new Message("Ender Pearls"), new Message("Doors"), new Message("Buttons"), new Message("Gates"), new Message("Beds")), /* Use Doors, Buttons, Fly etc. */
         MANAGE(new ItemBuilder(Material.HOPPER), new Message("Beheren", "Manage"), new Message("Mobs"), new Message("Chests"), new Message("Farms"), new Message("Boats"), new Message("Minecarts"), new Message("Cauldrons"), new Message("Jukeboxes"), new Message("Anvils"), new Message("Cakes")), /* Access Chests & Plant Farms */
         BUILD(new ItemBuilder(Material.IRON_AXE).addFlag(ItemFlag.HIDE_ATTRIBUTES), new Message("Bouwen", "Build"), new Message("Blocks Plaatsen", "Placing Blocks"), new Message("Blocks Breken", "Breaking Blocks"), new Message("Note Blocks"), new Message("Redstone"), new Message("Armor Stands")); /* Build & Break Blocks */
 

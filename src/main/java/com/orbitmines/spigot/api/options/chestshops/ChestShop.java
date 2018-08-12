@@ -39,7 +39,7 @@ public class ChestShop {
     private final Long id;
     private final UUID owner;
 
-    private final Location location;
+    protected final Location location;
     private Material material;
 
     private Type type;
@@ -170,7 +170,7 @@ public class ChestShop {
     }
 
     public boolean hasMoney() {
-        return handler.getMoney(this.owner) >= this.price;
+        return owner == null || handler.getMoney(this.owner) >= this.price;
     }
 
     public void buy(OMPlayer omp) {
@@ -182,12 +182,19 @@ public class ChestShop {
         omp.updateInventory();
 
         handler.removeMoney(omp.getUUID(), this.price);
-        handler.addMoney(owner, this.price);
+
+        if (owner != null)
+            handler.addMoney(owner, this.price);
 
         String color = orbitMines.getServerHandler().getServer().getColor().getChatColor();
-        CachedPlayer owner = CachedPlayer.getPlayer(this.owner);
-        String ownerName = owner.getRankPrefixColor().getChatColor() + owner.getPlayerName();
+
+        CachedPlayer owner = this.owner != null ? CachedPlayer.getPlayer(this.owner) : null;
+
+        String ownerName = owner != null ? (owner.getRankPrefixColor().getChatColor() + owner.getPlayerName()) : orbitMines.getServerHandler().getServer().getDisplayName();
         omp.sendMessage("Shop", Color.LIME, "Je hebt " + color + "§l" + itemName + " §7(" + color + "§l" + this.amount + "x§7) gekocht van " + ownerName + "§7 voor " + handler.getCurrencyDisplay(this.price) + "§7.", "You've bought " + color + "§l" + itemName + " §7(" + color + "§l" + this.amount + "x§7) from " + ownerName + "§7 for " + handler.getCurrencyDisplay(this.price) + "§7.");
+
+        if (owner == null)
+            return;
 
         OMPlayer omp2 = OMPlayer.getPlayer(this.owner);
 
@@ -198,6 +205,9 @@ public class ChestShop {
     }
 
     public void sell(OMPlayer omp) {
+        if (owner == null)
+            throw new IllegalStateException();
+
         Chest chest = WorldUtils.getChestAtSign(this.location);
 
         List<ItemStack> sold = PlayerUtils.removeItems(omp.getPlayer(), material, amount);
@@ -241,7 +251,7 @@ public class ChestShop {
             lines[0] = type.getDisplayName(type.useable(this), language);
             lines[1] = nameLength <= 16 ? itemName : itemName.substring(index, index + 16);
             lines[2] = NumberUtils.locale(this.amount) + " : " + NumberUtils.locale(this.price) + handler.getCurrencySymbol();
-            lines[3] = CachedPlayer.getPlayer(this.owner).getPlayerName();
+            lines[3] = this.owner != null ? CachedPlayer.getPlayer(this.owner).getPlayerName() : orbitMines.getServerHandler().getServer().getDisplayName();
 
             languages.put(language, lines);
         }

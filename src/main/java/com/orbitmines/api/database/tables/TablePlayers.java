@@ -16,6 +16,7 @@ public class TablePlayers extends Table {
     public static final Column VIPRANK = new Column("VipRank", Column.Type.VARCHAR, 32);
     public static final Column FIRST_LOGIN = new Column("FirstLogin", Column.Type.DATETIME);
     public static final Column LANGUAGE = new Column("Language", Column.Type.VARCHAR, 32);
+    public static final Column SCOREBOARD = new Column("Scoreboard", Column.Type.TINYINT);
     public static final Column SETTINGS_PRIVATE_MESSAGES = new Column("PrivateMessages", Column.Type.VARCHAR, Settings.PRIVATE_MESSAGES.getDefaultType().toString(), 32);
     public static final Column SETTINGS_PLAYER_VISIBILITY = new Column("PlayerVisibility", Column.Type.VARCHAR, Settings.PLAYER_VISIBILITY.getDefaultType().toString(), 32);
     public static final Column SETTINGS_GADGETS = new Column("Gadgets", Column.Type.VARCHAR, Settings.GADGETS.getDefaultType().toString(), 32);
@@ -25,6 +26,6 @@ public class TablePlayers extends Table {
     public static final Column PRISMS = new Column("Prisms", Column.Type.INT);
 
     public TablePlayers() {
-        super("Players", UUID, NAME, NICK, STAFFRANK, VIPRANK, FIRST_LOGIN, LANGUAGE, SETTINGS_PRIVATE_MESSAGES, SETTINGS_PLAYER_VISIBILITY, SETTINGS_GADGETS, SETTINGS_STATS, SILENT, SOLARS, PRISMS);
+        super("Players", UUID, NAME, NICK, STAFFRANK, VIPRANK, FIRST_LOGIN, LANGUAGE, SCOREBOARD, SETTINGS_PRIVATE_MESSAGES, SETTINGS_PLAYER_VISIBILITY, SETTINGS_GADGETS, SETTINGS_STATS, SILENT, SOLARS, PRISMS);
     }
 }

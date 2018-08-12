@@ -84,7 +84,7 @@ public class Punishment {
 
     /* If the punishment is currently active */
     public boolean isActive() {
-        return pardoned || severity != Severity.WARNING && (severity.getDuration() == Duration.PERMANENT || DateUtils.now().compareTo(to) < 0);
+        return severity != Severity.WARNING && !pardoned && (severity.getDuration() == Duration.PERMANENT || DateUtils.now().compareTo(to) < 0);
     }
 
     /* returns true when the punishment is expired: when it is no longer taken into account for further offences */

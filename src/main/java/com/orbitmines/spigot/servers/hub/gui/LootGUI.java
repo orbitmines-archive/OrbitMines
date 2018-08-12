@@ -95,7 +95,23 @@ public class LootGUI extends GUI {
         for (int i = 0; i < periodLoot.length; i++) {
             PeriodLoot loot = periodLoot[i];
 
-            boolean canCollect = (loot != PeriodLoot.MONTHLY_VIP || omp.getVipRank() != VipRank.NONE) && periodLootData.canCollect(loot);
+            /* Dont display loot specificly for a server */
+            if (loot.getServer() != null && loot.getServer() != orbitMines.getServerHandler().getServer())
+                continue;
+
+            boolean hasRank = true;
+
+            switch (loot) {
+                case MONTHLY_VIP:
+                case SURVIVAL_BACK_CHARGES:
+                    hasRank = omp.getVipRank() != VipRank.NONE;
+                    break;
+                case SURVIVAL_SPAWNER_ITEM:
+                    hasRank = omp.getVipRank() == VipRank.EMERALD;
+                    break;
+            }
+
+            boolean canCollect = hasRank && periodLootData.canCollect(loot);
 
             ItemBuilder item = canCollect ? loot.getClaimable(omp) : loot.getClaimed(omp);
             item.setDisplayName((canCollect ? "§a§l" : "§c§l") + omp.lang(loot.getTitle(omp)));
@@ -106,20 +122,40 @@ public class LootGUI extends GUI {
             }
             item.addLore("");
 
-            if (loot != PeriodLoot.MONTHLY_VIP || omp.getVipRank() != VipRank.NONE) {
+            if (hasRank) {
                 if (canCollect)
                     item.addLore(omp.lang("§aKlik hier om te ontvangen.", "§aClick here to collect."));
                 else
                     item.addLore(omp.lang("§cJe krijgt weer beloningen over ", "§cYou can collect again in ") + TimeUtils.fromTimeStamp(periodLootData.getCooldown(loot) * 1000L, omp.getLanguage()) + ".");
             } else {
-                item.addLore(omp.lang("§cJe hebt geen Rank.", "§cYou don't have a Rank."));
+                item.addLore(omp.lang("§cJe Rank voldoet niet aan de rewards.", "§cYou don't have a sufficient Rank."));
             }
 
             if (canCollect)
                 item.glow();
 
+            /* In order to center  */
+            List<PeriodLoot> list = PeriodLoot.from(loot.getServer());
+            int size = list.size();
+            int indexOf = list.indexOf(loot);
+            int row = loot.getServer() == null ? 2 : 3;
+            int slot = 4 - (size % 2 == 0 ? size / 2 : (size - 1) / 2);
+
+            for (int j = 0; j < size; j++) {
+                /* Skip middle slot whenever a the amount of types is even to center types correctly */
+                if (slot == 4 && size % 2 == 0) {
+                    slot++;
+                }
+
+                if (j == indexOf)
+                    /* Found Slot */
+                    break;
+
+                slot++;
+            }
+
             if (canCollect)
-                add(2, 3 + i, new ItemInstance(item.build()) {
+                add(row, slot, new ItemInstance(item.build()) {
                     @Override
                     public void onClick(InventoryClickEvent event, OMPlayer omp) {
                         periodLootData.collect(omp, loot);
@@ -128,7 +164,7 @@ public class LootGUI extends GUI {
                     }
                 });
             else
-                add(2, 3 + i, new EmptyItemInstance(item.build()));
+                add(row, slot, new EmptyItemInstance(item.build()));
         }
 
         int slot = 36;

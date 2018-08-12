@@ -29,6 +29,8 @@ public class DeathEvent implements Listener {
         p.setHealth(p.getMaxHealth());
         p.setFoodLevel(20);
 
+        omp.setBackLocation(p.getLocation());
+
         new BukkitRunnable() {
             @Override
             public void run() {

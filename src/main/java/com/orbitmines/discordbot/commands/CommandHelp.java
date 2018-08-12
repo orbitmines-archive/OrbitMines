@@ -38,13 +38,18 @@ public class CommandHelp extends Command {
     }
 
     @Override
+    public boolean isBungeeCommand() {
+        return true;
+    }
+
+    @Override
     public void dispatch(MessageReceivedEvent event, User user, MessageChannel channel, Message msg, String[] a) {
         EmbedBuilder builder = new EmbedBuilder();
         builder.setAuthor("OrbitMines Discord Commands");
         builder.setColor(ColorUtils.from(Color.BLUE));
 
         for (Command command : getCommands()) {
-            if (command instanceof CommandHelp)
+            if (command instanceof CommandHelp || command instanceof CommandListServer)
                 continue;
 
             builder.addField(command.getHelpMessage(), command.getDescription(), false);

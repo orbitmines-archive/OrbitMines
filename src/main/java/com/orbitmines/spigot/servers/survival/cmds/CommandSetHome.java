@@ -8,15 +8,21 @@ import com.orbitmines.api.Color;
 import com.orbitmines.api.Server;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.cmd.Command;
+import com.orbitmines.spigot.servers.survival.Survival;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalPlayer;
+import com.orbitmines.spigot.servers.survival.handlers.claim.Claim;
 import com.orbitmines.spigot.servers.survival.handlers.teleportable.Home;
 
 public class CommandSetHome extends Command {
 
     private String[] alias = { "/sethome", "/seth" };
 
-    public CommandSetHome() {
+    private Survival survival;
+
+    public CommandSetHome(Survival survival) {
         super(Server.SURVIVAL);
+
+        this.survival = survival;
     }
 
     @Override
@@ -50,7 +56,15 @@ public class CommandSetHome extends Command {
                 }
             }
 
-            omp.setHome(a[1]);
+            Claim claim = survival.getClaimHandler().getClaimAt(omp.getLocation(), false, omp.getLastClaim());
+            if (claim != null)
+                omp.setLastClaim(claim);
+
+            if (claim == null || claim.canAccess(omp)) {
+                omp.setHome(a[1]);
+            } else {
+                omp.sendMessage("Home", Color.RED, "Je hebt §a§l" + omp.lang(Claim.Permission.ACCESS.getName()) + " §7nodig van " + claim.getOwnerName() + " §7om hier een home te zetten.", "You need §a§l" + omp.lang(Claim.Permission.ACCESS.getName()) + " §7from " + claim.getOwnerName() + " §7to set a home here.");
+            }
         }
     }
 }

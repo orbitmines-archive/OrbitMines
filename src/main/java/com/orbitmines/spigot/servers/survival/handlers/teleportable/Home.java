@@ -53,6 +53,12 @@ public class Home extends Teleportable {
         return name;
     }
 
+    @Override
+    public void onTeleport(OMPlayer player, Location from, Location to) {
+        SurvivalPlayer omp = (SurvivalPlayer) player;
+        omp.setBackLocation(from);
+    }
+
     public UUID getUUID() {
         return uuid;
     }

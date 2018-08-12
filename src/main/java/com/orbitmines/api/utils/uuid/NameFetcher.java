@@ -47,11 +47,11 @@ public class NameFetcher implements Callable<Map<UUID, List<String>>> {
                         } else if (i == array.size()) {
                             String date = DateUtils.FORMAT.format(new Date((long) obj.get("changedToAt")));
 
-                            names.add(obj.get("name") + " §7(§6" + date + "§7)");
+                            names.add(obj.get("name") + " " + date);
                         } else {
                             String date = DateUtils.FORMAT.format(new Date((long) obj.get("changedToAt")));
 
-                            names.add(obj.get("name") + " §7(§6" + date + "§7)");
+                            names.add(obj.get("name") + " " + date);
                         }
                     }
                 } else {

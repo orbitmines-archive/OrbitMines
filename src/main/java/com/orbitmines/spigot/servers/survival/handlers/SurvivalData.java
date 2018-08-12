@@ -16,14 +16,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import static com.orbitmines.api.database.tables.survival.TableSurvivalPlayers.*;
 
 public class SurvivalData extends Data {
 
+    public static long PHANTOM_DELAY = TimeUnit.HOURS.toMillis(2);
+
     private int earthMoney;
     private int claimBlocks;
 
+    private Location backLocation;
+    private int backCharges;
+
+    private long lastBedEnter;
     private Location logoutLocation;
     private boolean logoutFly;
 
@@ -38,6 +45,11 @@ public class SurvivalData extends Data {
 
         earthMoney = 175;
         claimBlocks = 250;
+
+        backLocation = null;
+        backCharges = 0;
+
+        lastBedEnter = 0;
         logoutLocation = null;
         logoutFly = false;
         extraHomes = 0;
@@ -49,11 +61,14 @@ public class SurvivalData extends Data {
     @Override
     public void load() {
         if (!Database.get().contains(table, new Column[] { TableSurvivalPlayers.UUID }, new Where(TableSurvivalPlayers.UUID, getUUID().toString()))) {
-            Database.get().insert(table, uuid.toString(), earthMoney + "", claimBlocks + "", "", logoutFly ? "1" : "0", extraHomes + "", warpSlotShop ? "1" : "0", warpSlotPrisms ? "1" : "0", Serializer.serializeLongList(favoriteWarps));
+            Database.get().insert(table, uuid.toString(), earthMoney + "", claimBlocks + "", "", backCharges + "", lastBedEnter + "", "", logoutFly ? "1" : "0", extraHomes + "", warpSlotShop ? "1" : "0", warpSlotPrisms ? "1" : "0", Serializer.serializeLongList(favoriteWarps));
         } else {
             Map<Column, String> values = Database.get().getValues(table, new Column[] {
                     EARTH_MONEY,
                     CLAIM_BLOCKS,
+                    BACK_LOCATION,
+                    BACK_CHARGES,
+                    BED_ENTER,
                     LOGOUT_LOCATION,
                     LOGOUT_FLY,
                     EXTRA_HOMES,
@@ -63,6 +78,11 @@ public class SurvivalData extends Data {
 
             earthMoney = Integer.parseInt(values.get(EARTH_MONEY));
             claimBlocks = Integer.parseInt(values.get(CLAIM_BLOCKS));
+
+            backLocation = Serializer.parseLocation(values.get(BACK_LOCATION));
+            backCharges = Integer.parseInt(values.get(BACK_CHARGES));
+
+            lastBedEnter = Long.parseLong(values.get(BED_ENTER));
 
             logoutLocation = Serializer.parseLocation(values.get(LOGOUT_LOCATION));
             logoutFly = values.get(LOGOUT_FLY).equals("1");
@@ -120,6 +140,57 @@ public class SurvivalData extends Data {
     private void updateClaimBlocks() {
         Database.get().update(Table.SURVIVAL_PLAYERS, new Set(TableSurvivalPlayers.CLAIM_BLOCKS, this.claimBlocks), new Where(TableSurvivalPlayers.UUID, getUUID().toString()));
     }
+
+    /*
+        BackLocation
+     */
+
+    public Location getBackLocation() {
+        return backLocation;
+    }
+
+    public void setBackLocation(Location backLocation) {
+        this.backLocation = backLocation;
+        Database.get().update(Table.SURVIVAL_PLAYERS, new Set(TableSurvivalPlayers.BACK_LOCATION, this.backLocation == null ? "" : Serializer.serialize(this.backLocation)), new Where(TableSurvivalPlayers.UUID, getUUID().toString()));
+    }
+
+    /*
+        BackCharges
+     */
+
+    public int getBackCharges() {
+        return backCharges;
+    }
+
+    public void addBackCharges(int amount) {
+        backCharges += amount;
+
+        updateBackCharges();
+    }
+
+    public void removeBackCharges(int amount) {
+        backCharges -= amount;
+
+        updateBackCharges();
+    }
+
+    private void updateBackCharges() {
+        Database.get().update(Table.SURVIVAL_PLAYERS, new Set(TableSurvivalPlayers.BACK_CHARGES, this.backCharges), new Where(TableSurvivalPlayers.UUID, getUUID().toString()));
+    }
+
+    /*
+        LastBedEnter
+     */
+
+    public void updateLastBedEnter() {
+        this.lastBedEnter = System.currentTimeMillis();
+        Database.get().update(Table.SURVIVAL_PLAYERS, new Set(TableSurvivalPlayers.BED_ENTER, this.lastBedEnter), new Where(TableSurvivalPlayers.UUID, getUUID().toString()));
+    }
+
+    public boolean canSpawnPhantom() {
+        return (System.currentTimeMillis() - this.lastBedEnter) >= PHANTOM_DELAY;
+    }
+
 
     /*
         LogoutLocation

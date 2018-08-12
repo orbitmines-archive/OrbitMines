@@ -63,7 +63,7 @@ public abstract class GUI {
         PlayerUtils.updateInventory(omp.getPlayer());
     }
 
-    protected void reopen(OMPlayer omp) {
+    public void reopen(OMPlayer omp) {
         clear();
         open(omp);
         PlayerUtils.updateInventory(omp.getPlayer());

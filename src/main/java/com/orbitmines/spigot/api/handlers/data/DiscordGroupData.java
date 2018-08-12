@@ -66,20 +66,21 @@ public class DiscordGroupData extends Data {
 
         Database.get().update(table, new Set(SELECTED, selected == null ? "" : selected.toString()), new Where(UUID, getUUID().toString()));
 
-        messageHandler.dataTransfer(PluginMessage.UPDATE_DISCORD_GROUP_DATA, getUUID().toString());
+        messageHandler.dataTransfer(PluginMessage.UPDATE_DISCORD_GROUP_DATA, CachedPlayer.getPlayer(getUUID()).getServer(), getUUID().toString());
     }
 
     /* Inventory Interactions */
     public void onAccept(CachedPlayer owner) {
         onMemberAddition(owner);
+        forceUpdateFor(owner);
     }
 
-    public void onDeny(CachedPlayer friend) {
-        clearInvite(friend);
+    public void onDeny(CachedPlayer owner) {
+        clearInvite(owner);
     }
 
-    public void onRequestCancel(CachedPlayer friend) {
-        clearRequest(friend);
+    public void onRequestCancel(CachedPlayer member) {
+        clearRequest(member);
     }
 
     public void onRequest(UUID member) {
@@ -126,7 +127,7 @@ public class DiscordGroupData extends Data {
         removeInvites(data.getUUID());
         data.removeSentRequests(uuid);
 
-        messageHandler.dataTransfer(PluginMessage.DISCORD_GROUP_ACTION, owner.toString(), "ADD", uuid.toString());
+        messageHandler.dataTransfer(PluginMessage.DISCORD_GROUP_ACTION, owner.getUUID().toString(), "ADD", uuid.toString());
     }
 
     public void onMemberRemoval(CachedPlayer member, boolean forced) {
@@ -135,7 +136,7 @@ public class DiscordGroupData extends Data {
         if (!group.getMembers().contains(member.getUUID()))
             return;
 
-        messageHandler.dataTransfer(PluginMessage.DISCORD_GROUP_ACTION, uuid.toString(), "REMOVE", member.toString(), forced + "");
+        messageHandler.dataTransfer(PluginMessage.DISCORD_GROUP_ACTION, uuid.toString(), "REMOVE", member.getUUID().toString(), forced + "");
 
         forceUpdateFor(member);
     }
@@ -145,22 +146,13 @@ public class DiscordGroupData extends Data {
     }
 
     private void forceUpdateFor(CachedPlayer friend, Message message) {
-        /* Player is on current server, so no need to update */
-        OMPlayer omp = OMPlayer.getPlayer(friend.getUUID());
-        if (omp != null) {
-            if (message != null)
-                omp.sendMessage(message);
-
-            return;
-        }
-
         /* Player is currently not online, so we do not send the update */
         Server server = friend.getServer();
         if (server == null)
             return;
 
         /* Force update on another server */
-        messageHandler.dataTransfer(PluginMessage.UPDATE_FRIENDS, server, friend.getUUID().toString());
+        messageHandler.dataTransfer(PluginMessage.UPDATE_DISCORD_GROUP_DATA, server, friend.getUUID().toString());
 
         if (message != null)
             messageHandler.dataTransfer(PluginMessage.MESSAGE_PLAYER, friend.getUUID().toString(), message.lang(friend.getLanguage()).replaceAll("§", "&"));
@@ -208,7 +200,7 @@ public class DiscordGroupData extends Data {
 
         OMPlayer omp = OMPlayer.getPlayer(this.uuid);
 
-        DiscordGroup group = DiscordGroup.getFromDatabase(OrbitMines.getInstance().getServerHandler().getDiscord(), uuid);
+        DiscordGroup group = DiscordGroup.getFromDatabase(OrbitMines.getInstance().getServerHandler().getDiscord(), friend.getUUID());
 
         forceUpdateFor(friend, new Message("Discord", Color.BLUE, omp.getName() + "§7 heeft je verzoek om " + group.getDisplayName() + " §7te joinen afgewezen.", omp.getName() + "§7 denied your request to join " + group.getDisplayName() + "§7."));
     }

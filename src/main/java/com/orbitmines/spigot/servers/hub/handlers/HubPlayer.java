@@ -1,5 +1,6 @@
 package com.orbitmines.spigot.servers.hub.handlers;
 
+import com.orbitmines.api.Color;
 import com.orbitmines.api.StaffRank;
 import com.orbitmines.api.settings.Settings;
 import com.orbitmines.api.settings.SettingsType;
@@ -9,9 +10,9 @@ import com.orbitmines.spigot.api.handlers.data.FriendsData;
 import com.orbitmines.spigot.api.handlers.data.SettingsData;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.servers.hub.Hub;
-import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 
@@ -37,8 +38,7 @@ public class HubPlayer extends OMPlayer {
         setScoreboard(new Hub.Scoreboard(orbitMines, this));
 
         hub.getLobbyKit(this).setItems(this);
-
-        player.setGameMode(GameMode.ADVENTURE);
+        player.getInventory().setHeldItemSlot(4);
 
 //        new BukkitRunnable() {
 //            @Override
@@ -147,6 +147,21 @@ public class HubPlayer extends OMPlayer {
     @Override
     protected void onFirstLogin() {
 
+    }
+
+    @Override
+    public void on2FALogin() {
+        super.on2FALogin();
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (isFirstLogin())
+                    sendMessage("Server", Color.BLUE, "Welkom op §8§lOrbit§7§lMines§7, " + getName() + "§7. Gebruik de §3§lEnder Pearl§7 om een server te joinen.", "Welcome to §8§lOrbit§7§lMines§7, " + getName() + "§7. Use the §3§lEnder Pearl§7 to join a server.");
+                else
+                    sendMessage("Server", Color.BLUE, "Welkom terug, " + getName() + "§7. Gebruik de §3§lEnder Pearl§7 om een server te joinen.", "Welcome back, " + getName() + "§7. Use the §3§lEnder Pearl§7 to join a server.");
+            }
+        }.runTaskLater(orbitMines, 20);
     }
 
     @Override

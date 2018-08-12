@@ -160,6 +160,8 @@ public class StatsGUI extends GUI {
                 item.addLore("§7Homes: " + Home.COLOR.getChatColor() + "§l" + NumberUtils.locale(Home.getHomeCount(player.getUUID())) + "§7§l / " + NumberUtils.locale(survival.getHomesAllowed(player)));
                 item.addLore("§7Warps: " + Warp.COLOR.getChatColor() + "§l" + NumberUtils.locale(Warp.getWarpCount(player.getUUID())) + "§7§l / " + NumberUtils.locale(Warp.Type.values().length));
                 item.addLore("");
+                item.addLore("§7Back Charges: §6§l" + NumberUtils.locale(survival.getBackCharges()));
+                item.addLore("");
                 break;
             }
             case SKYBLOCK:

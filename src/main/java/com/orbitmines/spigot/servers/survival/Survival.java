@@ -60,9 +60,11 @@ import com.orbitmines.spigot.servers.survival.runnables.ClaimAchievementRunnable
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
@@ -71,6 +73,8 @@ import java.util.*;
 * OrbitMines - @author Fadi Shawki - 2017
 */
 public class Survival extends OrbitMinesServer {
+
+    public static ItemBuilder SPAWNER_MINER = new ItemBuilder(Material.DIAMOND_PICKAXE, 1, "§5§lSpawner Miner", "§7§oOne time use§4").addEnchantment(Enchantment.SILK_TOUCH, 1).unbreakable(true).addFlag(ItemFlag.HIDE_ATTRIBUTES);
 
     private World world;
     private World world_nether;
@@ -122,7 +126,8 @@ public class Survival extends OrbitMinesServer {
                 PreventionSet.Prevention.ENTITY_INTERACTING,
                 PreventionSet.Prevention.LEAF_DECAY,
                 PreventionSet.Prevention.PLAYER_DAMAGE,
-                PreventionSet.Prevention.WEATHER_CHANGE
+                PreventionSet.Prevention.WEATHER_CHANGE,
+                PreventionSet.Prevention.MONSTER_EGG_USAGE
         );
         orbitMines.getLobby().getWorld().setPVP(false);
 
@@ -284,7 +289,9 @@ public class Survival extends OrbitMinesServer {
                 new ClaimEvents(this),
                 new DeathEvent(this),
                 new FlyEvent(this),
+                new PhantomEvent(),
                 new SignEvent(),
+                new SpawnerEvents(orbitMines.getNms().world()),
                 new AchievementEvents(orbitMines),
                 new VoidDamageEvent(orbitMines.getLobby().getWorld()) {
                     @Override
@@ -302,6 +309,7 @@ public class Survival extends OrbitMinesServer {
 
         new CommandSpawn(this);
         new CommandRegion(this);
+        new CommandNearby(this);
 
         new CommandClaim();
         new CommandCredits();
@@ -310,13 +318,15 @@ public class Survival extends OrbitMinesServer {
 
         new CommandHome();
         new CommandHomes();
-        new CommandSetHome();
+        new CommandSetHome(this);
         new CommandDelHome();
 
         new CommandWarps(this);
         new CommandMyWarps(this);
 
         new CommandAccept();
+
+        new CommandBack();
 
         new CommandTeleport();
         new CommandFly();
@@ -333,6 +343,11 @@ public class Survival extends OrbitMinesServer {
     @Override
     public void setupNpc(String npcName, Location location) {
 
+    }
+
+    @Override
+    public GameMode getGameMode() {
+        return GameMode.SURVIVAL;
     }
 
     public World getWorld() {
@@ -789,10 +804,18 @@ public class Survival extends OrbitMinesServer {
                     () -> " " + NumberUtils.locale(omp.getEarthMoney()),
                     () -> " ",
                     () -> "§9§lClaimblocks",
-                    () -> " " + NumberUtils.locale(omp.getRemainingClaimBlocks()),
-                    () -> "  "
+                    () -> " " + NumberUtils.locale(omp.getRemainingClaimBlocks()) + " ",
+                    () -> "  ",
+                    () -> "§6§lBack Charges",
+                    () -> " " + NumberUtils.locale(omp.getBackCharges()) + "  ",
+                    () -> "   "
 
             );
+        }
+
+        @Override
+        public boolean canBypassSettings() {
+            return false;
         }
     }
 
@@ -818,6 +841,11 @@ public class Survival extends OrbitMinesServer {
                     () -> omp.lang("§7een hoek te klikken.", "§7clicking on a corner.")
 
             );
+        }
+
+        @Override
+        public boolean canBypassSettings() {
+            return true;
         }
     }
 

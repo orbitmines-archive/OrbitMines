@@ -2,7 +2,6 @@ package com.orbitmines.discordbot.handlers;
 
 import com.orbitmines.discordbot.DiscordBot;
 import com.orbitmines.discordbot.utils.BotToken;
-import com.orbitmines.spigot.api.cmds.discord.CommandList;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
@@ -35,6 +34,8 @@ public abstract class Command {
 
     public abstract String getHelp();
 
+    public abstract boolean isBungeeCommand();
+
     /* a[0] = '!<command>' */
     public abstract void dispatch(MessageReceivedEvent event, User user, MessageChannel channel, Message msg, String[] a);
 
@@ -63,8 +64,10 @@ public abstract class Command {
     }
 
     public static Command getCommand(BotToken token, String cmd) {
+        boolean isBungee = DiscordBot.getInstance().isBungee();
+
         for (Command command : commands) {
-            if (command.getToken() != token || token == BotToken.DEFAULT && !DiscordBot.getInstance().isBungee() && !(command instanceof CommandList))
+            if (command.getToken() != token || isBungee && !command.isBungeeCommand() || !isBungee && command.isBungeeCommand())
                 continue;
 
             for (String alias : command.getAlias()) {

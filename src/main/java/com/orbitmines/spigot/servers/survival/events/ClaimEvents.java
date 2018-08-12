@@ -1271,32 +1271,32 @@ public class ClaimEvents implements Listener {
 
     @EventHandler
     public void onExplode(EntityExplodeEvent event) {
-        handleExplosion(event.getEntity(), event.getLocation(), event.blockList());
+        handleExplosion(/*event.getEntity(), */event.getLocation(), event.blockList());
     }
 
     @EventHandler
     public void onExplode(BlockExplodeEvent event) {
-        handleExplosion(null, event.getBlock().getLocation(), event.blockList());
+        handleExplosion(/*null, */event.getBlock().getLocation(), event.blockList());
     }
 
-    @EventHandler
-    public void onIgnite(BlockIgniteEvent event) {
-        if (!(event.getIgnitingEntity() instanceof TNTPrimed))
-            return;
+//    @EventHandler
+//    public void onIgnite(BlockIgniteEvent event) {
+//        if (!(event.getIgnitingEntity() instanceof TNTPrimed))
+//            return;
+//
+//        if (event.getPlayer() != null) {
+//            SurvivalPlayer omp = SurvivalPlayer.getPlayer(event.getPlayer());
+//            tnt.put((TNTPrimed) event.getIgnitingEntity(), omp);
+//        } else if (toIgnite.containsKey(event.getIgnitingBlock())) {
+//            tnt.put((TNTPrimed) event.getIgnitingEntity(), toIgnite.get(event.getIgnitingBlock()));
+//            toIgnite.remove(event.getIgnitingBlock());
+//        }
+//    }
 
-        if (event.getPlayer() != null) {
-            SurvivalPlayer omp = SurvivalPlayer.getPlayer(event.getPlayer());
-            tnt.put((TNTPrimed) event.getIgnitingEntity(), omp);
-        } else if (toIgnite.containsKey(event.getIgnitingBlock())) {
-            tnt.put((TNTPrimed) event.getIgnitingEntity(), toIgnite.get(event.getIgnitingBlock()));
-            toIgnite.remove(event.getIgnitingBlock());
-        }
-    }
+//    private Map<TNTPrimed, SurvivalPlayer> tnt = new HashMap<>();
+//    private Map<Block, SurvivalPlayer> toIgnite = new HashMap<>();
 
-    private Map<TNTPrimed, SurvivalPlayer> tnt = new HashMap<>();
-    private Map<Block, SurvivalPlayer> toIgnite = new HashMap<>();
-
-    private void handleExplosion(Entity en, Location location, List<Block> blocks) {
+    private void handleExplosion(/*Entity en, */Location location, List<Block> blocks) {
         if (!location.getWorld().getName().equals(survival.getWorld().getName()))
             return;
 
@@ -1317,38 +1317,38 @@ public class ClaimEvents implements Listener {
             if (claim != null) {
                 cached = claim;
 
-                if (en != null) {
-                    if (en instanceof Creeper) {
-                        for (Entity entity : en.getNearbyEntities(10, 10, 10)) {
-                            if (!(entity instanceof Player))
-                                continue;
-
-                            Player player = (Player) entity;
-
-                            if (claim.getPermission(player.getUniqueId()) != Claim.Permission.BUILD) {
-                                blocks.remove(block);
-                                continue loop;
-                            }
-                        }
-
-                        continue;
-                    } else if (en instanceof TNTPrimed && this.tnt.containsKey(en)) {
-                        if (claim.canBuild(this.tnt.get(en), Material.TNT)) {
-                            blocks.remove(block);
-                        } else {
-                            if (block.getType() == Material.TNT)
-                                this.toIgnite.put(block, this.tnt.get(en));
-
-                            continue;
-                        }
-                    }
-                }
+//                if (en != null) {
+//                    if (en instanceof Creeper) {
+//                        for (Entity entity : en.getNearbyEntities(10, 10, 10)) {
+//                            if (!(entity instanceof Player))
+//                                continue;
+//
+//                            Player player = (Player) entity;
+//
+//                            if (claim.getPermission(player.getUniqueId()) != Claim.Permission.BUILD) {
+//                                blocks.remove(block);
+//                                continue loop;
+//                            }
+//                        }
+//
+//                        continue;
+//                    } else if (en instanceof TNTPrimed && this.tnt.containsKey(en)) {
+//                        if (claim.canBuild(this.tnt.get(en), Material.TNT)) {
+//                            blocks.remove(block);
+//                        } else {
+//                            if (block.getType() == Material.TNT)
+//                                this.toIgnite.put(block, this.tnt.get(en));
+//
+//                            continue;
+//                        }
+//                    }
+//                }
 
                 blocks.remove(block);
             }
         }
 
-        if (en instanceof TNTPrimed)
-            tnt.remove(en);
+//        if (en instanceof TNTPrimed)
+//            tnt.remove(en);
     }
 }

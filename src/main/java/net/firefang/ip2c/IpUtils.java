@@ -26,8 +26,10 @@ public class IpUtils {
     }
 
     public static String getCountry(Player player) {
-        String ip = player.getAddress().getHostString();
+        return getCountry(player.getAddress().getHostString());
+    }
 
+    public static String getCountry(String ip) {
         Country c = null;
         try {
             c = ip2c.getCountry(ip);

@@ -108,7 +108,7 @@ public class WarpEditorGUI extends GUI {
             add(1, 5, new ItemInstance(item.build()) {
                 @Override
                 public void onClick(InventoryClickEvent event, OMPlayer omp) {
-                    if (omp.getLocation().getWorld() != survival.getWorld()) {
+                    if (!omp.isOpMode() && omp.getLocation().getWorld() != survival.getWorld()) {
                         omp.sendMessage("Warp", Color.RED, "§7Je kan alleen maar warps maken in de overworld!", "§7You're only allowed to create warps in the overworld!");
                         return;
                     }

@@ -12,9 +12,11 @@ public class TablePeriodLoot extends Table {
     public static final Column DAILY = new Column("Daily", Column.Type.BIGINT);
     public static final Column MONTHLY = new Column("Monthly", Column.Type.BIGINT);
     public static final Column MONTHLY_VIP = new Column("MonthlyVIP", Column.Type.BIGINT);
+    public static final Column SURVIVAL_BACK_CHARGES = new Column("SurvivalBackCharges", Column.Type.BIGINT);
+    public static final Column SURVIVAL_SPAWNER_ITEM = new Column("SurvivalSpawnerItem", Column.Type.BIGINT);
 
 
     public TablePeriodLoot() {
-        super("PeriodLoot", UUID, DAILY, MONTHLY, MONTHLY_VIP);
+        super("PeriodLoot", UUID, DAILY, MONTHLY, MONTHLY_VIP, SURVIVAL_BACK_CHARGES, SURVIVAL_SPAWNER_ITEM);
     }
 }

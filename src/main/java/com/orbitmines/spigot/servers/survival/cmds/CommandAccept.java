@@ -52,6 +52,7 @@ public class CommandAccept extends Command {
         SurvivalPlayer omp2 = SurvivalPlayer.getPlayer(p2);
 
         if (omp.hasTpRequestFrom(a[1])) {
+            omp2.setBackLocation(p2.getLocation());
             p2.teleport(p);
             omp.sendMessage("Teleport", Color.LIME, omp2.getName() + " §7is naar jouw geteleporteerd.", omp2.getName() + " §7has been teleporter to you.");
             omp2.sendMessage("Teleport", Color.LIME, omp.getName() + " §7heeft je verzoek geaccepteerd.", omp.getName() + " §7accepted your request.");
@@ -59,6 +60,7 @@ public class CommandAccept extends Command {
 
             omp.getTpRequests().remove(a[1]);
         } else if (omp.hasTpHereRequestFrom(a[1])) {
+            omp.setBackLocation(p.getLocation());
             p.teleport(p2);
             omp.sendMessage("Teleport", Color.LIME, "§7Je bent geteleporteerd naar " + omp2.getName() + "§7.", "§7You have been teleported to " + omp2.getName() + "§7.");
             omp2.sendMessage("Teleport", Color.LIME, omp.getName() + " §7heeft je verzoek geaccepteerd.", omp.getName() + " §7accepted your request.");

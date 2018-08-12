@@ -1,6 +1,6 @@
 package net.firefang.ip2c;
 
-import com.orbitmines.spigot.OrbitMines;
+import com.orbitmines.bungeecord.OrbitMinesBungee;
 import net.firefang.ip2c.input.MemoryMappedRandoeAccessFile;
 import net.firefang.ip2c.input.RandomAccessBuffer;
 import net.firefang.ip2c.input.RandomAccessFile2;
@@ -29,7 +29,7 @@ public class IP2Country {
     }
 
     public IP2Country(int n) throws IOException {
-        this(OrbitMines.getInstance().getResourceFolder() + "/ip/ip-to-country.bin", n);
+        this(OrbitMinesBungee.getBungee().getResourceFolder() + "/ip/ip-to-country.bin", n);
     }
 
     public IP2Country(String string, int n) throws IOException {

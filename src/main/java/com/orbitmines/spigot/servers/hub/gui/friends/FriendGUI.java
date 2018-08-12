@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class FriendGUI extends GUI {
+public class FriendGUI extends GUI implements FriendGUIInstance {
 
     private final int FRIENDS_PER_PAGE = 27;
     private final int NEW_PER_PAGE = FRIENDS_PER_PAGE / 9;

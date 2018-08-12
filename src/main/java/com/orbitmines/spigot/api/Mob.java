@@ -236,6 +236,14 @@ public enum Mob {
         return null;
     }
 
+    public static Mob from(String name) {
+        for (Mob mob : Mob.values()) {
+            if (mob.getName().equals(name))
+                return mob;
+        }
+        return null;
+    }
+
     public static Mob random() {
         return RandomUtils.randomFrom(values());
     }

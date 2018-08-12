@@ -287,13 +287,13 @@ public class PreventionSet {
             if (!worlds.get(Prevention.MONSTER_EGG_USAGE).contains(player.getWorld()))
                 return;
 
-            ItemStack item = player.getInventory().getItemInMainHand();
+            ItemStack mainHand = player.getInventory().getItemInMainHand();
+            ItemStack offHand = player.getInventory().getItemInOffHand();
 
-            if (item == null || !ItemUtils.EGGS.contains(item.getType()))
-                return;
-
-            event.setCancelled(true);
-            OMPlayer.getPlayer(player).updateInventory();
+            if (mainHand != null && ItemUtils.EGGS.contains(mainHand.getType()) || offHand != null && ItemUtils.EGGS.contains(offHand.getType())) {
+                event.setCancelled(true);
+                OMPlayer.getPlayer(player).updateInventory();
+            }
         }
 
         @EventHandler
@@ -303,13 +303,13 @@ public class PreventionSet {
             if (!worlds.get(Prevention.MONSTER_EGG_USAGE).contains(player.getWorld()))
                 return;
 
-            ItemStack item = player.getInventory().getItemInMainHand();
+            ItemStack mainHand = player.getInventory().getItemInMainHand();
+            ItemStack offHand = player.getInventory().getItemInOffHand();
 
-            if (item == null || !ItemUtils.EGGS.contains(item.getType()))
-                return;
-
-            event.setCancelled(true);
-            OMPlayer.getPlayer(player).updateInventory();
+            if (mainHand != null && ItemUtils.EGGS.contains(mainHand.getType()) || offHand != null && ItemUtils.EGGS.contains(offHand.getType())) {
+                event.setCancelled(true);
+                OMPlayer.getPlayer(player).updateInventory();
+            }
         }
 
         @EventHandler
@@ -319,13 +319,13 @@ public class PreventionSet {
             if (!worlds.get(Prevention.MONSTER_EGG_USAGE).contains(player.getWorld()))
                 return;
 
-            ItemStack item = player.getInventory().getItemInMainHand();
+            ItemStack mainHand = player.getInventory().getItemInMainHand();
+            ItemStack offHand = player.getInventory().getItemInOffHand();
 
-            if (item == null || !ItemUtils.EGGS.contains(item.getType()))
-                return;
-
-            event.setCancelled(true);
-            OMPlayer.getPlayer(player).updateInventory();
+            if (mainHand != null && ItemUtils.EGGS.contains(mainHand.getType()) || offHand != null && ItemUtils.EGGS.contains(offHand.getType())) {
+                event.setCancelled(true);
+                OMPlayer.getPlayer(player).updateInventory();
+            }
         }
     }
 

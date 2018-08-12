@@ -26,11 +26,7 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
-import java.net.URL;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -47,6 +43,60 @@ public class PatchNotes {
     public PatchNotes(OrbitMines orbitMines) {
         this.orbitMines = orbitMines;
         this.instances = new HashMap<>();
+
+        add(new Instance(Server.HUB, "v1.1.0", "Private Discord Server, !list & more", "Private Discord servers, changes to solars and !list on Discord!", "2018-08-11",
+                new Feature(
+                        "PRIVATE DISCORD", Color.BLUE,
+                        "EMERALD+ are now able to create their own Discord server and communicate with players in-game.",
+                        "https://i.imgur.com/4ViYTKT.jpg"
+                ),
+                new Feature(
+                        "SOLAR PRICES", Color.YELLOW,
+                        "Solar prices in OrbitMines.Buycraft.net have been updated to: 1500, 4000, 12,500 Solars.",
+                        "https://i.imgur.com/QzxcXdm.jpg"
+                ),
+                new Feature(
+                        "IRON SOLARS", Color.SILVER,
+                        "We have changed the IRON starting Solars from ~250~ to 500."
+                ),
+                new Feature(
+                        "DISCORD COMMANDS", Color.BLUE,
+                        "Executed Discord commands in the in-game chats will no longer be shown to online players."
+                ),
+                new Feature(
+                        "GLOBAL MENTIONSS", Color.RED,
+                        "You are no longer able to use @everyone and @here, due to potential abuse."
+                ),
+                new Feature(
+                        "COLOR ROLES", Color.YELLOW,
+                        "Several color roles have been added to Discord."
+                ),
+                new Feature(
+                        "NAME CHANGES", Color.PURPLE,
+                        "Name changes will now be logged in #name_change."
+                ),
+                new Feature(
+                        "SCOREBOARD", Color.WHITE,
+                        "You are now able to disable your Scoreboard in /settings.",
+                        "https://i.imgur.com/MsxJZcg.jpg"
+                ),
+                new Feature(
+                        "SERVER SELECTOR", Color.TEAL,
+                        "When joining OrbitMines, the Server Selector will be in your selected hotkey."
+                ),
+                new Feature(
+                        "!list", Color.BLUE,
+                        "Added a !list command to Discord, it can be used in in-game chats & private Discord servers."
+                ),
+                new Feature(
+                        "/discord", Color.BLUE,
+                        "Use /discord in-game to get the Discord invite link."
+                ),
+                new Feature(
+                        "/discordserver", Color.BLUE,
+                        "Open the private Discord server GUI."
+                )
+        ));
 
         add(new Instance(Server.HUB, "v1.0.0", "OM Release", "The first OrbitMines release, containing commands, stats, loot and many other features!", "2018-07-23",
                 new Feature(
@@ -182,6 +232,61 @@ public class PatchNotes {
                 new Feature(
                         "/nick <name>|off", Color.BLUE,
                         "Set your nickname, this feature is for GOLD+."
+                )
+        ));
+
+        add(new Instance(Server.SURVIVAL, "v1.1.0", "Spawn Shop, Silk Touch Spawners, /back & much more", "We have added a Spawn Shop and many cool features such as Silk Touch Spawners and /Back.", "2018-08-11",
+                new Feature(
+                        "HARD DIFFICULTY", Color.RED,
+                        "We have changed the difficulty to hard, instead of easy."
+                ),
+                new Feature(
+                        "SPAWN SHOP", Color.LIME,
+                        "There is a shop at spawn with all sorts of essential items & daily rotating deals.",
+                        "https://i.imgur.com/SZHhTPl.jpg"
+                ),
+                new Feature(
+                        "SPAWNERS", Color.PURPLE,
+                        "You are now able to mine spawners with a special one-time use Silk Touch Pickaxe.",
+                        "https://i.imgur.com/zUeGo63.jpg"
+                ),
+                new Feature(
+                        "WARP NAME", Color.TEAL,
+                        "You can now use /warp <name> in order to teleport to a specific Warp."
+                ),
+                new Feature(
+                        "CLAIM VISUALIZATION", Color.TEAL,
+                        "Claim borders are now presented above water, instead of the bottom of an ocean.",
+                        "https://i.imgur.com/Vpvlu7D.jpg"
+                ),
+                new Feature(
+                        "SETHOME ACCESS", Color.ORANGE,
+                        "You will now need access permissions in order to set a home inside someone else's claim."
+                ),
+                new Feature(
+                        "PHANTOMS", Color.ORANGE,
+                        "Entering a bed will now remove the Phantoms for two hours.",
+                        "https://i.imgur.com/89KTaOt.jpg"
+                ),
+                new Feature(
+                        "CLAIM CATEGORY", Color.LIME,
+                        "Manage&Build categories now clearly show that they also contain permissions for the lower categories."
+                ),
+                new Feature(
+                        "WORKBENCH", Color.ORANGE,
+                        "The /workbench command has been added to GOLD+ instead of DIAMOND+."
+                ),
+                new Feature(
+                        "REMEMBER FLY", Color.WHITE,
+                        "You will no longer fall to your death after logging out in /fly."
+                ),
+                new Feature(
+                        "/nearby", Color.BLUE,
+                        "Show the most nearby Region, how far it is and in what direction."
+                ),
+                new Feature(
+                        "/back", Color.BLUE,
+                        "With the use of Back Charges, you will now be able to teleport to your previous location & location of death."
                 )
         ));
 
@@ -458,27 +563,22 @@ public class PatchNotes {
 
         TextChannel channel = discord.getChannel(token, DiscordBot.ChannelType.patch_notes);
 
-        String url = null;
+        DiscordBot.Images image = null;
         switch (token) {
 
             case DEFAULT:
-                url = DiscordBot.Images.ORBITMINES_LOGO.getUrl();
+                image = DiscordBot.Images.ORBITMINES_LOGO;
                 break;
             case SURVIVAL:
-                url = DiscordBot.Images.SURVIVAL_LOGO.getUrl();
+                image = DiscordBot.Images.SURVIVAL_LOGO;
                 break;
         }
 
-        if (url != null) {
-            try {
-                BufferedImage img = ImageIO.read(new URL(url));
-                File file = new File("patch_notes_logo.png");
-                ImageIO.write(img, "png", file);
+        if (image != null) {
+            File file = image.getFile("patch_notes_logo");
 
+            if (file != null)
                 channel.sendFile(file).queue();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
         channel.sendMessage("@everyone **" + instance.getServer().getName() + " " + instance.getVersion() + "** has been released! » \"**" + instance.getName() + "**\"").queue();
         channel.sendMessage("_" + DateUtils.SIMPLE_FORMAT.format(instance.getDate()) + ": " + instance.getDescription() + "_").queue();

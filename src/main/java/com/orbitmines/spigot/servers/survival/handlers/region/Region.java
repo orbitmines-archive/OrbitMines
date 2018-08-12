@@ -163,6 +163,12 @@ public class Region extends Teleportable {
         return "Region " + (id + 1);
     }
 
+    @Override
+    public void onTeleport(OMPlayer player, Location from, Location to) {
+        SurvivalPlayer omp = (SurvivalPlayer) player;
+        omp.setBackLocation(from);
+    }
+
     public static Region getRegion(int id) {
         for (Region region : regions) {
             if (region.getId() == id)

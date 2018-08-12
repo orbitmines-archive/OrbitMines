@@ -55,6 +55,11 @@ public class ClaimPlayerDetailsGUI extends GUI {
                 item.addLore("§7- " + color + desc.lang(omp.getLanguage()));
             }
 
+            for (Claim.Permission perm : Claim.Permission.values()) {
+                if (permission.ordinal() > perm.ordinal())
+                    item.addLore("§7- " + color + "§l" + perm.getName().lang(omp.getLanguage()));
+            }
+
             add(1, (current != null ? 1 : 2) + index, new ItemInstance(item.build()) {
                 @Override
                 public void onClick(InventoryClickEvent event, OMPlayer omp) {

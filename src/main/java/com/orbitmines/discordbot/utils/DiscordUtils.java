@@ -42,6 +42,18 @@ public class DiscordUtils {
         return (player != null ? SkinLibrary.getEmote(discord.getGuild(token), player.getUUID()).getAsMention() : "") + prefix + " **" + name + "**";
     }
 
+    public static String getDisplay(DiscordBot discord, BotToken token, StaffRank staffRank, VipRank vipRank, UUID uuid, String name) {
+        String prefix;
+        String rankName = (staffRank == StaffRank.NONE ? vipRank.getName() : staffRank.getName());
+
+        if (staffRank == StaffRank.NONE || staffRank == StaffRank.ADMIN)
+            prefix = vipRank != VipRank.NONE ? " " + discord.getEmote(token, vipRank).getAsMention() + "**" + rankName + "**" : "";
+        else
+            prefix = " **" + rankName + "**";
+
+        return SkinLibrary.getEmote(discord.getGuild(token), uuid).getAsMention() + prefix + " **" + name + "**";
+    }
+
     public static String filterToDiscord(DiscordBot discord, BotToken token, String message) {
         Guild guild = discord.getGuild(token);
 
@@ -57,6 +69,9 @@ public class DiscordUtils {
         for (Emote emote : guild.getEmotes()) {
             message = message.replaceAll(":" + emote.getName() + ":", emote.getAsMention());
         }
+
+        /* We don't want people using @everyone & @here */
+        message = message.replaceAll("@everyone", "[everyone]").replaceAll("@here", "[here]");
 
         return message;
     }

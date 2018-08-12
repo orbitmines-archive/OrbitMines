@@ -51,6 +51,18 @@ public class SettingsGUI extends GUI {
             index++;
         }
 
+        add(1, 6, new EmptyItemInstance(new ItemBuilder(Material.PAPER, 1, "§7§lScoreboard").build()));
+
+        boolean hasScoreboard = omp.hasScoreboard();
+        add(2, 6, new ItemInstance(new ItemBuilder(hasScoreboard ? Material.LIME_STAINED_GLASS_PANE : Material.RED_STAINED_GLASS_PANE, 1, hasScoreboard ? omp.lang("§aAan", "§aEnabled") : omp.lang("§cUit", "§cDisabled")).build()) {
+            @Override
+            public void onClick(InventoryClickEvent event, OMPlayer omp) {
+                omp.setHasScoreboard(!hasScoreboard);
+                omp.playSound(Sound.UI_BUTTON_CLICK);
+                reopen(omp);
+            }
+        });
+
         add(1, 7, new EmptyItemInstance(BannerBuilder.getBuilder(omp.getLanguage()).setDisplayName(omp.lang(new Message("§7§lTaal", "§7§lLanguage"))).addFlag(ItemFlag.HIDE_POTION_EFFECTS).build()));
 
         add(2, 7, new ItemInstance(new ItemBuilder(ColorUtils.getStainedGlassPaneMaterial(Color.BLUE), 1, omp.lang(new Message("§9Dutch §7/ §9Nederlands", "§9English"))).build()) {

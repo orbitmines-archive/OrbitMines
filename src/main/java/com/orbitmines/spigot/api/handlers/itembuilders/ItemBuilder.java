@@ -4,6 +4,7 @@ import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
@@ -183,7 +184,16 @@ public class ItemBuilder {
 
     protected ItemStack modify(ItemStack itemStack) {
         if (enchantments.size() != 0) {
-            itemStack.addUnsafeEnchantments(new HashMap<>(enchantments));
+            if (material == Material.ENCHANTED_BOOK) {
+                /* Enchanted Book */
+                EnchantmentStorageMeta meta = (EnchantmentStorageMeta) itemStack.getItemMeta();
+                for (Enchantment enchantment : this.enchantments.keySet()) {
+                    meta.addStoredEnchant(enchantment, this.enchantments.get(enchantment), true);
+                }
+                itemStack.setItemMeta(meta);
+            } else {
+                itemStack.addUnsafeEnchantments(new HashMap<>(this.enchantments));
+            }
         } else if (glow) {
             itemStack.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
 

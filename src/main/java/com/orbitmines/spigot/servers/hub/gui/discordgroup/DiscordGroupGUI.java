@@ -23,7 +23,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 
-public class DiscordGroupGUI extends GUI {
+public class DiscordGroupGUI extends GUI implements DiscordGroupGUIInstance {
 
     private final int GROUPS_PER_PAGE = 9;
     private final int NEW_PER_PAGE = GROUPS_PER_PAGE / 9;
@@ -60,7 +60,12 @@ public class DiscordGroupGUI extends GUI {
             }
             add(1, 2, new EmptyItemInstance(item.build()));
 
-            add(2, 2, new EmptyItemInstance(new ItemBuilder(Material.BLUE_STAINED_GLASS_PANE, 1, "§7Type §9!<message>§7 in " + omp.lang("de", "the") + " chat.").build()));
+            ItemBuilder item2 = new ItemBuilder(Material.BLUE_STAINED_GLASS_PANE, 1, "§7Type §9!<message>§7 in " + omp.lang("de", "the") + " chat.");
+
+            if (group != null)
+                item2.glow();
+
+            add(2, 2, new EmptyItemInstance(item2.build()));
         }
 
         {
@@ -148,16 +153,22 @@ public class DiscordGroupGUI extends GUI {
                                 if (!Character.isAlphabetic(c) && !Character.isDigit(c) && c != '_') {
                                     event.setWillClose(false);
                                     event.setWillDestroy(false);
-                                    omp.sendMessage("Discord", Color.RED, "§7Je privé Discord server naam kan alleen maar bestaan uit letters en nummers.", "§7Your privateDiscord server name can only contain alphabetic and numeric characters.");
+                                    omp.sendMessage("Discord", Color.RED, "§7Je privé Discord server naam kan alleen maar bestaan uit letters en nummers.", "§7Your private Discord server name can only contain alphabetic and numeric characters.");
                                     return;
                                 }
                             }
 
-                            if (!DiscordGroup.exists(name)) {
+                            if (!DiscordGroup.exists(discord, orbitMines.getServerHandler().getToken(), name)) {
                                 event.setWillClose(true);
                                 event.setWillDestroy(true);
 
-                                group.setName(name);
+                                OrbitMines.getInstance().getServerHandler().getMessageHandler().dataTransfer(PluginMessage.DISCORD_GROUP_ACTION, omp.getUUID().toString(), "NAME", name);
+                                new BukkitRunnable() {
+                                    @Override
+                                    public void run() {
+                                        omp.getPlayer().closeInventory();
+                                    }
+                                }.runTaskLater(orbitMines, 2);
                             } else {
                                 event.setWillClose(false);
                                 event.setWillDestroy(false);
@@ -211,19 +222,38 @@ public class DiscordGroupGUI extends GUI {
             if (group != null) {
                 CachedPlayer owner = CachedPlayer.getPlayer(group.getOwnerUUID());
 
-                boolean invite = data.getInvites().contains(group.getOwnerUUID());
+                boolean invite = data.getInvites().contains(owner.getUUID());
 
-                if (invite) {
+                if (!invite) {
+                    boolean isOwner = omp.getUUID().toString().equals(owner.getUUID().toString());
+
                     PlayerSkullBuilder item = new PlayerSkullBuilder(owner::getPlayerName, 1, group.getDisplayName(), new ArrayList<>());
 
                     setOnlineLore(item, group);
 
-                    add(slot, new ItemInstance(item.build()) {
-                        @Override
-                        public void onClick(InventoryClickEvent event, OMPlayer omp) {
-                            new DiscordGroupRequestDetailsGUI(owner, group.getDisplayName()).open(omp);
-                        }
-                    });
+                    item.addLore("");
+
+                    if (isOwner)
+                        item.addLore(omp.lang("§aKlik hier om te selecteren.", "§aClick here to select."));
+                    else
+                        item.addLore(omp.lang("§aKlik hier om te selecteren/verwijderen.", "§aClick here to select or delete."));
+
+                    if (isOwner)
+                        add(slot, new ItemInstance(item.build()) {
+                            @Override
+                            public void onClick(InventoryClickEvent event, OMPlayer omp) {
+                                data.setSelected(owner.getUUID());
+
+                                reopen(omp);
+                            }
+                        });
+                    else
+                        add(slot, new ItemInstance(item.build()) {
+                            @Override
+                            public void onClick(InventoryClickEvent event, OMPlayer omp) {
+                                new DiscordGroupDetailsGUI(owner, group.getDisplayName()).open(omp);
+                            }
+                        });
                 } else {
                     ItemBuilder item = new ItemBuilder(Material.WRITABLE_BOOK, 1, "§9§l" + omp.lang("UITNODIGING", "INVITATION") + " " + group.getDisplayName(), new ArrayList<>());
                     item.glow();
@@ -236,7 +266,7 @@ public class DiscordGroupGUI extends GUI {
                     add(slot, new ItemInstance(item.build()) {
                         @Override
                         public void onClick(InventoryClickEvent event, OMPlayer omp) {
-                            new DiscordGroupDetailsGUI(owner, group.getDisplayName()).open(omp);
+                            new DiscordGroupRequestDetailsGUI(owner, group.getDisplayName()).open(omp);
                         }
                     });
                 }
@@ -355,6 +385,20 @@ public class DiscordGroupGUI extends GUI {
             lore.add(server.getDisplayName() + "§7(" + onlineMembers.get(server).size() + "):");
 
             for (CachedPlayer member : onlineMembers.get(server)) {
+                /* Owner Prefix */
+                String prefix = "";
+                if (member.getUUID().toString().equals(group.getOwnerUUID().toString()))
+                    prefix = " §e§l+ ";
+
+                lore.add(" §7- " + prefix + member.getRankPrefix() + member.getPlayerName());
+            }
+        }
+
+        if (offlineMembers.size() > 0) {
+            lore.add("");
+            lore.add(Server.Status.OFFLINE.getDisplayName() + "§7(" + offlineMembers.size() + "):");
+
+            for (CachedPlayer member : offlineMembers) {
                 /* Owner Prefix */
                 String prefix = "";
                 if (member.getUUID().toString().equals(group.getOwnerUUID().toString()))

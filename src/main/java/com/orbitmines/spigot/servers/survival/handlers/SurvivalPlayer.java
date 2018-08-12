@@ -3,11 +3,11 @@ package com.orbitmines.spigot.servers.survival.handlers;
 import com.orbitmines.api.Color;
 import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
+import com.orbitmines.spigot.api.handlers.chat.ActionBar;
 import com.orbitmines.spigot.servers.survival.Survival;
 import com.orbitmines.spigot.servers.survival.handlers.claim.Claim;
 import com.orbitmines.spigot.servers.survival.handlers.claim.Visualization;
 import com.orbitmines.spigot.servers.survival.handlers.teleportable.Home;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -53,8 +53,6 @@ public class SurvivalPlayer extends OMPlayer {
     @Override
     protected void onLogin() {
         players.add(this);
-
-        player.setGameMode(GameMode.SURVIVAL);
 
         Location logOutLocation = getData().getLogoutLocation();
         if (logOutLocation != null && (logOutLocation.getWorld().getName().equals(survival.getWorld_nether().getName()) || logOutLocation.getWorld().getName().equals(survival.getWorld_the_end().getName())))
@@ -133,6 +131,48 @@ public class SurvivalPlayer extends OMPlayer {
 
     public int getRemainingClaimBlocks() {
         return survival.getClaimHandler().getRemaining(getUUID(), getClaimBlocks());
+    }
+
+    /*
+        BackLocation
+     */
+
+    public Location getBackLocation() {
+        return getData().getBackLocation();
+    }
+
+    public void setBackLocation(Location backLocation) {
+        getData().setBackLocation(backLocation);
+    }
+
+    /*
+        BackCharges
+     */
+
+    public int getBackCharges() {
+        return getData().getBackCharges();
+    }
+
+    public void addBackCharges(int amount) {
+        getData().addBackCharges(amount);
+    }
+
+    public void removeBackCharges(int amount) {
+        getData().removeBackCharges(amount);
+    }
+
+    /*
+        LastBedEnter
+     */
+
+    public void updateLastBedEnter() {
+        getData().updateLastBedEnter();
+
+        new ActionBar(this, () -> lang("§7§lPhantom spawning is uitgezet voor §a§ltwee hours§7§l.", "§7§lPhantom spawning has been disabled for §a§ltwo hours§7§l."), 100).send();
+    }
+
+    public boolean canSpawnPhantom() {
+        return getData().canSpawnPhantom();
     }
 
     /*

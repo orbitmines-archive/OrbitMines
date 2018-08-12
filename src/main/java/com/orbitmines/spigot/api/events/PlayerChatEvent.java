@@ -27,6 +27,7 @@ public class PlayerChatEvent implements Listener {
 
         if (omp.isLoggedIn()) {
             if (omp.isMuted()) {
+                event.setCancelled(true);
                 omp.sendMessage("Mute", Color.RED, "§7Je bent gemute!", "§7You have been muted!");//TODO GIVE player indication how long the mute lasts
                 return;
             }

@@ -14,9 +14,8 @@ import com.orbitmines.api.utils.DateUtils;
 import com.orbitmines.api.utils.RandomUtils;
 import com.orbitmines.bungeecord.OrbitMinesBungee;
 import com.orbitmines.discordbot.DiscordBot;
-import com.orbitmines.discordbot.utils.ColorUtils;
-import com.orbitmines.discordbot.utils.DiscordUtils;
-import com.orbitmines.discordbot.utils.SkinLibrary;
+import com.orbitmines.discordbot.handlers.DiscordGroup;
+import com.orbitmines.discordbot.utils.*;
 import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.data.*;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -80,7 +79,7 @@ public class BungeePlayer {
         players.add(this);
 
         if (!Database.get().contains(Table.PLAYERS, TablePlayers.UUID, new Where(TablePlayers.UUID, getUUID().toString()))) {
-            Database.get().insert(Table.PLAYERS, getUUID().toString(), getRealName(), "", staffRank.toString(), vipRank.toString(), DateUtils.FORMAT.format(DateUtils.now()), language.toString(), Settings.PRIVATE_MESSAGES.getDefaultType().toString(), Settings.PLAYER_VISIBILITY.getDefaultType().toString(), Settings.GADGETS.getDefaultType().toString(), Settings.STATS.getDefaultType().toString(), silent ? "1" : "0", "0", "0");
+            Database.get().insert(Table.PLAYERS, getUUID().toString(), getRealName(), "", staffRank.toString(), vipRank.toString(), DateUtils.FORMAT.format(DateUtils.now()), language.toString(), "1", Settings.PRIVATE_MESSAGES.getDefaultType().toString(), Settings.PLAYER_VISIBILITY.getDefaultType().toString(), Settings.GADGETS.getDefaultType().toString(), Settings.STATS.getDefaultType().toString(), silent ? "1" : "0", "0", "0");
 
             onFirstLogin();
         } else {
@@ -97,11 +96,12 @@ public class BungeePlayer {
             language = Language.valueOf(values.get(TablePlayers.LANGUAGE));
             silent = "1".equals(values.get(TablePlayers.SILENT));
 
-               /* Update Name Change */
+            /* Update Name Change */
             String name = values.get(TablePlayers.NAME);
-            if (!name.equals(getRealName()))
+            if (!name.equals(getRealName())) {
                 Database.get().update(Table.PLAYERS, new Set(TablePlayers.NAME, getRealName()), new Where(TablePlayers.UUID, getUUID().toString()));
-
+                onNameChange(name, getRealName());
+            }
         }
 
         /* PrefixColor to DisplayName */
@@ -144,6 +144,18 @@ public class BungeePlayer {
     public void on2FALogin() {
         /* Send Title Announcements */
         bungee.getAnnouncementHandler().send(player);
+    }
+
+    private void onNameChange(String previousName, String newName) {
+        /* Log Name Change */
+        DiscordBot discord = bungee.getDiscord();
+        BotToken token = bungee.getToken();
+        discord.getChannel(token, DiscordBot.ChannelType.name_change).sendMessage(DiscordUtils.getDisplay(discord, token, staffRank, vipRank, getUUID(), previousName) + " » " + DiscordUtils.getDisplay(discord, token, staffRank, vipRank, getUUID(), newName)).queue();
+
+        /* Update DiscordGroup Category */
+        DiscordGroup group = DiscordGroup.getGroup(getUUID());
+        if (group != null)
+            group.updateCategoryName();
     }
 
     public void updateLastOnline() {
@@ -303,6 +315,10 @@ public class BungeePlayer {
 
         if (user != null)
             discord.updateRanks(user);
+
+        DiscordGroup group = DiscordGroup.getGroup(getUUID());
+        if (group != null)
+            group.updateCategoryName();
     }
 
     /*
@@ -533,9 +549,6 @@ public class BungeePlayer {
 
             case VOTES:
                 data = new VoteData(getUUID());
-                break;
-            case DISCORD_GROUPS:
-                data = new DiscordGroupData(getUUID());
                 break;
             case SETTINGS:
                 data = new SettingsData(getUUID());

@@ -7,9 +7,11 @@ import com.orbitmines.bungeecord.OrbitMinesBungee;
 import com.orbitmines.bungeecord.handlers.BungeePlayer;
 import com.orbitmines.bungeecord.handlers.cmd.Command;
 import com.orbitmines.discordbot.DiscordBot;
+import com.orbitmines.discordbot.handlers.DiscordGroup;
 import com.orbitmines.discordbot.utils.BotToken;
 import com.orbitmines.discordbot.utils.DiscordBungeeUtils;
 import com.orbitmines.discordbot.utils.DiscordUtils;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -51,10 +53,30 @@ public class PlayerChatEvent implements Listener {
                 if (event.getMessage().length() != 1) {
                     bungee.broadcast(StaffRank.MODERATOR, "Staff", Color.AQUA, omp.getStaffRank().getPrefix() + omp.getName() + " §7» §f§l" + event.getMessage().substring(1));
                 } else {
-                    omp.sendMessage("Staff", Color.RED, "§7Use §9@<message>§7.");
+                    omp.sendMessage("Staff", Color.RED, "§7Gebruik §9@<message>§7.", "§7Use §9@<message>§7.");
+                    return;
                 }
 
                 toDiscord(event, omp);
+            } else if (a[0].startsWith("!")) {
+                /* Discord Channel message */
+                event.setCancelled(true);
+
+                DiscordGroup selected = DiscordGroup.getSelected(omp.getUUID());
+
+                if (selected == null) {
+                    omp.sendMessage("Discord", Color.RED, "Je moet een §9/discordserver §7selecteren.", "You have to select a §9/discordserver§7.");
+                    return;
+                }
+
+                if (event.getMessage().length() != 1) {
+                    selected.sendMessage("@" + selected.getName(), selected.getColor(), omp.getRankPrefix() + omp.getName() + " §7» §f§l" + event.getMessage().substring(1));
+                } else {
+                    omp.sendMessage("@" + selected.getName(), selected.getColor(), "§7Gebruik §9!<message>§7.", "§7Use §9!<message>§7.");
+                    return;
+                }
+
+                toDiscord(selected.getTextChannel(), event, omp);
             }
         } else if (!omp.isLoggedIn()) {
             event.setCancelled(true);
@@ -76,6 +98,12 @@ public class PlayerChatEvent implements Listener {
     private void toDiscord(ChatEvent event, BungeePlayer omp) {
         DiscordBot discord = bungee.getDiscord();
         BotToken token = bungee.getToken();
-        discord.getChannel(token, DiscordBot.ChannelType.staff).sendMessage(DiscordBungeeUtils.getDisplay(discord, token, omp) + " » " + DiscordUtils.filterToDiscord(discord, token, event.getMessage().substring(1))).queue();
+        toDiscord(discord.getChannel(token, DiscordBot.ChannelType.staff), event, omp);
+    }
+
+    private void toDiscord(TextChannel channel, ChatEvent event, BungeePlayer omp) {
+        DiscordBot discord = bungee.getDiscord();
+        BotToken token = bungee.getToken();
+        channel.sendMessage(DiscordBungeeUtils.getDisplay(discord, token, omp, true) + " » " + DiscordUtils.filterToDiscord(discord, token, event.getMessage().substring(1))).queue();
     }
 }

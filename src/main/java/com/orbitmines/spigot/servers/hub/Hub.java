@@ -2,6 +2,7 @@ package com.orbitmines.spigot.servers.hub;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.orbitmines.api.*;
+import com.orbitmines.api.Server;
 import com.orbitmines.api.utils.NumberUtils;
 import com.orbitmines.api.utils.RandomUtils;
 import com.orbitmines.discordbot.DiscordBot;
@@ -28,10 +29,7 @@ import com.orbitmines.spigot.servers.hub.gui.stats.StatsGUI;
 import com.orbitmines.spigot.servers.hub.handlers.HubDataPointHandler;
 import com.orbitmines.spigot.servers.hub.handlers.HubPlayer;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 
@@ -178,6 +176,11 @@ public class Hub extends OrbitMinesServer {
     @Override
     public void setupNpc(String npcName, Location location) {
 
+    }
+
+    @Override
+    public GameMode getGameMode() {
+        return GameMode.ADVENTURE;
     }
 
     public World getVoidWorld() {
@@ -347,6 +350,11 @@ public class Hub extends OrbitMinesServer {
                     () -> " " + omp.getRankName(),
                     () -> "   "
             );
+        }
+
+        @Override
+        public boolean canBypassSettings() {
+            return false;
         }
     }
 }

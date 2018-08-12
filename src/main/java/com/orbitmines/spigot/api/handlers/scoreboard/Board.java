@@ -193,6 +193,10 @@ public class Board {
         scores.clear();
     }
 
+    public void clearObj() {
+        obj = null;
+    }
+
     public Scoreboard getScoreboard() {
         return scoreboard;
     }

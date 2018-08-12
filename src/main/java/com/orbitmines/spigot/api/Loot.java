@@ -48,9 +48,9 @@ public enum Loot {
                 case VIP_UPGRADE_GOLD_EMERALD:
                 case VIP_UPGRADE_DIAMOND_EMERALD:
                     return new ItemBuilder(Material.EMERALD);
-                case SOLARS_1000:
-                case SOLARS_2500:
-                case SOLARS_7500:
+                case SOLARS_1500:
+                case SOLARS_4000:
+                case SOLARS_12500:
                     return new ItemBuilder(Material.SUNFLOWER);
                 case SURVIVAL_CLAIMBLOCKS_10000:
                 case SURVIVAL_CLAIMBLOCKS_25000:
@@ -99,19 +99,19 @@ public enum Loot {
                     omp.setVipRank(rank);
                     break;
                 }
-                case SOLARS_1000:
-                case SOLARS_2500:
-                case SOLARS_7500: {
+                case SOLARS_1500:
+                case SOLARS_4000:
+                case SOLARS_12500: {
                     int solars = 0;
                     switch (donation) {
-                        case SOLARS_1000:
+                        case SOLARS_1500:
                             solars = 1000;
                             break;
-                        case SOLARS_2500:
-                            solars = 2500;
+                        case SOLARS_4000:
+                            solars = 4000;
                             break;
-                        case SOLARS_7500:
-                            solars = 7500;
+                        case SOLARS_12500:
+                            solars = 12500;
                             break;
                     }
 

@@ -81,6 +81,8 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
 
     private int maxPlayers;
 
+    private String resourceFolder;
+
     private MotdHandler motdHandler;
     private AnnouncementHandler announcementHandler;
 
@@ -99,7 +101,7 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
 
         /* Setup Config Files */
         configHandler = new ConfigHandler(this);
-        configHandler.setup(/*"donations", */"settings");
+        configHandler.setup("settings", "resources");
 
         /* Setup Database */
         Configuration settings = configHandler.get("settings");
@@ -125,6 +127,9 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
             maxPlayers += Integer.parseInt(entry.get(TableServers.MAX_PLAYERS));
         }
 
+        /* Update Resources Folder */
+        resourceFolder = configHandler.get("resources").getString("path");
+
         /* Setup MotdHandler */
         motdHandler = new MotdHandler();
         /* Setup AnnouncementHandler */
@@ -143,11 +148,17 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
             ex.printStackTrace();
         }
 
+        discord.setupCustomEmojis();
+        discord.setupCustomRoles(token);
+
         /* Clear all Player Emojis */
         SkinLibrary.deleteAllExistingEmotes(discord.getGuild(token));
 
         /* Setup all Discord Groups */
         DiscordGroup.setup(discord);
+
+        /* Setup all IPs */
+        IP.loadAll();
 
         /* Register */
         registerCommands();
@@ -178,6 +189,10 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
 
     public int getMaxPlayers() {
         return maxPlayers;
+    }
+
+    public String getResourceFolder() {
+        return resourceFolder;
     }
 
     public ServerInfo getServer(Server server) {
@@ -253,6 +268,7 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
         new CommandAnnouncement();
         new CommandMotd();
         new CommandSilent();
+        new CommandLookup(this);
         new CommandMaintenance(this);
 
         /* Console Commands */
