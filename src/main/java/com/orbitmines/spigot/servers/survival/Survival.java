@@ -789,6 +789,8 @@ public class Survival extends OrbitMinesServer {
 
                 omp.resetScoreboard();
                 omp.setScoreboard(new Scoreboard(orbitMines, omp));
+
+                Visualization.revert(omp);
             }
         };
     }

@@ -211,6 +211,27 @@ public class Database {
         return count;
     }
 
+    public long getLongSum(Table table, Column column, Where... wheres) {
+        long sum = 0;
+
+        String query = "SELECT SUM(" + column.toString() + ") AS sum FROM `" + table.toString() + "`" + toString(wheres) + ";";
+
+        try {
+            checkConnection();
+
+            ResultSet rs = connection.prepareStatement(query).executeQuery();
+
+            while (rs.next()) {
+                sum = rs.getLong("sum");
+            }
+
+            rs.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return sum;
+    }
+
     public int getInt(Table table, Column column, Where... wheres) {
         int integer = 0;
 
@@ -343,6 +364,22 @@ public class Database {
         }
 
         return values;
+    }
+
+    public boolean entryEquals(Column keyColumn, Map<Column, String>... entries) {
+        if (entries == null || entries.length == 0)
+            return true;
+
+        for (Column column : entries[0].keySet()) {
+            if (column == keyColumn)
+                continue;
+
+            for (int i = 1; i < entries.length; i++) {
+                if (!entries[0].get(column).equals(entries[i].get(column)))
+                    return false;
+            }
+        }
+        return true;
     }
 
     public List<Map<Column, Integer>> getIntEntries(Table table, Where... where) {

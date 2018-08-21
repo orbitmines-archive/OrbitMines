@@ -1,6 +1,7 @@
 package com.orbitmines.bungeecord.events;
 
-import com.orbitmines.api.*;
+import com.orbitmines.api.PluginMessage;
+import com.orbitmines.api.ServerList;
 import com.orbitmines.api.utils.uuid.UUIDUtils;
 import com.orbitmines.bungeecord.OrbitMinesBungee;
 import com.orbitmines.bungeecord.handlers.BungeePlayer;
@@ -58,9 +59,10 @@ public class VoteEvent implements Listener {
 
         data.addVote(serverList, Long.parseLong(vote.getTimeStamp()));
 
-        BungeePlayer omp = BungeePlayer.getPlayer(uuid);
+        /* Discord message */
+        discord.getChannel(bungee.getToken(), DiscordBot.ChannelType.votes).sendMessage(discord.getEmote(bungee.getToken(), DiscordBot.CustomEmote.prismarine_shard).getAsMention() + " " + DiscordUtils.getDisplay(discord, bungee.getToken(), uuid) + " has voted and received **250 Prisms**.").queue();
 
-        discord.getChannel(bungee.getToken(), DiscordBot.ChannelType.votes).sendMessage(discord.getEmote(bungee.getToken(), DiscordBot.CustomEmote.prismarine_shard).getAsMention() + " " + DiscordUtils.getDisplay(discord, bungee.getToken(), omp.getUUID()) + " has voted and received **250 Prisms**.").queue();
+        BungeePlayer omp = BungeePlayer.getPlayer(uuid);
 
         if (omp == null)
             /* Offline */

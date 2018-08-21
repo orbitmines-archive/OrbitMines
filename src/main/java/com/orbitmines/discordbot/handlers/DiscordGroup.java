@@ -288,7 +288,7 @@ public class DiscordGroup {
 
                         server.sendMessage("Welcome to " + role.getAsMention() + " " + user.getAsMention() + "!").queue();
                         server.sendMessage(" • Use **/discordserver** in game to manage your server").queue();
-                        server.sendMessage(" • In order to type in your server type **!<message>** in game.").queue();
+                        server.sendMessage(" • In order to graphType in your server graphType **!<message>** in game.").queue();
                         server.sendMessage(" • Use **!list** in Discord to view all online players in game.").queue();
 
                         omp.sendMessage("Discord", Color.BLUE, "Je §9§lPrivé Discord Server§7 staat klaar!", "Your §9§lPrivate Discord Server§7 is ready for use!");

@@ -55,7 +55,7 @@ public class PlayerUtils {
     public static int getEmptySlotCount(Inventory inventory) {
         int count = 0;
 
-        for (ItemStack item : inventory.getContents()) {
+        for (ItemStack item : inventory.getStorageContents()) {
             if (item == null || item.getType() == Material.AIR)
                 count++;
         }

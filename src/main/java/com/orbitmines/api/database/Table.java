@@ -2,6 +2,9 @@ package com.orbitmines.api.database;
 
 import com.orbitmines.api.database.tables.*;
 import com.orbitmines.api.database.tables.kitpvp.TableKitPvPPlayers;
+import com.orbitmines.api.database.tables.statistics.TableStatsOnline;
+import com.orbitmines.api.database.tables.statistics.TableStatsUnique;
+import com.orbitmines.api.database.tables.statistics.TableStatsVotes;
 import com.orbitmines.api.database.tables.survival.TableSurvivalClaim;
 import com.orbitmines.api.database.tables.survival.TableSurvivalHomes;
 import com.orbitmines.api.database.tables.survival.TableSurvivalPlayers;
@@ -39,6 +42,10 @@ public class Table {
     public static TableServers SERVERS;
     public static TableMaps MAPS;
 
+    public static TableStatsOnline STATS_ONLINE;
+    public static TableStatsUnique STATS_UNIQUE;
+    public static TableStatsVotes STATS_VOTES;
+
     /* Survival */
     public static TableSurvivalPlayers SURVIVAL_PLAYERS;
     public static TableSurvivalClaim SURVIVAL_CLAIM;
@@ -70,6 +77,10 @@ public class Table {
         SERVER_DATA = new TableServerData();
         SERVERS = new TableServers();
         MAPS = new TableMaps();
+
+        STATS_ONLINE = new TableStatsOnline();
+        STATS_UNIQUE = new TableStatsUnique();
+        STATS_VOTES = new TableStatsVotes();
 
         SURVIVAL_PLAYERS = new TableSurvivalPlayers();
         SURVIVAL_CLAIM = new TableSurvivalClaim();

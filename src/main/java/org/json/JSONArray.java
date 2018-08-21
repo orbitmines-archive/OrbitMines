@@ -55,8 +55,8 @@ import java.util.Map;
  * obtaining optional values.
  * <p>
  * The generic <code>get()</code> and <code>opt()</code> methods return an
- * object which you can cast or query for type. There are also typed
- * <code>get</code> and <code>opt</code> methods that do type checking and type
+ * object which you can cast or query for graphType. There are also typed
+ * <code>get</code> and <code>opt</code> methods that do graphType checking and graphType
  * coercion for you.
  * <p>
  * The texts produced by the <code>toString</code> methods strictly conform to
@@ -298,7 +298,7 @@ public class JSONArray implements Iterable<Object> {
     * Get the enum value associated with an index.
     * 
     * @param clazz
-    *            The type of enum to retrieve.
+    *            The graphType of enum to retrieve.
     * @param index
     *            The index must be between 0 and length() - 1.
     * @return The enum value at the index location
@@ -312,7 +312,7 @@ public class JSONArray implements Iterable<Object> {
             // JSONException should really take a throwable argument.
             // If it did, I would re-implement this with the Enum.valueOf
             // method and place any thrown exception in the JSONException
-            throw new JSONException("JSONArray[" + index + "] is not an enum of type "
+            throw new JSONException("JSONArray[" + index + "] is not an enum of graphType "
                     + JSONObject.quote(clazz.getSimpleName()) + ".");
         }
         return val;
@@ -669,7 +669,7 @@ public class JSONArray implements Iterable<Object> {
      * Get the enum value associated with a key.
      * 
      * @param clazz
-     *            The type of enum to retrieve.
+     *            The graphType of enum to retrieve.
      * @param index
      *            The index must be between 0 and length() - 1.
      * @return The enum value at the index location or null if not found
@@ -682,7 +682,7 @@ public class JSONArray implements Iterable<Object> {
      * Get the enum value associated with a key.
      * 
      * @param clazz
-     *            The type of enum to retrieve.
+     *            The graphType of enum to retrieve.
      * @param index
      *            The index must be between 0 and length() - 1.
      * @param defaultValue
@@ -861,7 +861,7 @@ public class JSONArray implements Iterable<Object> {
      * Get an optional {@link Number} value associated with a key, or <code>null</code>
      * if there is no such key or if the value is not a number. If the value is a string,
      * an attempt will be made to evaluate it as a number ({@link BigDecimal}). This method
-     * would be used in cases where type coercion of the number value is unwanted.
+     * would be used in cases where graphType coercion of the number value is unwanted.
      *
      * @param index
      *            The index must be between 0 and length() - 1.
@@ -875,7 +875,7 @@ public class JSONArray implements Iterable<Object> {
      * Get an optional {@link Number} value associated with a key, or the default if there
      * is no such key or if the value is not a number. If the value is a string,
      * an attempt will be made to evaluate it as a number ({@link BigDecimal}). This method
-     * would be used in cases where type coercion of the number value is unwanted.
+     * would be used in cases where graphType coercion of the number value is unwanted.
      *
      * @param index
      *            The index must be between 0 and length() - 1.

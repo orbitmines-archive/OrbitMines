@@ -28,7 +28,7 @@ public class SpawnerEvents implements Listener {
         this.nms = nms;
     }
 
-    /* Stop players from changing spawner type */
+    /* Stop players from changing spawner graphType */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onInteract(PlayerInteractEvent event) {
         if (event.isCancelled() || event.getClickedBlock().getType() != Material.SPAWNER)

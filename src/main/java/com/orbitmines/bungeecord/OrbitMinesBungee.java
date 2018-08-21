@@ -16,6 +16,7 @@ import com.orbitmines.bungeecord.commands.moderator.*;
 import com.orbitmines.bungeecord.events.*;
 import com.orbitmines.bungeecord.handlers.*;
 import com.orbitmines.bungeecord.runnables.BungeeRunnable;
+import com.orbitmines.bungeecord.statistics.Statistics;
 import com.orbitmines.discordbot.DiscordBot;
 import com.orbitmines.discordbot.handlers.DiscordGroup;
 import com.orbitmines.discordbot.utils.BotToken;
@@ -95,6 +96,8 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
     private BotToken token;
     private DiscordBot discord;
 
+    private Statistics statistics;
+
     @Override
     public void onEnable() {
         bungee = this;
@@ -159,6 +162,9 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
 
         /* Setup all IPs */
         IP.loadAll();
+
+        /* Setup Statistics */
+        statistics = new Statistics();
 
         /* Register */
         registerCommands();
@@ -238,6 +244,10 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
 
     public DiscordBot getDiscord() {
         return discord;
+    }
+
+    public Statistics getStatistics() {
+        return statistics;
     }
 
     public boolean mustLogin(BungeePlayer omp) {

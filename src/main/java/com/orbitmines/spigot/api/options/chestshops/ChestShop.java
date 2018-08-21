@@ -201,7 +201,7 @@ public class ChestShop {
         if (omp2 == null)
             return;
 
-        omp2.sendMessage("Shop", Color.LIME, omp.getName() + " §7heeft " + color + "§l" + itemName + " §7(" + color + "§l" + this.amount + "x§7) van je gekocht voor " + handler.getCurrencyDisplay(this.price) + "§7.", ownerName + "§7 bought " + color + "§l" + itemName + " §7(" + color + "§l" + this.amount + "x§7) from you for " + handler.getCurrencyDisplay(this.price) + "§7.");
+        omp2.sendMessage("Shop", Color.LIME, omp.getName() + " §7heeft " + color + "§l" + itemName + " §7(" + color + "§l" + this.amount + "x§7) van je gekocht voor " + handler.getCurrencyDisplay(this.price) + "§7.", omp.getName() + "§7 bought " + color + "§l" + itemName + " §7(" + color + "§l" + this.amount + "x§7) from you for " + handler.getCurrencyDisplay(this.price) + "§7.");
     }
 
     public void sell(OMPlayer omp) {

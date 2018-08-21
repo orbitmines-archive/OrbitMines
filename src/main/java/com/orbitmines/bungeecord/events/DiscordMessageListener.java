@@ -108,7 +108,7 @@ public class DiscordMessageListener extends ListenerAdapter {
 
         cM.add(new com.orbitmines.api.Message(name), HoverEvent.Action.SHOW_TEXT, new com.orbitmines.api.Message(rankPrefix + "@" + member.getUser().getName() + "#" + member.getUser().getDiscriminator() + "\n§7IGN: " + (playerName == null ? StaffRank.NONE.getDisplayName() : playerName)));
 
-        cM.add(new com.orbitmines.api.Message(" §7» " + chatColor.getChatColor() + "§l" + DiscordUtils.filterFromDiscord(message)));
+        cM.add(new com.orbitmines.api.Message(" §7» " + DiscordUtils.filterFromDiscord(chatColor.getChatColor() + "§l", message)));
 
         if (message.getAttachments().size() != 0) {
             net.dv8tion.jda.core.entities.Message.Attachment attachment = message.getAttachments().get(0);
@@ -155,7 +155,7 @@ public class DiscordMessageListener extends ListenerAdapter {
 
         cM.add(new com.orbitmines.api.Message(name), HoverEvent.Action.SHOW_TEXT, new com.orbitmines.api.Message(rankPrefix + "@" + member.getUser().getName() + "#" + member.getUser().getDiscriminator() + "\n§7IGN: " + (playerName == null ? StaffRank.NONE.getDisplayName() : playerName)));
 
-        cM.add(new com.orbitmines.api.Message(" §7» " + chatColor.getChatColor() + "§l" + DiscordUtils.filterFromDiscord(message)));
+        cM.add(new com.orbitmines.api.Message(" §7» " + DiscordUtils.filterFromDiscord(chatColor.getChatColor() + "§l", message)));
 
         if (message.getAttachments().size() != 0) {
             net.dv8tion.jda.core.entities.Message.Attachment attachment = message.getAttachments().get(0);

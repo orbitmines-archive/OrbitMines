@@ -60,7 +60,7 @@ public class FriendsData extends Data {
     }
 
     public void sendJoinMessage(OMPlayer omp) {
-        messageHandler.dataTransfer(PluginMessage.FAVORITE_FRIEND_MESSAGE, Serializer.serializeUUIDList(friends), getUUID().toString(), omp.getName());
+        messageHandler.dataTransfer(PluginMessage.FAVORITE_FRIEND_MESSAGE, Serializer.serializeUUIDList(friends), getUUID().toString(), omp.getName(true));
     }
 
     /* Inventory Interactions */

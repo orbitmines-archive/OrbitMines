@@ -151,7 +151,7 @@ public abstract class OrbitMinesServer {
 
         cM.add(new Message(name), HoverEvent.Action.SHOW_TEXT, new Message(rankPrefix + "@" + member.getUser().getName() + "#" + member.getUser().getDiscriminator() + "\n§7IGN: " + (playerName == null ? StaffRank.NONE.getDisplayName() : playerName)));
 
-        cM.add(new Message(" §7» " + chatColor.getChatColor() + DiscordUtils.filterFromDiscord(message)));
+        cM.add(new Message(" §7» " + DiscordUtils.filterFromDiscord(chatColor.getChatColor(), message)));
 
         if (message.getAttachments().size() != 0) {
             net.dv8tion.jda.core.entities.Message.Attachment attachment = message.getAttachments().get(0);

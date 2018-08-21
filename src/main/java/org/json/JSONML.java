@@ -41,7 +41,7 @@ public class JSONML {
      * @param arrayForm true if array form, false if object form.
      * @param ja      The JSONArray that is containing the current tag or null
      *     if we are at the outermost level.
-     * @param keepStrings	Don't type-convert text nodes and attribute values
+     * @param keepStrings	Don't graphType-convert text nodes and attribute values
      * @return A JSONArray if the value is the outermost tag, otherwise null.
      * @throws JSONException
      */
@@ -258,7 +258,7 @@ public class JSONML {
      * name/value pairs. If the tag contains children, then strings and
      * JSONArrays will represent the child tags.
      * As opposed to toJSONArray this method does not attempt to convert 
-     * any text node or attribute value to any type 
+     * any text node or attribute value to any graphType
      * but just leaves it as a string.
      * Comments, prologs, DTDs, and <code>&lt;[ [ ]]></code> are ignored.
      * @param string The source string.
@@ -280,7 +280,7 @@ public class JSONML {
      * name/value pairs. If the tag contains children, then strings and
      * JSONArrays will represent the child content and tags.
      * As opposed to toJSONArray this method does not attempt to convert 
-     * any text node or attribute value to any type 
+     * any text node or attribute value to any graphType
      * but just leaves it as a string.
      * Comments, prologs, DTDs, and <code>&lt;[ [ ]]></code> are ignored.
      * @param x An XMLTokener.

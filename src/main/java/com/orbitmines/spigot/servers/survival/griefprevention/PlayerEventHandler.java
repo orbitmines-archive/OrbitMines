@@ -31,12 +31,12 @@ class PlayerEventHandler implements Listener {
 //		Block result = player.getLocation().getBlock().getRelative(BlockFace.UP);
 //		while (iterator.hasNext()) {
 //			result = iterator.next();
-//			Material type = result.getType();
-//			if (type != Material.AIR &&
-//					(!passThroughWater || type != Material.STATIONARY_WATER) &&
-//					(!passThroughWater || type != Material.WATER) &&
-//					type != Material.LONG_GRASS &&
-//					type != Material.SNOW) return result;
+//			Material graphType = result.getType();
+//			if (graphType != Material.AIR &&
+//					(!passThroughWater || graphType != Material.STATIONARY_WATER) &&
+//					(!passThroughWater || graphType != Material.WATER) &&
+//					graphType != Material.LONG_GRASS &&
+//					graphType != Material.SNOW) return result;
 //		}
 //
 //		return result;

@@ -85,6 +85,9 @@ public class AutoRestart extends BungeeRunnable {
         new Timer(new BungeeRunnable.Time(TimeUnit.MINUTE, 10), new BungeeRunnable.Time(TimeUnit.SECOND, 1)) {
             @Override
             public void onFinish() {
+                /* Update Statistics */
+                bungee.getStatistics().update();
+
                 /* Kick all Players */
                 for (BungeePlayer omp : BungeePlayer.getPlayers()) {
                     omp.getPlayer().disconnect("§8§lOrbit§7§lMines\n" + omp.lang("§c§lRestarten...", "§c§lRestarting...") + "\n\n" + omp.lang("§7De server is aan het restarten! Je kan binnen een paar minuten weer joinen!", "§7The server is restarting! You will be able to join the server within a few minutes."));

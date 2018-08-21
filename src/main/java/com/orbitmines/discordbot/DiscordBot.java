@@ -114,6 +114,11 @@ public class DiscordBot {
         return jdaMap.get(token).getGuildById(serverId);
     }
 
+    public Category getCategory(BotToken token, String name) {
+        List<Category> list = getGuild(token).getCategoriesByName(name, true);
+        return list.size() > 0 ? list.get(0) : null;
+    }
+
     public TextChannel getChannelFor(BotToken token) {
         List<TextChannel> list = getGuild(token).getTextChannelsByName(token.getChannel(), true);
         return list.size() > 0 ? list.get(0) : null;
@@ -379,6 +384,12 @@ public class DiscordBot {
         sign_log(true),
         discord_link_log(false),
         private_server_log(false),
+
+        stats_online(false),
+        stats_online_by_rank(false),
+        stats_unique_players(false),
+        stats_votes_total(false),
+        stats_votes_monthly(false),
 
         staff(false);
 
