@@ -1,6 +1,8 @@
 package com.orbitmines.spigot;
 
 import com.orbitmines.api.*;
+import com.orbitmines.api.database.Database;
+import com.orbitmines.api.database.Table;
 import com.orbitmines.discordbot.DiscordBot;
 import com.orbitmines.discordbot.utils.BotToken;
 import com.orbitmines.discordbot.utils.DiscordSpigotUtils;
@@ -18,6 +20,7 @@ import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
+import net.minecraft.server.v1_13_R1.MinecraftServer;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -81,6 +84,14 @@ public abstract class OrbitMinesServer {
                             maintenanceBossBar.addPlayer(player);
                     }
                 }
+            }
+        };
+
+        new SpigotRunnable(SpigotRunnable.TimeUnit.MINUTE, 5) {
+            @Override
+            public void run() {
+                MinecraftServer server = MinecraftServer.getServer();
+                Database.get().insert(Table.STATS_TPS, System.currentTimeMillis() + "", OrbitMinesServer.this.server.toString(), ((long) ((server.recentTps[0] + server.recentTps[1] + server.recentTps[2]) / 3) * 10000L) + "");
             }
         };
     }

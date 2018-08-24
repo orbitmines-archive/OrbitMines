@@ -9,6 +9,7 @@ import com.orbitmines.api.database.Column;
 import com.orbitmines.api.database.Database;
 import com.orbitmines.api.database.Table;
 import com.orbitmines.api.database.tables.statistics.TableStatsUnique;
+import com.orbitmines.api.utils.NumberUtils;
 import com.orbitmines.bungeecord.runnables.BungeeRunnable;
 import com.orbitmines.bungeecord.statistics.graphs.Graph;
 import com.orbitmines.discordbot.DiscordBot;
@@ -48,7 +49,7 @@ public class UniquePlayerGraph extends DateGraphUpdater {
         }
 
         @Override
-        protected int getCount(int count, int prevCount) {
+        protected long getCount(long count, long prevCount) {
             return count - getMainInstance().first;
         }
 
@@ -57,8 +58,8 @@ public class UniquePlayerGraph extends DateGraphUpdater {
             return new Instance(type.getThisStatus(), Color.RED, mainCountColumn) {
                 @Override
                 protected String getDescription() {
-                    int count = getCount(last, 0);
-                    return count + " Unique " + (count == 1 ? "Player" : "Players");
+                    long count = getCount(last, 0);
+                    return NumberUtils.locale(count) + " Unique " + (count == 1 ? "Player" : "Players");
                 }
             };
         }
@@ -70,8 +71,8 @@ public class UniquePlayerGraph extends DateGraphUpdater {
                 return new Instance(type.getLastStatus(), Color.BLUE, mainCountColumn) {
                     @Override
                     protected String getDescription() {
-                        int count = getCount(last, 0);
-                        return count + " Unique " + (count == 1 ? "Player" : "Players");
+                        long count = getCount(last, 0);
+                        return NumberUtils.locale(count) + " Unique " + (count == 1 ? "Player" : "Players");
                     }
 
                     @Override

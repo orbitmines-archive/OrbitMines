@@ -4,9 +4,13 @@ package com.orbitmines.bungeecord.statistics;
  * OrbitMines - @author Fadi Shawki - 2018
  */
 
+import com.orbitmines.api.Server;
 import com.orbitmines.bungeecord.statistics.graphs.date.*;
+import com.orbitmines.discordbot.DiscordBot;
 
 import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Statistics {
 
@@ -22,6 +26,10 @@ public class Statistics {
     private final VotesTotalGraph votesTotalGraph;
     private final VotesMonthlyGraph votesMonthlyGraph;
 
+    private final PlayTimeTotalGraph playTimeTotalGraph;
+
+    private final Map<Server, TPSGraph> tpsGraphs;
+
     public Statistics() {
         onlinePlayerGraph = new OnlinePlayerGraph();
         onlinePlayerByRankGraph = new OnlinePlayerByRankGraph();
@@ -30,6 +38,12 @@ public class Statistics {
 
         votesTotalGraph = new VotesTotalGraph();
         votesMonthlyGraph = new VotesMonthlyGraph();
+
+        playTimeTotalGraph = new PlayTimeTotalGraph();
+
+        tpsGraphs = new HashMap<>();
+        tpsGraphs.put(Server.HUB, new TPSGraph(DiscordBot.ChannelType.stats_tps_hub, Server.HUB));
+        tpsGraphs.put(Server.SURVIVAL, new TPSGraph(DiscordBot.ChannelType.stats_tps_survival, Server.SURVIVAL));
     }
 
     public OnlinePlayerGraph getOnlinePlayerGraph() {
@@ -52,6 +66,14 @@ public class Statistics {
         return votesMonthlyGraph;
     }
 
+    public PlayTimeTotalGraph getPlayTimeTotalGraph() {
+        return playTimeTotalGraph;
+    }
+
+    public Map<Server, TPSGraph> getTpsGraphs() {
+        return tpsGraphs;
+    }
+
     public void update() {
         onlinePlayerGraph.update();
         onlinePlayerByRankGraph.update();
@@ -60,5 +82,11 @@ public class Statistics {
 
         votesTotalGraph.update();
         votesMonthlyGraph.update();
+
+        playTimeTotalGraph.update();
+
+        for (Server server : tpsGraphs.keySet()) {
+            tpsGraphs.get(server).update();
+        }
     }
 }

@@ -93,7 +93,7 @@ public class PatchNotes {
                         "Use /discord in-game to get the Discord invite link."
                 ),
                 new Feature(
-                        "/discordserver", Color.BLUE,
+                        "/discordsquad", Color.BLUE,
                         "Open the private Discord server GUI."
                 )
         ));

@@ -6,7 +6,7 @@ package com.orbitmines.spigot.servers.hub.gui.discordgroup;
 
 import com.orbitmines.api.*;
 import com.orbitmines.discordbot.DiscordBot;
-import com.orbitmines.discordbot.handlers.DiscordGroup;
+import com.orbitmines.discordbot.handlers.DiscordSquad;
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.GUI;
@@ -39,7 +39,7 @@ public class DiscordGroupGUI extends GUI implements DiscordGroupGUIInstance {
         orbitMines = OrbitMines.getInstance();
         this.page = page;
 
-        newInventory(54, "§0§lPrivate Discord Servers");
+        newInventory(54, "§0§lDiscord Squads");
     }
 
     @Override
@@ -49,11 +49,11 @@ public class DiscordGroupGUI extends GUI implements DiscordGroupGUIInstance {
 
         {
             UUID selected = data.getSelected();
-            DiscordGroup group = selected != null ? DiscordGroup.getFromDatabase(discord, selected) : null;
+            DiscordSquad group = selected != null ? DiscordSquad.getFromDatabase(discord, selected) : null;
 
             PlayerSkullBuilder item = getDiscordSkull();
-            item.setDisplayName("§7§l" + omp.lang("Geselecteerde Server", "Selected Server"));
-            item.addLore("§7Server: " + (group != null ? group.getDisplayName() : VipRank.NONE.getDisplayName()));
+            item.setDisplayName("§7§l" + omp.lang("Geselecteerde Squad", "Selected Squad"));
+            item.addLore("§7Squad " + (group != null ? group.getDisplayName() : VipRank.NONE.getDisplayName()));
             if (group != null) {
                 CachedPlayer owner = CachedPlayer.getPlayer(selected);
                 item.addLore("§7" + omp.lang("Eigenaar", "Owner") + ": " + owner.getRankPrefixColor().getChatColor() + owner.getPlayerName());
@@ -69,13 +69,13 @@ public class DiscordGroupGUI extends GUI implements DiscordGroupGUIInstance {
         }
 
         {
-            DiscordGroup group = DiscordGroup.getFromDatabase(discord, omp.getUUID());
+            DiscordSquad group = DiscordSquad.getFromDatabase(discord, omp.getUUID());
 
             if (group == null) {
                 {
                     boolean canCreate = omp.isEligible(VipRank.EMERALD);
 
-                    ItemBuilder item = new ItemBuilder(Material.WRITABLE_BOOK, 1, omp.lang("§7§lJouw Privé Discord Server", "§7§lYour Private Discord Server"));
+                    ItemBuilder item = new ItemBuilder(Material.WRITABLE_BOOK, 1, omp.lang("§7§lJouw Discord Squad", "§7§lYour Discord Squad"));
                     item.addLore("§7Required: " + VipRank.EMERALD.getDisplayName());
 
                     boolean hasLinked = CachedPlayer.getPlayer(omp.getUUID()).getDiscordId() != null;
@@ -87,18 +87,18 @@ public class DiscordGroupGUI extends GUI implements DiscordGroupGUIInstance {
                                 "§7You have to link your §9§lDiscord"
                         ));
                         item.addLore(omp.lang(
-                                "§7linken om je privé server aan",
+                                "§7linken om je discord squad aan",
                                 "§9§lAccount§7 in order to create"
                         ));
                         item.addLore(omp.lang(
                                 "§7te maken. (§9/discordlink§7)",
-                                "§7your private server. (§9/discordlink§7)"
+                                "§7your discord squad. (§9/discordlink§7)"
                         ));
                     }
 
                     if (canCreate) {
                         item.addLore("");
-                        item.addLore(omp.lang("§aKlik hier om je discord server te maken.", "§aClick here to create your discord server."));
+                        item.addLore(omp.lang("§aKlik hier om je Discord Squad te maken.", "§aClick here to create your Discord Squad."));
 
                         item.glow();
                     }
@@ -153,12 +153,12 @@ public class DiscordGroupGUI extends GUI implements DiscordGroupGUIInstance {
                                 if (!Character.isAlphabetic(c) && !Character.isDigit(c) && c != '_') {
                                     event.setWillClose(false);
                                     event.setWillDestroy(false);
-                                    omp.sendMessage("Discord", Color.RED, "§7Je privé Discord server naam kan alleen maar bestaan uit letters en nummers.", "§7Your private Discord server name can only contain alphabetic and numeric characters.");
+                                    omp.sendMessage("Discord", Color.RED, "§7Je Discord Squad naam kan alleen maar bestaan uit letters en nummers.", "§7Your Discord Squad name can only contain alphabetic and numeric characters.");
                                     return;
                                 }
                             }
 
-                            if (!DiscordGroup.exists(discord, orbitMines.getServerHandler().getToken(), name)) {
+                            if (!DiscordSquad.exists(discord, orbitMines.getServerHandler().getToken(), name)) {
                                 event.setWillClose(true);
                                 event.setWillDestroy(true);
 
@@ -172,7 +172,7 @@ public class DiscordGroupGUI extends GUI implements DiscordGroupGUIInstance {
                             } else {
                                 event.setWillClose(false);
                                 event.setWillDestroy(false);
-                                omp.sendMessage("Discord", Color.RED, "§7Er is al een privé Discord server met die naam.", "§7There already is a private Discord server with that name.");
+                                omp.sendMessage("Discord", Color.RED, "§7Er is al een Discord Squad met die naam.", "§7There already is a Discord Squad with that name.");
                             }
                         }, new AnvilNms.AnvilCloseEvent() {
                             @Override
@@ -206,19 +206,19 @@ public class DiscordGroupGUI extends GUI implements DiscordGroupGUIInstance {
             }
         }
 
-        List<DiscordGroup> groups = DiscordGroup.getGroupsFromDatabase(discord, omp.getUUID());
+        List<DiscordSquad> groups = DiscordSquad.getGroupsFromDatabase(discord, omp.getUUID());
 
         /* Order List Invites, Groups */
-        List<DiscordGroup> ordered = new ArrayList<>();
+        List<DiscordSquad> ordered = new ArrayList<>();
         for (UUID invite : data.getInvites()) {
-            ordered.add(DiscordGroup.getFromDatabase(discord, invite));
+            ordered.add(DiscordSquad.getFromDatabase(discord, invite));
         }
 
         ordered.addAll(groups);
 
         int slot = 36;
 
-        for (DiscordGroup group : getGroupsForPage(ordered)) {
+        for (DiscordSquad group : getGroupsForPage(ordered)) {
             if (group != null) {
                 CachedPlayer owner = CachedPlayer.getPlayer(group.getOwnerUUID());
 
@@ -278,7 +278,7 @@ public class DiscordGroupGUI extends GUI implements DiscordGroupGUIInstance {
         }
 
         if (page != 0)
-            add(5, 0, new ItemInstance(new PlayerSkullBuilder(() -> "Blue Arrow Left", 1, omp.lang("§7« Meer Discord Servers", "§7« More Discord Servers")).setTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWFlNzg0NTFiZjI2Y2Y0OWZkNWY1NGNkOGYyYjM3Y2QyNWM5MmU1Y2E3NjI5OGIzNjM0Y2I1NDFlOWFkODkifX19").build()) {
+            add(5, 0, new ItemInstance(new PlayerSkullBuilder(() -> "Blue Arrow Left", 1, omp.lang("§7« Meer Discord Squads", "§7« More Discord Squads")).setTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWFlNzg0NTFiZjI2Y2Y0OWZkNWY1NGNkOGYyYjM3Y2QyNWM5MmU1Y2E3NjI5OGIzNjM0Y2I1NDFlOWFkODkifX19").build()) {
                 @Override
                 public void onClick(InventoryClickEvent event, OMPlayer omp) {
                     page--;
@@ -290,7 +290,7 @@ public class DiscordGroupGUI extends GUI implements DiscordGroupGUIInstance {
             clear(5, 0);
 
         if (canHaveMorePages(ordered))
-            add(5, 8, new ItemInstance(new PlayerSkullBuilder(() -> "Blue Arrow Right", 1, omp.lang("§7Meer Discord Servers »", "§7More Discord Servers »")).setTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTE3ZjM2NjZkM2NlZGZhZTU3Nzc4Yzc4MjMwZDQ4MGM3MTlmZDVmNjVmZmEyYWQzMjU1Mzg1ZTQzM2I4NmUifX19").build()) {
+            add(5, 8, new ItemInstance(new PlayerSkullBuilder(() -> "Blue Arrow Right", 1, omp.lang("§7Meer Discord Squads »", "§7More Discord Squads »")).setTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTE3ZjM2NjZkM2NlZGZhZTU3Nzc4Yzc4MjMwZDQ4MGM3MTlmZDVmNjVmZmEyYWQzMjU1Mzg1ZTQzM2I4NmUifX19").build()) {
                 @Override
                 public void onClick(InventoryClickEvent event, OMPlayer omp) {
                     page++;
@@ -308,8 +308,8 @@ public class DiscordGroupGUI extends GUI implements DiscordGroupGUIInstance {
         return new PlayerSkullBuilder(() -> "Discord Skull").setTexture(DiscordBot.SKULL_TEXTURE);
     }
 
-    private DiscordGroup[] getGroupsForPage(List<DiscordGroup> groups) {
-        DiscordGroup[] pageGroups = new DiscordGroup[GROUPS_PER_PAGE];
+    private DiscordSquad[] getGroupsForPage(List<DiscordSquad> groups) {
+        DiscordSquad[] pageGroups = new DiscordSquad[GROUPS_PER_PAGE];
 
         for (int i = 0; i < GROUPS_PER_PAGE; i++) {
             if (groups.size() > i)
@@ -336,7 +336,7 @@ public class DiscordGroupGUI extends GUI implements DiscordGroupGUIInstance {
         return pageGroups;
     }
 
-    private boolean canHaveMorePages(List<DiscordGroup> groups) {
+    private boolean canHaveMorePages(List<DiscordSquad> groups) {
         int groupAmount = groups.size();
 
         if (groupAmount <= GROUPS_PER_PAGE)
@@ -348,7 +348,7 @@ public class DiscordGroupGUI extends GUI implements DiscordGroupGUIInstance {
         return maxPage > page;
     }
 
-    public static void setOnlineLore(ItemBuilder item, DiscordGroup group) {
+    public static void setOnlineLore(ItemBuilder item, DiscordSquad group) {
         /* Sort all online/offline members */
         Map<Server, List<CachedPlayer>> onlineMembers = new HashMap<>();
         List<CachedPlayer> offlineMembers = new ArrayList<>();

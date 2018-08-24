@@ -54,7 +54,7 @@ public class CommandAccept extends Command {
         if (omp.hasTpRequestFrom(a[1])) {
             omp2.setBackLocation(p2.getLocation());
             p2.teleport(p);
-            omp.sendMessage("Teleport", Color.LIME, omp2.getName() + " §7is naar jouw geteleporteerd.", omp2.getName() + " §7has been teleporter to you.");
+            omp.sendMessage("Teleport", Color.LIME, omp2.getName() + " §7is naar jouw geteleporteerd.", omp2.getName() + " §7has been teleported to you.");
             omp2.sendMessage("Teleport", Color.LIME, omp.getName() + " §7heeft je verzoek geaccepteerd.", omp.getName() + " §7accepted your request.");
             p2.playSound(p2.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 5, 1);
 

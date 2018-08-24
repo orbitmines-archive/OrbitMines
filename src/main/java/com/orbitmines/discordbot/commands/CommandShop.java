@@ -14,7 +14,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 public class CommandShop extends Command {
 
-    private String[] alias = { "shop", "donate" };
+    private String[] alias = { "shop", "buy", "buycraft", "shop", "store", "webshop", "donate", "rank" };
 
     private final DiscordBot bot;
 

@@ -18,7 +18,7 @@ import com.orbitmines.bungeecord.handlers.*;
 import com.orbitmines.bungeecord.runnables.BungeeRunnable;
 import com.orbitmines.bungeecord.statistics.Statistics;
 import com.orbitmines.discordbot.DiscordBot;
-import com.orbitmines.discordbot.handlers.DiscordGroup;
+import com.orbitmines.discordbot.handlers.DiscordSquad;
 import com.orbitmines.discordbot.utils.BotToken;
 import com.orbitmines.discordbot.utils.SkinLibrary;
 import com.vexsoftware.votifier.VoteHandler;
@@ -158,7 +158,7 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
         SkinLibrary.deleteAllExistingEmotes(discord.getGuild(token));
 
         /* Setup all Discord Groups */
-        DiscordGroup.setup(discord);
+        DiscordSquad.setup(discord);
 
         /* Setup all IPs */
         IP.loadAll();

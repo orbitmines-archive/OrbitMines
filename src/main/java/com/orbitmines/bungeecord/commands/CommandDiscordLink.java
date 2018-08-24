@@ -32,12 +32,26 @@ public class CommandDiscordLink extends Command {
 
     @Override
     public void dispatch(ChatEvent event, BungeePlayer omp, String[] a) {
-        if (a.length != 2 || !a[1].contains("#")) {
+        if (a.length == 1) {
             getHelpMessage(omp).send(omp);
             return;
         }
 
-        String[] parts = a[1].split("#");
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 1; i < a.length; i++) {
+            if (i != 1)
+                stringBuilder.append(" ");
+
+            stringBuilder.append(a[i]);
+        }
+        String name = stringBuilder.toString();
+
+        if (!name.contains("#")) {
+            getHelpMessage(omp).send(omp);
+            return;
+        }
+
+        String[] parts = name.split("#");
 
         switch (bungee.getDiscord().minecraftLink(omp.getUUID(), parts[0], parts[1])) {
 

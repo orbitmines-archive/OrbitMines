@@ -57,7 +57,7 @@ public enum PeriodLoot {
         public Message[] getDescription(OMPlayer omp) {
             return new Message[] {
                     new Message(omp.getVipRank() == VipRank.IRON ? VipRank.IRON.getDisplayName() : "§8§l" + VipRank.IRON.getName()),
-                    new Message(omp.getVipRank() == VipRank.IRON ? "§7- §e§l100 Solars" : "§8- §l100 Solars"),
+                    new Message(omp.getVipRank() == VipRank.IRON ? "§7- §e§l150 Solars" : "§8- §l150 Solars"),
                     new Message(omp.getVipRank() == VipRank.GOLD ? VipRank.GOLD.getDisplayName() : "§8§l" + VipRank.GOLD.getName()),
                     new Message(omp.getVipRank() == VipRank.GOLD ? "§7- §e§l300 Solars" : "§8- §l300 Solars"),
                     new Message(omp.getVipRank() == VipRank.DIAMOND ? VipRank.DIAMOND.getDisplayName() : "§8§l" + VipRank.DIAMOND.getName()),
@@ -74,7 +74,7 @@ public enum PeriodLoot {
                 case NONE:
                     break;
                 case IRON:
-                    omp.addSolars(100);
+                    omp.addSolars(150);
                     break;
                 case GOLD:
                     omp.addSolars(300);

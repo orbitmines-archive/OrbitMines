@@ -13,7 +13,7 @@ import com.orbitmines.bungeecord.handlers.BungeePlayer;
 import com.orbitmines.bungeecord.handlers.chat.ComponentMessage;
 import com.orbitmines.discordbot.DiscordBot;
 import com.orbitmines.discordbot.handlers.Command;
-import com.orbitmines.discordbot.handlers.DiscordGroup;
+import com.orbitmines.discordbot.handlers.DiscordSquad;
 import com.orbitmines.discordbot.utils.DiscordUtils;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -52,7 +52,7 @@ public class DiscordMessageListener extends ListenerAdapter {
         if (channel.getName().equals(DiscordBot.ChannelType.staff.toString())) {
             fromDiscordStaff(member, message);
         } else {
-            DiscordGroup group = DiscordGroup.getGroup(event.getTextChannel());
+            DiscordSquad group = DiscordSquad.getGroup(event.getTextChannel());
 
             if (group != null)
                 fromDiscordGroup(group, member, message);
@@ -118,7 +118,7 @@ public class DiscordMessageListener extends ListenerAdapter {
         cM.send(players);
     }
 
-    public void fromDiscordGroup(DiscordGroup group, Member member, net.dv8tion.jda.core.entities.Message message) {
+    public void fromDiscordGroup(DiscordSquad group, Member member, net.dv8tion.jda.core.entities.Message message) {
         List<BungeePlayer> online = group.getPlayers();
 
         if (online.size() == 0)

@@ -14,7 +14,7 @@ import com.orbitmines.api.utils.DateUtils;
 import com.orbitmines.api.utils.RandomUtils;
 import com.orbitmines.bungeecord.OrbitMinesBungee;
 import com.orbitmines.discordbot.DiscordBot;
-import com.orbitmines.discordbot.handlers.DiscordGroup;
+import com.orbitmines.discordbot.handlers.DiscordSquad;
 import com.orbitmines.discordbot.utils.*;
 import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.data.*;
@@ -152,8 +152,8 @@ public class BungeePlayer {
         BotToken token = bungee.getToken();
         discord.getChannel(token, DiscordBot.ChannelType.name_change).sendMessage(DiscordUtils.getDisplay(discord, token, staffRank, vipRank, getUUID(), previousName) + " » " + DiscordUtils.getDisplay(discord, token, staffRank, vipRank, getUUID(), newName)).queue();
 
-        /* Update DiscordGroup Category */
-        DiscordGroup group = DiscordGroup.getGroup(getUUID());
+        /* Update DiscordSquad Category */
+        DiscordSquad group = DiscordSquad.getGroup(getUUID());
         if (group != null)
             group.updateCategoryName();
     }
@@ -316,7 +316,7 @@ public class BungeePlayer {
         if (user != null)
             discord.updateRanks(user);
 
-        DiscordGroup group = DiscordGroup.getGroup(getUUID());
+        DiscordSquad group = DiscordSquad.getGroup(getUUID());
         if (group != null)
             group.updateCategoryName();
     }

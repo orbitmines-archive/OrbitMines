@@ -130,7 +130,7 @@ public class SurvivalDataPointSpawnShop extends DataPointSign {
         SUGAR_CANE(Material.SUGAR_CANE, 8, 200),
         CACTUS(Material.CACTUS, 8, 200),
 
-        DIRT(Material.DIRT, 64, 50),
+        DIRT(Material.DIRT, 64, 100),
         COBBLESTONE(Material.COBBLESTONE, 64, 100),
 
         OAK_LOG(Material.OAK_LOG, 16, 100),
@@ -141,7 +141,7 @@ public class SurvivalDataPointSpawnShop extends DataPointSign {
         LEATHER(Material.LEATHER, 8, 200),
         COAL(Material.COAL, 16, 250),
         IRON_INGOT(Material.IRON_INGOT, 8, 200),
-        GOLD_INGOT(Material.GOLD_INGOT, 1, 150),
+        GOLD_INGOT(Material.GOLD_INGOT, 8, 500),
         DIAMOND(Material.DIAMOND, 1, 500),
         GLOWSTONE(Material.GLOWSTONE, 16, 400),
 

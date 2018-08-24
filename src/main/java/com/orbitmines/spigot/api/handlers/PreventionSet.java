@@ -9,14 +9,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.block.LeavesDecayEvent;
-import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.block.*;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.weather.WeatherChangeEvent;
@@ -81,6 +75,9 @@ public class PreventionSet {
             case BLOCK_INTERACTING:
                 listener = new PreventBlockInteracting();
                 break;
+            case BLOCK_SPREAD:
+                listener = new PreventBlockSpread();
+                break;
             case MONSTER_EGG_USAGE:
                 listener = new PreventMonsterEggUsage();
                 break;
@@ -114,6 +111,9 @@ public class PreventionSet {
             case ENTITY_INTERACTING:
                 listener = new PreventEntityInteracting();
                 break;
+            case EXPLOSION_DAMAGE:
+                listener = new PreventExplosionDamage();
+                break;
         }
 
         listeners.put(prevention, listener);
@@ -144,6 +144,7 @@ public class PreventionSet {
         BLOCK_PLACE,
         BLOCK_BREAK,
         BLOCK_INTERACTING,
+        BLOCK_SPREAD,
         MONSTER_EGG_USAGE,
         SWAP_HAND_ITEMS,
         ITEM_DROP,
@@ -154,7 +155,8 @@ public class PreventionSet {
         CLICK_PLAYER_INVENTORY,
         PLAYER_DAMAGE,
         LEAF_DECAY,
-        ENTITY_INTERACTING
+        ENTITY_INTERACTING,
+        EXPLOSION_DAMAGE
 
     }
 
@@ -275,6 +277,17 @@ public class PreventionSet {
 
             if (ItemUtils.INTERACTABLE.contains(block.getType()))
                 event.setCancelled(true);
+        }
+    }
+
+    public class PreventBlockSpread implements Listener {
+
+        @EventHandler
+        public void preventBlockInteracting(BlockSpreadEvent event) {
+            if (!worlds.get(Prevention.BLOCK_SPREAD).contains(event.getBlock().getWorld()))
+                return;
+
+            event.setCancelled(true);
         }
     }
 
@@ -449,6 +462,17 @@ public class PreventionSet {
         @EventHandler
         public void preventEntityInteracting(PlayerInteractAtEntityEvent event) {
             if (!worlds.get(Prevention.ENTITY_INTERACTING).contains(event.getPlayer().getWorld()))
+                return;
+
+            event.setCancelled(true);
+        }
+    }
+
+    public class PreventExplosionDamage implements Listener {
+
+        @EventHandler
+        public void preventEntityInteracting(EntityExplodeEvent event) {
+            if (!worlds.get(Prevention.EXPLOSION_DAMAGE).contains(event.getLocation().getWorld()))
                 return;
 
             event.setCancelled(true);

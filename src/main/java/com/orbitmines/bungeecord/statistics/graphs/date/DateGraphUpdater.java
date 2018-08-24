@@ -35,14 +35,16 @@ public abstract class DateGraphUpdater extends GraphUpdater {
 
         /* Remove redudancy; If the last 3 entries are the same, remove the middle one */
         Table table = getTable();
-        List<Map<Column, String>> entries = Database.get().getEntries(table);
-        int size = entries.size();
+        if (table != null) {
+            List<Map<Column, String>> entries = Database.get().getEntries(table);
+            int size = entries.size();
 
-        if (size >= 3) {
-            boolean redundant = Database.get().entryEquals(table.getColumns()[0], entries.get(size - 1), entries.get(size - 2), entries.get(size - 3));
+            if (size >= 3) {
+                boolean redundant = Database.get().entryEquals(table.getColumns()[0], entries.get(size - 1), entries.get(size - 2), entries.get(size - 3));
 
-            if (redundant)
-                Database.get().delete(table, new Where(table.getColumns()[0], Long.parseLong(entries.get(size - 2).get(table.getColumns()[0]))));
+                if (redundant)
+                    Database.get().delete(table, new Where(table.getColumns()[0], Long.parseLong(entries.get(size - 2).get(table.getColumns()[0]))));
+            }
         }
 
         /* Update */

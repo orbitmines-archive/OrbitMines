@@ -9,7 +9,7 @@ import com.orbitmines.api.database.tables.TableDiscord;
 import com.orbitmines.api.database.tables.TableServerData;
 import com.orbitmines.discordbot.commands.*;
 import com.orbitmines.discordbot.events.MessageListener;
-import com.orbitmines.discordbot.handlers.DiscordGroup;
+import com.orbitmines.discordbot.handlers.DiscordSquad;
 import com.orbitmines.discordbot.utils.BotToken;
 import com.orbitmines.discordbot.utils.DiscordUtils;
 import net.dv8tion.jda.core.AccountType;
@@ -102,6 +102,7 @@ public class DiscordBot {
         new CommandHelp(this);
 
         new CommandVote(this);
+        new CommandTopVoters(this);
         new CommandDiscordLink(this);
         new CommandStats(this);
         new CommandSite(this);
@@ -323,7 +324,7 @@ public class DiscordBot {
         }
 
         /* Update Groups */
-        for (DiscordGroup group : DiscordGroup.getGroups(player.getUUID())) {
+        for (DiscordSquad group : DiscordSquad.getGroups(player.getUUID())) {
             check(group.getRole(), toRemove, toAdd);
         }
 
@@ -390,6 +391,10 @@ public class DiscordBot {
         stats_unique_players(false),
         stats_votes_total(false),
         stats_votes_monthly(false),
+        stats_playtime_total(false),
+//        stats_unique_joins(false),
+        stats_tps_hub(false),
+        stats_tps_survival(false),
 
         staff(false);
 
@@ -458,6 +463,8 @@ public class DiscordBot {
         TOP_VOTER_1("#1", Color.ORANGE, true),
         TOP_VOTER_2("#2", Color.SILVER, true),
         TOP_VOTER_3("#3", Color.MAROON, true),
+        TOP_VOTER_4("#4", Color.GRAY, true),
+        TOP_VOTER_5("#5", Color.GRAY, true),
 
         AQUA(Color.AQUA.getName(), Color.AQUA, true),
         BLACK(Color.BLACK.getName(), Color.BLACK, true),

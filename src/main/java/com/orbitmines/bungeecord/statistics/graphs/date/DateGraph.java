@@ -107,14 +107,24 @@ public abstract class DateGraph extends Graph {
         return instances.get(0);
     }
 
-    protected int getCount(int count, int prevCount) {
+    protected long getCount(long count, long prevCount) {
         return count;
     }
 
     @Override
     protected void onGenerate() {
         this.maximum = DateUtils.now();
-        this.minimum = type != Type.LIFE_TIME ? new Date(maximum.getTime() - type.millis) : new Date(Long.parseLong(Database.get().getEntries(table, timeColumn).get(0).get(timeColumn)));
+
+        if (type == Type.LIFE_TIME) {
+            List<Map<Column, String>> entries = Database.get().getEntries(table, timeColumn);
+
+            if (entries.size() > 0) {
+                this.minimum = new Date(Long.parseLong(entries.get(0).get(timeColumn)));
+                return;
+            }
+        }
+
+        this.minimum = new Date(maximum.getTime() - type.millis);
     }
 
     @Override
@@ -218,20 +228,26 @@ public abstract class DateGraph extends Graph {
         protected final Column countColumn;
 
         protected long top;
-        protected int topCount;
+        protected long topCount;
 
-        protected Long firstTime;
-        protected Integer first;
+        protected long bottom;
+        protected long bottomCount;
 
-        protected Long lastZeroOrFirstTime;
-        protected Integer lastZeroOrFirst;
+        protected long firstTime;
+        protected long first;
 
-        protected Long lastTime;
-        protected Integer last;
+        protected long lastZeroOrFirstTime;
+        protected long lastZeroOrFirst;
+
+        protected long lastTime;
+        protected long last;
 
         protected long entryCount;
         protected long entrySum;
-        protected int average;
+        protected long countTimesTimeSum; /* count * time passed sum */
+        protected long average;
+
+        protected long duration;
 
         public Instance(String seriesName, Color color, Column countColumn) {
             this.seriesName = seriesName;
@@ -255,6 +271,14 @@ public abstract class DateGraph extends Graph {
             return millis;
         }
 
+        public List<Map<Column, String>> getEntries() {
+            return Database.get().getEntries(table, new Where(Where.Operator.GREATER_THAN_OR_EQUAL, timeColumn, getMinimum()), new Where(Where.Operator.LESSER_THAN_OR_EQUAL, timeColumn, getMaximum()));
+        }
+
+        public void add(TimeSeries series, Millisecond date, long count) {
+            series.add(date, count);
+        }
+
         protected abstract String getDescription();
 
         public void generate(XYDataset xyDataset) {
@@ -262,30 +286,39 @@ public abstract class DateGraph extends Graph {
 
             /* Reset all Values */
             top = 0L;
-            topCount = 0;
-            average = 0;
+            topCount = 0L;
 
-            first = null;
+            bottom = 0L;
+            bottomCount = 0L;
 
-            entryCount = 0;
-            entrySum = 0;
+            average = 0L;
+            duration = 0L;
 
-            lastZeroOrFirstTime = null;
-            lastZeroOrFirst = 0;
+            firstTime = 0L;
+            first = 0L;
 
-            lastTime = null;
-            last = 0;
+            entryCount = 0L;
+            entrySum = 0L;
+            countTimesTimeSum = 0L;
+
+            lastZeroOrFirstTime = 0L;
+            lastZeroOrFirst = 0L;
+
+            lastTime = 0L;
+            last = 0L;
 
             /* Setup Series */
             TimeSeries series = new TimeSeries(seriesName);
 
-            int prevCount = 0;
-            for (Map<Column, String> entry : Database.get().getEntries(table, new Where(Where.Operator.GREATER_THAN_OR_EQUAL, timeColumn, getMinimum()), new Where(Where.Operator.LESSER_THAN_OR_EQUAL, timeColumn, getMaximum()))) {
+            long prevMillis = 0;
+            long prevCount = 0;
+
+            for (Map<Column, String> entry : getEntries()) {
                 long millis = Long.parseLong(entry.get(timeColumn));
-                int loaded = Integer.parseInt(entry.get(countColumn));
+                long loaded = Long.parseLong(entry.get(countColumn));
 
                 /* First Time */
-                if (firstTime == null) {
+                if (firstTime == 0L) {
                     firstTime = millis;
                     first = loaded;
 
@@ -293,22 +326,28 @@ public abstract class DateGraph extends Graph {
                     lastZeroOrFirst = first;
                 }
 
-                int count = getCount(loaded, prevCount);
+                long count = getCount(loaded, prevCount);
 
-                series.add(new Millisecond(new Date(getMillis(millis))), count);
+                add(series, new Millisecond(new Date(getMillis(millis))), count);
 
                 /* Record */
                 if (top == 0L || count >= topCount) {
                     top = millis;
                     topCount = count;
                 }
+                /* Worst */
+                if (bottom == 0L || count <= bottomCount) {
+                    bottom = millis;
+                    bottomCount = count;
+                }
 
                 /* Average */
                 entryCount += 1L;
-                entrySum += (long) count;
-
-                /* Prev Count */
-                prevCount = loaded;
+                entrySum += count;
+                if (prevMillis != 0L) {
+                    countTimesTimeSum += ((count + prevCount) / 2L) * (millis - prevMillis);
+                    duration += millis - prevMillis;
+                }
 
                 /* LastZero / Or First */
                 if (loaded == 0) {
@@ -319,13 +358,20 @@ public abstract class DateGraph extends Graph {
                 /* Last Time */
                 lastTime = millis;
                 last = loaded;
+
+                /* Prev Count */
+                prevMillis = millis;
+                prevCount = loaded;
             }
+
+            if (entryCount == 0)
+                return;
 
             dataset.addSeries(series);
 
             /* Average */
-            if (entryCount != 0)
-                average = (int) (entrySum / entryCount);
+            if (duration != 0L)
+                average = (countTimesTimeSum / duration);
         }
     }
 }

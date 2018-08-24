@@ -32,7 +32,7 @@ public class DiscordGroupRequestGUI extends GUI implements DiscordGroupGUIInstan
     public DiscordGroupRequestGUI(int page) {
         this.page = page;
 
-        newInventory(54, "§0§lPrivate Discord Servers");
+        newInventory(54, "§0§lDiscord Squads");
     }
 
     @Override

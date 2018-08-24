@@ -7,7 +7,7 @@ package com.orbitmines.spigot.servers.hub.gui.discordgroup;
 import com.orbitmines.api.Color;
 import com.orbitmines.api.PluginMessage;
 import com.orbitmines.discordbot.DiscordBot;
-import com.orbitmines.discordbot.handlers.DiscordGroup;
+import com.orbitmines.discordbot.handlers.DiscordSquad;
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.handlers.GUI;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
@@ -18,7 +18,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 public abstract class DiscordGroupColorGUI extends GUI implements DiscordGroupGUIInstance {
 
     public DiscordGroupColorGUI() {
-        newInventory(54, "§0§lPrivate Discord Servers");
+        newInventory(54, "§0§lDiscord Squads");
     }
 
     public abstract void openOverview();
@@ -27,7 +27,7 @@ public abstract class DiscordGroupColorGUI extends GUI implements DiscordGroupGU
     protected boolean onOpen(OMPlayer omp) {
         DiscordBot discord = OrbitMines.getInstance().getServerHandler().getDiscord();
 
-        DiscordGroup group = DiscordGroup.getFromDatabase(discord, omp.getUUID());
+        DiscordSquad group = DiscordSquad.getFromDatabase(discord, omp.getUUID());
 
         Color[] colors = Color.values();
         int i = 0;

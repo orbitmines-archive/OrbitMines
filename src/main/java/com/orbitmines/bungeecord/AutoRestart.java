@@ -62,20 +62,20 @@ public class AutoRestart extends BungeeRunnable {
 
         /* Initiate Restart at 4 o'clock */
         if (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) == 4) {
-            initiateRestart(false);
+            initiateRestart();
             return;
         }
 
         /* Initiate Restart at midnight at the end of the month and give players rewards (top voters) */
         if (today == 1)
-            initiateRestart(true);
+            initiateRestart();
     }
 
     private int getDayOfMonth() {
         return Calendar.getInstance().get(Calendar.DATE);
     }
 
-    private void initiateRestart(boolean voteRestart) {
+    private void initiateRestart() {
         BossBar bossBar = new BossBar("§8§lOrbit§7§lMines §c§lRestarting in " + TimeUtils.fromTimeStamp(10 * 60 * 1000, Language.ENGLISH) + "...", BossBar.Color.RED, BossBar.Style.SOLID);
 
         for (ProxiedPlayer player : bungee.getProxy().getPlayers()) {
@@ -99,10 +99,6 @@ public class AutoRestart extends BungeeRunnable {
                     if (info != null)
                         bungee.getMessageHandler().dataTransfer(PluginMessage.SHUTDOWN, info);
                 }
-
-                /* Give Vote Rewards */
-                if (voteRestart)
-                    giveEndOfMonthRewards();
 
                 /* Shutdown Proxy */
                 ProxyServer.getInstance().stop();

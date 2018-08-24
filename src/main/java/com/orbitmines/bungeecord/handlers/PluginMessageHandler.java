@@ -10,7 +10,7 @@ import com.orbitmines.api.punishment.offences.Severity;
 import com.orbitmines.bungeecord.OrbitMinesBungee;
 import com.orbitmines.bungeecord.runnables.BungeeRunnable;
 import com.orbitmines.bungeecord.utils.ConsoleUtils;
-import com.orbitmines.discordbot.handlers.DiscordGroup;
+import com.orbitmines.discordbot.handlers.DiscordSquad;
 import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.data.PlayTimeData;
 import com.orbitmines.spigot.api.utils.Serializer;
@@ -222,7 +222,7 @@ public class PluginMessageHandler implements Listener {
                 }
                 case DISCORD_GROUP_ACTION: {
                     UUID owner = UUID.fromString(in.readUTF());
-                    DiscordGroup group = DiscordGroup.getGroup(owner);
+                    DiscordSquad group = DiscordSquad.getGroup(owner);
 
                     switch(in.readUTF()) {
                         case "CREATE": {
@@ -234,7 +234,7 @@ public class PluginMessageHandler implements Listener {
                             if (omp == null)
                                 break;
 
-                            group = new DiscordGroup(bungee.getDiscord(), owner);
+                            group = new DiscordSquad(bungee.getDiscord(), owner);
                             group.setup(omp);
                             break;
                         }

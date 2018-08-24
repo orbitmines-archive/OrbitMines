@@ -298,7 +298,7 @@ public class Hub extends OrbitMinesServer {
                 new ItemHoverActionBar(item, false) {
                     @Override
                     public String getMessage(OMPlayer omp) {
-                        return "§9§l" + omp.lang("Privé Discord Server", "Private Discord Server") + "§r §8- §e§l" + omp.lang("Rechtermuisklik", "Right Click");
+                        return "§9§lDiscord Squad§r §8- §e§l" + omp.lang("Rechtermuisklik", "Right Click");
                     }
                 };
             }

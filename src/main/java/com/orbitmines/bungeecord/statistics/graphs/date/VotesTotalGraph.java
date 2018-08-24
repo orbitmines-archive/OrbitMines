@@ -10,6 +10,7 @@ import com.orbitmines.api.database.Database;
 import com.orbitmines.api.database.Table;
 import com.orbitmines.api.database.tables.TableVotes;
 import com.orbitmines.api.database.tables.statistics.TableStatsVotes;
+import com.orbitmines.api.utils.NumberUtils;
 import com.orbitmines.bungeecord.runnables.BungeeRunnable;
 import com.orbitmines.bungeecord.statistics.graphs.Graph;
 import com.orbitmines.discordbot.DiscordBot;
@@ -49,7 +50,7 @@ public class VotesTotalGraph extends DateGraphUpdater {
         }
 
         @Override
-        protected int getCount(int count, int prevCount) {
+        protected long getCount(long count, long prevCount) {
             return count - getMainInstance().first;
         }
 
@@ -58,8 +59,8 @@ public class VotesTotalGraph extends DateGraphUpdater {
             return new Instance(type.getThisStatus(), Color.BLUE, mainCountColumn) {
                 @Override
                 protected String getDescription() {
-                    int count = getCount(last, 0);
-                    return count + " " + (count == 1 ? "Vote" : "Votes");
+                    long count = getCount(last, 0);
+                    return NumberUtils.locale(count) + " " + (count == 1 ? "Vote" : "Votes");
                 }
             };
         }
@@ -71,8 +72,8 @@ public class VotesTotalGraph extends DateGraphUpdater {
                 return new Instance(type.getLastStatus(), Color.TEAL, mainCountColumn) {
                     @Override
                     protected String getDescription() {
-                        int count = getCount(last, 0);
-                        return count + " " + (count == 1 ? "Vote" : "Votes");
+                        long count = getCount(last, 0);
+                        return NumberUtils.locale(count) + " " + (count == 1 ? "Vote" : "Votes");
                     }
 
                     @Override

@@ -2,7 +2,7 @@ package com.orbitmines.spigot.api.handlers.data;
 
 import com.orbitmines.api.*;
 import com.orbitmines.api.database.*;
-import com.orbitmines.discordbot.handlers.DiscordGroup;
+import com.orbitmines.discordbot.handlers.DiscordSquad;
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
@@ -86,7 +86,7 @@ public class DiscordGroupData extends Data {
     public void onRequest(UUID member) {
         OMPlayer omp = OMPlayer.getPlayer(uuid);
 
-        DiscordGroup group = DiscordGroup.getFromDatabase(OrbitMines.getInstance().getServerHandler().getDiscord(), this.uuid);
+        DiscordSquad group = DiscordSquad.getFromDatabase(OrbitMines.getInstance().getServerHandler().getDiscord(), this.uuid);
 
         if (member.toString().equals(this.uuid.toString())) {
             omp.sendMessage("Discord", Color.RED, "§7Je kan jezelf niet als een member toevoegen. :(", "§7You cannot add yourself as a member. :(");
@@ -117,7 +117,7 @@ public class DiscordGroupData extends Data {
     }
 
     public void onMemberAddition(CachedPlayer owner) {
-        DiscordGroup group = DiscordGroup.getFromDatabase(OrbitMines.getInstance().getServerHandler().getDiscord(), owner.getUUID());
+        DiscordSquad group = DiscordSquad.getFromDatabase(OrbitMines.getInstance().getServerHandler().getDiscord(), owner.getUUID());
 
         if (group.getMembers().contains(getUUID()))
             return;
@@ -131,7 +131,7 @@ public class DiscordGroupData extends Data {
     }
 
     public void onMemberRemoval(CachedPlayer member, boolean forced) {
-        DiscordGroup group = DiscordGroup.getFromDatabase(OrbitMines.getInstance().getServerHandler().getDiscord(), uuid);
+        DiscordSquad group = DiscordSquad.getFromDatabase(OrbitMines.getInstance().getServerHandler().getDiscord(), uuid);
 
         if (!group.getMembers().contains(member.getUUID()))
             return;
@@ -200,7 +200,7 @@ public class DiscordGroupData extends Data {
 
         OMPlayer omp = OMPlayer.getPlayer(this.uuid);
 
-        DiscordGroup group = DiscordGroup.getFromDatabase(OrbitMines.getInstance().getServerHandler().getDiscord(), friend.getUUID());
+        DiscordSquad group = DiscordSquad.getFromDatabase(OrbitMines.getInstance().getServerHandler().getDiscord(), friend.getUUID());
 
         forceUpdateFor(friend, new Message("Discord", Color.BLUE, omp.getName() + "§7 heeft je verzoek om " + group.getDisplayName() + " §7te joinen afgewezen.", omp.getName() + "§7 denied your request to join " + group.getDisplayName() + "§7."));
     }

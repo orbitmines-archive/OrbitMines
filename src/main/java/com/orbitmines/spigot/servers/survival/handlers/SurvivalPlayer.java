@@ -86,6 +86,15 @@ public class SurvivalPlayer extends OMPlayer {
 
         if (player.getInventory().getItem(7) == null)
             player.getInventory().setItem(7, new ItemStack(Material.COOKED_BEEF, 3));
+
+        /* Action Bars so New Players know how to join the world */
+        new ActionBar(this, () -> lang("§7§lGebruik §a§l/region random§7§l of §a§l/region§7§l om naar de wereld te gaan!", "§7§lUse §a§l/region random§7§l or §a§l/region§7§l to join the world!"), Integer.MAX_VALUE) {
+            @Override
+            public void onRun() {
+                if (!player.getWorld().getName().equals(survival.getLobbySpawn().getWorld().getName()))
+                    forceStop();
+            }
+        }.send();
     }
 
     @Override

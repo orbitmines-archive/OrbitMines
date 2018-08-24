@@ -24,7 +24,7 @@ public class DiscordGroupRequestDetailsGUI extends GUI implements DiscordGroupGU
         this.owner = owner;
         this.name = name;
 
-        newInventory(27, "§0§lPrivate Discord Servers");
+        newInventory(27, "§0§lDiscord Squads");
     }
 
     @Override

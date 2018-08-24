@@ -31,6 +31,9 @@ public class ActionBar {
         this.stay = stay;
     }
 
+    /* @Override to use */
+    public void onRun() { }
+
     public ScoreboardString getMessage() {
         return message;
     }
@@ -76,8 +79,10 @@ public class ActionBar {
                     actionBars.put(player, ActionBar.this);
 
                 /* Check if most recent actionbar is this actionbar */
-                if (actionBars.get(player) == ActionBar.this)
+                if (actionBars.get(player) == ActionBar.this) {
                     plugin.getNms().actionBar().send(Collections.singletonList(player.getPlayer()), message.getString());
+                    onRun();
+                }
             }
 
             @Override

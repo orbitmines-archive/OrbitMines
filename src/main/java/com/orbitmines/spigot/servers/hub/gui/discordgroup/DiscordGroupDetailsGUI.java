@@ -24,7 +24,7 @@ public class DiscordGroupDetailsGUI extends GUI implements DiscordGroupGUIInstan
         this.owner = owner;
         this.name = name;
 
-        newInventory(27, "§0§lPrivate Discord Servers");
+        newInventory(27, "§0§lDiscord Squads");
     }
 
     @Override
@@ -56,7 +56,7 @@ public class DiscordGroupDetailsGUI extends GUI implements DiscordGroupGUIInstan
             }
         });
 
-        add(1, 7, new ItemInstance(new ItemBuilder(Material.BARRIER, 1, omp.lang("§c§lVerlaat Server", "§c§lLeave Server")).build()) {
+        add(1, 7, new ItemInstance(new ItemBuilder(Material.BARRIER, 1, omp.lang("§c§lVerlaat Squad", "§c§lLeave Squad")).build()) {
             @Override
             public void onClick(InventoryClickEvent event, OMPlayer omp) {
                 omp.getPlayer().closeInventory();

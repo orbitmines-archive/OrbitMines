@@ -10,7 +10,7 @@ import com.orbitmines.spigot.servers.hub.gui.discordgroup.DiscordGroupGUI;
 
 public class CommandDiscordServer extends Command {
 
-    private String[] alias = { "/discordserver" };
+    private String[] alias = { "/discordsquad", "/discordserver" };
 
     public CommandDiscordServer() {
         super(null);

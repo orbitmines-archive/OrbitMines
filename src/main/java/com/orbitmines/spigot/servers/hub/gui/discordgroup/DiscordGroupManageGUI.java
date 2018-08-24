@@ -7,7 +7,7 @@ package com.orbitmines.spigot.servers.hub.gui.discordgroup;
 import com.orbitmines.api.*;
 import com.orbitmines.api.utils.uuid.UUIDUtils;
 import com.orbitmines.discordbot.DiscordBot;
-import com.orbitmines.discordbot.handlers.DiscordGroup;
+import com.orbitmines.discordbot.handlers.DiscordSquad;
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.OrbitMinesServer;
 import com.orbitmines.spigot.api.handlers.Data;
@@ -43,14 +43,14 @@ public class DiscordGroupManageGUI extends GUI {
         orbitMines = OrbitMines.getInstance();
         this.page = page;
 
-        newInventory(54, "§0§lPrivate Discord Servers");
+        newInventory(54, "§0§lDiscord Squads");
     }
 
     @Override
     protected boolean onOpen(OMPlayer omp) {
         DiscordGroupData data = (DiscordGroupData) omp.getData(Data.Type.DISCORD_GROUPS);
 
-        DiscordGroup group = DiscordGroup.getFromDatabase(orbitMines.getServerHandler().getDiscord(), omp.getUUID());
+        DiscordSquad group = DiscordSquad.getFromDatabase(orbitMines.getServerHandler().getDiscord(), omp.getUUID());
 
         {
             ItemBuilder item = new ItemBuilder(Material.BOOK, 1, omp.lang("§7§lUitnodigingen", "§7§lInvites"), "§7  " + omp.lang("Uitgaand", "Outgoing") + " (§9§l" + data.getSentRequests().size() + "§7)");
@@ -143,12 +143,12 @@ public class DiscordGroupManageGUI extends GUI {
                         if (!Character.isAlphabetic(c) && !Character.isDigit(c) && c != '_') {
                             event.setWillClose(false);
                             event.setWillDestroy(false);
-                            omp.sendMessage("Discord", Color.RED, "§7Je privé Discord server naam kan alleen maar bestaan uit letters en nummers.", "§7Your private Discord server name can only contain alphabetic and numeric characters.");
+                            omp.sendMessage("Discord", Color.RED, "§7Je Discord Squad naam kan alleen maar bestaan uit letters en nummers.", "§7Your Discord Squad name can only contain alphabetic and numeric characters.");
                             return;
                         }
                     }
 
-                    if (!DiscordGroup.exists(orbitMines.getServerHandler().getDiscord(), orbitMines.getServerHandler().getToken(), name)) {
+                    if (!DiscordSquad.exists(orbitMines.getServerHandler().getDiscord(), orbitMines.getServerHandler().getToken(), name)) {
                         event.setWillClose(true);
                         event.setWillDestroy(true);
 
@@ -162,7 +162,7 @@ public class DiscordGroupManageGUI extends GUI {
                     } else {
                         event.setWillClose(false);
                         event.setWillDestroy(false);
-                        omp.sendMessage("Discord", Color.RED, "§7Er is al een privé Discord server met die naam.", "§7There already is a private Discord server with that name.");
+                        omp.sendMessage("Discord", Color.RED, "§7Er is al een Discord Squad met die naam.", "§7There already is a Discord Squad with that name.");
                     }
                 }, new AnvilNms.AnvilCloseEvent() {
                     @Override

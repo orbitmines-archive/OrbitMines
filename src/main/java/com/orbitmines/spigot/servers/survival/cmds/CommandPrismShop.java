@@ -11,7 +11,7 @@ import com.orbitmines.spigot.servers.survival.gui.SurvivalPrismSolarShopGUI;
 
 public class CommandPrismShop extends Command {
 
-    private String[] alias = { "/prismshop" };
+    private String[] alias = { "/prismshop", "/prismsshop" };
 
     public CommandPrismShop() {
         super(Server.SURVIVAL);

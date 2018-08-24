@@ -1,10 +1,9 @@
 package com.orbitmines.api.database;
 
 import com.orbitmines.api.database.tables.*;
+import com.orbitmines.api.database.tables.kitpvp.TableKitPvPKitStats;
 import com.orbitmines.api.database.tables.kitpvp.TableKitPvPPlayers;
-import com.orbitmines.api.database.tables.statistics.TableStatsOnline;
-import com.orbitmines.api.database.tables.statistics.TableStatsUnique;
-import com.orbitmines.api.database.tables.statistics.TableStatsVotes;
+import com.orbitmines.api.database.tables.statistics.*;
 import com.orbitmines.api.database.tables.survival.TableSurvivalClaim;
 import com.orbitmines.api.database.tables.survival.TableSurvivalHomes;
 import com.orbitmines.api.database.tables.survival.TableSurvivalPlayers;
@@ -45,6 +44,8 @@ public class Table {
     public static TableStatsOnline STATS_ONLINE;
     public static TableStatsUnique STATS_UNIQUE;
     public static TableStatsVotes STATS_VOTES;
+    public static TableStatsPlayTime STATS_PLAY_TIME;
+    public static TableStatsTPS STATS_TPS;
 
     /* Survival */
     public static TableSurvivalPlayers SURVIVAL_PLAYERS;
@@ -54,6 +55,7 @@ public class Table {
 
     /* KitPvP */
     public static TableKitPvPPlayers KITPVP_PLAYERS;
+    public static TableKitPvPKitStats KITPVP_KIT_STATS;
 
     static {
         PLAYERS = new TablePlayers();
@@ -81,6 +83,8 @@ public class Table {
         STATS_ONLINE = new TableStatsOnline();
         STATS_UNIQUE = new TableStatsUnique();
         STATS_VOTES = new TableStatsVotes();
+        STATS_PLAY_TIME = new TableStatsPlayTime();
+        STATS_TPS = new TableStatsTPS();
 
         SURVIVAL_PLAYERS = new TableSurvivalPlayers();
         SURVIVAL_CLAIM = new TableSurvivalClaim();
@@ -88,6 +92,7 @@ public class Table {
         SURVIVAL_WARPS = new TableSurvivalWarps();
 
         KITPVP_PLAYERS = new TableKitPvPPlayers();
+        KITPVP_KIT_STATS = new TableKitPvPKitStats();
     }
 
     private final String name;

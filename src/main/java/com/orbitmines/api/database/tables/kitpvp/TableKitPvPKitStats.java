@@ -6,15 +6,15 @@ import com.orbitmines.api.database.Table;
 /*
 * OrbitMines - @author Fadi Shawki - 2017
 */
-public class TableKitPvPPlayers extends Table {
+public class TableKitPvPKitStats extends Table {
 
     public static final Column UUID = new Column("UUID", Column.Type.VARCHAR, 36);
-    public static final Column COINS = new Column("Coins", Column.Type.INT);
-    public static final Column EXPERIENCE = new Column("Experience", Column.Type.INT);
+    public static final Column KIT_ID = new Column("KitId", Column.Type.BIGINT);
+    public static final Column UNLOCKED_LEVEL = new Column("UnlockedLevel", Column.Type.INT);
     public static final Column KILLS = new Column("Kills", Column.Type.INT);
     public static final Column DEATHS = new Column("Deaths", Column.Type.INT);
 
-    public TableKitPvPPlayers() {
-        super("KitPvPPlayers", UUID, COINS, EXPERIENCE, KILLS, DEATHS);
+    public TableKitPvPKitStats() {
+        super("KitPvPKitStats", UUID, KIT_ID, UNLOCKED_LEVEL, KILLS, DEATHS);
     }
 }

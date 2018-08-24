@@ -36,7 +36,8 @@ public abstract class Data {
         LOOT,
         PERIOD_LOOT,
 
-        SURVIVAL;
+        SURVIVAL,
+        KITPVP;
 
     }
 }

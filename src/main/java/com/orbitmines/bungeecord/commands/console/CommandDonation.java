@@ -70,11 +70,11 @@ public class CommandDonation extends ConsoleCommand {
 
         TextChannel channel = discord.getChannel(bungee.getToken(), DiscordBot.ChannelType.donations);
 
-        channel.sendMessage(DiscordUtils.getDisplay(discord, bungee.getToken(), uuid) + " has donated **" + String.format("%.2f", price) + " " + currency + "** to OrbitMines!").queue();
+        channel.sendMessage(DiscordUtils.getDisplay(discord, bungee.getToken(), uuid) + " has made a donation to OrbitMines!").queue();
 
         EmbedBuilder builder = new EmbedBuilder();
         builder.setAuthor("Donation by " + name);
-        builder.setDescription(String.format("%.2f", price) + " " + currency);
+//        builder.setDescription(String.format("%.2f", price) + " " + currency);
         builder.setColor(ColorUtils.from(Color.TEAL));
 
         builder.addField("Item", ChatColor.stripColor(donation.getTitle()), true);

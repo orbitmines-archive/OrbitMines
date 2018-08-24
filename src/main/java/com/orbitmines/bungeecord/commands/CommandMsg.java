@@ -99,7 +99,7 @@ public class CommandMsg extends Command {
         String message = stringBuilder.toString();
 
         omp.sendMessage("§7§l" + omp.lang("Jij", "You") + " §7» " + omp2.getRankPrefix() + omp2.getName() + " §f§l" + message);
-        omp2.sendMessage(omp.getRankPrefix() + omp.getName() + " §7» §7§l" + omp.lang("Jij", "You") + " §f§l" + message);
+        omp2.sendMessage(omp.getRankPrefix() + omp.getName() + " §7» §7§l" + omp2.lang("Jij", "You") + " §f§l" + message);
 
         omp.setLastMsg(omp2);
         omp2.setLastMsg(omp);

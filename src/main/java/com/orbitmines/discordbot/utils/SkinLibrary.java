@@ -51,6 +51,13 @@ public class SkinLibrary {
         if (name == null)
             return;
 
+        setupEmote(guild, uuid, name);
+    }
+
+    public static void setupEmote(Guild guild, UUID uuid, String name) {
+        if (emoteCache.contains(uuid.toString()))
+            return;
+
         deleteExistingEmotes(guild, uuid);
 
         try {

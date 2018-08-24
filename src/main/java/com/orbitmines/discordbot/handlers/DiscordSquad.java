@@ -23,9 +23,9 @@ import net.dv8tion.jda.core.managers.GuildController;
 import java.io.File;
 import java.util.*;
 
-public class DiscordGroup {
+public class DiscordSquad {
 
-    private static final List<DiscordGroup> groups = new ArrayList<>();
+    private static final List<DiscordSquad> groups = new ArrayList<>();
 
     public static final int MAX_NAME_CHARACTERS = 100;
 
@@ -43,7 +43,7 @@ public class DiscordGroup {
     private Color color;
     private List<UUID> members;
 
-    public DiscordGroup(DiscordBot discord, UUID owner) {
+    public DiscordSquad(DiscordBot discord, UUID owner) {
         groups.add(this);
 
         this.discord = discord;
@@ -56,7 +56,7 @@ public class DiscordGroup {
         this.members = new ArrayList<>();
     }
 
-    public DiscordGroup(DiscordBot discord, UUID owner, long categoryId, long textChannelId, long voiceChannelId, long roleId, String name, Color color, List<UUID> members, boolean list) {
+    public DiscordSquad(DiscordBot discord, UUID owner, long categoryId, long textChannelId, long voiceChannelId, long roleId, String name, Color color, List<UUID> members, boolean list) {
         if (list)
             groups.add(this);
 
@@ -105,7 +105,7 @@ public class DiscordGroup {
 
         /* Only update when the category name changed */
         if (!category.getName().equals(categoryName))
-            category.getManager().setName(categoryName).queue(channel -> discord.getChannel(BotToken.DEFAULT, DiscordBot.ChannelType.private_server_log).sendMessage("Successfully changed " + DiscordUtils.getDisplay(discord, BotToken.DEFAULT, this.owner) + "'s Discord Server Category to » **" + categoryName + "**.").queue());
+            category.getManager().setName(categoryName).queue(channel -> discord.getChannel(BotToken.DEFAULT, DiscordBot.ChannelType.private_server_log).sendMessage("Successfully changed " + DiscordUtils.getDisplay(discord, BotToken.DEFAULT, this.owner) + "'s Discord Squad Category to » **" + categoryName + "**.").queue());
     }
 
     public void setName(String name) {
@@ -113,7 +113,7 @@ public class DiscordGroup {
         getRole().getManager().setName(name).queue(role -> {
             getTextChannel().getManager().setName(name.toLowerCase()).queue(channel -> {
                 getVoiceChannel().getManager().setName(name).queue(channel2 -> {
-                    discord.getChannel(BotToken.DEFAULT, DiscordBot.ChannelType.private_server_log).sendMessage("Successfully changed " + DiscordUtils.getDisplay(discord, BotToken.DEFAULT, this.owner) + "'s Discord Server Name to " + getRole().getAsMention() + " » " + getTextChannel().getAsMention() + ".").queue();
+                    discord.getChannel(BotToken.DEFAULT, DiscordBot.ChannelType.private_server_log).sendMessage("Successfully changed " + DiscordUtils.getDisplay(discord, BotToken.DEFAULT, this.owner) + "'s Discord Squad Name to " + getRole().getAsMention() + " » " + getTextChannel().getAsMention() + ".").queue();
                     getTextChannel().sendMessage("Successfully changed name to " + getRole().getAsMention() + " » " + getTextChannel().getAsMention() + ".").queue();
                 });
             });
@@ -130,7 +130,7 @@ public class DiscordGroup {
         this.color = color;
         getRole().getManager().setColor(color.getAwtColor()).queue(role -> {
             String mention = discord.getRole(BotToken.DEFAULT, DiscordBot.CustomRole.valueOf(color.toString())).getAsMention();
-            discord.getChannel(BotToken.DEFAULT, DiscordBot.ChannelType.private_server_log).sendMessage("Successfully changed " + DiscordUtils.getDisplay(discord, BotToken.DEFAULT, this.owner) + "'s Discord Server Color to " + mention + " » " + getRole().getAsMention() + ".").queue();
+            discord.getChannel(BotToken.DEFAULT, DiscordBot.ChannelType.private_server_log).sendMessage("Successfully changed " + DiscordUtils.getDisplay(discord, BotToken.DEFAULT, this.owner) + "'s Discord Squad Color to " + mention + " » " + getRole().getAsMention() + ".").queue();
             getTextChannel().sendMessage("Successfully changed color to " + mention + " » " + getRole().getAsMention() + ".").queue();
         });
         Database.get().update(Table.DISCORD_GROUP, new Set(TableDiscordGroup.COLOR, this.color.toString()), new Where(TableDiscordGroup.UUID, this.owner.toString()));
@@ -229,7 +229,7 @@ public class DiscordGroup {
     }
 
     public void setup(BungeePlayer omp) {
-        omp.sendMessage("Discord", Color.BLUE, "Privé Discord server aan het maken...", "Setting up private Discord server...");
+        omp.sendMessage("Discord", Color.BLUE, "Discord Squad aan het maken...", "Setting up Discord Squad...");
 
         Guild guild = getGuild();
         GuildController controller = guild.getController();
@@ -276,7 +276,7 @@ public class DiscordGroup {
                             OrbitMinesBungee.getBungee().getMessageHandler().dataTransfer(PluginMessage.UPDATE_DISCORD_GROUP_DATA, omp.getPlayer(), omp.getUUID().toString());
                         }
 
-                        discord.getChannel(BotToken.DEFAULT, DiscordBot.ChannelType.private_server_log).sendMessage("Successfully created **Private Discord Server** for " + DiscordUtils.getDisplay(discord, BotToken.DEFAULT, this.owner) + " » " + role.getAsMention() + " » " + getTextChannel().getAsMention() + ".").queue();
+                        discord.getChannel(BotToken.DEFAULT, DiscordBot.ChannelType.private_server_log).sendMessage("Successfully created **Discord Squad** for " + DiscordUtils.getDisplay(discord, BotToken.DEFAULT, this.owner) + " » " + role.getAsMention() + " » " + getTextChannel().getAsMention() + ".").queue();
 
                         TextChannel server = getTextChannel();
 
@@ -287,29 +287,29 @@ public class DiscordGroup {
                         User user = discord.getLinkedUser(BotToken.DEFAULT, omp.getUUID());
 
                         server.sendMessage("Welcome to " + role.getAsMention() + " " + user.getAsMention() + "!").queue();
-                        server.sendMessage(" • Use **/discordserver** in game to manage your server").queue();
-                        server.sendMessage(" • In order to graphType in your server graphType **!<message>** in game.").queue();
+                        server.sendMessage(" • Use **/discordsquad** in game to manage your squad").queue();
+                        server.sendMessage(" • In order to graphType in your squad graphType **!<message>** in game.").queue();
                         server.sendMessage(" • Use **!list** in Discord to view all online players in game.").queue();
 
-                        omp.sendMessage("Discord", Color.BLUE, "Je §9§lPrivé Discord Server§7 staat klaar!", "Your §9§lPrivate Discord Server§7 is ready for use!");
+                        omp.sendMessage("Discord", Color.BLUE, "Je §9§lDiscord Squad§7 staat klaar!", "Your §9§lDiscord Squad§7 is ready for use!");
                     }, throwable -> {
                         throwable.printStackTrace();
-                        omp.sendMessage("Discord", Color.RED, "Er is een probleem met het maken van je Discord server.", "An error occurred while creating your Discord server.");
+                        omp.sendMessage("Discord", Color.RED, "Er is een probleem met het maken van je Discord Squad.", "An error occurred while creating your Discord Squad.");
                         broadcastError("Voice Channel");
                     });
                 }, throwable -> {
                     throwable.printStackTrace();
-                    omp.sendMessage("Discord", Color.RED, "Er is een probleem met het maken van je Discord server.", "An error occurred while creating your Discord server.");
+                    omp.sendMessage("Discord", Color.RED, "Er is een probleem met het maken van je Discord Squad.", "An error occurred while creating your Discord Squad.");
                     broadcastError("Text Channel");
                 });
             }, throwable -> {
                 throwable.printStackTrace();
-                omp.sendMessage("Discord", Color.RED, "Er is een probleem met het maken van je Discord server.", "An error occurred while creating your Discord server.");
+                omp.sendMessage("Discord", Color.RED, "Er is een probleem met het maken van je Discord Squad.", "An error occurred while creating your Discord Squad.");
                 broadcastError("Category");
             });
         }, throwable -> {
             throwable.printStackTrace();
-            omp.sendMessage("Discord", Color.RED, "Er is een probleem met het maken van je Discord server.", "An error occurred while creating your Discord server.");
+            omp.sendMessage("Discord", Color.RED, "Er is een probleem met het maken van je Discord Squad.", "An error occurred while creating your Discord Squad.");
             broadcastError("Role");
         });
     }
@@ -342,25 +342,25 @@ public class DiscordGroup {
     }
 
     private void broadcastError(String type) {
-        discord.getChannel(BotToken.DEFAULT, DiscordBot.ChannelType.private_server_log).sendMessage(discord.getEmote(BotToken.DEFAULT, DiscordBot.CustomEmote.barrier).getAsMention() + " " + discord.getRole(BotToken.DEFAULT, StaffRank.OWNER).getAsMention() + ", " + discord.getRole(BotToken.DEFAULT, StaffRank.DEVELOPER).getAsMention() + " » An error occurred while creating a **" + type + "** for " + DiscordUtils.getDisplay(discord, BotToken.DEFAULT, this.owner) + "'s **Private Discord Server**.").queue();
+        discord.getChannel(BotToken.DEFAULT, DiscordBot.ChannelType.private_server_log).sendMessage(discord.getEmote(BotToken.DEFAULT, DiscordBot.CustomEmote.barrier).getAsMention() + " " + discord.getRole(BotToken.DEFAULT, StaffRank.OWNER).getAsMention() + ", " + discord.getRole(BotToken.DEFAULT, StaffRank.DEVELOPER).getAsMention() + " » An error occurred while creating a **" + type + "** for " + DiscordUtils.getDisplay(discord, BotToken.DEFAULT, this.owner) + "'s **Discord Squad**.").queue();
     }
 
-    public static List<DiscordGroup> getGroups() {
+    public static List<DiscordSquad> getGroups() {
         return groups;
     }
 
-    public static DiscordGroup getGroup(UUID owner) {
-        for (DiscordGroup group : groups) {
+    public static DiscordSquad getGroup(UUID owner) {
+        for (DiscordSquad group : groups) {
             if (group.getOwnerUUID().toString().equals(owner.toString()))
                 return group;
         }
         return null;
     }
 
-    public static List<DiscordGroup> getGroups(UUID member) {
-        List<DiscordGroup> list = new ArrayList<>();
+    public static List<DiscordSquad> getGroups(UUID member) {
+        List<DiscordSquad> list = new ArrayList<>();
 
-        for (DiscordGroup group : groups) {
+        for (DiscordSquad group : groups) {
             if (group.getOwnerUUID().toString().equals(member.toString()) || group.getMembers().contains(member))
                 list.add(group);
         }
@@ -368,15 +368,15 @@ public class DiscordGroup {
         return list;
     }
 
-    public static DiscordGroup getGroup(TextChannel textChannel) {
-        for (DiscordGroup group : groups) {
+    public static DiscordSquad getGroup(TextChannel textChannel) {
+        for (DiscordSquad group : groups) {
             if (group.getTextChannel().getId().equals(textChannel.getId()))
                 return group;
         }
         return null;
     }
 
-    public static DiscordGroup getSelected(UUID member) {
+    public static DiscordSquad getSelected(UUID member) {
         String selectedString = Database.get().getString(Table.DISCORD_GROUP_DATA, TableDiscordGroupData.SELECTED, new Where(TableDiscordGroupData.UUID, member.toString()));
 
         if (selectedString.equals(""))
@@ -396,11 +396,11 @@ public class DiscordGroup {
             Color color = Color.valueOf(entry.get(TableDiscordGroup.COLOR));
             List<UUID> members = Serializer.parseUUIDList(entry.get(TableDiscordGroup.MEMBERS));
 
-            new DiscordGroup(discord, owner, categoryId, textChannelId, voiceChannelId, roleId, name, color, members, true);
+            new DiscordSquad(discord, owner, categoryId, textChannelId, voiceChannelId, roleId, name, color, members, true);
         }
     }
 
-    public static DiscordGroup getFromDatabase(DiscordBot discord, UUID owner) {
+    public static DiscordSquad getFromDatabase(DiscordBot discord, UUID owner) {
         if (!Database.get().contains(Table.DISCORD_GROUP, TableDiscordGroup.UUID, new Where(TableDiscordGroup.UUID, owner.toString())))
             return null;
 
@@ -414,7 +414,7 @@ public class DiscordGroup {
         Color color = Color.valueOf(entry.get(TableDiscordGroup.COLOR));
         List<UUID> members = Serializer.parseUUIDList(entry.get(TableDiscordGroup.MEMBERS));
 
-        DiscordGroup group = new DiscordGroup(discord, owner, categoryId, textChannelId, voiceChannelId, roleId, name, color, members, false);
+        DiscordSquad group = new DiscordSquad(discord, owner, categoryId, textChannelId, voiceChannelId, roleId, name, color, members, false);
         groups.remove(group);
         return group;
     }
@@ -431,8 +431,8 @@ public class DiscordGroup {
         return false;
     }
 
-    public static List<DiscordGroup> getGroupsFromDatabase(DiscordBot discord, UUID member) {
-        List<DiscordGroup> list = new ArrayList<>();
+    public static List<DiscordSquad> getGroupsFromDatabase(DiscordBot discord, UUID member) {
+        List<DiscordSquad> list = new ArrayList<>();
 
         for (Map<Column, String> entry : Database.get().getEntries(Table.DISCORD_GROUP)) {
             UUID owner = UUID.fromString(entry.get(TableDiscordGroup.UUID));
@@ -448,7 +448,7 @@ public class DiscordGroup {
             String name = entry.get(TableDiscordGroup.NAME);
             Color color = Color.valueOf(entry.get(TableDiscordGroup.COLOR));
 
-            list.add(new DiscordGroup(discord, owner, categoryId, textChannelId, voiceChannelId, roleId, name, color, members, false));
+            list.add(new DiscordSquad(discord, owner, categoryId, textChannelId, voiceChannelId, roleId, name, color, members, false));
         }
 
         return list;

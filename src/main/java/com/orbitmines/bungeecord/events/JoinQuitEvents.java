@@ -39,7 +39,6 @@ public class JoinQuitEvents implements Listener {
         if (active != null) {
             event.setCancelled(true);
             event.setCancelReason(active.getBanString(player.getLanguage()));
-            return;
         }
     }
 

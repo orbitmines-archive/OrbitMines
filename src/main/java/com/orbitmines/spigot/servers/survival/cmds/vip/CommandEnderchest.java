@@ -14,7 +14,7 @@ public class CommandEnderchest extends VipCommand {
     private String[] alias = { "/enderchest" };
 
     public CommandEnderchest() {
-        super(Server.SURVIVAL, VipRank.EMERALD);
+        super(Server.SURVIVAL, VipRank.DIAMOND);
     }
 
     @Override

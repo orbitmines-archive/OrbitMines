@@ -7,7 +7,7 @@ import com.orbitmines.bungeecord.OrbitMinesBungee;
 import com.orbitmines.bungeecord.handlers.BungeePlayer;
 import com.orbitmines.bungeecord.handlers.cmd.Command;
 import com.orbitmines.discordbot.DiscordBot;
-import com.orbitmines.discordbot.handlers.DiscordGroup;
+import com.orbitmines.discordbot.handlers.DiscordSquad;
 import com.orbitmines.discordbot.utils.BotToken;
 import com.orbitmines.discordbot.utils.DiscordBungeeUtils;
 import com.orbitmines.discordbot.utils.DiscordUtils;
@@ -62,10 +62,10 @@ public class PlayerChatEvent implements Listener {
                 /* Discord Channel message */
                 event.setCancelled(true);
 
-                DiscordGroup selected = DiscordGroup.getSelected(omp.getUUID());
+                DiscordSquad selected = DiscordSquad.getSelected(omp.getUUID());
 
                 if (selected == null) {
-                    omp.sendMessage("Discord", Color.RED, "Je moet een §9/discordserver §7selecteren.", "You have to select a §9/discordserver§7.");
+                    omp.sendMessage("Discord", Color.RED, "Je moet een §9/discordsquad §7selecteren.", "You have to select a §9/discordsquad§7.");
                     return;
                 }
 

@@ -9,7 +9,7 @@ import com.orbitmines.api.StaffRank;
 import com.orbitmines.bungeecord.handlers.BungeePlayer;
 import com.orbitmines.discordbot.DiscordBot;
 import com.orbitmines.discordbot.handlers.Command;
-import com.orbitmines.discordbot.handlers.DiscordGroup;
+import com.orbitmines.discordbot.handlers.DiscordSquad;
 import com.orbitmines.discordbot.utils.BotToken;
 import com.orbitmines.discordbot.utils.DiscordBungeeUtils;
 import net.dv8tion.jda.core.entities.Message;
@@ -59,7 +59,7 @@ public class CommandList extends Command {
             /* Handled in CommandListServer */
             return;
 
-        DiscordGroup group = DiscordGroup.getGroup(channel);
+        DiscordSquad group = DiscordSquad.getGroup(channel);
 
         if (group != null) {
             send(channel, group.getName(), group.getPlayers());
