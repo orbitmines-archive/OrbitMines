@@ -24,7 +24,7 @@ public enum Donation {
 
     SOLARS_1500(12, 5.00, Icon.OM_ICON, "§e§l1,500 Solars", ""),
     SOLARS_4000(13, 10.00, Icon.OM_ICON, "§e§l4,000 Solars", ""),
-    SOLARS_12500(14, 25.00, Icon.OM_ICON, "§e§l112,500 Solars", ""),
+    SOLARS_12500(14, 25.00, Icon.OM_ICON, "§e§l12,500 Solars", ""),
 
     SURVIVAL_CLAIMBLOCKS_10000(15, 5.00, Server.SURVIVAL, Icon.SURVIVAL, "§9§l10,000 Claimblocks", ""),
     SURVIVAL_CLAIMBLOCKS_25000(16, 10.00, Server.SURVIVAL, Icon.SURVIVAL, "§9§l25,000 Claimblocks", ""),

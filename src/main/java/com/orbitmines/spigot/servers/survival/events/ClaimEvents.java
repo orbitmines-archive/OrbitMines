@@ -31,7 +31,6 @@ import org.bukkit.event.world.StructureGrowEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.Dispenser;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffect;
@@ -39,7 +38,9 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 /*
 * OrbitMines - @author Fadi Shawki - 2017
@@ -93,7 +94,7 @@ public class ClaimEvents implements Listener {
         if (event.getCause() != PlayerTeleportEvent.TeleportCause.NETHER_PORTAL)
             return;
 
-        if (!event.getTo().getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(event.getTo().getWorld()))
             return;
 
         Location to = event.getTo();
@@ -136,7 +137,7 @@ public class ClaimEvents implements Listener {
 
     @EventHandler
     public void onInteract(PlayerInteractEntityEvent event) {
-        if (!event.getRightClicked().getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(event.getRightClicked().getWorld()))
             return;
 
         SurvivalPlayer omp = SurvivalPlayer.getPlayer(event.getPlayer());
@@ -215,7 +216,7 @@ public class ClaimEvents implements Listener {
 
         Entity entity = event.getCaught();
 
-        if (!entity.getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(entity.getWorld()))
             return;
 
         if (entity instanceof ArmorStand || entity instanceof Animals) {
@@ -231,8 +232,11 @@ public class ClaimEvents implements Listener {
     }
 
     @EventHandler
-    public void onPickup(PlayerPickupItemEvent event) {
-        SurvivalPlayer omp = SurvivalPlayer.getPlayer(event.getPlayer());
+    public void onPickup(EntityPickupItemEvent event) {
+        if (!(event.getEntity() instanceof Player))
+            return;
+
+        SurvivalPlayer omp = SurvivalPlayer.getPlayer((Player) event.getEntity());
 
         Item item = event.getItem();
         List<MetadataValue> data = item.getMetadata("SURVIVAL_PROTECTED");
@@ -260,7 +264,7 @@ public class ClaimEvents implements Listener {
 
     @EventHandler
     public void onBucketEmpty(PlayerBucketEmptyEvent event) {
-        if (!event.getBlockClicked().getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(event.getBlockClicked().getWorld()))
             return;
 
         SurvivalPlayer omp = SurvivalPlayer.getPlayer(event.getPlayer());
@@ -298,7 +302,7 @@ public class ClaimEvents implements Listener {
 
     @EventHandler
     public void onBucketFill(PlayerBucketFillEvent event) {
-        if (!event.getBlockClicked().getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(event.getBlockClicked().getWorld()))
             return;
 
         SurvivalPlayer omp = SurvivalPlayer.getPlayer(event.getPlayer());
@@ -319,7 +323,7 @@ public class ClaimEvents implements Listener {
         if (action == Action.LEFT_CLICK_AIR || action == Action.PHYSICAL)
             return;
 
-        if (!event.getPlayer().getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(event.getPlayer().getWorld()))
             return;
 
         Block block = event.getClickedBlock();
@@ -425,7 +429,7 @@ public class ClaimEvents implements Listener {
                 Claim claim = survival.getClaimHandler().getClaimAt(block.getLocation(), false, omp.getLastClaim());
                 omp.setLastClaim(claim);
 
-                if (claim != null && !claim.canAccess(omp))
+                if (claim != null && !claim.canAccess(omp, true))
                     event.setCancelled(true);
 
                 return;
@@ -521,7 +525,7 @@ public class ClaimEvents implements Listener {
     public void onBreak(BlockBreakEvent event) {
         Player p = event.getPlayer();
 
-        if (!p.getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(p.getWorld()))
             return;
 
         Block block = event.getBlock();
@@ -535,7 +539,7 @@ public class ClaimEvents implements Listener {
     public void onPlace(BlockPlaceEvent event) {
         Player p = event.getPlayer();
 
-        if (!p.getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(p.getWorld()))
             return;
 
         Block block = event.getBlock();
@@ -551,7 +555,7 @@ public class ClaimEvents implements Listener {
     public void onMultiPlace(BlockMultiPlaceEvent event) {
         Player p = event.getPlayer();
 
-        if (!p.getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(p.getWorld()))
             return;
 
         SurvivalPlayer omp = SurvivalPlayer.getPlayer(p);
@@ -571,7 +575,7 @@ public class ClaimEvents implements Listener {
         if (event.getDirection() == BlockFace.DOWN)
             return;
 
-        if (!event.getBlock().getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(event.getBlock().getWorld()))
             return;
 
         Block piston = event.getBlock();
@@ -649,7 +653,7 @@ public class ClaimEvents implements Listener {
         if (event.getDirection() == BlockFace.UP)
             return;
 
-        if (!event.getBlock().getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(event.getBlock().getWorld()))
             return;
 
         Block piston = event.getBlock();
@@ -692,7 +696,7 @@ public class ClaimEvents implements Listener {
         if (event.getSource().getType() != Material.FIRE)
             return;
 
-        if (!event.getBlock().getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(event.getBlock().getWorld()))
             return;
 
         if (Region.isInRegion(event.getBlock().getLocation()) || survival.getClaimHandler().getClaimAt(event.getBlock().getLocation(), false, null) != null)
@@ -701,7 +705,7 @@ public class ClaimEvents implements Listener {
 
     @EventHandler
     public void onBurn(BlockBurnEvent event) {
-        if (!event.getBlock().getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(event.getBlock().getWorld()))
             return;
 
         if (Region.isInRegion(event.getBlock().getLocation()) || survival.getClaimHandler().getClaimAt(event.getBlock().getLocation(), false, null) != null)
@@ -715,7 +719,7 @@ public class ClaimEvents implements Listener {
         if (event.getFace() == BlockFace.DOWN)
             return;
 
-        if (!event.getBlock().getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(event.getBlock().getWorld()))
             return;
 
         Block to = event.getToBlock();
@@ -741,11 +745,11 @@ public class ClaimEvents implements Listener {
 
     @EventHandler
     public void onDispense(BlockDispenseEvent event) {
-        if (!event.getBlock().getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(event.getBlock().getWorld()))
             return;
 
         Block from = event.getBlock();
-        Dispenser dispenser = new Dispenser(Material.DISPENSER, from.getData());
+        org.bukkit.block.data.type.Dispenser dispenser = (org.bukkit.block.data.type.Dispenser) from.getBlockData();
 
         Block to = from.getRelative(dispenser.getFacing());
 
@@ -768,7 +772,7 @@ public class ClaimEvents implements Listener {
 
     @EventHandler
     public void onTreeGrow(StructureGrowEvent event) {
-        if (!event.getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(event.getWorld()))
             return;
 
         Location root = event.getLocation();
@@ -847,7 +851,7 @@ public class ClaimEvents implements Listener {
 
     @EventHandler
     public void onHangingBreak(HangingBreakEvent e) {
-        if (!e.getEntity().getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(e.getEntity().getWorld()))
             return;
 
         if (e.getCause() == HangingBreakEvent.RemoveCause.EXPLOSION) {
@@ -875,7 +879,7 @@ public class ClaimEvents implements Listener {
 
     @EventHandler
     public void onHangingPlace(HangingPlaceEvent event) {
-        if (!event.getEntity().getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(event.getEntity().getWorld()))
             return;
 
         SurvivalPlayer omp = SurvivalPlayer.getPlayer(event.getPlayer());
@@ -923,7 +927,7 @@ public class ClaimEvents implements Listener {
             }
         }
 
-        if (!e.getEntity().getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(e.getEntity().getWorld()))
             return;
 
         if (!(e instanceof EntityDamageByEntityEvent))
@@ -960,7 +964,7 @@ public class ClaimEvents implements Listener {
 
                 if (claim != null) {
                     if (omp == null) {
-                        if (event.getEntity() instanceof Villager && damager != null && damager instanceof Zombie)
+                        if (event.getEntity() instanceof Villager && damager instanceof Zombie)
                             return;
 
                         event.setCancelled(true);
@@ -1022,7 +1026,7 @@ public class ClaimEvents implements Listener {
 
                     event.setCancelled(true);
 
-                    if (damager != null && damager instanceof Projectile)
+                    if (damager instanceof Projectile)
                         damager.remove();
 
                     return;
@@ -1067,7 +1071,7 @@ public class ClaimEvents implements Listener {
         if (event.getVehicle() == null)
             return;
 
-        if (!event.getVehicle().getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(event.getVehicle().getWorld()))
             return;
 
         Player attacker = null;
@@ -1164,7 +1168,7 @@ public class ClaimEvents implements Listener {
 
     @EventHandler
     public void onEntityBlockForm(EntityBlockFormEvent event) {
-        if (!event.getBlock().getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(event.getBlock().getWorld()))
             return;
 
         if (!(event.getEntity() instanceof Player))
@@ -1178,7 +1182,7 @@ public class ClaimEvents implements Listener {
 
     @EventHandler
     public void onEntityChangeBlock(EntityChangeBlockEvent event) {
-        if (!event.getBlock().getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(event.getBlock().getWorld()))
             return;
 
         Block block = event.getBlock();
@@ -1253,7 +1257,7 @@ public class ClaimEvents implements Listener {
         if (event.getBlock().getType() != Material.FARMLAND)
             return;
 
-        if (!event.getBlock().getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(event.getBlock().getWorld()))
             return;
 
         for (Entity passenger : event.getEntity().getPassengers()) {
@@ -1297,7 +1301,7 @@ public class ClaimEvents implements Listener {
 //    private Map<Block, SurvivalPlayer> toIgnite = new HashMap<>();
 
     private void handleExplosion(/*Entity en, */Location location, List<Block> blocks) {
-        if (!location.getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(location.getWorld()))
             return;
 
         Claim cached = null;

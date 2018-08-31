@@ -50,32 +50,64 @@ public class ClaimGUI extends GUI {
         this.claim = claim;
         this.page = page;
 
-        newInventory(54, "§0§lClaim #" + NumberUtils.locale(claim.getId()));
+        newInventory(54, "§0§l" + claim.getName());
     }
 
     @Override
     protected boolean onOpen(OMPlayer player) {
         SurvivalPlayer omp = (SurvivalPlayer) player;
 
-        int x1 = claim.getCorner1().getBlockX();
-        int x2 = claim.getCorner2().getBlockX();
-        int z1 = claim.getCorner1().getBlockZ();
-        int z2 = claim.getCorner2().getBlockZ();
+        add(0, 4, new ItemInstance(getClaimIcon(omp, claim).addLore("").addLore(omp.lang("§aKlik hier om te hernoemen.", "§aClick here to rename.")).build()) {
+            @Override
+            public void onClick(InventoryClickEvent e, OMPlayer omp) {
+                AnvilNms anvil = survival.getOrbitMines().getNms().anvilGui(omp.getPlayer(), (event) -> {
+                    if (event.getSlot() != AnvilNms.AnvilSlot.OUTPUT) {
+                        event.setWillClose(false);
+                        event.setWillDestroy(false);
+                        return;
+                    }
 
-        int width = (Math.abs(x1 - x2) + 1);
-        int height = (Math.abs(z1 - z2) + 1);
-        int area = width * height;
+                    String claimName = event.getName();
 
-        int x = x1 > x2 ? x1 - (width / 2) : x1 + (width / 2);
-        int z = z1 > z2 ? z1 - (height / 2) : z1 + (height / 2);
+                    if (claimName.length() > 20) {
+                        event.setWillClose(false);
+                        event.setWillDestroy(false);
+                        omp.sendMessage("Claim", Color.RED, "§7Je mag maximaal maar §a20 karakters§7 gebruiken.", "§7You're only allowed to use §a20 characters§7.");
+                        return;
+                    }
 
-        add(0, 4, new EmptyItemInstance(new ItemBuilder(Material.STONE_HOE, 1, "§a§lClaim #" + NumberUtils.locale(claim.getId()),
-                "§7" + omp.lang("Gemaakt op", "Created on") + ": §a§l" + DateUtils.SIMPLE_FORMAT.format(claim.getCreatedOn()),
-                "",
-                "§7" + omp.lang("Oppervlak", "Area") + ": §a§l" + NumberUtils.locale(width) + " x " + NumberUtils.locale(height),
-                "§7Blocks: §a§l" + NumberUtils.locale(area),
-                "§7XZ: §a§l" + x + " §7/ §a§l" + z
-        ).addFlag(ItemFlag.HIDE_ATTRIBUTES).build()));
+                    for (int i = 0; i < claimName.length(); i++) {
+                        char c = claimName.charAt(i);
+                        if (!Character.isAlphabetic(c) && !Character.isDigit(c) && !Character.isSpaceChar(c)) {
+                            event.setWillClose(false);
+                            event.setWillDestroy(false);
+                            omp.sendMessage("Claim", Color.RED, "§7Je §aclaim naam§7 kan alleen maar bestaan uit §aletters§7, §anummers§7 en §aspaties§7.", "§7Your §awarp name§7 can only contain §aalphabetic§7 and §anumeric§7 characters and §aspaces§7.");
+                            return;
+                        }
+                    }
+
+                    event.setWillClose(true);
+                    event.setWillDestroy(true);
+
+                    claim.setName(claimName);
+                    survival.getClaimHandler().saveClaim(claim);
+                }, new AnvilNms.AnvilCloseEvent() {
+                    @Override
+                    public void onClose() {
+                        new BukkitRunnable() {
+                            @Override
+                            public void run() {
+                                reopen(omp);
+                            }
+                        }.runTaskLater(survival.getOrbitMines(), 1);
+                    }
+                });
+
+                anvil.getItems().put(AnvilNms.AnvilSlot.INPUT_LEFT, new ItemBuilder(Material.STONE_HOE, 1, claim.getName()).build());
+
+                anvil.open();
+            }
+        });
 
         add(0, 1, new ItemInstance(new ItemBuilder(Material.WRITABLE_BOOK, 1, omp.lang("§a§lVoeg Speler Toe", "§a§lAdd Player")).build()) {
             @Override
@@ -352,6 +384,30 @@ public class ClaimGUI extends GUI {
         maxPage = maxPage != 0 ? (playerAmount - PLAYERS_PER_PAGE + (NEW_PER_PAGE - maxPage)) / NEW_PER_PAGE : (playerAmount - PLAYERS_PER_PAGE) / NEW_PER_PAGE;
 
         return maxPage > page;
+    }
+
+    public static ItemBuilder getClaimIcon(OMPlayer omp, Claim claim) {
+        int x1 = claim.getCorner1().getBlockX();
+        int x2 = claim.getCorner2().getBlockX();
+        int z1 = claim.getCorner1().getBlockZ();
+        int z2 = claim.getCorner2().getBlockZ();
+
+        int width = (Math.abs(x1 - x2) + 1);
+        int height = (Math.abs(z1 - z2) + 1);
+        int area = width * height;
+
+        int x = x1 > x2 ? x1 - width : x1 + width;
+        int z = z1 > z2 ? z1 - height : z1 + height;
+
+        return new ItemBuilder(Material.STONE_HOE, 1, "§a§l" + claim.getName(),
+                "§7Claim Id: §a§l#" + NumberUtils.locale(claim.getId()),
+                "§7" + omp.lang("Gemaakt door", "Created by") + ": " + claim.getOwnerName(),
+                "§7" + omp.lang("Gemaakt op", "Created on") + ": §a§l" + DateUtils.SIMPLE_FORMAT.format(claim.getCreatedOn()),
+                "",
+                "§7" + omp.lang("Oppervlak", "Area") + ": §9§l" + NumberUtils.locale(width) + " x " + NumberUtils.locale(height),
+                "§7Blocks: §9§l" + NumberUtils.locale(area),
+                "§7XZ: §a§l" + NumberUtils.locale(x) + " §7/ §a§l" + NumberUtils.locale(z)
+        ).addFlag(ItemFlag.HIDE_ATTRIBUTES);
     }
 
     public enum FriendType {

@@ -135,6 +135,7 @@ public class Survival extends OrbitMinesServer {
         world.getWorldBorder().setCenter(0.5, 0.5);
         world.getWorldBorder().setSize(Region.WORLD_BORDER);
         world.setPVP(false);
+        Region.WORLD = world;
 
         world_nether = Bukkit.getWorld("world_nether");
         world_nether.setPVP(false);
@@ -221,7 +222,7 @@ public class Survival extends OrbitMinesServer {
 
             @Override
             public ScoreboardSet getNewScoreboardInstance(OrbitMines orbitMines, OMPlayer omp) {
-                return new Survival.Scoreboard(orbitMines, (SurvivalPlayer) omp);
+                return new Survival.Scoreboard(Survival.this, (SurvivalPlayer) omp);
             }
 
             @Override
@@ -312,6 +313,7 @@ public class Survival extends OrbitMinesServer {
         new CommandNearby(this);
 
         new CommandClaim();
+        new CommandClaims(this);
         new CommandCredits();
         new CommandPay();
         new CommandPrismShop();
@@ -329,8 +331,9 @@ public class Survival extends OrbitMinesServer {
         new CommandBack();
 
         new CommandTeleport();
-        new CommandFly();
         new CommandWorkbench();
+//        new CommandHat(); EMERALD+?
+        new CommandFly();
         new CommandEnderchest();
         new CommandTpHere();
     }
@@ -348,6 +351,14 @@ public class Survival extends OrbitMinesServer {
     @Override
     public GameMode getGameMode() {
         return GameMode.SURVIVAL;
+    }
+
+    public boolean canClaimIn(World world) {
+        return Arrays.asList(this.world, this.world_nether, this.world_the_end).contains(world);
+    }
+
+    public boolean canEditOtherClaims(SurvivalPlayer omp) {
+        return omp.isEligible(StaffRank.ADMIN) && omp.isOpMode();
     }
 
     public World getWorld() {
@@ -404,6 +415,12 @@ public class Survival extends OrbitMinesServer {
     }
 
     private void setupClaims() {
+        /* Setup Spawn Protection for The End, so that no-one can claim it */
+        {
+            Claim endClaim = new Claim(this, -1L, "End Claim", DateUtils.now(), new Location(world_the_end, 200, 0, 200), new Location(world_the_end, -200, 0, -200), null, new HashMap<>(), new HashMap<>());
+            claimHandler.addClaim(endClaim, false);
+        }
+
         /* Next ID */
         if (!Database.get().contains(Table.SERVER_DATA, TableServerData.DATA, new Where(TableServerData.SERVER, getServer().toString()), new Where(TableServerData.TYPE, "NEXT_ID")))
             Database.get().insert(Table.SERVER_DATA, Table.SERVER_DATA.values(getServer().toString(), "NEXT_ID", Claim.NEXT_ID + ""));
@@ -417,6 +434,7 @@ public class Survival extends OrbitMinesServer {
 
         for (Map<Column, String> entry : entries) {
             Long id = Long.parseLong(entry.get(TableSurvivalClaim.ID));
+            String name = entry.get(TableSurvivalClaim.NAME);
             Date createdOn = DateUtils.parse(DateUtils.FORMAT, entry.get(TableSurvivalClaim.CREATED_ON));
 
             Location corner1 = Serializer.parseLocation(entry.get(TableSurvivalClaim.CORNER_1));
@@ -446,7 +464,7 @@ public class Survival extends OrbitMinesServer {
                 }
             }
 
-            Claim claim = new Claim(this, id, createdOn, corner1, corner2, owner, members, settings);
+            Claim claim = new Claim(this, id, name, createdOn, corner1, corner2, owner, members, settings);
 
             Long parentId = Long.parseLong(entry.get(TableSurvivalClaim.PARENT));
 
@@ -486,7 +504,7 @@ public class Survival extends OrbitMinesServer {
 
             @Override
             public void onLeftClick(OMPlayer player, PlayerInteractEvent event, ItemStack itemStack) {
-                if (!player.getWorld().getName().equals(Survival.this.getWorld().getName()))
+                if (!canClaimIn(player.getWorld()))
                     return;
 
                 SurvivalPlayer omp = (SurvivalPlayer) player;
@@ -523,7 +541,7 @@ public class Survival extends OrbitMinesServer {
                     } else {
                         omp.setLastClaim(claim);
 
-                        if (claim.getOwner().equals(omp.getUUID())) {
+                        if (claim.getOwner().equals(omp.getUUID()) || canEditOtherClaims(omp)) {
                             new ClaimGUI(Survival.this, claim).open(omp);
                         } else {
                             String name = claim.getOwnerName();
@@ -537,7 +555,7 @@ public class Survival extends OrbitMinesServer {
 
             @Override
             public void onRightClick(OMPlayer player, PlayerInteractEvent event, ItemStack itemStack) {
-                if (!player.getWorld().getName().equals(Survival.this.getWorld().getName()))
+                if (!canClaimIn(player.getWorld()))
                     return;
 
                 SurvivalPlayer omp = (SurvivalPlayer) player;
@@ -553,6 +571,9 @@ public class Survival extends OrbitMinesServer {
                     new ActionBar(omp, () -> omp.lang("§c§lDat is te ver weg!", "§c§lThat is too far away!"), 60).send();
                     return;
                 }
+
+                if (canEditOtherClaims(omp))
+                    return;
 
                 if (omp.getResizingClaim() != null && omp.getResizingClaim().isRegistered()) {
                     /* Already resizing exisiting claim */
@@ -682,7 +703,7 @@ public class Survival extends OrbitMinesServer {
                 if (omp.getLastClaimToolLocation() == null) {
                     /* First point not selected */
 
-                    if (!omp.getWorld().getName().equals(Survival.this.getWorld().getName())) {
+                    if (!canClaimIn(omp.getWorld())) {
                         new ActionBar(omp, () -> omp.lang("§c§lJe kan hier niet claimen.", "§c§lClaiming is disabled here."), 40).send();
                         return;
                     }
@@ -690,7 +711,7 @@ public class Survival extends OrbitMinesServer {
                     /* Start claiming */
                     omp.setLastClaimToolLocation(block.getLocation());
 
-                    Claim newClaim = new Claim(Survival.this, null, null, block.getLocation(), block.getLocation(), null, new HashMap<>(), new HashMap<>());
+                    Claim newClaim = new Claim(Survival.this, null, null, null, block.getLocation(), block.getLocation(), null, new HashMap<>(), new HashMap<>());
                     Visualization.show(omp, newClaim, block.getY(), Visualization.Type.DISPLAY, player.getLocation());
                 } else {
                     /* Finishing claim */
@@ -760,7 +781,7 @@ public class Survival extends OrbitMinesServer {
             public String getMessage(OMPlayer player) {
                 SurvivalPlayer omp = (SurvivalPlayer) player;
 
-                if (!omp.getWorld().getName().equals(Survival.this.getWorld().getName()))
+                if (!canClaimIn(omp.getWorld()))
                     return omp.lang("§c§lJe kan hier niet claimen.", "§c§lClaiming is disabled here.");
 
                 if (omp.getLastClaimToolLocation() == null)
@@ -777,7 +798,7 @@ public class Survival extends OrbitMinesServer {
                 omp.playSound(Sound.UI_BUTTON_CLICK);
 
                 omp.resetScoreboard();
-                omp.setScoreboard(new ClaimScoreboard(orbitMines, omp));
+                omp.setScoreboard(new ClaimScoreboard(Survival.this, omp));
             }
 
             @Override
@@ -788,7 +809,7 @@ public class Survival extends OrbitMinesServer {
                 omp.setResizingClaim(null);
 
                 omp.resetScoreboard();
-                omp.setScoreboard(new Scoreboard(orbitMines, omp));
+                omp.setScoreboard(new Scoreboard(Survival.this, omp));
 
                 Visualization.revert(omp);
             }
@@ -797,9 +818,9 @@ public class Survival extends OrbitMinesServer {
 
     public static class Scoreboard extends DefaultScoreboard {
 
-        public Scoreboard(OrbitMines orbitMines, SurvivalPlayer omp) {
+        public Scoreboard(Survival survival, SurvivalPlayer omp) {
             super(omp,
-                    () -> orbitMines.getScoreboardAnimation().get(),
+                    () -> survival.getOrbitMines().getScoreboardAnimation().get(),
                     () -> "§m--------------",
                     () -> "",
                     () -> "§2§lCredits",
@@ -823,9 +844,9 @@ public class Survival extends OrbitMinesServer {
 
     public static class ClaimScoreboard extends DefaultScoreboard {
 
-        public ClaimScoreboard(OrbitMines orbitMines, SurvivalPlayer omp) {
+        public ClaimScoreboard(Survival survival, SurvivalPlayer omp) {
             super(omp,
-                    () -> orbitMines.getScoreboardAnimation().get(),
+                    () -> survival.getOrbitMines().getScoreboardAnimation().get(),
                     () -> "§f§m------------------------",
                     () -> "§9§lClaimblocks",
                     () -> " " + NumberUtils.locale(omp.getRemainingClaimBlocks()),
@@ -837,7 +858,10 @@ public class Survival extends OrbitMinesServer {
                     () -> omp.lang("§6§lSHIFT + LINKER MUISKLIK", "§6§lSHIFT + LEFT CLICK"),
                     () -> omp.lang("§7Dichtstbijzijnde claims.", "§7Show nearby claims."),
                     () -> "  ",
-                    () -> omp.lang("§6§lRECHTER MUISKLIK", "§6§lRIGHT CLICK"),
+                    () -> {
+                        String color = survival.canEditOtherClaims(omp) ? "§c§l§m" : "§6§l";
+                        return omp.lang(color + "RECHTER MUISKLIK", color + "RIGHT CLICK");
+                    },
                     () -> omp.lang("§7Kies hoeken om te claimen.", "§7Claim by selecting corners."),
                     () -> omp.lang("§7Pas een claim aan door op", "§7Resize an existing claim by"),
                     () -> omp.lang("§7een hoek te klikken.", "§7clicking on a corner.")

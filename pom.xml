@@ -35,10 +35,10 @@
     <dependencies>
         <dependency>
             <groupId>spigotmc.org</groupId>
-            <artifactId>spigot-server-1.13</artifactId>
-            <version>1.13</version>
+            <artifactId>spigot-server-1.13.1</artifactId>
+            <version>1.13.1</version>
             <scope>system</scope>
-            <systemPath>${basedir}/src/spigot-1.13.jar</systemPath>
+            <systemPath>${basedir}/src/spigot-1.13.1.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>net.md-5</groupId>

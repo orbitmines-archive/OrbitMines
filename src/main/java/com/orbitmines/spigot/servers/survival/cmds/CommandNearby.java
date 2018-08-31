@@ -12,6 +12,7 @@ import com.orbitmines.spigot.api.handlers.cmd.Command;
 import com.orbitmines.spigot.api.utils.VectorUtils;
 import com.orbitmines.spigot.api.utils.WorldUtils;
 import com.orbitmines.spigot.servers.survival.Survival;
+import com.orbitmines.spigot.servers.survival.handlers.SurvivalPlayer;
 import com.orbitmines.spigot.servers.survival.handlers.region.Region;
 import org.bukkit.block.BlockFace;
 
@@ -38,25 +39,19 @@ public class CommandNearby extends Command {
     }
 
     @Override
-    public void dispatch(OMPlayer omp, String[] a) {
+    public void dispatch(OMPlayer player, String[] a) {
+        SurvivalPlayer omp = (SurvivalPlayer) player;
+
         if (!omp.getWorld().getName().equals(survival.getWorld().getName())) {
+            omp.setLastRegion(null);
             omp.sendMessage("Region", Color.RED, "Er zijn geen regions dichtbij.", "There are no regions nearby.");
             return;
         }
 
-        Region region = null;
-        double distance = 0;
+        Region region = Region.getNearest(omp.getLocation());
+        omp.setLastRegion(region);
 
-        for (Region rg : Region.getRegions()) {
-            double d = VectorUtils.distance2D(omp.getLocation().toVector(), rg.getLocation().toVector());
-
-            if (region == null || d < distance) {
-                region = rg;
-                distance = d;
-            }
-        }
-
-        int blocks = (int) distance;
+        int blocks = (int) VectorUtils.distance2D(omp.getLocation().toVector(), region.getLocation().toVector());
         int regionId = region.getId() + 1;
 
         if (blocks <= Region.PROTECTION) {

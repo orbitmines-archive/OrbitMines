@@ -6,9 +6,11 @@ package com.orbitmines.spigot.servers.kitpvp;
 
 public interface Attributes {
 
+    /* 20.0D default value */
     double getMaxHealth();
 
-    double getKnockBackMultiplier();
+    /* 0.0 - 1.0 */
+    double getKnockbackResistance();
 
     HealthRegen getHealthRegen();
 

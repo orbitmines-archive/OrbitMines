@@ -101,6 +101,7 @@ public class DiscordBot {
     private void registerCommands(BotToken token) {
         new CommandHelp(this);
 
+        new CommandIP(this);
         new CommandVote(this);
         new CommandTopVoters(this);
         new CommandDiscordLink(this);

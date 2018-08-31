@@ -83,11 +83,11 @@ public class IpUtils {
         }
         StringTokenizer stringTokenizer = new StringTokenizer(string, "\",");
         if (stringTokenizer.countTokens() == 7) {
-            System.err.println("Detected format : SOFTWARE77");
+            System.err.println("Detected toMinecraft : SOFTWARE77");
             return 1;
         }
         if (stringTokenizer.countTokens() == 5) {
-            System.err.println("Detected format : WEBHOSTING_INFO");
+            System.err.println("Detected toMinecraft : WEBHOSTING_INFO");
             return 0;
         }
         return -1;

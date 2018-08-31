@@ -17,7 +17,7 @@ import java.util.*;
 
 public class PunishmentHandler {
 
-    private static List<PunishmentHandler> handlers = new ArrayList<>();
+    private static Map<UUID, PunishmentHandler> handlers = new HashMap<>();
 
     private final UUID uuid;
     private final List<Punishment> punishments;
@@ -26,7 +26,7 @@ public class PunishmentHandler {
         this.uuid = uuid;
         this.punishments = new ArrayList<>();
 
-        handlers.add(this);
+        handlers.put(uuid, this);
 
         update();
     }
@@ -175,15 +175,10 @@ public class PunishmentHandler {
     }
 
     public static PunishmentHandler getHandler(UUID uuid) {
-        for (PunishmentHandler handler : handlers) {
-            if (handler.uuid.toString().equals(uuid.toString()))
-                return handler;
-        }
-
-        return new PunishmentHandler(uuid);
+        return handlers.getOrDefault(uuid, new PunishmentHandler(uuid));
     }
 
-    public static List<PunishmentHandler> getHandlers() {
-        return handlers;
+    public static Collection<PunishmentHandler> getHandlers() {
+        return handlers.values();
     }
 }

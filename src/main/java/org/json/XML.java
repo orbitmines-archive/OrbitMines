@@ -440,7 +440,7 @@ public class XML {
     /**
      * Convert a well-formed (but not necessarily valid) XML string into a
      * JSONObject. Some information may be lost in this transformation because
-     * JSON is a data format and XML is a document format. XML uses elements,
+     * JSON is a data toMinecraft and XML is a document toMinecraft. XML uses elements,
      * attributes, and content text, while JSON uses unordered collections of
      * name/value pairs and arrays of values. JSON does not does not like to
      * distinguish between elements and attributes. Sequences of similar
@@ -461,7 +461,7 @@ public class XML {
     /**
      * Convert a well-formed (but not necessarily valid) XML string into a
      * JSONObject. Some information may be lost in this transformation because
-     * JSON is a data format and XML is a document format. XML uses elements,
+     * JSON is a data toMinecraft and XML is a document toMinecraft. XML uses elements,
      * attributes, and content text, while JSON uses unordered collections of
      * name/value pairs and arrays of values. JSON does not does not like to
      * distinguish between elements and attributes. Sequences of similar

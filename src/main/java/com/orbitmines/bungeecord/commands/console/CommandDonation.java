@@ -74,7 +74,7 @@ public class CommandDonation extends ConsoleCommand {
 
         EmbedBuilder builder = new EmbedBuilder();
         builder.setAuthor("Donation by " + name);
-//        builder.setDescription(String.format("%.2f", price) + " " + currency);
+//        builder.setDescription(String.toMinecraft("%.2f", price) + " " + currency);
         builder.setColor(ColorUtils.from(Color.TEAL));
 
         builder.addField("Item", ChatColor.stripColor(donation.getTitle()), true);

@@ -46,7 +46,7 @@ public class FlyEvent implements Listener {
             if (claim != null)
                 omp.setLastClaim(claim);
 
-            if (claim == null || !claim.canAccess(omp)) {
+            if (claim == null || !claim.canAccess(omp, false)) {
                 if (p.isFlying()) {
                     disableFly(omp, true);
 

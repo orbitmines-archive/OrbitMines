@@ -10,20 +10,34 @@ import com.orbitmines.api.database.Database;
 import com.orbitmines.api.database.Table;
 import com.orbitmines.api.database.Where;
 import com.orbitmines.api.database.tables.TableMaps;
+import com.orbitmines.api.utils.RandomUtils;
 import com.orbitmines.spigot.api.handlers.OrbitMinesMap;
+import com.orbitmines.spigot.api.handlers.timer.Timer;
 import com.orbitmines.spigot.api.handlers.worlds.WorldLoader;
+import com.orbitmines.spigot.api.runnables.SpigotRunnable;
+import com.orbitmines.spigot.api.utils.LocationUtils;
+import com.orbitmines.spigot.api.utils.WorldUtils;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class KitPvPMap extends OrbitMinesMap {
+
+    public static KitPvPMap CURRENT;
+    public static Timer TIMER;
 
     private static List<KitPvPMap> maps = new ArrayList<>();
 
     private List<Location> spawns;
     private List<Location> spectatorSpawns;
+
+    private List<UUID> votes;
+    private List<Location> voteSigns;
 
     //TODO Border Datapoint
 
@@ -32,16 +46,69 @@ public class KitPvPMap extends OrbitMinesMap {
 
         maps.add(this);
 
-        this.spawns = new ArrayList<>();
-        this.spectatorSpawns = new ArrayList<>();
+        this.votes = new ArrayList<>();
     }
 
-    public List<Location> getSpawns() {
-        return spawns;
+    public void setup(List<Location> spawns, List<Location> spectatorSpawns, List<Location> voteSigns) {
+        this.spawns = spawns;
+        this.spectatorSpawns = spectatorSpawns;
+        this.voteSigns = voteSigns;
+
+        new SpigotRunnable(SpigotRunnable.TimeUnit.SECOND, 1) {
+            @Override
+            public void run() {
+                updateVoteSigns();
+            }
+        };
     }
 
-    public List<Location> getSpectatorSpawns() {
-        return spectatorSpawns;
+    public void teleport(KitPvPPlayer omp) {
+        omp.getPlayer().teleport(RandomUtils.randomFrom(omp.getGameMode() != GameMode.SPECTATOR ? spawns : spectatorSpawns));
+    }
+
+    public List<UUID> getVotes() {
+        return votes;
+    }
+
+    public void updateVoteSigns() {
+        for (Location voteSignLoc : voteSigns) {
+            for (Player player : WorldUtils.getNearbyPlayers(voteSignLoc, 16)) {
+                KitPvPPlayer omp = KitPvPPlayer.getPlayer(player);
+
+                String[] lines = new String[4];
+
+                lines[0] = "§l" + this.getName();
+                lines[1] = votes.size() + " " + (votes.size() == 1 ? "Vote" : "Votes");
+                lines[2] = "";
+
+                if (getVotedFor(omp.getUUID()) == null)
+                    lines[3] = (votes.contains(omp.getUUID()) ? "§2" : "§4") + "§l" + omp.lang("Gevoten", "Voted");
+                else
+                    lines[3] = "§n" + omp.lang("Klik om te voten", "Click to vote");
+
+                player.sendSignChange(voteSignLoc, lines);
+
+                //TODO PLAY CIRCLE EFFECT
+            }
+        }
+    }
+
+    public static KitPvPMap getVotedFor(UUID uuid) {
+        for (KitPvPMap map : maps) {
+            if (map.getVotes().contains(uuid))
+                return map;
+        }
+        return null;
+    }
+
+    public static KitPvPMap getMap(Location signLocation) {
+        for (KitPvPMap map : maps) {
+            for (Location loc : map.voteSigns) {
+                if (LocationUtils.equals(loc, signLocation))
+                    return map;
+            }
+        }
+        return null;
     }
 
     public static List<KitPvPMap> getMaps() {

@@ -169,7 +169,7 @@ public class JSONObject {
     public JSONObject() {
         // HashMap is used on purpose to ensure that elements are unordered by 
         // the specification.
-        // JSON tends to be a portable transfer format to allows the container 
+        // JSON tends to be a portable transfer toMinecraft to allows the container
         // implementations to rearrange their items for a faster element 
         // retrieval based on associative access.
         // Therefore, an implementation mustn't rely on the order of the item.
@@ -2125,7 +2125,7 @@ public class JSONObject {
             // not all Numbers may match actual JSON Numbers. i.e. Fractions or Complex
             final String numberAsString = numberToString((Number) value);
             try {
-                // Use the BigDecimal constructor for it's parser to validate the format.
+                // Use the BigDecimal constructor for it's parser to validate the toMinecraft.
                 @SuppressWarnings("unused")
                 BigDecimal unused = new BigDecimal(numberAsString);
                 // Close enough to a JSON number that we will return it unquoted
@@ -2240,7 +2240,7 @@ public class JSONObject {
             // not all Numbers may match actual JSON Numbers. i.e. fractions or Imaginary
             final String numberAsString = numberToString((Number) value);
             try {
-                // Use the BigDecimal constructor for it's parser to validate the format.
+                // Use the BigDecimal constructor for it's parser to validate the toMinecraft.
                 @SuppressWarnings("unused")
                 BigDecimal testNum = new BigDecimal(numberAsString);
                 // Close enough to a JSON number that we will use it unquoted

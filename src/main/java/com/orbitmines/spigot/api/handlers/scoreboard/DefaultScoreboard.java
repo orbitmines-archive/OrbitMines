@@ -31,9 +31,12 @@ public abstract class DefaultScoreboard extends ScoreboardSet {
         ArrayUtils.reverse(staffRanks);
 
         for (StaffRank rank : staffRanks) {
-            ScoreboardTeam team = new ScoreboardTeam(rank.toString());
+            if (rank == StaffRank.NONE)
+                continue;
 
-            if (rank != StaffRank.NONE && rank != StaffRank.ADMIN)
+            ScoreboardTeam team = new ScoreboardTeam(getTeamName(rank));
+
+            if (rank != StaffRank.ADMIN)
                 team.setPrefix(rank.getPrefix(null) + "§r ");
 
             team.setColor(ColorUtils.toChatColor(rank.getPrefixColor()));
@@ -46,7 +49,7 @@ public abstract class DefaultScoreboard extends ScoreboardSet {
         ArrayUtils.reverse(vipRanks);
 
         for (VipRank rank : vipRanks) {
-            ScoreboardTeam team = new ScoreboardTeam(rank.toString());
+            ScoreboardTeam team = new ScoreboardTeam(getTeamName(rank));
 
             if (rank != VipRank.NONE)
                 team.setPrefix(rank.getPrefix(null) + "§r ");
@@ -56,6 +59,40 @@ public abstract class DefaultScoreboard extends ScoreboardSet {
             teams.add(team);
             vipRankTeams.put(rank, team);
         }
+    }
+
+    /* Order ranks in tablist */
+    private String getTeamName(StaffRank staffRank) {
+        switch (staffRank) {
+
+            case OWNER:
+                return "a";
+            case ADMIN:
+                return "b";
+            case DEVELOPER:
+                return "c";
+            case MODERATOR:
+                return "d";
+            case BUILDER:
+                return "e";
+        }
+        throw new IllegalStateException();
+    }
+    private String getTeamName(VipRank vipRank) {
+        switch (vipRank) {
+
+            case EMERALD:
+                return "f";
+            case DIAMOND:
+                return "g";
+            case GOLD:
+                return "h";
+            case IRON:
+                return "i";
+            case NONE:
+                return "j";
+        }
+        throw new IllegalStateException();
     }
 
     @Override

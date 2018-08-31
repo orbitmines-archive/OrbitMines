@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 */
 public class BungeePlayer {
 
-    private static List<BungeePlayer> players = new ArrayList<>();
+    private static Map<UUID, BungeePlayer> players = new HashMap<>();
 
     private OrbitMinesBungee bungee;
     private final ProxiedPlayer player;
@@ -76,7 +76,7 @@ public class BungeePlayer {
     */
 
     public void login() {
-        players.add(this);
+        players.put(getUUID(), this);
 
         if (!Database.get().contains(Table.PLAYERS, TablePlayers.UUID, new Where(TablePlayers.UUID, getUUID().toString()))) {
             Database.get().insert(Table.PLAYERS, getUUID().toString(), getRealName(), "", staffRank.toString(), vipRank.toString(), DateUtils.FORMAT.format(DateUtils.now()), language.toString(), "1", Settings.PRIVATE_MESSAGES.getDefaultType().toString(), Settings.PLAYER_VISIBILITY.getDefaultType().toString(), Settings.GADGETS.getDefaultType().toString(), Settings.STATS.getDefaultType().toString(), silent ? "1" : "0", "0", "0");
@@ -135,7 +135,7 @@ public class BungeePlayer {
 
         ((PlayTimeData) getData(Data.Type.PLAY_TIME)).stopSession();
 
-        players.remove(this);
+        players.remove(getUUID());
 
         SkinLibrary.deleteExistingEmotes(bungee.getDiscord().getGuild(bungee.getToken()), getUUID());
     }
@@ -693,10 +693,8 @@ public class BungeePlayer {
      */
 
     public static BungeePlayer getPlayer(ProxiedPlayer player) {
-        for (BungeePlayer omp : players) {
-            if (omp.getUUID().toString().equals(player.getUniqueId().toString()))
-                return omp;
-        }
+        if (players.containsKey(player.getUniqueId()))
+            return players.get(player.getUniqueId());
 
         BungeePlayer omp = new BungeePlayer(player);
         omp.login();
@@ -704,25 +702,16 @@ public class BungeePlayer {
     }
 
     public static BungeePlayer getPlayer(String name) {
-        for (BungeePlayer omp : players) {
-            if (omp.getName(true).equalsIgnoreCase(name))
-                return omp;
-        }
-
         ProxiedPlayer player = ProxyServer.getInstance().getPlayer(name);
         if (player == null)
             return null;
 
-        BungeePlayer omp = new BungeePlayer(player);
-        omp.login();
-        return omp;
+        return getPlayer(player);
     }
 
     public static BungeePlayer getPlayer(UUID uuid) {
-        for (BungeePlayer omp : players) {
-            if (omp.getUUID().toString().equals(uuid.toString()))
-                return omp;
-        }
+        if (players.containsKey(uuid))
+            return players.get(uuid);
 
         ProxiedPlayer player = ProxyServer.getInstance().getPlayer(uuid);
         if (player == null)
@@ -733,15 +722,14 @@ public class BungeePlayer {
         return omp;
     }
 
-    public static List<BungeePlayer> getPlayers() {
-        return players;
+    public static Collection<BungeePlayer> getPlayers() {
+        return players.values();
     }
-
 
     public static List<BungeePlayer> getPlayers(Server server) {
         List<BungeePlayer> list = new ArrayList<>();
 
-        for (BungeePlayer bungeePlayer : players) {
+        for (BungeePlayer bungeePlayer : players.values()) {
             if (bungeePlayer.getServer() == server)
                 list.add(bungeePlayer);
         }

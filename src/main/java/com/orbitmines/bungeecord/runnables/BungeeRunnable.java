@@ -10,7 +10,7 @@ import java.util.*;
 */
 public abstract class BungeeRunnable {
 
-    private Map<Long, List<BungeeRunnable>> runnables = new HashMap<>();
+    private static final Map<Long, List<BungeeRunnable>> runnables = new HashMap<>();
 
     protected OrbitMinesBungee bungee;
     private Time time;
@@ -57,7 +57,7 @@ public abstract class BungeeRunnable {
         runnables.put(seconds, new ArrayList<>(Collections.singletonList(this)));
 
         task = bungee.getProxy().getScheduler().schedule(bungee, () -> {
-            for (BungeeRunnable runnable : runnables.get(time.getSeconds())) {
+            for (BungeeRunnable runnable : new ArrayList<>(runnables.get(time.getSeconds()))) {
                 runnable.run();
             }
         }, 0, time.getSeconds(), java.util.concurrent.TimeUnit.SECONDS);

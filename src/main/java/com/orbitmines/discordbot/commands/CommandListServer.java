@@ -16,7 +16,7 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
-import java.util.List;
+import java.util.Collection;
 
 public class CommandListServer extends Command {
 
@@ -55,19 +55,22 @@ public class CommandListServer extends Command {
     }
 
     private void send(TextChannel channel, Server server) {
-        List<OMPlayer> list = OMPlayer.getPlayers();
+        Collection<OMPlayer> list = OMPlayer.getPlayers();
         int players = list.size();
 
         StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < players; i++) {
-            OMPlayer omp = list.get(i);
 
-            if (i == 0)
+        boolean first = true;
+        for (OMPlayer omp : list) {
+            if (first)
                 stringBuilder.append(" » ");
             else
                 stringBuilder.append(", ");
 
             stringBuilder.append(DiscordSpigotUtils.getDisplay(discord, token, omp));
+
+            if (first)
+                first = false;
         }
 
         channel.sendMessage("There " + (players == 1 ? "is" : "are") + " currently **" + players + " " + (players == 1 ? "Player" : "Players") + "** online in the" + discord.getEmote(token, DiscordBot.CustomEmote.from(server)).getAsMention() + "**" + server.getName() + "** server" + stringBuilder).queue();

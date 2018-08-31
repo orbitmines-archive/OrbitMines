@@ -6,6 +6,7 @@ package com.orbitmines.spigot.servers.survival.cmds;
 
 import com.orbitmines.api.Color;
 import com.orbitmines.api.Server;
+import com.orbitmines.api.utils.NumberUtils;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.cmd.Command;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalPlayer;
@@ -70,7 +71,7 @@ public class CommandPay extends Command {
         omp.removeEarthMoney(amount);
         omp2.addEarthMoney(amount);
 
-        String display = "§2§l" + amount + " " + (amount == 1 ? "Credits" : "Credits");
+        String display = "§2§l" + NumberUtils.locale(amount) + " " + (amount == 1 ? "Credits" : "Credits");
 
         omp.sendMessage("Pay", Color.LIME, "Je hebt " + display + " §7betaald aan " + omp2.getName() + "§7.", "You have payed " + omp2.getName() + " " + display + "§7.");
         omp2.sendMessage("Pay", Color.LIME, "Je hebt " + display + " §7ontvangen van " + omp.getName() + "§7.", "You have received " + display + " §7from " + omp.getName() + "§7.");

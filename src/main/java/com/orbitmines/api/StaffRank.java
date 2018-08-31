@@ -9,7 +9,7 @@ public enum StaffRank {
     BUILDER("BUILDER", Color.FUCHSIA, Color.WHITE),
     MODERATOR("MOD", Color.AQUA, Color.WHITE),
     DEVELOPER("DEV", Color.RED, Color.WHITE),
-    /* Temporary */
+    /* Temporary TODO */
     ADMIN("ADMIN", Color.GRAY, Color.SILVER),
     OWNER("OWNER", Color.MAROON, Color.WHITE);
 

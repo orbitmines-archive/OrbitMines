@@ -6,16 +6,14 @@ import com.orbitmines.spigot.api.handlers.scoreboard.ScoreboardString;
 import com.orbitmines.spigot.api.handlers.timer.Timer;
 import com.orbitmines.spigot.api.runnables.SpigotRunnable;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /*
 * OrbitMines - @author Fadi Shawki - 29-7-2017
 */
 public class ActionBar {
 
-    private Map<OMPlayer, ActionBar> actionBars = new HashMap<>();
+    private static final Map<OMPlayer, List<ActionBar>> actionBars = new HashMap<>();
 
     private OrbitMines plugin;
     private final ScoreboardString message;
@@ -63,7 +61,10 @@ public class ActionBar {
     }
 
     private void start() {
-        actionBars.put(player, this);
+        if (!actionBars.containsKey(player))
+            actionBars.put(player, new ArrayList<>());
+
+        actionBars.get(player).add(this);
 
         timer = new Timer(new SpigotRunnable.Time(SpigotRunnable.TimeUnit.TICK, (int) stay), new SpigotRunnable.Time(SpigotRunnable.TimeUnit.TICK, 1)) {
 
@@ -74,12 +75,10 @@ public class ActionBar {
                     return;
                 }
 
-                /* If another actionbar stopped */
-                if (!actionBars.containsKey(player))
-                    actionBars.put(player, ActionBar.this);
+                List<ActionBar> list = actionBars.get(player);
 
                 /* Check if most recent actionbar is this actionbar */
-                if (actionBars.get(player) == ActionBar.this) {
+                if (list.get(list.size() -1) == ActionBar.this) {
                     plugin.getNms().actionBar().send(Collections.singletonList(player.getPlayer()), message.getString());
                     onRun();
                 }
@@ -93,8 +92,10 @@ public class ActionBar {
     }
 
     public void stop() {
-        if (actionBars.get(player) == this)
+        if (actionBars.get(player).size() == 1)
             actionBars.remove(player);
+        else
+            actionBars.get(player).remove(this);
 
         if (timer != null)
             timer.cancel();
@@ -103,7 +104,8 @@ public class ActionBar {
     public void forceStop() {
         stop();
 
-        /* Clear ActionBar */ //TODO this might be causing the flickering when multiple actionbars are on?
-        plugin.getNms().actionBar().send(Collections.singletonList(player.getPlayer()), "");
+        if (!actionBars.containsKey(player))
+            /* Clear ActionBar, if we no longer need to display any action bar */
+            plugin.getNms().actionBar().send(Collections.singletonList(player.getPlayer()), "");
     }
 }

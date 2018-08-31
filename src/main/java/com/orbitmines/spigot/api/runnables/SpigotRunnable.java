@@ -11,7 +11,7 @@ import java.util.*;
 */
 public abstract class SpigotRunnable {
 
-    private Map<Long, List<SpigotRunnable>> runnables = new HashMap<>();
+    private static final Map<Long, List<SpigotRunnable>> runnables = new HashMap<>();
 
     protected OrbitMines orbitMines;
     private Time time;
@@ -92,11 +92,11 @@ public abstract class SpigotRunnable {
         this.task = new BukkitRunnable() {
             @Override
             public void run() {
-                for (SpigotRunnable runnable : runnables.get(time.getTicks())) {
+                for (SpigotRunnable runnable : new ArrayList<>(runnables.get(ticks))) {
                     runnable.run();
                 }
             }
-        }.runTaskTimer(orbitMines, delay.getTicks(), time.getTicks());
+        }.runTaskTimer(orbitMines, delay.getTicks(), ticks);
     }
 
     public boolean isRunning() {

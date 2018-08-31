@@ -3,6 +3,7 @@ package com.orbitmines.spigot.api.handlers.chat;
 import com.orbitmines.api.Language;
 import com.orbitmines.api.Message;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -21,6 +22,14 @@ public class ComponentMessage {
         tcs = new ArrayList<>();
     }
 
+    public ComponentMessage(ComponentMessage componentMessage) {
+        this.tcs = new ArrayList<>(componentMessage.tcs);
+    }
+
+    public ComponentMessage add(String component) {
+        return add(new Message(component), null, null, null, null);
+    }
+
     public ComponentMessage add(Message component) {
         return add(component, null, null, null, null);
     }
@@ -33,9 +42,21 @@ public class ComponentMessage {
         return add(component, null, null, hoverAction, hoverEvent);
     }
 
+    public ComponentMessage add(String component, ClickEvent.Action clickAction, String clickEvent, HoverEvent.Action hoverAction, String hoverEvent) {
+        return add(new Message(component), clickAction, new Message(clickEvent), hoverAction, new Message(hoverEvent));
+    }
+
     public ComponentMessage add(Message component, ClickEvent.Action clickAction, Message clickEvent, HoverEvent.Action hoverAction, Message hoverEvent) {
-        tcs.add(new TempTextComponent(component, clickAction, clickEvent, hoverAction, hoverEvent));
+        return add(new TempTextComponent(component, clickAction, clickEvent, hoverAction, hoverEvent));
+    }
+
+    public ComponentMessage add(TempTextComponent textComponent) {
+        tcs.add(textComponent);
         return this;
+    }
+
+    public List<TempTextComponent> getComponents() {
+        return tcs;
     }
 
     public void send(OMPlayer player) {
@@ -76,13 +97,35 @@ public class ComponentMessage {
         return new TextComponent(tcs);
     }
 
-    private class TempTextComponent {
+    public static class TempTextComponent {
 
-        private final Message component;
+        private Message component;
         private final ClickEvent.Action clickAction;
-        private final Message clickEvent;
+        private Message clickEvent;
         private final HoverEvent.Action hoverAction;
-        private final Message hoverEvent;
+        private Message hoverEvent;
+
+        private ChatColor chatColor;
+
+        public TempTextComponent(String component) {
+            this(new Message(component), null, null, null, null);
+        }
+
+        public TempTextComponent(Message component) {
+            this(component, null, null, null, null);
+        }
+
+        public TempTextComponent(Message component, ClickEvent.Action clickAction, Message clickEvent) {
+            this(component, clickAction, clickEvent, null, null);
+        }
+
+        public TempTextComponent(Message component, HoverEvent.Action hoverAction, Message hoverEvent) {
+            this(component, null, null, hoverAction, hoverEvent);
+        }
+
+        public TempTextComponent(String component, ClickEvent.Action clickAction, String clickEvent, HoverEvent.Action hoverAction, String hoverEvent) {
+            this(new Message(component), clickAction, new Message(clickEvent), hoverAction, new Message(hoverEvent));
+        }
 
         public TempTextComponent(Message component, ClickEvent.Action clickAction, Message clickEvent, HoverEvent.Action hoverAction, Message hoverEvent) {
             this.component = component;
@@ -90,6 +133,27 @@ public class ComponentMessage {
             this.clickEvent = clickEvent;
             this.hoverAction = hoverAction;
             this.hoverEvent = hoverEvent;
+            this.chatColor = ChatColor.WHITE;
+        }
+
+        public TempTextComponent setComponent(Message component) {
+            this.component = component;
+            return this;
+        }
+
+        public TempTextComponent setClickEvent(Message clickEvent) {
+            this.clickEvent = clickEvent;
+            return this;
+        }
+
+        public TempTextComponent setHoverEvent(Message hoverEvent) {
+            this.hoverEvent = hoverEvent;
+            return this;
+        }
+
+        public TempTextComponent setChatColor(ChatColor chatColor) {
+            this.chatColor = chatColor;
+            return this;
         }
 
         public TextComponent lang(Language language) {
@@ -98,6 +162,8 @@ public class ComponentMessage {
                 tc.setClickEvent(new ClickEvent(clickAction, clickEvent.lang(language)));
             if (hoverAction != null)
                 tc.setHoverEvent(new HoverEvent(hoverAction, new ComponentBuilder(hoverEvent.lang(language)).create()));
+
+            tc.setColor(chatColor);
 
             return tc;
         }

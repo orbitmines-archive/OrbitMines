@@ -13,8 +13,11 @@ public class TableKitPvPPlayers extends Table {
     public static final Column EXPERIENCE = new Column("Experience", Column.Type.INT);
     public static final Column KILLS = new Column("Kills", Column.Type.INT);
     public static final Column DEATHS = new Column("Deaths", Column.Type.INT);
+    public static final Column BEST_STREAK = new Column("BestStreak", Column.Type.INT);
+    public static final Column LAST_SELECTED_ID = new Column("LastSelectedId", Column.Type.BIGINT);
+    public static final Column LAST_SELECTED_LEVEL = new Column("LastSelectedLevel", Column.Type.INT);
 
     public TableKitPvPPlayers() {
-        super("KitPvPPlayers", UUID, COINS, EXPERIENCE, KILLS, DEATHS);
+        super("KitPvPPlayers", UUID, COINS, EXPERIENCE, KILLS, DEATHS, BEST_STREAK, LAST_SELECTED_ID, LAST_SELECTED_LEVEL);
     }
 }

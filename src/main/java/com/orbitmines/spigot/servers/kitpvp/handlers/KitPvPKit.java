@@ -83,6 +83,14 @@ public class KitPvPKit {
         return kits;
     }
 
+    public static KitPvPKit getKit(long kitId) {
+        for (KitPvPKit kit : kits) {
+            if (kit.getId() == kitId)
+                return kit;
+        }
+        return null;
+    }
+
     public class Level {
 
         protected final int price;

@@ -275,8 +275,8 @@ public class PreventionSet {
             if (!worlds.get(Prevention.BLOCK_INTERACTING).contains(block.getWorld()))
                 return;
 
-            if (ItemUtils.INTERACTABLE.contains(block.getType()))
-                event.setCancelled(true);
+//            if (ItemUtils.INTERACTABLE.contains(block.getType()))
+            event.setCancelled(true);
         }
     }
 

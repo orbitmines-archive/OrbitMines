@@ -95,7 +95,7 @@ public enum Loot {
                 case VIP_UPGRADE_DIAMOND_EMERALD: {
                     VipRank rank = donation.getRank();
 
-                    data.add(Loot.SOLARS, Rarity.LEGENDARY, donation.getTitle().replace("§l", "§l§o") + " §e§l§oSolars", rank.getSolars(omp.getVipRank()));
+                    data.add(Loot.SOLARS, Rarity.LEGENDARY, donation.getTitle().replace("§l", "§l§o") + " §e§l§oSolars", rank.getSolars(donation.getUpgradedFrom()));
                     omp.setVipRank(rank);
                     break;
                 }
@@ -105,7 +105,7 @@ public enum Loot {
                     int solars = 0;
                     switch (donation) {
                         case SOLARS_1500:
-                            solars = 1000;
+                            solars = 1500;
                             break;
                         case SOLARS_4000:
                             solars = 4000;

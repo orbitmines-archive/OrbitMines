@@ -6,7 +6,10 @@ package com.orbitmines.spigot.servers.kitpvp.handlers;
 
 import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.api.Color;
+import com.orbitmines.api.Language;
 import com.orbitmines.api.VipRank;
+import com.orbitmines.api.utils.TimeUtils;
+import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.api.handlers.timer.Timer;
 import com.orbitmines.spigot.api.runnables.SpigotRunnable;
@@ -18,29 +21,51 @@ public class CoinBooster {
 
     public static CoinBooster ACTIVE;
 
+    private final OrbitMines orbitMines;
+
     private final Type type;
     private final CachedPlayer player;
 
+    private Timer timer;
+
     public CoinBooster(Type type, UUID uuid) {
+        this.orbitMines = OrbitMines.getInstance();
+
         this.type = type;
         this.player = CachedPlayer.getPlayer(uuid);
     }
 
     public void start() {
-        ACTIVE = this;
+        String name = player.getRankPrefix() + player.getPlayerName();
 
-        new Timer(type.duration, new SpigotRunnable.Time(SpigotRunnable.TimeUnit.MINUTE, 5)) {
+        orbitMines.broadcast("Booster", Color.ORANGE, name + " §7heeft een " + player.getRankPrefixColor().getChatColor() + type.multiplier + "x Coin Booster §7geactiveerd (§6" + TimeUtils.fromTimeStamp(type.duration.getTicks() * 50, Language.DUTCH) + "§7).", name + " has activated a " + player.getRankPrefixColor().getChatColor() + type.multiplier + "x Coin Booster§7 (§6" + TimeUtils.fromTimeStamp(type.duration.getTicks() * 50, Language.ENGLISH) + "§7).");
+
+        timer = new Timer(type.duration, new SpigotRunnable.Time(SpigotRunnable.TimeUnit.MINUTE, 5)) {
             @Override
             public void onInterval() {
-                // TODO BROADCAST
+                orbitMines.broadcast("Booster", Color.ORANGE, name + "'s " + type.multiplier + "x Coin Booster §7verloopt in §6" + TimeUtils.fromTimeStamp(getRemainingTicks() * 50, Language.DUTCH) + "§7.", name + "'s " + type.multiplier + "x Coin Booster §7expires in §6" + TimeUtils.fromTimeStamp(getRemainingTicks() * 50, Language.ENGLISH) + "§7.");
             }
 
             @Override
             public void onFinish() {
+                orbitMines.broadcast("Booster", Color.ORANGE, name + "'s " + type.multiplier + "x Coin Booster §7is verlopen.", name + "'s " + type.multiplier + "x Coin Booster §7has expired.");
                 ACTIVE = null;
-                //TODO BROADCAST
             }
         };
+
+        ACTIVE = this;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public CachedPlayer getPlayer() {
+        return player;
+    }
+
+    public Timer getTimer() {
+        return timer;
     }
 
     public enum Type {

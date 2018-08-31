@@ -51,7 +51,7 @@ public class HubDataPointSpawnpoint extends DataPointSign {
 
         location.setYaw(yaw);
         location.setPitch(pitch);
-        spawns.add(location.add(0.5, 0, 0.5));
+        spawns.add(location.add(0.5, 0.5, 0.5));
         return true;
     }
 

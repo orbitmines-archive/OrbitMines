@@ -60,7 +60,7 @@ public class CommandSetHome extends Command {
             if (claim != null)
                 omp.setLastClaim(claim);
 
-            if (claim == null || claim.canAccess(omp)) {
+            if (claim == null || claim.canAccess(omp, true)) {
                 omp.setHome(a[1]);
             } else {
                 omp.sendMessage("Home", Color.RED, "Je hebt §a§l" + omp.lang(Claim.Permission.ACCESS.getName()) + " §7nodig van " + claim.getOwnerName() + " §7om hier een home te zetten.", "You need §a§l" + omp.lang(Claim.Permission.ACCESS.getName()) + " §7from " + claim.getOwnerName() + " §7to set a home here.");

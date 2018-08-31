@@ -14,13 +14,15 @@ import com.orbitmines.spigot.api.handlers.chat.ComponentMessage;
 import com.orbitmines.spigot.api.options.ApiOption;
 import com.orbitmines.spigot.api.runnables.SpigotRunnable;
 import com.orbitmines.spigot.servers.hub.Hub;
+import com.orbitmines.spigot.servers.kitpvp.KitPvP;
 import com.orbitmines.spigot.servers.survival.Survival;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
-import net.minecraft.server.v1_13_R1.MinecraftServer;
+import net.minecraft.server.v1_13_R2.MinecraftServer;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -124,10 +126,6 @@ public abstract class OrbitMinesServer {
         }
     }
 
-    public void format(AsyncPlayerChatEvent event, OMPlayer omp) {
-        event.setFormat(omp.getRankPrefix() + omp.getName() + "§7 » " + omp.getRankChatColor().getChatColor() + "%2$s");
-    }
-
     public void fromDiscord(Member member, net.dv8tion.jda.core.entities.Message message) {
         StaffRank staffRank = StaffRank.NONE;
         VipRank vipRank = VipRank.NONE;
@@ -146,6 +144,7 @@ public abstract class OrbitMinesServer {
 
         String rankPrefix = (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getPrefix(staffRank.getPrefixColor()) : vipRank.getPrefix(vipRank.getPrefixColor());
         Color chatColor = (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getChatColor() : vipRank.getChatColor();
+        Color prefixColor = (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getPrefixColor() : vipRank.getPrefixColor();
 
         cM.add(new Message("§9§lDISCORD§r"));
         cM.add(new Message(" §7» "));
@@ -160,16 +159,55 @@ public abstract class OrbitMinesServer {
             playerName = player.getRankPrefixColor().getChatColor() + player.getPlayerName();
         }
 
-        cM.add(new Message(name), HoverEvent.Action.SHOW_TEXT, new Message(rankPrefix + "@" + member.getUser().getName() + "#" + member.getUser().getDiscriminator() + "\n§7IGN: " + (playerName == null ? StaffRank.NONE.getDisplayName() : playerName)));
+        cM.add(new Message(name), HoverEvent.Action.SHOW_TEXT, new Message(prefixColor.getChatColor() + "@" + member.getUser().getName() + "#" + member.getUser().getDiscriminator() + "\n§7Rank: " + (staffRank == StaffRank.NONE ? vipRank.getDisplayName() : (vipRank == VipRank.NONE ? staffRank.getDisplayName() : (staffRank.getDisplayName() + " §7/ " + vipRank.getDisplayName()))) + "\n§7IGN: " + (playerName == null ? StaffRank.NONE.getDisplayName() : playerName)));
 
-        cM.add(new Message(" §7» " + DiscordUtils.filterFromDiscord(chatColor.getChatColor(), message)));
+        cM.add(new Message(" §7» "));
 
+        /* Filter discord mentions */
+        String filtered = DiscordUtils.filterFromDiscord(chatColor.getChatColor(), message);
+
+        /* File Attachment */
+        ComponentMessage.TempTextComponent attachmentComponent = null;
         if (message.getAttachments().size() != 0) {
             net.dv8tion.jda.core.entities.Message.Attachment attachment = message.getAttachments().get(0);
-            cM.add(new Message(" (File: §9§l" + attachment.getFileName() + "§r" + chatColor.getChatColor() + ")"), ClickEvent.Action.OPEN_URL, new Message(attachment.getUrl()), HoverEvent.Action.SHOW_TEXT, new Message("§7Klik hier om §9§l" + attachment.getFileName() + "§7 te openen.", "§7Click here to open §9§l" + attachment.getFileName() + "§7."));
+            attachmentComponent = new ComponentMessage.TempTextComponent(new Message((filtered.equals("") ? "" : " ") + "(File: §l" + attachment.getFileName() + "§r§3)"), ClickEvent.Action.OPEN_URL, new Message(attachment.getUrl()), HoverEvent.Action.SHOW_TEXT, new Message("§7Klik hier om §9§l" + attachment.getFileName() + "§7 te openen.", "§7Click here to open §9§l" + attachment.getFileName() + "§7.")).setChatColor(ChatColor.DARK_AQUA);
         }
 
-        cM.send(OMPlayer.getPlayers());
+        /* Send per player for commands&mentions */
+        for (OMPlayer player : OMPlayer.getPlayers()) {
+            ComponentMessage componentMessage = new ComponentMessage(cM);
+
+            for (ComponentMessage.TempTextComponent component : DiscordSpigotUtils.formatMessage(player, player.getRankChatColor(), filtered)) {
+                componentMessage.add(component);
+            }
+
+            if (attachmentComponent != null)
+                componentMessage.add(attachmentComponent);
+
+            componentMessage.send(player);
+        }
+    }
+
+    public void toMinecraft(OMPlayer omp, String message) {
+        ComponentMessage cM = new ComponentMessage();
+
+        for (ComponentMessage.TempTextComponent component : omp.getChatPrefix()) {
+            cM.add(component);
+        }
+
+        cM.add(DiscordSpigotUtils.getPlayerMention(omp, omp.getRankPrefix() + omp.getName()));
+
+        cM.add("§7 » ");
+
+        for (OMPlayer player : OMPlayer.getPlayers()) {
+            ComponentMessage componentMessage = new ComponentMessage(cM);
+
+            for (ComponentMessage.TempTextComponent component : DiscordSpigotUtils.formatMessage(player, player.getRankChatColor(), message)) {
+                componentMessage.add(component);
+            }
+
+            componentMessage.send(player);
+        }
     }
 
     public void toDiscord(AsyncPlayerChatEvent event, OMPlayer omp) {
@@ -187,7 +225,7 @@ public abstract class OrbitMinesServer {
         switch (server) {
 
             case KITPVP:
-                return null;
+                return new KitPvP(orbitMines);
             case PRISON:
                 return null;
             case CREATIVE:

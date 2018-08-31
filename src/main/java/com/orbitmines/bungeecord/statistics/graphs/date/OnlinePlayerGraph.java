@@ -22,10 +22,7 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class OnlinePlayerGraph extends DateGraphUpdater {
 
@@ -35,7 +32,7 @@ public class OnlinePlayerGraph extends DateGraphUpdater {
 
     @Override
     protected void insert() {
-        List<BungeePlayer> players = BungeePlayer.getPlayers();
+        Collection<BungeePlayer> players = BungeePlayer.getPlayers();
 
         Map<StaffRank, Integer> staffCount = new HashMap<>();
         Map<VipRank, Integer> vipCount = new HashMap<>();

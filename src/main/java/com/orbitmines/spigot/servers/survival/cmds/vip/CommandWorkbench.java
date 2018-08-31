@@ -11,7 +11,7 @@ import com.orbitmines.spigot.api.handlers.cmd.VipCommand;
 
 public class CommandWorkbench extends VipCommand {
 
-    private String[] alias = { "/workbench" };
+    private String[] alias = { "/workbench", "/wb" };
 
     public CommandWorkbench() {
         super(Server.SURVIVAL, VipRank.GOLD);

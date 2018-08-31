@@ -28,5 +28,7 @@ public class RegainHealthEvent implements Listener {
         amount *= omp.getSelectedKit().getAttributes().getHealthRegen().getMultiplier();
 
         event.setAmount(amount);
+
+        //TODO RESDET DAMAGE
     }
 }

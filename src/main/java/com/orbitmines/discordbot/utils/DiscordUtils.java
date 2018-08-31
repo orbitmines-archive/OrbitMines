@@ -77,19 +77,7 @@ public class DiscordUtils {
     }
 
     public static String filterFromDiscord(String chatColor, Message message) {
-        /* This fixes the issue of color disappearing on the second line */
-        String[] part = message.getContentDisplay().split(" ");
-        StringBuilder stringBuilder = new StringBuilder();
-
-        for (int i = 0; i < part.length; i++) {
-            if (i != 0)
-                stringBuilder.append(" ");
-
-            stringBuilder.append(chatColor);
-            stringBuilder.append(part[i]);
-        }
-
-        String msg = stringBuilder.toString();
+        String msg = message.getContentDisplay().replaceAll("\\n", " ");
 
         for (Role role : message.getMentionedRoles()) {
             msg = msg.replaceAll(role.getAsMention(), "@" + role.getName());

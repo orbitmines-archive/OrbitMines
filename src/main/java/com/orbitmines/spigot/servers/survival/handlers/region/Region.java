@@ -10,17 +10,17 @@ import com.orbitmines.spigot.api.handlers.Teleportable;
 import com.orbitmines.spigot.api.handlers.chat.ActionBar;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.api.handlers.itembuilders.PotionBuilder;
-import com.orbitmines.spigot.api.runnables.SpigotRunnable;
-import com.orbitmines.spigot.api.utils.WorldUtils;
+import com.orbitmines.spigot.api.utils.VectorUtils;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalPlayer;
 import com.orbitmines.spigot.servers.survival.utils.BiomeUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Beacon;
 import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +51,8 @@ public class Region extends Teleportable {
     public static final int LAST_REGION_DISTANCE = (REGION_SIZE / 2) * OFFSET;
     public static int TELEPORTABLE = 10 * 10;
     public static final int WORLD_BORDER = (int) Math.sqrt(TELEPORTABLE) * OFFSET + 15000; /* Additional 5k blocks surrounding the regions, *outer space* */
+
+    public static World WORLD;
 
     public static PotionBuilder UNDERWATER_POTION = new PotionBuilder(PotionEffectType.CONDUIT_POWER, 260, 0, true, true);
 
@@ -87,35 +89,19 @@ public class Region extends Teleportable {
         if (id >= Region.TELEPORTABLE)
             return;
 
-        if (underWater) {
-//            Location conduitLocation = location.clone().add(0, 2, 0).clone();
-
-            new SpigotRunnable(SpigotRunnable.TimeUnit.SECOND, 1) {
-                @Override
-                public void run() {
-                    List<Player> players = WorldUtils.getNearbyPlayers(location, Region.PROTECTION);
-                    for (Player player : players) {
-                        player.addPotionEffect(Region.UNDERWATER_POTION.build());
-                        player.setRemainingAir(player.getMaximumAir());
-                    }
-
-//                    orbitMines.getNms().world().conduitAnimation(conduitLocation, players);
-                }
-            };
-        } else {
+        if (!underWater)
             aboveWaterRegions.add(this);
 
-            for (int i = 0; i < location.getBlockY(); i++) {
-                Block block = location.clone().subtract(0, i, 0).getBlock();
+        for (int i = 0; i < location.getBlockY(); i++) {
+            Block block = location.clone().subtract(0, i, 0).getBlock();
 
-                if (block.getType() != Material.BEACON)
-                    continue;
+            if (block.getType() != Material.BEACON)
+                continue;
 
-                Beacon beacon = (Beacon) block.getState();
-                beacon.setPrimaryEffect(PotionEffectType.SPEED);
-                beacon.update(true);
-                break;
-            }
+            Beacon beacon = (Beacon) block.getState();
+            beacon.setPrimaryEffect(underWater ? PotionEffectType.CONDUIT_POWER : PotionEffectType.SPEED);
+            beacon.update(true);
+            break;
         }
     }
 
@@ -182,7 +168,7 @@ public class Region extends Teleportable {
     }
 
     public static boolean isInRegion(SurvivalPlayer omp, Location location) {
-        if (omp != null && omp.isOpMode())
+        if (!Region.WORLD.getName().equals(location.getWorld().getName()) || omp != null && omp.isOpMode())
             return false;
 
         int x = Math.abs(location.getBlockX());
@@ -235,6 +221,31 @@ public class Region extends Teleportable {
                 return region;
         }
         return null;
+    }
+
+    public static Region getNearest(Location location) {
+        return getNearest(location, null);
+    }
+
+    public static Region getNearest(Location location, Region cached) {
+        Vector vector = location.toVector();
+
+        if (cached != null && VectorUtils.distance2D(vector, cached.getLocation().toVector()) < (Region.OFFSET / 2))
+            return cached;
+
+        Region region = null;
+        double distance = 0;
+
+        for (Region rg : Region.getRegions()) {
+            double d = VectorUtils.distance2D(vector, rg.getLocation().toVector());
+
+            if (region == null || d < distance) {
+                region = rg;
+                distance = d;
+            }
+        }
+
+        return region;
     }
 
     private ItemBuilder toItemBuilder() {

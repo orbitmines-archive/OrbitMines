@@ -242,10 +242,16 @@ public enum ResetTimer {
             /* Update logout location for all players */
             Database.get().update(Table.SURVIVAL_PLAYERS, new Set(TableSurvivalPlayers.LOGOUT_LOCATION, Serializer.serialize(survival.getLobbySpawn())), new Where(Where.Operator.LIKE, TableSurvivalPlayers.LOGOUT_LOCATION, world.getName() + "%"));
 
+            /* Delete All Claims in the world */
+            survival.getClaimHandler().deleteClaims(world);
+
+            /* Unload World */
             Bukkit.unloadWorld(world, true);
 
+            /* Backup World */
             backup(survival);
 
+            /* Delete World */
             DirectoryUtils.deleteDirectory(worldFile);
         }
     }

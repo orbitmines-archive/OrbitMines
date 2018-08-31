@@ -1,42 +1,63 @@
 package com.orbitmines.spigot.servers.kitpvp.handlers;
 
+import com.orbitmines.api.CachedPlayer;
+import com.orbitmines.api.Color;
 import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.chat.ActionBar;
+import com.orbitmines.spigot.api.handlers.chat.ComponentMessage;
+import com.orbitmines.spigot.api.handlers.chat.Title;
+import com.orbitmines.spigot.api.nms.entity.EntityNms;
+import com.orbitmines.spigot.servers.kitpvp.Attributes;
 import com.orbitmines.spigot.servers.kitpvp.KitPvP;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import javax.annotation.Nullable;
+import java.util.*;
 
 /*
 * OrbitMines - @author Fadi Shawki - 2017
 */
 public class KitPvPPlayer extends OMPlayer {
 
-    private static ArrayList<KitPvPPlayer> players = new ArrayList<>();
+    private static Map<Player, KitPvPPlayer> players = new HashMap<>();
+
+    private final KitPvP kitPvP;
 
     private final LevelData levelData;
 
-    private KitPvPKit.Level selectedKit;
+    private boolean spectator;
 
-    public KitPvPPlayer(Player player) {
+    private boolean spawnProtection;
+    private KitPvPKit.Level selectedKit;
+    private int killStreak;
+
+    public KitPvPPlayer(KitPvP kitPvP, Player player) {
         super(player);
 
+        this.kitPvP = kitPvP;
+
         levelData = new LevelData(this);
+        killStreak = 0;
     }
 
     @Override
     protected void onLogin() {
-        players.add(this);
+        players.put(player, this);
 
         clearFullInventory();
         clearPotionEffects();
 
+        /* Lobby Kit */
+        kitPvP.getLobbyKit(this).setItems(this);
+        player.getInventory().setHeldItemSlot(4);
+
         /* Force Update */
         getData();
-
         /* Update Level */
         levelData.update(false);
 
@@ -46,9 +67,12 @@ public class KitPvPPlayer extends OMPlayer {
 
     @Override
     protected void onLogout() {
+        EntityNms nms = orbitMines.getNms().entity();
 
+        if (selectedKit != null && player.getHealth() != nms.getAttribute(player, EntityNms.Attribute.MAX_HEALTH))
+            player.damage(nms.getAttribute(player, EntityNms.Attribute.MAX_HEALTH), player.getLastDamageCause().getEntity());
 
-        players.remove(this);
+        players.remove(player);
     }
 
     @Override
@@ -58,11 +82,167 @@ public class KitPvPPlayer extends OMPlayer {
 
     @Override
     public boolean canReceiveVelocity() {
-        return false;//TODO
+        return true;
+    }
+
+    @Override
+    public Collection<ComponentMessage.TempTextComponent> getChatPrefix() {
+        return Arrays.asList(
+                        new ComponentMessage.TempTextComponent(levelData.getPrefix()),
+                        new ComponentMessage.TempTextComponent(isSpectator() ? " §eSpec " : "")
+                );
+    }
+
+    public boolean hasSpawnProtection() {
+        return spawnProtection;
     }
 
     public KitPvPKit.Level getSelectedKit() {
         return selectedKit;
+    }
+
+    /* Death & Kills */
+    public void processKill(KitPvPPlayer killed) {
+        addKill();
+
+        //TODO OnKill Effect
+
+        /* Coins */
+        int coins = KitPvP.COINS_PER_KILL;
+        sendMessage("§6§l+" + coins + " Coins");
+
+        coins += applyMultiplier(Color.ORANGE, "Coins", coins, getCoinMultiplier(), vipRank.getDisplayName());
+        if (CoinBooster.ACTIVE != null) {
+            CachedPlayer player = CoinBooster.ACTIVE.getPlayer();
+            coins += applyMultiplier(Color.ORANGE, "Coins", coins, CoinBooster.ACTIVE.getType().getMultiplier(), player.getRankPrefix() + player.getPlayerName() + "'s Booster");
+        }
+
+        /* Experience */
+        int experience = KitPvP.XP_PER_KILL;
+        sendMessage("§e§l+" + experience + " XP");
+
+        experience += applyMultiplier(Color.YELLOW, "XP", experience, getXPMultiplier(), vipRank.getDisplayName());
+
+        /* Give Rewards */
+        addCoinsExperience(coins, experience, true);
+
+        /* Kill Hologram */
+    }
+
+    private int applyMultiplier(Color color, String type, int current, double multiplier, String name) {
+        if (multiplier == 1.0D)
+            return 0;
+
+        int added = (int) (current * (1 - multiplier));
+        sendMessage(color.getChatColor() + "§l+" + current + " " + type + " §7(" + name + "§7)");
+
+        return added;
+    }
+
+    public void processDeath(@Nullable KitPvPPlayer killer) {
+        addDeath();
+
+
+
+        this.selectedKit = null;
+        this.killStreak = 0;
+    }
+
+    /* Joining Map */
+
+    public void joinMap() {
+        joinMap(getLastSelected());
+    }
+
+    public void joinMap(KitPvPKit.Level selectedKit) {
+        teleportToMap();
+        setSelectedKit(selectedKit);
+    }
+
+    public void setSelectedKit(KitPvPKit.Level selectedKit) {
+        this.selectedKit = selectedKit;
+
+        clearFullInventory();
+        clearPotionEffects();
+
+        /* Apply Attributes */
+        Attributes attributes = selectedKit.getAttributes();
+        EntityNms nms = orbitMines.getNms().entity();
+        nms.setAttribute(player, EntityNms.Attribute.MAX_HEALTH, attributes.getMaxHealth());
+        player.setHealth(attributes.getMaxHealth());
+        nms.setAttribute(player, EntityNms.Attribute.KNOCKBACK_RESISTANCE, attributes.getKnockbackResistance());
+
+        /* Remove Attack Delay */
+        nms.setAttribute(player, EntityNms.Attribute.ATTACK_SPEED, 16.0D);
+
+        /* Give Kit */
+        selectedKit.getKit().setItems(this);
+
+        /* Update Last Selected Kit */
+        KitPvPData data = getData();
+        data.setLastSelectedId(selectedKit.getHandler().getId());
+        data.setLastSelectedLevel(selectedKit.getLevel());
+
+//        updateNpcs();
+
+        new Title(selectedKit.getHandler().getDisplayName(), "§e§lLevel" + selectedKit.getLevel(), 20, 40, 20).send(this);
+    }
+
+    public int getKillStreak() {
+        return killStreak;
+    }
+
+    public void teleportToMap() {
+        KitPvPMap.CURRENT.teleport(this);
+
+        /* Spawn Protection */
+        if (player.getGameMode() != GameMode.SPECTATOR) {
+            spawnProtection = true;
+
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    spawnProtection = false;
+                }
+            }.runTaskLater(orbitMines, 40);
+        }
+
+        /* Teleport sound */
+        playSound(Sound.ENTITY_ENDERMAN_TELEPORT);
+    }
+
+    /* Spectator */
+    public boolean isSpectator() {
+        return spectator;
+    }
+
+    public void setSpectator(boolean spectator) {
+        this.spectator = spectator;
+
+        clearFullInventory();
+        clearPotionEffects();
+
+        if (spectator) {
+            kitPvP.getSpectatorKit(this).setItems(this);
+            player.getInventory().setHeldItemSlot(4);
+
+            teleportToMap();
+
+            player.setGameMode(GameMode.CREATIVE);
+            player.setAllowFlight(true);
+            player.setFlying(true);
+        } else {
+            kitPvP.getLobbyKit(this).setItems(this);
+            player.getInventory().setHeldItemSlot(4);
+
+            player.teleport(kitPvP.getSpawnLocation(player));
+
+            player.setGameMode(GameMode.SURVIVAL);
+            player.setFlying(false);
+            player.setAllowFlight(false);
+        }
+
+        playSound(Sound.ENTITY_ENDERMAN_TELEPORT);
     }
 
     public LevelData getLevelData() {
@@ -110,7 +290,7 @@ public class KitPvPPlayer extends OMPlayer {
 
     public void addCoinsExperience(int coins, int experience, boolean notify) {
         if (notify)
-            new ActionBar(this, () -> "§6+" + coins + " " + (coins == 1 ? "Coin" : "Coins") + "§7, " + "§e+" + experience + " XP", 100).send();
+            new ActionBar(this, () -> "§6§l+" + coins + " " + (coins == 1 ? "Coin" : "Coins") + "§7, " + "§e§l+" + experience + " XP", 100).send();
 
         addCoins(coins, false);
         addExperience(experience, false);
@@ -138,6 +318,25 @@ public class KitPvPPlayer extends OMPlayer {
 
     public void addDeath() {
         getData().addDeath(selectedKit.getHandler().getId());
+    }
+
+    /*
+        BestStreak
+     */
+
+    public int getBestStreak() {
+        return getData().getBestStreak();
+    }
+
+    private void setBestStreak(int bestStreak) {
+        getData().setBestStreak(selectedKit.getHandler().getId(), bestStreak);
+    }
+
+    /*
+        LastSelected
+     */
+    public KitPvPKit.Level getLastSelected() {
+        return KitPvPKit.getKit(getData().getLastSelectedId()).getLevel(getData().getLastSelectedLevel());
     }
 
     /*
@@ -185,30 +384,18 @@ public class KitPvPPlayer extends OMPlayer {
     }
 
     public static KitPvPPlayer getPlayer(Player player) {
-        for (KitPvPPlayer omp : players) {
-            if (omp.getPlayer() == player)
-                return omp;
-        }
-        return null;
+        return player == null ? null : players.getOrDefault(player, null);
     }
 
     public static KitPvPPlayer getPlayer(String name) {
-        for (KitPvPPlayer omp : players) {
-            if (omp.getName(true).equalsIgnoreCase(name))
-                return omp;
-        }
-        return null;
+        return getPlayer(Bukkit.getPlayer(name));
     }
 
     public static KitPvPPlayer getPlayer(UUID uuid) {
-        for (KitPvPPlayer omp : players) {
-            if (omp.getUUID().toString().equals(uuid.toString()))
-                return omp;
-        }
-        return null;
+        return getPlayer(Bukkit.getPlayer(uuid));
     }
 
-    public static List<KitPvPPlayer> getKitPvPPlayers() {
-        return players;
+    public static Collection<KitPvPPlayer> getKitPvPPlayers() {
+        return players.values();
     }
 }

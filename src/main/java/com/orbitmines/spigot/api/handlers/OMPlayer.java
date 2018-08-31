@@ -54,10 +54,10 @@ import java.util.*;
 */
 public abstract class OMPlayer {
 
-    protected static List<OMPlayer> players = new ArrayList<>();
+    protected static Map<Player, OMPlayer> players = new HashMap<>();
 
-    protected static Map<StaffRank, List<Player>> staff = new HashMap<>();
-    protected static Map<VipRank, List<Player>> vips = new HashMap<>();
+//    protected static Map<StaffRank, List<Player>> staff = new HashMap<>();
+//    protected static Map<VipRank, List<Player>> vips = new HashMap<>();
 
     protected OrbitMines orbitMines;
     protected final Player player;
@@ -128,6 +128,9 @@ public abstract class OMPlayer {
     /* Called when a player receives knock back, example: gadgets */
     public abstract boolean canReceiveVelocity();
 
+    /* Chat Prefix */
+    public abstract Collection<ComponentMessage.TempTextComponent> getChatPrefix();
+
     /*
 
 
@@ -137,7 +140,7 @@ public abstract class OMPlayer {
      */
 
     public void login() {
-        players.add(this);
+        players.put(player, this);
 
         /* Update Players */
         orbitMines.getServerHandler().getServer().setPlayers(Bukkit.getOnlinePlayers().size());
@@ -287,11 +290,11 @@ public abstract class OMPlayer {
         if (teleportingTo != null)
             teleportingTimer.cancel();
 
-        players.remove(this);
+        players.remove(player);
     }
 
     public void defaultTabList() {
-        orbitMines.getNms().tabList().send(Collections.singletonList(player), "\n§8§lOrbit§7§lMines\n" + orbitMines.getServerHandler().getServer().getDisplayName() + "\n", "\n    §7Website: §6§lwww.orbitmines.com§r    \n    §7" + lang("Winkel", "Shop") + ": §3§lorbitmines.buycraft.net§r    \n    §7Discord: §9§lQjVGJMe    \n    §7Twitter: §b§l@OrbitMines§r    \n\n    §7Vote: §9§l/vote§r    \n");
+        orbitMines.getNms().tabList().send(Collections.singletonList(player), "\n§8§lOrbit§7§lMines\n" + orbitMines.getServerHandler().getServer().getDisplayName() + "\n", "\n    §7Website: §6§lwww.orbitmines.com§r    \n    §7" + lang("Winkel", "Shop") + ": §3§lorbitmines.buycraft.net§r    \n    §7Discord: §9§lQjVGJMe    \n    §7Twitter: §b§l@OrbitMines§r    \n\n    §7Vote: §9§l/vote§r    \n§7");
     }
 
     public void on2FALogin() {
@@ -856,6 +859,10 @@ public abstract class OMPlayer {
         displayName.setName(name);
     }
 
+    public boolean hasNickname() {
+        return displayName.hasChanged();
+    }
+
     public String getPrefix() {
         return displayName.getPrefix();
     }
@@ -1081,31 +1088,19 @@ public abstract class OMPlayer {
      */
 
     public static OMPlayer getPlayer(Player player) {
-        for (OMPlayer omp : players) {
-            if (omp.getPlayer() == player)
-                return omp;
-        }
-        return null;
+        return player == null ? null : players.getOrDefault(player, null);
     }
 
     public static OMPlayer getPlayer(String name) {
-        for (OMPlayer omp : players) {
-            if (omp.getName(true).equalsIgnoreCase(name))
-                return omp;
-        }
-        return null;
+        return getPlayer(Bukkit.getPlayer(name));
     }
 
     public static OMPlayer getPlayer(UUID uuid) {
-        for (OMPlayer omp : players) {
-            if (omp.getUUID().toString().equals(uuid.toString()))
-                return omp;
-        }
-        return null;
+        return getPlayer(Bukkit.getPlayer(uuid));
     }
 
-    public static List<OMPlayer> getPlayers() {
-        return players;
+    public static Collection<OMPlayer> getPlayers() {
+        return players.values();
     }
 
 }

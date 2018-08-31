@@ -189,6 +189,7 @@ public class WorldUtils {
 
         return list;
     }
+
 //
 //    /* Returns a list of OMPlayers nearby a location */
 //    public static List<OMPlayer> getNearbyPlayers(Location loc, double range, boolean includeSpectators) {

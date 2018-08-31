@@ -63,10 +63,11 @@ public class WarpEditorGUI extends GUI {
                         }
 
                         for (int i = 0; i < warpName.length(); i++) {
-                            if (!Character.isAlphabetic(warpName.charAt(i)) && !Character.isDigit(warpName.charAt(i)) && !Character.isSpaceChar(warpName.charAt(i))) {
+                            char c = warpName.charAt(i);
+                            if (!Character.isAlphabetic(c) && !Character.isDigit(c) && !Character.isSpaceChar(c)) {
                                 event.setWillClose(false);
                                 event.setWillDestroy(false);
-                                omp.sendMessage("Warp", Color.RED, "§7Je " + Warp.COLOR.getChatColor() + "warp naam§7 kan alleen maar bestaan uit " + Warp.COLOR.getChatColor() + "letters§7," + Warp.COLOR.getChatColor() + "nummers§7 en " + Warp.COLOR.getChatColor() + "spaties§7.", "§7Your " + Warp.COLOR.getChatColor() + "warp name§7 can only contain " + Warp.COLOR.getChatColor() + "alphabetic§7 and " + Warp.COLOR.getChatColor() + "numeric§7 characters and " + Warp.COLOR.getChatColor() + "spaces§7.");
+                                omp.sendMessage("Warp", Color.RED, "§7Je " + Warp.COLOR.getChatColor() + "warp naam§7 kan alleen maar bestaan uit " + Warp.COLOR.getChatColor() + "letters§7, " + Warp.COLOR.getChatColor() + "nummers§7 en " + Warp.COLOR.getChatColor() + "spaties§7.", "§7Your " + Warp.COLOR.getChatColor() + "warp name§7 can only contain " + Warp.COLOR.getChatColor() + "alphabetic§7 and " + Warp.COLOR.getChatColor() + "numeric§7 characters and " + Warp.COLOR.getChatColor() + "spaces§7.");
                                 return;
                             }
                         }

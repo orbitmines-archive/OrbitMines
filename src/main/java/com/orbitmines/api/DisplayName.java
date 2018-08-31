@@ -66,4 +66,8 @@ public class DisplayName {
     public String getDisplayName(boolean onlyName) {
         return onlyName ? initialName /* name, and then change methods to OMPlayer#getRealName? */ : (prefix != null ? prefix : "") + name + (suffix != null ? suffix : "");
     }
+
+    public boolean hasChanged() {
+        return !name.equals(initialName);
+    }
 }

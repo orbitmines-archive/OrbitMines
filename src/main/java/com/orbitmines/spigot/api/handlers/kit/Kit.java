@@ -9,15 +9,18 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /*
 * OrbitMines - @author Fadi Shawki - 29-7-2017
 */
 public class Kit {
-    private static List<Kit> kits = new ArrayList<>();
 
-    private String name;
+    private static Map<String, Kit> kits = new HashMap<>();
+
+    private final String name;
     private ItemBuilder[] armorContents;
     private ItemBuilder[] contents;
     private ItemBuilder itemOffHand;
@@ -27,7 +30,7 @@ public class Kit {
     private CachedPlayer lastUsedBy;
 
     public Kit(String name) {
-        kits.add(this);
+        kits.put(name, this);
 
         this.name = name;
         this.armorContents = new ItemBuilder[4];
@@ -37,10 +40,6 @@ public class Kit {
 
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public ItemBuilder getHelmet() {
@@ -267,11 +266,6 @@ public class Kit {
     }
 
     public static Kit getKit(String name) {
-        for (Kit kit : kits) {
-            if (kit.getName().equals(name)) {
-                return kit;
-            }
-        }
-        return null;
+        return kits.getOrDefault(name, null);
     }
 }

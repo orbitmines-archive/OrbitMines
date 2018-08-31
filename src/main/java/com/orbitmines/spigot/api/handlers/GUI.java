@@ -3,6 +3,7 @@ package com.orbitmines.spigot.api.handlers;
 import com.orbitmines.spigot.api.utils.PlayerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -17,8 +18,11 @@ public abstract class GUI {
     /* Called before inventory is opened, return false to cancel */
     protected abstract boolean onOpen(OMPlayer omp);
 
-    /* @Override: Called after a player clicks a registered item */
+    /* @Override: Called after a player clicks an item */
     protected void onClick(InventoryClickEvent event, OMPlayer omp) {}
+
+    /* @Override: Called after a player drags an item */
+    protected void onDrag(InventoryDragEvent event, OMPlayer omp) {}
 
     public Inventory getInventory() {
         return inventory;
@@ -83,6 +87,22 @@ public abstract class GUI {
             itemInstance.onClick(event, omp);
 
         onClick(event, omp);
+    }
+
+    /* Event Cancelled on default, use Event#setCancelled(false) in ItemInstance#onClick in in order to undo */
+    public void processDragEvent(InventoryDragEvent event, OMPlayer omp) {
+        Inventory clicked = event.getInventory();
+        if (clicked == null || clicked.getTitle() == null || !clicked.getTitle().equals(inventory.getTitle()))
+            return;
+
+        event.setCancelled(true);
+
+//        ItemInstance itemInstance = itemInstances[event.gets()];
+//
+//        if (itemInstance != null)
+//            itemInstance.onClick(event, omp);
+
+        onDrag(event, omp);
     }
 
     public void clearInstances() {

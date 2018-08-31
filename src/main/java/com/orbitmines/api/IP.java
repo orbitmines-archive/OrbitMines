@@ -19,7 +19,7 @@ public class IP {
     private static final int MAX_HISTORY = 1000;
     public static final String UNKNOWN = "UNKNOWN";
 
-    private static List<IP> ips = new ArrayList<>();
+    private static Map<UUID, IP> ips = new HashMap<>();
 
     private final UUID uuid;
     private String currentServer;
@@ -29,7 +29,7 @@ public class IP {
     private Map<String, String> allIps;
 
     public IP(UUID uuid, String lastIp) {
-        ips.add(this);
+        ips.put(uuid, this);
 
         this.uuid = uuid;
         this.lastIp = lastIp;
@@ -43,7 +43,7 @@ public class IP {
     }
 
     public IP(UUID uuid, String lastIp, String lastLogin, Map<String, String> allIps) {
-        ips.add(this);
+        ips.put(uuid, this);
 
         this.uuid = uuid;
         this.currentServer = null;
@@ -148,16 +148,12 @@ public class IP {
     }
 
     public static IP getIp(UUID uuid) {
-        for (IP ip : ips) {
-            if (ip.getUuid().toString().equals(uuid.toString()))
-                return ip;
-        }
-        return fromDatabase(uuid);
+        return ips.getOrDefault(uuid, fromDatabase(uuid));
     }
 
     public static List<IP> getIpInfo(String ipString) {
         List<IP> ipList = new ArrayList<>();
-        for (IP ip : ips) {
+        for (IP ip : ips.values()) {
             for (String address : ip.getAllIps().keySet()) {
                 if (address.equals(ipString)) {
                     ipList.add(ip);
@@ -168,7 +164,7 @@ public class IP {
         return ipList;
     }
 
-    public static List<IP> getIps() {
+    public static Map<UUID, IP> getIps() {
         return ips;
     }
 

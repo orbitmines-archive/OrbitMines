@@ -57,6 +57,11 @@ public abstract class Command {
             help = " §7" + help;
 
         StringBuilder aliases = new StringBuilder();
+        if (this instanceof VipCommand)
+            aliases.append("\n§7Required: ").append(((VipCommand) this).getVipRank().getDisplayName());
+        else if (this instanceof StaffCommand)
+            aliases.append("\n§7Required: ").append(((StaffCommand) this).getStaffRank().getDisplayName());
+
         if (getAlias().length > 1) {
             aliases.append("\n\n§7Alias: ");
 

@@ -1,13 +1,14 @@
 package com.orbitmines.spigot.servers.survival.handlers.claim;
 
+import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.api.Message;
-import com.orbitmines.api.StaffRank;
+import com.orbitmines.api.Server;
 import com.orbitmines.api.database.Database;
 import com.orbitmines.api.database.Table;
 import com.orbitmines.api.database.Where;
 import com.orbitmines.api.database.tables.survival.TableSurvivalClaim;
 import com.orbitmines.api.utils.DateUtils;
-import com.orbitmines.api.CachedPlayer;
+import com.orbitmines.api.utils.NumberUtils;
 import com.orbitmines.spigot.api.handlers.chat.ActionBar;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.api.utils.ItemUtils;
@@ -47,6 +48,7 @@ public class Claim {
     private final Survival survival;
 
     private Long id;
+    private String name;
     private final Date createdOn;
 
     private boolean registered;
@@ -64,6 +66,7 @@ public class Claim {
     public Claim(Survival survival) {
         this.survival = survival;
         this.id = null;
+        this.name = null;
         this.createdOn = DateUtils.now();
 
         this.members = new HashMap<>();
@@ -71,9 +74,10 @@ public class Claim {
         this.children = new ArrayList<>();
     }
 
-    public Claim(Survival survival, Long id, Date createdOn, Location corner1, Location corner2, UUID owner, Map<UUID, Permission> members, Map<Settings, Permission> settings) {
+    public Claim(Survival survival, Long id, String name, Date createdOn, Location corner1, Location corner2, UUID owner, Map<UUID, Permission> members, Map<Settings, Permission> settings) {
         this.survival = survival;
         this.id = id;
+        this.name = name;
         this.createdOn = createdOn;
         this.corners = new Location[] { corner1, corner2 };
         this.owner = owner;
@@ -100,6 +104,18 @@ public class Claim {
 
     public void setRegistered(boolean registered) {
         this.registered = registered;
+    }
+
+    /*
+        Name
+     */
+
+    public String getName() {
+        return name == null ? "Claim #" + NumberUtils.locale(id) : name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     /*
@@ -163,7 +179,7 @@ public class Claim {
             return parent.getOwnerName();
 
         if (!hasOwner())
-            return StaffRank.MODERATOR.getPrefixColor().getChatColor() + "§lModerators";
+            return Server.SURVIVAL.getDisplayName();
 
         CachedPlayer player = CachedPlayer.getPlayer(owner);
         return player.getRankPrefixColor().getChatColor() + player.getPlayerName();
@@ -182,7 +198,7 @@ public class Claim {
     }
 
     public boolean hasPermission(UUID member, Permission permission) {
-        return hasParent() && parent.hasPermission(member, permission) || members.containsKey(member) && members.get(member).hasPerms(permission);
+        return owner == null || hasParent() && parent.hasPermission(member, permission) || members.containsKey(member) && members.get(member).hasPerms(permission);
     }
 
     public void setPermission(UUID member, Permission permission) {
@@ -319,7 +335,7 @@ public class Claim {
         return false;
     }
 
-    public boolean canAccess(SurvivalPlayer omp) {
+    public boolean canAccess(SurvivalPlayer omp, boolean notify) {
         if (omp.isOpMode())
             return true;
 
@@ -329,8 +345,10 @@ public class Claim {
         if (hasPermission(omp.getUUID(), Permission.ACCESS))
             return true;
 
-        String name = getOwnerName();
-        new ActionBar(omp, () -> omp.lang(name + " §c§lheeft je geen toegang gegeven om dat hier te gebruiken.", name + " §c§ldidn't give you permission to use that here."), 60).send();
+        if (notify) {
+            String name = getOwnerName();
+            new ActionBar(omp, () -> omp.lang(name + " §c§lheeft je geen toegang gegeven om dat hier te gebruiken.", name + " §c§ldidn't give you permission to use that here."), 60).send();
+        }
 
         return false;
     }

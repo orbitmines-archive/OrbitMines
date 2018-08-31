@@ -24,20 +24,19 @@ public class PlayerChatEvent implements Listener {
     @EventHandler
     public void onChat(AsyncPlayerChatEvent event) {
         OMPlayer omp = OMPlayer.getPlayer(event.getPlayer());
+        event.setCancelled(true);
 
         if (omp.isLoggedIn()) {
             if (omp.isMuted()) {
-                event.setCancelled(true);
                 omp.sendMessage("Mute", Color.RED, "§7Je bent gemute!", "§7You have been muted!");//TODO GIVE player indication how long the mute lasts
                 return;
             }
 
-            orbitMines.getServerHandler().format(event, omp);
+            orbitMines.getServerHandler().toMinecraft(omp, event.getMessage());
             orbitMines.getServerHandler().toDiscord(event, omp);
             return;
         }
 
-        event.setCancelled(true);
         /* 2FA */
         switch (orbitMines.get2FA().login(omp, event.getMessage())) {
 

@@ -33,12 +33,17 @@ public class CommandPreprocessEvent implements Listener {
         String[] a = event.getMessage().split(" ");
         Command command = Command.getCommand(a[0]);
 
-        event.setCancelled(true);
 
         if (command == null) {
+            if (omp.isOpMode())
+                return;
+
+            event.setCancelled(true);
             omp.sendMessage(Message.UNKNOWN_COMMAND);
             return;
         }
+
+        event.setCancelled(true);
 
         command.dispatch(omp, a);
 

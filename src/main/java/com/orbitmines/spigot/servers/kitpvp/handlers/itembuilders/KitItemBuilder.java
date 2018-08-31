@@ -28,8 +28,10 @@ public class KitItemBuilder extends ItemBuilder {
         super(material, amount, displayName, lore);
     }
 
-    public KitItemBuilder(ItemBuilder itemBuilder) {
+    public KitItemBuilder(KitItemBuilder itemBuilder) {
         super(itemBuilder);
+
+        //
     }
 
     public KitItemBuilder(Material material, int amount, String displayName, List<String> lore) {

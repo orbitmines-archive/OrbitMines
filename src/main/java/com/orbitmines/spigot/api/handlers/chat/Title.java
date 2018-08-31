@@ -21,6 +21,10 @@ public class Title {
     private int stay;
     private int fadeOut;
 
+    public Title(String title, String subTitle, int fadeIn, int stay, int fadeOut) {
+        this(new Message(title), new Message(subTitle), fadeIn, stay, fadeOut);
+    }
+
     public Title(Message title, Message subTitle, int fadeIn, int stay, int fadeOut) {
         plugin = OrbitMines.getInstance();
 

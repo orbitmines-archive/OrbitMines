@@ -6,10 +6,12 @@ import com.orbitmines.api.settings.Settings;
 import com.orbitmines.api.settings.SettingsType;
 import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
+import com.orbitmines.spigot.api.handlers.chat.ComponentMessage;
 import com.orbitmines.spigot.api.handlers.data.FriendsData;
 import com.orbitmines.spigot.api.handlers.data.SettingsData;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.servers.hub.Hub;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -21,7 +23,7 @@ import java.util.*;
 */
 public class HubPlayer extends OMPlayer {
 
-    protected static List<HubPlayer> players = new ArrayList<>();
+    protected static Map<Player, HubPlayer> players = new HashMap<>();
 
     private final Hub hub;
 
@@ -33,7 +35,7 @@ public class HubPlayer extends OMPlayer {
 
     @Override
     protected void onLogin() {
-        players.add(this);
+        players.put(player, this);
 
         setScoreboard(new Hub.Scoreboard(orbitMines, this));
 
@@ -141,7 +143,7 @@ public class HubPlayer extends OMPlayer {
     @Override
     protected void onLogout() {
 
-        players.remove(this);
+        players.remove(player);
     }
 
     @Override
@@ -167,6 +169,11 @@ public class HubPlayer extends OMPlayer {
     @Override
     public boolean canReceiveVelocity() {
         return false;
+    }
+
+    @Override
+    public Collection<ComponentMessage.TempTextComponent> getChatPrefix() {
+        return Collections.emptyList();
     }
 
     @Override
@@ -246,30 +253,18 @@ public class HubPlayer extends OMPlayer {
      */
 
     public static HubPlayer getPlayer(Player player) {
-        for (HubPlayer omp : players) {
-            if (omp.getPlayer() == player)
-                return omp;
-        }
-        throw new IllegalStateException();
+        return player == null ? null : players.getOrDefault(player, null);
     }
 
     public static HubPlayer getPlayer(String name) {
-        for (HubPlayer omp : players) {
-            if (omp.getName(true).equalsIgnoreCase(name))
-                return omp;
-        }
-        throw new IllegalStateException();
+        return getPlayer(Bukkit.getPlayer(name));
     }
 
     public static HubPlayer getPlayer(UUID uuid) {
-        for (HubPlayer omp : players) {
-            if (omp.getUUID().toString().equals(uuid.toString()))
-                return omp;
-        }
-        throw new IllegalStateException();
+        return getPlayer(Bukkit.getPlayer(uuid));
     }
 
-    public static List<HubPlayer> getHubPlayers() {
-        return players;
+    public static Collection<HubPlayer> getHubPlayers() {
+        return players.values();
     }
 }
