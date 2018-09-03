@@ -21,7 +21,7 @@ public class DiscordBungeeUtils {
 
         String prefix;
 
-        if (omp.getStaffRank() == StaffRank.NONE || omp.getStaffRank() == StaffRank.ADMIN)
+        if (omp.getStaffRank() == StaffRank.NONE)
             prefix = omp.getVipRank() != VipRank.NONE ? " " + discord.getEmote(token, omp.getVipRank()).getAsMention() + "**" + omp.getRankName() + "**" : "";
         else
             prefix = " **" + omp.getRankName() + "**";

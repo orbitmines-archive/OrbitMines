@@ -1,5 +1,7 @@
 package com.orbitmines.spigot.servers.kitpvp;
 
+import com.orbitmines.api.CachedPlayer;
+import com.orbitmines.api.Color;
 import com.orbitmines.api.Language;
 import com.orbitmines.api.Server;
 import com.orbitmines.api.utils.NumberUtils;
@@ -10,6 +12,7 @@ import com.orbitmines.spigot.OrbitMinesServer;
 import com.orbitmines.spigot.api.events.VoidDamageEvent;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.PreventionSet;
+import com.orbitmines.spigot.api.handlers.chat.ComponentMessage;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.api.handlers.itemhandlers.ItemHoverActionBar;
 import com.orbitmines.spigot.api.handlers.kit.Kit;
@@ -74,7 +77,8 @@ public class KitPvP extends OrbitMinesServer {
                 PreventionSet.Prevention.ITEM_PICKUP,
                 PreventionSet.Prevention.SWAP_HAND_ITEMS,
                 PreventionSet.Prevention.WEATHER_CHANGE,
-                PreventionSet.Prevention.MONSTER_EGG_USAGE
+                PreventionSet.Prevention.MONSTER_EGG_USAGE,
+                PreventionSet.Prevention.BUCKET_USAGE
         );
 
         /* Load & Create all Maps from Database */
@@ -96,7 +100,8 @@ public class KitPvP extends OrbitMinesServer {
 
                     PreventionSet.Prevention.FOOD_CHANGE,
                     PreventionSet.Prevention.BLOCK_SPREAD,
-                    PreventionSet.Prevention.EXPLOSION_DAMAGE,
+                    PreventionSet.Prevention.MONSTER_EGG_USAGE,
+                    PreventionSet.Prevention.BUCKET_USAGE,
                     PreventionSet.Prevention.PHYSICAL_INTERACTING_EXCEPT_PLATES
             );
             map.getWorld().setGameRule(GameRule.DO_MOB_SPAWNING, false);
@@ -138,6 +143,11 @@ public class KitPvP extends OrbitMinesServer {
     @Override
     public GameMode getGameMode() {
         return GameMode.SURVIVAL;
+    }
+
+    @Override
+    public boolean format(CachedPlayer sender, OMPlayer receiver, Color color, String string, List<ComponentMessage.TempTextComponent> list) {
+        return false;
     }
 
     @Override

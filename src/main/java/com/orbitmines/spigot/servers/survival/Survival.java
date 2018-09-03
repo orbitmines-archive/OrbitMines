@@ -2,6 +2,7 @@ package com.orbitmines.spigot.servers.survival;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.orbitmines.api.*;
+import com.orbitmines.api.Color;
 import com.orbitmines.api.Server;
 import com.orbitmines.api.database.Column;
 import com.orbitmines.api.database.Database;
@@ -22,6 +23,7 @@ import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.PluginMessageHandler;
 import com.orbitmines.spigot.api.handlers.PreventionSet;
 import com.orbitmines.spigot.api.handlers.chat.ActionBar;
+import com.orbitmines.spigot.api.handlers.chat.ComponentMessage;
 import com.orbitmines.spigot.api.handlers.cmd.Command;
 import com.orbitmines.spigot.api.handlers.data.LootData;
 import com.orbitmines.spigot.api.handlers.data.PlayTimeData;
@@ -34,10 +36,7 @@ import com.orbitmines.spigot.api.handlers.npc.Hologram;
 import com.orbitmines.spigot.api.handlers.scoreboard.DefaultScoreboard;
 import com.orbitmines.spigot.api.handlers.scoreboard.ScoreboardSet;
 import com.orbitmines.spigot.api.options.chestshops.ChestShopHandler;
-import com.orbitmines.spigot.api.utils.ConsoleUtils;
-import com.orbitmines.spigot.api.utils.LocationUtils;
-import com.orbitmines.spigot.api.utils.PlayerUtils;
-import com.orbitmines.spigot.api.utils.Serializer;
+import com.orbitmines.spigot.api.utils.*;
 import com.orbitmines.spigot.servers.hub.datapoints.HubDataPointSpawnpoint;
 import com.orbitmines.spigot.servers.survival.cmds.*;
 import com.orbitmines.spigot.servers.survival.cmds.vip.*;
@@ -57,6 +56,7 @@ import com.orbitmines.spigot.servers.survival.handlers.region.RegionBuilder;
 import com.orbitmines.spigot.servers.survival.handlers.teleportable.SurvivalSpawn;
 import com.orbitmines.spigot.servers.survival.handlers.teleportable.Warp;
 import com.orbitmines.spigot.servers.survival.runnables.ClaimAchievementRunnable;
+import net.md_5.bungee.api.chat.HoverEvent;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -127,7 +127,8 @@ public class Survival extends OrbitMinesServer {
                 PreventionSet.Prevention.LEAF_DECAY,
                 PreventionSet.Prevention.PLAYER_DAMAGE,
                 PreventionSet.Prevention.WEATHER_CHANGE,
-                PreventionSet.Prevention.MONSTER_EGG_USAGE
+                PreventionSet.Prevention.MONSTER_EGG_USAGE,
+                PreventionSet.Prevention.BUCKET_USAGE
         );
         orbitMines.getLobby().getWorld().setPVP(false);
 
@@ -333,7 +334,7 @@ public class Survival extends OrbitMinesServer {
         new CommandTeleport();
         new CommandWorkbench();
 //        new CommandHat(); EMERALD+?
-        new CommandFly();
+        new CommandFly(this);
         new CommandEnderchest();
         new CommandTpHere();
     }
@@ -353,8 +354,74 @@ public class Survival extends OrbitMinesServer {
         return GameMode.SURVIVAL;
     }
 
+    @Override
+    public boolean format(CachedPlayer sender, OMPlayer receiver, Color color, String string, List<ComponentMessage.TempTextComponent> list) {
+        if (string.equalsIgnoreCase("[item]")) {
+            OMPlayer senderPlayer = sender != null ? OMPlayer.getPlayer(sender.getUUID()) : null;
+
+            if (senderPlayer == null || senderPlayer.getItemInMainHand() == null || senderPlayer.getItemInMainHand().getType() == Material.AIR) {
+                /* Player offline, or no item in hand, display explanation message */
+                list.add(new ComponentMessage.TempTextComponent(new Message("[item]"), HoverEvent.Action.SHOW_TEXT, new Message(
+                        "§a[item]\n" +
+                        "§7Neem een item in je hand\n" +
+                        "§7en type [item] om het\n" +
+                        "§7in de chat te zetten.",
+                        "§a[item]\n" +
+                        "§7Hold an item in your hand\n" +
+                        "§7and type [item] to put it\n" +
+                        "§7in the chat."
+                )).setChatColor(Color.LIME.getMd5()));
+                return true;
+            }
+
+            /* Display ItemStack with [DisplayName] */
+            ItemStack item = senderPlayer.getItemInMainHand();
+            String serialized = ReflectionUtils.toJSONString(item);
+
+            list.add(new ComponentMessage.TempTextComponent("§a[", HoverEvent.Action.SHOW_ITEM, serialized).setChatColor(Color.LIME.getMd5()));
+
+            if (item.getItemMeta() != null && item.getItemMeta().getDisplayName() != null && !item.getItemMeta().getDisplayName().isEmpty()) {
+                String displayName = item.getItemMeta().getDisplayName();
+                String[] display = displayName.split(" ");
+
+                int charIndex = 0;
+                for (int i = 0; i < display.length; i++) {
+                    String space = i != 0 ? " " : "";
+                    String part = display[i];
+
+                    charIndex += space.length() + part.length();
+
+                    String lastColors = ChatColor.getLastColors(displayName.substring(0, charIndex));
+
+                    ComponentMessage.TempTextComponent component = new ComponentMessage.TempTextComponent(space + (i == 0 ? item.getAmount() + "x " : "") +  part, HoverEvent.Action.SHOW_ITEM, serialized);
+
+                    for (Color c : Color.values()) {
+                        if (!lastColors.contains(c.getChatColor()))
+                            continue;
+
+                        component.setChatColor(c.getMd5());
+                    }
+
+                    component.setBold(lastColors.contains("§l"));
+                    component.setItalic(lastColors.contains("§o"));
+                    component.setObfuscated(lastColors.contains("§k"));
+                    component.setStrikethrough(lastColors.contains("§m"));
+                    component.setUnderlined(lastColors.contains("§n"));
+
+                    list.add(component);
+                }
+            } else {
+                list.add(new ComponentMessage.TempTextComponent(item.getAmount() + "x " + ItemUtils.getName(item.getType()), HoverEvent.Action.SHOW_ITEM, serialized).setChatColor(Color.WHITE.getMd5()));
+            }
+
+            list.add(new ComponentMessage.TempTextComponent("§a]", HoverEvent.Action.SHOW_ITEM, serialized).setChatColor(Color.LIME.getMd5()));
+            return true;
+        }
+        return false;
+    }
+
     public boolean canClaimIn(World world) {
-        return Arrays.asList(this.world, this.world_nether, this.world_the_end).contains(world);
+        return this.world.equals(world) || this.world_nether.equals(world) || this.world_the_end.equals(world);
     }
 
     public boolean canEditOtherClaims(SurvivalPlayer omp) {
@@ -703,11 +770,6 @@ public class Survival extends OrbitMinesServer {
                 if (omp.getLastClaimToolLocation() == null) {
                     /* First point not selected */
 
-                    if (!canClaimIn(omp.getWorld())) {
-                        new ActionBar(omp, () -> omp.lang("§c§lJe kan hier niet claimen.", "§c§lClaiming is disabled here."), 40).send();
-                        return;
-                    }
-
                     /* Start claiming */
                     omp.setLastClaimToolLocation(block.getLocation());
 
@@ -717,7 +779,7 @@ public class Survival extends OrbitMinesServer {
                     /* Finishing claim */
 
                     /* New event if switched worlds */
-                    if (!omp.getWorld().getName().equals(Survival.this.getWorld().getName())) {
+                    if (!omp.getWorld().getName().equals(omp.getLastClaimToolLocation().getWorld().getName())) {
                         omp.setLastClaimToolLocation(null);
                         onRightClick(omp, event, itemStack);
                         return;
@@ -784,8 +846,20 @@ public class Survival extends OrbitMinesServer {
                 if (!canClaimIn(omp.getWorld()))
                     return omp.lang("§c§lJe kan hier niet claimen.", "§c§lClaiming is disabled here.");
 
+                if (canEditOtherClaims(omp))
+                    return omp.lang("§a§lClaiming Tool §7| §4§lOp Mode");
+
+                Claim claim = claimHandler.getClaimAt(omp.getLocation(), true, omp.getLastClaim());
+
+                if (claim != null) {
+                    omp.setLastClaim(claim);
+
+                    if (claim.isOwner(omp.getUUID()) || canEditOtherClaims(omp))
+                        return omp.lang("§6§lLINKER MUISKLIK §7| §a§lBeheer " + claim.getName(), "§6§lLEFT CLICK §7| §a§lManage " + claim.getName());
+                }
+
                 if (omp.getLastClaimToolLocation() == null)
-                    return omp.lang("§6§lLINKER MUISKLIK §7| §a§lClaim Informatie        §6§lRECHTER MUISKLIK §7| §a§lClaimen", "§6§lLEFT CLICK §7| §a§lClaim Information        §6§lRIGHT CLICK §7| §a§lClaim");
+                    return omp.lang("§6§lRECHTER MUISKLIK §7| §a§lLand Claimen", "§6§lRIGHT CLICK §7| §a§lClaim Land");
 
                 return omp.lang("§a§l" + (omp.getResizingClaim() == null ? "Claimen" : "Claim aanpassen") + "...        §c§lPos 1: §6§l" + LocationUtils.friendlyString(omp.getLastClaimToolLocation()) + "        §c§lPos 2: §6§lGEEN", "§a§l" + (omp.getResizingClaim() == null ? "Claiming" : "Resizing Claim") + "...        §c§lPos 1: §6§l" + LocationUtils.friendlyString(omp.getLastClaimToolLocation()) + "        §c§lPos 2: §6§lNONE");
             }

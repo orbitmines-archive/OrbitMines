@@ -2,7 +2,6 @@ package com.orbitmines.spigot.api.handlers;
 
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.utils.ItemUtils;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -18,7 +17,10 @@ import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /*
 * OrbitMines - @author Fadi Shawki - 2017
@@ -275,8 +277,8 @@ public class PreventionSet {
             if (!worlds.get(Prevention.BLOCK_INTERACTING).contains(block.getWorld()))
                 return;
 
-//            if (ItemUtils.INTERACTABLE.contains(block.getType()))
-            event.setCancelled(true);
+            if (ItemUtils.INTERACTABLE.contains(block.getType()))
+                event.setCancelled(true);
         }
     }
 
@@ -405,11 +407,9 @@ public class PreventionSet {
 
     public class PreventBucketUsage implements Listener {
 
-        private final List<Material> buckets = Arrays.asList(Material.WATER_BUCKET, Material.LAVA_BUCKET);
-
         @EventHandler
         public void preventBucketUsage(PlayerInteractEvent event) {
-            if (event.getAction() != Action.RIGHT_CLICK_BLOCK || !worlds.get(Prevention.BLOCK_INTERACTING).contains(event.getPlayer().getWorld()) || event.getItem() == null || !buckets.contains(event.getItem().getType()))
+            if (event.getAction() != Action.RIGHT_CLICK_BLOCK || !worlds.get(Prevention.BLOCK_INTERACTING).contains(event.getPlayer().getWorld()) || event.getItem() == null || !ItemUtils.BUCKETS.contains(event.getItem().getType()))
                 return;
 
             event.setCancelled(true);

@@ -83,9 +83,9 @@ public class CommandStats extends Command {
         VipRank vipRank = player.getVipRank();
         StaffRank staffRank = player.getStaffRank();
 
-        builder.setColor(ColorUtils.from((staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getPrefixColor() : vipRank.getPrefixColor()));
+        builder.setColor(ColorUtils.from(staffRank != StaffRank.NONE ? staffRank.getPrefixColor() : vipRank.getPrefixColor()));
 
-        builder.addField("Rank", (staffRank == StaffRank.NONE || staffRank == StaffRank.ADMIN) ? vipRank.getName() : (vipRank == VipRank.NONE ? staffRank.getName() : (staffRank.getName() + " / " + vipRank.getName())), false);
+        builder.addField("Rank", staffRank == StaffRank.NONE ? vipRank.getName() : (vipRank == VipRank.NONE ? staffRank.getName() : (staffRank.getName() + " / " + vipRank.getName())), false);
 
         //TODO CHECK SETTINGS
 

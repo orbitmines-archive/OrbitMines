@@ -7,6 +7,9 @@ package com.orbitmines.spigot.servers.survival.cmds.vip;
 import com.orbitmines.api.*;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.cmd.VipCommand;
+import com.orbitmines.spigot.servers.survival.Survival;
+import com.orbitmines.spigot.servers.survival.handlers.SurvivalPlayer;
+import com.orbitmines.spigot.servers.survival.handlers.claim.Claim;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -14,8 +17,12 @@ public class CommandFly extends VipCommand {
 
     private String[] alias = { "/fly" };
 
-    public CommandFly() {
+    private final Survival survival;
+
+    public CommandFly(Survival survival) {
         super(Server.SURVIVAL, VipRank.DIAMOND);
+
+        this.survival = survival;
     }
 
     @Override
@@ -29,7 +36,8 @@ public class CommandFly extends VipCommand {
     }
 
     @Override
-    public void onDispatch(OMPlayer omp, String[] a) {
+    public void onDispatch(OMPlayer player, String[] a) {
+        SurvivalPlayer omp = (SurvivalPlayer) player;
         Player p = omp.getPlayer();
 
         if (omp.isEligible(StaffRank.MODERATOR) && omp.isOpMode() && a.length == 2) {
@@ -61,7 +69,16 @@ public class CommandFly extends VipCommand {
             } else {
                 omp.sendMessage("Fly", Color.RED, "§7Player §6" + a[1] + " §7is niet online!", "§7Player §6" + a[1] + " §7isn't online!");
             }
-        } else if (omp.isEligible(VipRank.DIAMOND) || omp.isEligible(StaffRank.MODERATOR)) {
+        } else if (omp.isEligible(VipRank.DIAMOND)) {
+            Claim claim = survival.getClaimHandler().getClaimAt(p.getLocation(), false, omp.getLastClaim());
+            if (claim != null)
+                omp.setLastClaim(claim);
+
+            if (claim == null || !claim.canAccess(omp, false)) {
+                omp.sendMessage("Fly", Color.RED, "Je kan alleen vliegen in je claims, of claims waar je §a§l" + Claim.Permission.ACCESS.getName().lang(omp.getLanguage()) + "§7 hebt.", "You are only allowed to fly in your claims, and claims where you have §a§l" + Claim.Permission.ACCESS.getName().lang(omp.getLanguage()) + "§7.");
+                return;
+            }
+
             p.setAllowFlight(!p.getAllowFlight());
             p.setFlying(p.getAllowFlight());
 

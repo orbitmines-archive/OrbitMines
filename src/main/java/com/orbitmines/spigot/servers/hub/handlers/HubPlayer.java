@@ -210,7 +210,7 @@ public class HubPlayer extends OMPlayer {
                     if (omp == this)
                         continue;
                     //TODO DEPRECATED
-                    if ((omp.getStaffRank() != StaffRank.NONE && omp.getStaffRank() != StaffRank.ADMIN) || friends.contains(omp.getUUID()))
+                    if (omp.getStaffRank() != StaffRank.NONE || friends.contains(omp.getUUID()))
                         this.player.showPlayer(omp.getPlayer());
                     else
                         this.player.hidePlayer(omp.getPlayer());
@@ -223,7 +223,7 @@ public class HubPlayer extends OMPlayer {
                     if (omp == this)
                         continue;
 
-                    if ((omp.getStaffRank() != StaffRank.NONE && omp.getStaffRank() != StaffRank.ADMIN) || friends.contains(omp.getUUID()))
+                    if (omp.getStaffRank() != StaffRank.NONE || friends.contains(omp.getUUID()))
                         this.player.showPlayer(omp.getPlayer());
                     else
                         this.player.hidePlayer(omp.getPlayer());

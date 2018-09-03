@@ -11,13 +11,19 @@ import com.orbitmines.api.punishment.offences.Offence;
 import com.orbitmines.api.punishment.offences.Severity;
 import com.orbitmines.api.settings.Settings;
 import com.orbitmines.api.utils.DateUtils;
+import com.orbitmines.api.utils.LootUtils;
 import com.orbitmines.api.utils.RandomUtils;
 import com.orbitmines.bungeecord.OrbitMinesBungee;
 import com.orbitmines.discordbot.DiscordBot;
 import com.orbitmines.discordbot.handlers.DiscordSquad;
-import com.orbitmines.discordbot.utils.*;
+import com.orbitmines.discordbot.utils.BotToken;
+import com.orbitmines.discordbot.utils.ColorUtils;
+import com.orbitmines.discordbot.utils.DiscordUtils;
+import com.orbitmines.discordbot.utils.SkinLibrary;
 import com.orbitmines.spigot.api.handlers.Data;
-import com.orbitmines.spigot.api.handlers.data.*;
+import com.orbitmines.spigot.api.handlers.data.PlayTimeData;
+import com.orbitmines.spigot.api.handlers.data.SettingsData;
+import com.orbitmines.spigot.api.handlers.data.VoteData;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -113,7 +119,7 @@ public class BungeePlayer {
         updateLastOnline();
 
         /* Initiate Login */
-        if (staffRank == StaffRank.NONE || staffRank == StaffRank.ADMIN || !bungee.mustLogin(this)) {
+        if (staffRank == StaffRank.NONE || !bungee.mustLogin(this)) {
             on2FALogin();
             return;
         }
@@ -170,13 +176,15 @@ public class BungeePlayer {
     }
 
     private void onFirstLogin() {
-        /* Give Welcome Loot */
-        Database.get().insert(Table.LOOT, getUUID().toString(), "SOLARS", Rarity.RARE.toString(), "250", "&a&l&oWelcome to &7&l&oOrbit&8&l&oMines&a&l&o!");
-
         DiscordBot discord = bungee.getDiscord();
+        BotToken token = bungee.getToken();
+
+        /* Give Welcome Loot */
+        LootUtils.insert(discord, token, getUUID(), LootUtils.SOLARS, null, Rarity.RARE, "&a&l&oWelcome to &7&l&oOrbit&8&l&oMines&a&l&o!", 250);
+
         Guild guild = discord.getGuild(bungee.getToken());
 
-        bungee.getProxy().getScheduler().schedule(bungee, () -> discord.getChannel(bungee.getToken(), DiscordBot.ChannelType.new_players).sendMessage(SkinLibrary.getEmote(guild, getUUID()).getAsMention() + " **" + getName(true) + "** has joined OrbitMines for the first time!").queue(), 1, TimeUnit.SECONDS);
+        bungee.getProxy().getScheduler().schedule(bungee, () -> discord.getChannel(token, DiscordBot.ChannelType.new_players).sendMessage(SkinLibrary.getEmote(guild, getUUID()).getAsMention() + " **" + getName(true) + "** has joined OrbitMines for the first time!").queue(), 1, TimeUnit.SECONDS);
     }
 
     /*
@@ -661,27 +669,27 @@ public class BungeePlayer {
     }
 
     public String getRankPrefix() {
-        return (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getPrefix() : vipRank.getPrefix();
+        return staffRank != StaffRank.NONE ? staffRank.getPrefix() : vipRank.getPrefix();
     }
 
     public String getRankPrefix(Color color) {
-        return (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getPrefix(color) : vipRank.getPrefix(color);
+        return staffRank != StaffRank.NONE ? staffRank.getPrefix(color) : vipRank.getPrefix(color);
     }
 
     public String getRankName() {
-        return (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getName() : vipRank.getName();
+        return staffRank != StaffRank.NONE ? staffRank.getName() : vipRank.getName();
     }
 
     public String getRankDisplayName() {
-        return (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getDisplayName() : vipRank.getDisplayName();
+        return staffRank != StaffRank.NONE ? staffRank.getDisplayName() : vipRank.getDisplayName();
     }
 
     public Color getRankPrefixColor() {
-        return (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getPrefixColor() : vipRank.getPrefixColor();
+        return staffRank != StaffRank.NONE ? staffRank.getPrefixColor() : vipRank.getPrefixColor();
     }
 
     public Color getRankChatColor() {
-        return (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getChatColor() : vipRank.getChatColor();
+        return staffRank != StaffRank.NONE ? staffRank.getChatColor() : vipRank.getChatColor();
     }
 
     /*

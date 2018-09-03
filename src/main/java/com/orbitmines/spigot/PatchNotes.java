@@ -563,16 +563,7 @@ public class PatchNotes {
 
         TextChannel channel = discord.getChannel(token, DiscordBot.ChannelType.patch_notes);
 
-        DiscordBot.Images image = null;
-        switch (token) {
-
-            case DEFAULT:
-                image = DiscordBot.Images.ORBITMINES_LOGO;
-                break;
-            case SURVIVAL:
-                image = DiscordBot.Images.SURVIVAL_LOGO;
-                break;
-        }
+        DiscordBot.Images image = DiscordBot.Images.logoFrom(token.getServer());
 
         if (image != null) {
             File file = image.getFile("patch_notes_logo");

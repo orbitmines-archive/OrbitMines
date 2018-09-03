@@ -91,8 +91,8 @@ public class DiscordMessageListener extends ListenerAdapter {
         }
         ComponentMessage cM = new ComponentMessage();
 
-        String rankPrefix = (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getPrefix(staffRank.getPrefixColor()) : vipRank.getPrefix(vipRank.getPrefixColor());
-        Color chatColor = (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getChatColor() : vipRank.getChatColor();
+        String rankPrefix = staffRank != StaffRank.NONE ? staffRank.getPrefix(staffRank.getPrefixColor()) : vipRank.getPrefix(vipRank.getPrefixColor());
+        Color chatColor = staffRank != StaffRank.NONE ? staffRank.getChatColor() : vipRank.getChatColor();
 
         cM.add(new com.orbitmines.api.Message(com.orbitmines.api.Message.FORMAT("Staff", Color.AQUA, "")));
 
@@ -138,8 +138,8 @@ public class DiscordMessageListener extends ListenerAdapter {
         }
         ComponentMessage cM = new ComponentMessage();
 
-        String rankPrefix = (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getPrefix(staffRank.getPrefixColor()) : vipRank.getPrefix(vipRank.getPrefixColor());
-        Color chatColor = (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getChatColor() : vipRank.getChatColor();
+        String rankPrefix = staffRank != StaffRank.NONE ? staffRank.getPrefix(staffRank.getPrefixColor()) : vipRank.getPrefix(vipRank.getPrefixColor());
+        Color chatColor = staffRank != StaffRank.NONE ? staffRank.getChatColor() : vipRank.getChatColor();
 
         cM.add(new com.orbitmines.api.Message(com.orbitmines.api.Message.FORMAT(group.getName(), group.getColor(), "")));
 

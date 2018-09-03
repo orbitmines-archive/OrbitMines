@@ -36,8 +36,7 @@ public abstract class DefaultScoreboard extends ScoreboardSet {
 
             ScoreboardTeam team = new ScoreboardTeam(getTeamName(rank));
 
-            if (rank != StaffRank.ADMIN)
-                team.setPrefix(rank.getPrefix(null) + "§r ");
+            team.setPrefix(rank.getPrefix(null) + "§r ");
 
             team.setColor(ColorUtils.toChatColor(rank.getPrefixColor()));
 

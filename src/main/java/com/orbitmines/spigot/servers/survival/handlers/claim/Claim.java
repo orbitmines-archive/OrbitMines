@@ -198,7 +198,7 @@ public class Claim {
     }
 
     public boolean hasPermission(UUID member, Permission permission) {
-        return owner == null || hasParent() && parent.hasPermission(member, permission) || members.containsKey(member) && members.get(member).hasPerms(permission);
+        return /* End Spawn */ owner == null || hasParent() && parent.hasPermission(member, permission) || members.containsKey(member) && members.get(member).hasPerms(permission);
     }
 
     public void setPermission(UUID member, Permission permission) {

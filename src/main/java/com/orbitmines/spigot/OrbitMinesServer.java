@@ -34,6 +34,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.PluginManager;
 
+import java.util.List;
 import java.util.UUID;
 
 /*
@@ -112,6 +113,9 @@ public abstract class OrbitMinesServer {
 
     public abstract GameMode getGameMode();
 
+    /* Word Formatting; [item], /cmd etc.. -> Add component to list */
+    public abstract boolean format(CachedPlayer sender, OMPlayer receiver, Color color, String string, List<ComponentMessage.TempTextComponent> list);
+
     protected abstract void registerEvents();
 
     protected abstract void registerCommands();
@@ -142,9 +146,9 @@ public abstract class OrbitMinesServer {
 
         ComponentMessage cM = new ComponentMessage();
 
-        String rankPrefix = (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getPrefix(staffRank.getPrefixColor()) : vipRank.getPrefix(vipRank.getPrefixColor());
-        Color chatColor = (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getChatColor() : vipRank.getChatColor();
-        Color prefixColor = (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getPrefixColor() : vipRank.getPrefixColor();
+        String rankPrefix = staffRank != StaffRank.NONE ? staffRank.getPrefix(staffRank.getPrefixColor()) : vipRank.getPrefix(vipRank.getPrefixColor());
+        Color chatColor = staffRank != StaffRank.NONE ? staffRank.getChatColor() : vipRank.getChatColor();
+        Color prefixColor = staffRank != StaffRank.NONE ? staffRank.getPrefixColor() : vipRank.getPrefixColor();
 
         cM.add(new Message("§9§lDISCORD§r"));
         cM.add(new Message(" §7» "));
@@ -152,11 +156,12 @@ public abstract class OrbitMinesServer {
         String name = rankPrefix + "@" + member.getEffectiveName();
 
         UUID uuid = discord.getLinkedUUID(member.getUser());
+        CachedPlayer sender = null;
         String playerName = null;
 
         if (uuid != null) {
-            CachedPlayer player = CachedPlayer.getPlayer(uuid);
-            playerName = player.getRankPrefixColor().getChatColor() + player.getPlayerName();
+            sender = CachedPlayer.getPlayer(uuid);
+            playerName = sender.getRankPrefixColor().getChatColor() + sender.getPlayerName();
         }
 
         cM.add(new Message(name), HoverEvent.Action.SHOW_TEXT, new Message(prefixColor.getChatColor() + "@" + member.getUser().getName() + "#" + member.getUser().getDiscriminator() + "\n§7Rank: " + (staffRank == StaffRank.NONE ? vipRank.getDisplayName() : (vipRank == VipRank.NONE ? staffRank.getDisplayName() : (staffRank.getDisplayName() + " §7/ " + vipRank.getDisplayName()))) + "\n§7IGN: " + (playerName == null ? StaffRank.NONE.getDisplayName() : playerName)));
@@ -177,7 +182,7 @@ public abstract class OrbitMinesServer {
         for (OMPlayer player : OMPlayer.getPlayers()) {
             ComponentMessage componentMessage = new ComponentMessage(cM);
 
-            for (ComponentMessage.TempTextComponent component : DiscordSpigotUtils.formatMessage(player, player.getRankChatColor(), filtered)) {
+            for (ComponentMessage.TempTextComponent component : DiscordSpigotUtils.formatMessage(this, sender, player, player.getRankChatColor(), filtered)) {
                 componentMessage.add(component);
             }
 
@@ -189,6 +194,8 @@ public abstract class OrbitMinesServer {
     }
 
     public void toMinecraft(OMPlayer omp, String message) {
+        CachedPlayer sender = CachedPlayer.getPlayer(omp.getUUID());
+
         ComponentMessage cM = new ComponentMessage();
 
         for (ComponentMessage.TempTextComponent component : omp.getChatPrefix()) {
@@ -202,7 +209,7 @@ public abstract class OrbitMinesServer {
         for (OMPlayer player : OMPlayer.getPlayers()) {
             ComponentMessage componentMessage = new ComponentMessage(cM);
 
-            for (ComponentMessage.TempTextComponent component : DiscordSpigotUtils.formatMessage(player, player.getRankChatColor(), message)) {
+            for (ComponentMessage.TempTextComponent component : DiscordSpigotUtils.formatMessage(this, sender, player, player.getRankChatColor(), message)) {
                 componentMessage.add(component);
             }
 

@@ -9,6 +9,7 @@ import com.orbitmines.api.database.Set;
 import com.orbitmines.api.database.tables.TableServerData;
 import com.orbitmines.api.database.tables.TableVotes;
 import com.orbitmines.api.utils.DateUtils;
+import com.orbitmines.api.utils.LootUtils;
 import com.orbitmines.api.utils.NumberUtils;
 import com.orbitmines.api.utils.TimeUtils;
 import com.orbitmines.bungeecord.handlers.BossBar;
@@ -176,7 +177,7 @@ public class AutoRestart extends BungeeRunnable {
             int voucher = reward.getStep();
             topVouchers[i] = voucher;
 
-            Database.get().insert(Table.LOOT, stringUUID, reward.getLoot(), Rarity.LEGENDARY.toString(), voucher + "", "&9&l&o#" + (i + 1) + " Voter (" + prevMonth + " " + year + ")");
+            LootUtils.insert(bungee.getDiscord(), bungee.getToken(), uuid, reward.getLoot(), null, Rarity.LEGENDARY, "&9&l&o#" + (i + 1) + " Voter (" + prevMonth + " " + year + ")", voucher);
         }
 
         /*
@@ -190,7 +191,7 @@ public class AutoRestart extends BungeeRunnable {
                 int votes = map.get(stringUUID);
                 int solars = votes * TopVoterReward.COMMUNITY_GOAL_SOLARS_PER_VOTE;
 
-                Database.get().insert(Table.LOOT, stringUUID, "SOLARS", Rarity.RARE.toString(), solars + "", "&a&l&oCommunity Goal " + prevMonth + " " + year + " (" + votes + " " + (votes == 1 ? "Vote" : "Votes") + ")");
+                LootUtils.insert(bungee.getDiscord(), bungee.getToken(), UUID.fromString(stringUUID), LootUtils.SOLARS, null, Rarity.RARE, "&a&l&oCommunity Goal " + prevMonth + " " + year + " (" + votes + " " + (votes == 1 ? "Vote" : "Votes") + ")", solars);
             }
 
             communityGoal = true;

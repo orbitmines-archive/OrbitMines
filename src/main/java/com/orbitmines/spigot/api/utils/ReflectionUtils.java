@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.orbitmines.spigot.OrbitMines;
 import org.bukkit.Bukkit;
+import org.bukkit.inventory.ItemStack;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 import java.lang.reflect.Field;
@@ -22,6 +23,19 @@ public class ReflectionUtils {
         } catch (Exception ex) {
             ex.printStackTrace();
             return;
+        }
+    }
+
+    public static String toJSONString(ItemStack item) {
+        Method asNMSCopyMethod = getDeclaredMethod(getOBCClass("inventory.CraftItemStack"), "asNMSCopy", ItemStack.class);
+
+        Class<?> nbtTagCompoundClass = getNMSClass("NBTTagCompound");
+        Method saveNmsItemStackMethod = getDeclaredMethod(getNMSClass("ItemStack"), "save", nbtTagCompoundClass);
+
+        try {
+            return saveNmsItemStackMethod.invoke(asNMSCopyMethod.invoke(null, item), nbtTagCompoundClass.newInstance()).toString();
+        } catch (Exception ex) {
+            return null;
         }
     }
 

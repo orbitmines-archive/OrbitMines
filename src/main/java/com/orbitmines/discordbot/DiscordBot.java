@@ -313,7 +313,7 @@ public class DiscordBot {
         List<Role> toAdd = new ArrayList<>();
 
         StaffRank staffRank = player.getStaffRank();
-        if (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) {
+        if (staffRank != StaffRank.NONE) {
             check(getRole(BotToken.DEFAULT, staffRank), toRemove, toAdd);
             check(getRole(BotToken.DEFAULT, CustomRole.STAFF), toRemove, toAdd);
         }
@@ -386,6 +386,7 @@ public class DiscordBot {
         sign_log(true),
         discord_link_log(false),
         private_server_log(false),
+        loot_log(false),
 
         stats_online(false),
         stats_online_by_rank(false),
@@ -447,7 +448,7 @@ public class DiscordBot {
         public static CustomEmote from(Server server) {
             try {
                 return CustomEmote.valueOf(server.toString().toLowerCase());
-            } catch(IllegalArgumentException ex) {
+            } catch(NullPointerException | IllegalArgumentException ex) {
                 return orbitmines;
             }
         }
@@ -517,6 +518,12 @@ public class DiscordBot {
         PRISMARINE_SHARD("https://i.imgur.com/NVGeZkz.png"),
 
         ORBITMINES_ICON("https://i.imgur.com/E1oDT11.png"),
+        KITPVP_ICON("https://i.imgur.com/P2ytvwc.png"),
+        PRISON_ICON("https://i.imgur.com/OI1mz7Z.png"),
+        SURVIVAL_ICON("https://i.imgur.com/lRqhPy1.png"),
+        MINIGAMES_ICON("https://i.imgur.com/2xTgLAg.png"),
+        FOG_ICON("https://i.imgur.com/YruBbXy.png"),
+        CREATIVE_ICON("https://i.imgur.com/b1MACP9.png"),
 
         ORBITMINES_LOGO("https://i.imgur.com/SX8L7Qi.png"),
         KITPVP_LOGO("https://i.imgur.com/0oX5Bmd.png"),
@@ -550,6 +557,22 @@ public class DiscordBot {
                 return file;
             } catch (IOException e) {
                 return null;
+            }
+        }
+
+        public static Images iconFrom(Server server) {
+            try {
+                return Images.valueOf(server.toString().toLowerCase() + "_ICON");
+            } catch(NullPointerException | IllegalArgumentException ex) {
+                return ORBITMINES_ICON;
+            }
+        }
+
+        public static Images logoFrom(Server server) {
+            try {
+                return Images.valueOf(server.toString().toLowerCase() + "_LOGO");
+            } catch(NullPointerException | IllegalArgumentException ex) {
+                return ORBITMINES_LOGO;
             }
         }
     }

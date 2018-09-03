@@ -4,6 +4,7 @@ import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.api.Color;
 import com.orbitmines.spigot.api.handlers.chat.ActionBar;
 import com.orbitmines.spigot.api.utils.ItemUtils;
+import com.orbitmines.spigot.api.utils.WorldUtils;
 import com.orbitmines.spigot.servers.survival.Survival;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalPlayer;
 import com.orbitmines.spigot.servers.survival.handlers.claim.Claim;
@@ -275,7 +276,7 @@ public class ClaimEvents implements Listener {
             return;
         }
 
-        int distance = 5;
+        int distance = 3;
 
         Claim claim = survival.getClaimHandler().getClaimAt(block.getLocation(), false, omp.getLastClaim());
 
@@ -284,16 +285,14 @@ public class ClaimEvents implements Listener {
                 event.setCancelled(true);
                 return;
             }
-
-            distance = 3;
         }
 
-        if (event.getBucket() != Material.LAVA_BUCKET)
+        if (event.getBucket() != Material.LAVA_BUCKET || omp.isOpMode())
             return;
 
         for (Player player : block.getWorld().getPlayers()) {
             if (!player.equals(omp.getPlayer()) && player.getGameMode() == GameMode.SURVIVAL && block.getY() >= player.getLocation().getBlockY() - 1 && player.getLocation().distanceSquared(block.getLocation()) < distance * distance) {
-                omp.sendMessage("Survival", Color.RED, "§7Je kan een lava bucket niet zo dichtbij een speler zetten.", "§7You can't place lava buckets that close to other players.");
+                new ActionBar(omp, () -> omp.lang("§c§lJe kan een lava bucket niet zo dichtbij een speler zetten.", "§c§lYou can't place lava buckets that close to other players."), 100).send();
                 event.setCancelled(true);
                 return;
             }
@@ -510,6 +509,18 @@ public class ClaimEvents implements Listener {
 
             if (claim != null && !claim.canBuild(omp, item.getType()))
                 event.setCancelled(true);
+        } else if (item.getType() == Material.FLINT_AND_STEEL) {
+            if (omp.isOpMode())
+                return;
+
+            for (Player player : WorldUtils.getNearbyPlayers(event.getClickedBlock().getRelative(BlockFace.UP).getLocation().add(0.5, 0, 0.5), 1.5)) {
+                if (player == event.getPlayer())
+                    continue;
+
+                new ActionBar(omp, () -> omp.lang("§c§lJe kan een flint and steel niet zo dichtbij een speler gebruiken.", "§c§lYou can't use a flint and steel that close to other players."), 100).send();
+                event.setCancelled(true);
+                return;
+            }
         }
     }
 

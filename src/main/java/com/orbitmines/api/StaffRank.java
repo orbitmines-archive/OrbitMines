@@ -9,8 +9,7 @@ public enum StaffRank {
     BUILDER("BUILDER", Color.FUCHSIA, Color.WHITE),
     MODERATOR("MOD", Color.AQUA, Color.WHITE),
     DEVELOPER("DEV", Color.RED, Color.WHITE),
-    /* Temporary TODO */
-    ADMIN("ADMIN", Color.GRAY, Color.SILVER),
+    ADMIN("ADMIN", Color.RED, Color.WHITE),
     OWNER("OWNER", Color.MAROON, Color.WHITE);
 
     private final String name;
@@ -40,11 +39,11 @@ public enum StaffRank {
     }
 
     public String getPrefix(Color color) {
-        return (this == NONE || this == ADMIN) ? (color == null ? "" : color.getChatColor()) : prefixColor.getChatColor() + "§l" + name + (color == null ? "" : "§r " + color.getChatColor());
+        return this == NONE ? (color == null ? "" : color.getChatColor()) : prefixColor.getChatColor() + "§l" + name + (color == null ? "" : "§r " + color.getChatColor());
     }
 
     public String getDisplayName() {
-        return (this == NONE || this == ADMIN) ? "§f§lNone" : prefixColor.getChatColor() + "§l" + name;
+        return this == NONE ? "§f§lNone" : prefixColor.getChatColor() + "§l" + name;
     }
 
     public static StaffRank getById(int id) {

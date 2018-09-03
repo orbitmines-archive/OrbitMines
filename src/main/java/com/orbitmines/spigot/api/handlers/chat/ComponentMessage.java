@@ -106,6 +106,11 @@ public class ComponentMessage {
         private Message hoverEvent;
 
         private ChatColor chatColor;
+        private boolean bold;
+        private boolean italic;
+        private boolean obfuscated;
+        private boolean strikethrough;
+        private boolean underlined;
 
         public TempTextComponent(String component) {
             this(new Message(component), null, null, null, null);
@@ -115,8 +120,16 @@ public class ComponentMessage {
             this(component, null, null, null, null);
         }
 
+        public TempTextComponent(String component, ClickEvent.Action clickAction, String clickEvent) {
+            this(new Message(component), clickAction, new Message(clickEvent), null, null);
+        }
+
         public TempTextComponent(Message component, ClickEvent.Action clickAction, Message clickEvent) {
             this(component, clickAction, clickEvent, null, null);
+        }
+
+        public TempTextComponent(String component, HoverEvent.Action hoverAction, String hoverEvent) {
+            this(new Message(component), null, null, hoverAction, new Message(hoverEvent));
         }
 
         public TempTextComponent(Message component, HoverEvent.Action hoverAction, Message hoverEvent) {
@@ -134,6 +147,11 @@ public class ComponentMessage {
             this.hoverAction = hoverAction;
             this.hoverEvent = hoverEvent;
             this.chatColor = ChatColor.WHITE;
+            this.bold = false;
+            this.italic = false;
+            this.obfuscated = false;
+            this.strikethrough = false;
+            this.underlined = false;
         }
 
         public TempTextComponent setComponent(Message component) {
@@ -156,6 +174,31 @@ public class ComponentMessage {
             return this;
         }
 
+        public TempTextComponent setBold(boolean bold) {
+            this.bold = bold;
+            return this;
+        }
+
+        public TempTextComponent setItalic(boolean italic) {
+            this.italic = italic;
+            return this;
+        }
+
+        public TempTextComponent setObfuscated(boolean obfuscated) {
+            this.obfuscated = obfuscated;
+            return this;
+        }
+
+        public TempTextComponent setStrikethrough(boolean strikethrough) {
+            this.strikethrough = strikethrough;
+            return this;
+        }
+
+        public TempTextComponent setUnderlined(boolean underlined) {
+            this.underlined = underlined;
+            return this;
+        }
+
         public TextComponent lang(Language language) {
             TextComponent tc = new TextComponent(component.lang(language));
             if (clickAction != null)
@@ -164,6 +207,11 @@ public class ComponentMessage {
                 tc.setHoverEvent(new HoverEvent(hoverAction, new ComponentBuilder(hoverEvent.lang(language)).create()));
 
             tc.setColor(chatColor);
+            tc.setBold(bold);
+            tc.setItalic(italic);
+            tc.setObfuscated(obfuscated);
+            tc.setStrikethrough(strikethrough);
+            tc.setUnderlined(underlined);
 
             return tc;
         }

@@ -73,7 +73,8 @@ public class SurvivalData extends Data {
                     LOGOUT_FLY,
                     EXTRA_HOMES,
                     WARP_SLOT_SHOP,
-                    WARP_SLOT_PRISMS
+                    WARP_SLOT_PRISMS,
+                    FAVORITE_WARPS
             }, new Where(TableSurvivalPlayers.UUID, getUUID().toString()));
 
             earthMoney = Integer.parseInt(values.get(EARTH_MONEY));
@@ -90,6 +91,10 @@ public class SurvivalData extends Data {
             extraHomes = Integer.parseInt(values.get(EXTRA_HOMES));
             warpSlotShop = values.get(WARP_SLOT_SHOP).equals("1");
             warpSlotPrisms = values.get(WARP_SLOT_PRISMS).equals("1");
+
+            for (String warpId : values.get(FAVORITE_WARPS).split("\\|")) {
+                favoriteWarps.add(Long.parseLong(warpId));
+            }
         }
     }
 

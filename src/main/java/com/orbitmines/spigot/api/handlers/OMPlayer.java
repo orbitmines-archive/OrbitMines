@@ -378,8 +378,19 @@ public abstract class OMPlayer {
                 Monthly Vote Achievement
          */
 
-        if (data.getVotes() >= TopVoterReward.MONTHLY_ACHIEVEMENT_VOTES && (data.getVotes() - votes) < TopVoterReward.MONTHLY_ACHIEVEMENT_VOTES)
-            ((LootData) getData(Data.Type.LOOT)).add(Loot.PRISMS, Rarity.UNCOMMON, "§a§l§oMonthly Achievement " + DateUtils.getMonth() + " " + DateUtils.getYear(), TopVoterReward.MONTHLY_ACHIEVEMENT_PRISMS);
+        for (TopVoterReward.PersonalAchievement achievement : TopVoterReward.MONTHLY_ACHIEVEMENT_VOTES) {
+            if (data.getVotes() >= achievement.getVotes() && (data.getVotes() - votes) < achievement.getVotes()) {
+                LootData lootData = ((LootData) getData(Data.Type.LOOT));
+
+                String tierString = NumberUtils.toRoman(achievement.getTier());
+
+                if (achievement.getPrisms() != 0)
+                    lootData.add(Loot.PRISMS, Rarity.UNCOMMON, "§a§l§oMonthly Achievement " + tierString + " " + DateUtils.getMonth() + " " + DateUtils.getYear(), achievement.getPrisms());
+
+                if (achievement.getSolars() != 0)
+                    lootData.add(Loot.SOLARS, Rarity.RARE, "§a§l§oMonthly Achievement " + tierString + " " + DateUtils.getMonth() + " " + DateUtils.getYear(), achievement.getSolars());
+            }
+        }
 
         StoredProgressAchievement handler = (StoredProgressAchievement) HubAchievements.ORBITMINES_SUPPORTER.getHandler();
         if (handler.hasCompleted(this))
@@ -1056,27 +1067,27 @@ public abstract class OMPlayer {
     }
 
     public String getRankPrefix() {
-        return (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getPrefix() : vipRank.getPrefix();
+        return staffRank != StaffRank.NONE ? staffRank.getPrefix() : vipRank.getPrefix();
     }
 
     public String getRankPrefix(Color color) {
-        return (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getPrefix(color) : vipRank.getPrefix(color);
+        return staffRank != StaffRank.NONE ? staffRank.getPrefix(color) : vipRank.getPrefix(color);
     }
 
     public String getRankName() {
-        return (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getName() : vipRank.getName();
+        return staffRank != StaffRank.NONE ? staffRank.getName() : vipRank.getName();
     }
 
     public String getRankDisplayName() {
-        return (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getDisplayName() : vipRank.getDisplayName();
+        return staffRank != StaffRank.NONE ? staffRank.getDisplayName() : vipRank.getDisplayName();
     }
 
     public Color getRankPrefixColor() {
-        return (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getPrefixColor() : vipRank.getPrefixColor();
+        return staffRank != StaffRank.NONE ? staffRank.getPrefixColor() : vipRank.getPrefixColor();
     }
 
     public Color getRankChatColor() {
-        return (staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getChatColor() : vipRank.getChatColor();
+        return staffRank != StaffRank.NONE ? staffRank.getChatColor() : vipRank.getChatColor();
     }
 
     /*

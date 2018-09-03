@@ -2,6 +2,7 @@ package com.orbitmines.spigot.servers.hub;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.orbitmines.api.*;
+import com.orbitmines.api.Color;
 import com.orbitmines.api.Server;
 import com.orbitmines.api.utils.NumberUtils;
 import com.orbitmines.api.utils.RandomUtils;
@@ -12,6 +13,7 @@ import com.orbitmines.spigot.api.events.VoidDamageEvent;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.PluginMessageHandler;
 import com.orbitmines.spigot.api.handlers.PreventionSet;
+import com.orbitmines.spigot.api.handlers.chat.ComponentMessage;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.api.handlers.itembuilders.PlayerSkullBuilder;
 import com.orbitmines.spigot.api.handlers.itembuilders.WrittenBookBuilder;
@@ -73,6 +75,8 @@ public class Hub extends OrbitMinesServer {
                 PreventionSet.Prevention.BLOCK_BREAK,
                 PreventionSet.Prevention.BLOCK_INTERACTING,
                 PreventionSet.Prevention.BLOCK_PLACE,
+                PreventionSet.Prevention.MONSTER_EGG_USAGE,
+                PreventionSet.Prevention.BUCKET_USAGE,
                 PreventionSet.Prevention.CHUNK_UNLOAD,
                 PreventionSet.Prevention.CLICK_PLAYER_INVENTORY,
                 PreventionSet.Prevention.ENTITY_INTERACTING,
@@ -149,6 +153,11 @@ public class Hub extends OrbitMinesServer {
     @Override
     public Location getSpawnLocation(Player player) {
         return RandomUtils.randomFrom(spawnLocations);
+    }
+
+    @Override
+    public boolean format(CachedPlayer sender, OMPlayer receiver, Color color, String string, List<ComponentMessage.TempTextComponent> list) {
+        return false;
     }
 
     @Override

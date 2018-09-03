@@ -33,7 +33,7 @@ public class DiscordUtils {
             StaffRank staffRank = player.getStaffRank();
             VipRank vipRank = player.getVipRank();
 
-            if (staffRank == StaffRank.NONE || staffRank == StaffRank.ADMIN)
+            if (staffRank == StaffRank.NONE)
                 prefix = vipRank != VipRank.NONE ? " " + discord.getEmote(token, vipRank).getAsMention() + "**" + player.getRankName() + "**" : "";
             else
                 prefix = " **" + player.getRankName() + "**";
@@ -46,7 +46,7 @@ public class DiscordUtils {
         String prefix;
         String rankName = (staffRank == StaffRank.NONE ? vipRank.getName() : staffRank.getName());
 
-        if (staffRank == StaffRank.NONE || staffRank == StaffRank.ADMIN)
+        if (staffRank == StaffRank.NONE)
             prefix = vipRank != VipRank.NONE ? " " + discord.getEmote(token, vipRank).getAsMention() + "**" + rankName + "**" : "";
         else
             prefix = " **" + rankName + "**";

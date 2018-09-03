@@ -36,7 +36,7 @@ public enum VipRank {
     }
 
     public int getSolars(VipRank previousRank) {
-        return solars - previousRank.solars;
+        return previousRank == null ? solars : (solars - previousRank.solars);
     }
 
     public String getPrefix() {

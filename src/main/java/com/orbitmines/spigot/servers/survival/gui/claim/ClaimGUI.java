@@ -22,6 +22,7 @@ import com.orbitmines.spigot.api.utils.ColorUtils;
 import com.orbitmines.spigot.servers.survival.Survival;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalPlayer;
 import com.orbitmines.spigot.servers.survival.handlers.claim.Claim;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -81,7 +82,7 @@ public class ClaimGUI extends GUI {
                         if (!Character.isAlphabetic(c) && !Character.isDigit(c) && !Character.isSpaceChar(c)) {
                             event.setWillClose(false);
                             event.setWillDestroy(false);
-                            omp.sendMessage("Claim", Color.RED, "§7Je §aclaim naam§7 kan alleen maar bestaan uit §aletters§7, §anummers§7 en §aspaties§7.", "§7Your §awarp name§7 can only contain §aalphabetic§7 and §anumeric§7 characters and §aspaces§7.");
+                            omp.sendMessage("Claim", Color.RED, "§7Je §aclaim naam§7 kan alleen maar bestaan uit §aletters§7, §anummers§7 en §aspaties§7.", "§7Your §aclaim name§7 can only contain §aalphabetic§7 and §anumeric§7 characters and §aspaces§7.");
                             return;
                         }
                     }
@@ -108,6 +109,31 @@ public class ClaimGUI extends GUI {
                 anvil.open();
             }
         });
+
+        /* Teleport for Admins */
+        if (survival.canEditOtherClaims(omp)) {
+            int x1 = claim.getCorner1().getBlockX();
+            int x2 = claim.getCorner2().getBlockX();
+            int z1 = claim.getCorner1().getBlockZ();
+            int z2 = claim.getCorner2().getBlockZ();
+
+            int width = (Math.abs(x1 - x2) + 1);
+            int height = (Math.abs(z1 - z2) + 1);
+
+            int x = x1 > x2 ? x1 - (width / 2) : x1 + (width / 2);
+            int z = z1 > z2 ? z1 - (height / 2) : z1 + (height / 2);
+            int y = claim.getCorner1().getWorld().getHighestBlockYAt(x, z) + 1;
+
+            add(0, 5, new ItemInstance(new ItemBuilder(Material.ENDER_PEARL, 1, omp.lang("§3§lTeleport naar Claim", "§3§lTeleport to Claim")).build()) {
+                @Override
+                public void onClick(InventoryClickEvent event, OMPlayer omp) {
+                    omp.getPlayer().teleport(new Location(claim.getCorner1().getWorld(), x, y, z));
+                    omp.sendMessage("Claim", Color.LIME, "Geteleporteerd naar §a§lClaim #" + claim.getId() + "§7.", "Teleported to §a§lClaim #" + claim.getId() + "§7.");
+
+                    omp.playSound(Sound.ENTITY_ENDERMAN_TELEPORT);
+                }
+            });
+        }
 
         add(0, 1, new ItemInstance(new ItemBuilder(Material.WRITABLE_BOOK, 1, omp.lang("§a§lVoeg Speler Toe", "§a§lAdd Player")).build()) {
             @Override
@@ -396,8 +422,8 @@ public class ClaimGUI extends GUI {
         int height = (Math.abs(z1 - z2) + 1);
         int area = width * height;
 
-        int x = x1 > x2 ? x1 - width : x1 + width;
-        int z = z1 > z2 ? z1 - height : z1 + height;
+        int x = x1 > x2 ? x1 - (width / 2) : x1 + (width / 2);
+        int z = z1 > z2 ? z1 - (height / 2) : z1 + (height / 2);
 
         return new ItemBuilder(Material.STONE_HOE, 1, "§a§l" + claim.getName(),
                 "§7Claim Id: §a§l#" + NumberUtils.locale(claim.getId()),

@@ -4,10 +4,7 @@ package com.orbitmines.discordbot.utils;
  * OrbitMines - @author Fadi Shawki - 2018
  */
 
-import com.orbitmines.api.Color;
-import com.orbitmines.api.Message;
-import com.orbitmines.api.StaffRank;
-import com.orbitmines.api.VipRank;
+import com.orbitmines.api.*;
 import com.orbitmines.discordbot.DiscordBot;
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.OrbitMinesServer;
@@ -30,7 +27,7 @@ public class DiscordSpigotUtils {
 
         String prefix;
 
-        if (omp.getStaffRank() == StaffRank.NONE || omp.getStaffRank() == StaffRank.ADMIN)
+        if (omp.getStaffRank() == StaffRank.NONE)
             prefix = omp.getVipRank() != VipRank.NONE ? " " + discord.getEmote(token, omp.getVipRank()).getAsMention() + "**" + omp.getRankName() + "**" : "";
         else
             prefix = " **" + omp.getRankName() + "**";
@@ -38,9 +35,8 @@ public class DiscordSpigotUtils {
         return SkinLibrary.getEmote(guild, omp.getUUID()).getAsMention() + prefix + " **" + omp.getName(true) + "**";
     }
 
-    public static List<ComponentMessage.TempTextComponent> formatMessage(OMPlayer receiver, Color color, String message) {
+    public static List<ComponentMessage.TempTextComponent> formatMessage(OrbitMinesServer server, CachedPlayer sender, OMPlayer receiver, Color color, String message) {
         boolean mentioned = message.toLowerCase().contains(receiver.getName(true).toLowerCase());
-
 
         Color chat = mentioned ? Color.ORANGE : color;
         Color cmd = Color.BLUE;
@@ -52,7 +48,8 @@ public class DiscordSpigotUtils {
 
         loop:
         for (int i = 0; i < part.length; i++) {
-            String space = i != 0 ? " " : "";
+            if (i != 0)
+                tcs.add(new ComponentMessage.TempTextComponent(" "));
 
             String string = part[i];
 
@@ -75,7 +72,7 @@ public class DiscordSpigotUtils {
                             continue;
 
                         int index = string.indexOf(alias);
-                        tcs.add(new ComponentMessage.TempTextComponent(space + chat.getChatColor() + string.substring(0, index)).setChatColor(chat.getMd5()));
+                        tcs.add(new ComponentMessage.TempTextComponent(chat.getChatColor() + string.substring(0, index)).setChatColor(chat.getMd5()));
                         tcs.add(getCommandMention(receiver, command, alias).setChatColor(cmd.getMd5()));
                         tcs.add(new ComponentMessage.TempTextComponent(string.substring(index + alias.length())).setChatColor(chat.getMd5()));
 
@@ -84,7 +81,10 @@ public class DiscordSpigotUtils {
                 }
             }
 
-            tcs.add(new ComponentMessage.TempTextComponent(space + string).setChatColor(chat.getMd5()));
+            if (server.format(sender, receiver, chat, string, tcs))
+                continue;
+
+            tcs.add(new ComponentMessage.TempTextComponent(string).setChatColor(chat.getMd5()));
         }
 
         return tcs;
@@ -92,7 +92,7 @@ public class DiscordSpigotUtils {
 
     public static ComponentMessage.TempTextComponent getPlayerMention(OMPlayer omp, String text) {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(omp.getName());
+        stringBuilder.append(omp.getRankPrefixColor().getChatColor()).append(omp.getName(true));
         stringBuilder.append("\n§7Rank: ");
         if (omp.getStaffRank() != StaffRank.NONE) {
             stringBuilder.append(omp.getStaffRank().getDisplayName());
@@ -108,7 +108,7 @@ public class DiscordSpigotUtils {
         stringBuilder.append("\n§7Discord: ").append((user != null ? omp.getRankPrefixColor().getChatColor() + user.getName() + "#" + user.getDiscriminator() : StaffRank.NONE.getDisplayName()));
 
         if (omp.hasNickname())
-            stringBuilder.append("\n§7Nick: ").append(omp.getName());
+            stringBuilder.append("\n§7Nickname: ").append(omp.getName());
 
         stringBuilder.append("\n\n§a").append(omp.lang("Klik hier om een pm te sturen.", "Click here to send a pm."));
 

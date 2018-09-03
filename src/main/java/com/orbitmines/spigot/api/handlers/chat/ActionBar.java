@@ -92,10 +92,12 @@ public class ActionBar {
     }
 
     public void stop() {
-        if (actionBars.get(player).size() == 1)
-            actionBars.remove(player);
-        else
-            actionBars.get(player).remove(this);
+        if (actionBars.containsKey(player)) {
+            if (actionBars.get(player).size() == 1)
+                actionBars.remove(player);
+            else
+                actionBars.get(player).remove(this);
+        }
 
         if (timer != null)
             timer.cancel();

@@ -18,6 +18,7 @@ import com.orbitmines.spigot.api.handlers.data.PeriodLootData;
 import com.orbitmines.spigot.api.handlers.data.VoteData;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.api.handlers.itembuilders.PlayerSkullBuilder;
+import com.orbitmines.spigot.api.utils.PlayerUtils;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import org.bukkit.Material;
@@ -85,6 +86,8 @@ public class LootGUI extends GUI {
                     cM.send(omp);
 
                     omp.playSound(Sound.UI_BUTTON_CLICK);
+
+                    PlayerUtils.updateInventory(omp.getPlayer());
                 }
             });
         }
@@ -194,6 +197,8 @@ public class LootGUI extends GUI {
                             loot.onInteract(omp, instance.getRarity(), instance.getDescription(), count);
                         else
                             omp.sendMessage("Loot", Color.RED, "§7Je kan dit item alleen gebruiken in " + server.getDisplayName() + "§7.", "§7You can only use this item in " + server.getDisplayName() + "§7.");
+
+                        PlayerUtils.updateInventory(omp.getPlayer());
                     }
                 });
             }

@@ -84,7 +84,7 @@ public abstract class DefaultCommandLeaderBoard extends LeaderBoard {
                             break;
                     }
 
-                    omp.sendMessage("  " + color + "§l" + (i + 1) + ". " + ((staffRank != StaffRank.NONE && staffRank != StaffRank.ADMIN) ? staffRank.getPrefixColor() : vipRank.getPrefixColor()).getChatColor() + player.getPlayerName() + " §8- " + getValue(player, count));
+                    omp.sendMessage("  " + color + "§l" + (i + 1) + ". " + (staffRank != StaffRank.NONE ? staffRank.getPrefixColor() : vipRank.getPrefixColor()).getChatColor() + player.getPlayerName() + " §8- " + getValue(player, count));
                 }
 
                 DefaultCommandLeaderBoard.this.onDispatch(omp, a);

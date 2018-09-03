@@ -39,7 +39,7 @@ public class ClaimHandler {
     }
 
     public boolean canBuild(SurvivalPlayer omp, Location location, Material material) {
-        if (!survival.getWorld().equals(location.getWorld()))
+        if (!survival.canClaimIn(location.getWorld()))
             return false;
 
         Claim claim = getClaimAt(location, false, omp.getLastClaim());
