@@ -238,6 +238,17 @@ public class PluginMessageHandler implements Listener {
                             group.setup(omp);
                             break;
                         }
+                        case "DESTROY": {
+                            if (group == null)
+                                break;
+
+                            BungeePlayer omp = BungeePlayer.getPlayer(owner);
+
+                            if (omp == null)
+                                break;
+
+                            group.destroy();
+                        }
                         case "ADD": {
                             boolean next = true;
                             while (next) {

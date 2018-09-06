@@ -25,7 +25,9 @@ import org.bukkit.event.entity.*;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
+import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
+import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.vehicle.VehicleDamageEvent;
 import org.bukkit.event.world.StructureGrowEvent;
@@ -52,6 +54,32 @@ public class ClaimEvents implements Listener {
 
     public ClaimEvents(Survival survival) {
         this.survival = survival;
+    }
+
+    @EventHandler
+    public void onCraft(CraftItemEvent event) {
+        for (ItemStack item : event.getInventory().getContents()) {
+            if (Claim.CLAIMING_TOOL.equals(item)) {
+                event.setCancelled(true);
+                SurvivalPlayer.getPlayer((Player) event.getWhoClicked()).sendMessage("Claim", Color.RED, "Je kan de " + Claim.CLAIMING_TOOL.getDisplayName() + " §7niet gebruiken om te craften.", "You can't use the " + Claim.CLAIMING_TOOL.getDisplayName() + " §7to craft.");
+                return;
+            } else if (Survival.SPAWNER_MINER.equals(item)) {
+                event.setCancelled(true);
+                SurvivalPlayer.getPlayer((Player) event.getWhoClicked()).sendMessage("Spawner Miner", Color.RED, "Je kan de " + Survival.SPAWNER_MINER.getDisplayName() + " §7niet gebruiken om te craften.", "You can't use the " + Survival.SPAWNER_MINER.getDisplayName() + " §7to craft.");
+                return;
+            }
+        }
+    }
+
+    @EventHandler
+    public void onAnvil(PrepareAnvilEvent event) {
+        for (ItemStack item : event.getInventory().getContents()) {
+            if (!Claim.CLAIMING_TOOL.equals(item) && !Survival.SPAWNER_MINER.equals(item))
+                continue;
+
+            event.setResult(null);
+            return;
+        }
     }
 
     /*

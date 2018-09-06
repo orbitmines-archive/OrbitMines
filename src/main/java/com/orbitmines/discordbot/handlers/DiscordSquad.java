@@ -9,6 +9,7 @@ import com.orbitmines.api.database.*;
 import com.orbitmines.api.database.Set;
 import com.orbitmines.api.database.tables.TableDiscordGroup;
 import com.orbitmines.api.database.tables.TableDiscordGroupData;
+import com.orbitmines.api.utils.DateUtils;
 import com.orbitmines.bungeecord.OrbitMinesBungee;
 import com.orbitmines.bungeecord.handlers.BungeePlayer;
 import com.orbitmines.discordbot.DiscordBot;
@@ -295,23 +296,66 @@ public class DiscordSquad {
                     }, throwable -> {
                         throwable.printStackTrace();
                         omp.sendMessage("Discord", Color.RED, "Er is een probleem met het maken van je Discord Squad.", "An error occurred while creating your Discord Squad.");
-                        broadcastError("Voice Channel");
+                        broadcastError("Voice Channel", true);
                     });
                 }, throwable -> {
                     throwable.printStackTrace();
                     omp.sendMessage("Discord", Color.RED, "Er is een probleem met het maken van je Discord Squad.", "An error occurred while creating your Discord Squad.");
-                    broadcastError("Text Channel");
+                    broadcastError("Text Channel", true);
                 });
             }, throwable -> {
                 throwable.printStackTrace();
                 omp.sendMessage("Discord", Color.RED, "Er is een probleem met het maken van je Discord Squad.", "An error occurred while creating your Discord Squad.");
-                broadcastError("Category");
+                broadcastError("Category", true);
             });
         }, throwable -> {
             throwable.printStackTrace();
             omp.sendMessage("Discord", Color.RED, "Er is een probleem met het maken van je Discord Squad.", "An error occurred while creating your Discord Squad.");
-            broadcastError("Role");
+            broadcastError("Role", true);
         });
+    }
+
+    public void destroy(BungeePlayer omp) {
+        omp.sendMessage("Discord", Color.BLUE, "Discord Squad aan het verwijderen...", "Deleting Discord Squad...");
+
+        /* Delete Squad */
+        Database.get().delete(Table.DISCORD_GROUP, new Where(TableDiscordGroup.UUID, this.owner.toString()));
+        /* Delete Squad from Selected */
+        Database.get().update(Table.DISCORD_GROUP_DATA, new Set(TableDiscordGroupData.SELECTED, ""), new Where(TableDiscordGroupData.SELECTED, this.owner.toString()));
+
+        getVoiceChannel().delete().queue((channel) -> {
+            omp.sendMessage("Discord", Color.LIME, "Voice Channel gemaakt.", "Successfully created Voice Channel.");
+
+            getTextChannel().getManager().setName("archive_" + this.owner.toString() + "_" + DateUtils.now().getTime()).setParent(discord.getCategory(BotToken.DEFAULT, "ARCHIVE")).queue((channel2) -> {
+                omp.sendMessage("Discord", Color.LIME, "Text Channel gemaakt.", "Successfully created Text Channel.");
+
+                getCategory().delete().queue((category) -> {
+                    omp.sendMessage("Discord", Color.LIME, "Category gemaakt.", "Successfully created Category.");
+
+                    getRole().delete().queue((role) -> {
+                        omp.sendMessage("Discord", Color.LIME, "Role gemaakt.", "Successfully created Role.");
+
+
+                    }, (throwable -> {
+                        throwable.printStackTrace();
+                        omp.sendMessage("Discord", Color.RED, "Er is een probleem met het verwijderen van je Discord Squad.", "An error occurred while deleting your Discord Squad.");
+                        broadcastError("Role", false);
+                    }));
+                }, (throwable -> {
+                    throwable.printStackTrace();
+                    omp.sendMessage("Discord", Color.RED, "Er is een probleem met het verwijderen van je Discord Squad.", "An error occurred while deleting your Discord Squad.");
+                    broadcastError("Category", false);
+                }));
+            }, (throwable -> {
+                throwable.printStackTrace();
+                omp.sendMessage("Discord", Color.RED, "Er is een probleem met het verwijderen van je Discord Squad.", "An error occurred while deleting your Discord Squad.");
+                broadcastError("Text Channel", false);
+            }));
+        }, (throwable -> {
+            throwable.printStackTrace();
+            omp.sendMessage("Discord", Color.RED, "Er is een probleem met het verwijderen van je Discord Squad.", "An error occurred while deleting your Discord Squad.");
+            broadcastError("Voice Channel", false);
+        }));
     }
 
     public boolean isSetup() {
@@ -341,8 +385,8 @@ public class DiscordSquad {
         return (rankName.equals(VipRank.NONE.getName()) ? "" : rankName + " ") + owner.getPlayerName();
     }
 
-    private void broadcastError(String type) {
-        discord.getChannel(BotToken.DEFAULT, DiscordBot.ChannelType.private_server_log).sendMessage(discord.getEmote(BotToken.DEFAULT, DiscordBot.CustomEmote.barrier).getAsMention() + " " + discord.getRole(BotToken.DEFAULT, StaffRank.OWNER).getAsMention() + ", " + discord.getRole(BotToken.DEFAULT, StaffRank.DEVELOPER).getAsMention() + " » An error occurred while creating a **" + type + "** for " + DiscordUtils.getDisplay(discord, BotToken.DEFAULT, this.owner) + "'s **Discord Squad**.").queue();
+    private void broadcastError(String type, boolean creating) {
+        discord.getChannel(BotToken.DEFAULT, DiscordBot.ChannelType.private_server_log).sendMessage(discord.getEmote(BotToken.DEFAULT, DiscordBot.CustomEmote.barrier).getAsMention() + " " + discord.getRole(BotToken.DEFAULT, StaffRank.OWNER).getAsMention() + ", " + discord.getRole(BotToken.DEFAULT, StaffRank.DEVELOPER).getAsMention() + " » An error occurred while " + (creating ? "creating" : "deleting") + " a **" + type + "** for " + DiscordUtils.getDisplay(discord, BotToken.DEFAULT, this.owner) + "'s **Discord Squad**.").queue();
     }
 
     public static List<DiscordSquad> getGroups() {

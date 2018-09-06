@@ -76,7 +76,7 @@ public class DiscordGroupData extends Data {
     }
 
     public void onDeny(CachedPlayer owner) {
-        clearInvite(owner);
+        clearInvite(owner, true);
     }
 
     public void onRequestCancel(CachedPlayer member) {
@@ -194,7 +194,7 @@ public class DiscordGroupData extends Data {
         return invites;
     }
 
-    private void clearInvite(CachedPlayer friend) {
+    public void clearInvite(CachedPlayer friend, boolean notify) {
         removeInvites(friend.getUUID());
         getDataFor(friend.getUUID()).removeSentRequests(uuid);
 
@@ -202,7 +202,10 @@ public class DiscordGroupData extends Data {
 
         DiscordSquad group = DiscordSquad.getFromDatabase(OrbitMines.getInstance().getServerHandler().getDiscord(), friend.getUUID());
 
-        forceUpdateFor(friend, new Message("Discord", Color.BLUE, omp.getName() + "§7 heeft je verzoek om " + group.getDisplayName() + " §7te joinen afgewezen.", omp.getName() + "§7 denied your request to join " + group.getDisplayName() + "§7."));
+        if (notify)
+            forceUpdateFor(friend, new Message("Discord", Color.BLUE, omp.getName() + "§7 heeft je verzoek om " + group.getDisplayName() + " §7te joinen afgewezen.", omp.getName() + "§7 denied your request to join " + group.getDisplayName() + "§7."));
+        else
+            forceUpdateFor(friend);
     }
 
     private void addInvites(UUID friend) {

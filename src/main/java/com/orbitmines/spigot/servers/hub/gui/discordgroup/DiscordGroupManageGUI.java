@@ -124,6 +124,18 @@ public class DiscordGroupManageGUI extends GUI {
                     new DiscordGroupGUI().open(omp);
                 }
             });
+
+            add(1, 4, new ItemInstance(new ItemBuilder(Material.BARRIER, 1, "§c§l" + omp.lang("Verwijder Squad", "Delete Squad")).build()) {
+                @Override
+                public void onClick(InventoryClickEvent event, OMPlayer omp) {
+                    new DiscordGroupRemoveGUI() {
+                        @Override
+                        protected void onCancel() {
+                            DiscordGroupManageGUI.this.reopen(omp);
+                        }
+                    }.open(omp);
+                }
+            });
         }
 
         add(0, 6, new ItemInstance(new ItemBuilder(Material.FILLED_MAP, 1, "§7§l" + omp.lang("Verander Naam", "Change Name")).build()) {

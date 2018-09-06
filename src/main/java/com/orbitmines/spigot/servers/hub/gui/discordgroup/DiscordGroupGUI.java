@@ -120,7 +120,21 @@ public class DiscordGroupGUI extends GUI implements DiscordGroupGUIInstance {
                 add(2, 4, new EmptyItemInstance(item));
                 add(2, 5, new EmptyItemInstance(item));
                 add(2, 6, new EmptyItemInstance(item));
+
+                clear(0, 5);
             } else {
+                add(0, 5, new ItemInstance(new ItemBuilder(Material.BARRIER, 1, "§c§l" + omp.lang("Verwijder Squad", "Delete Squad")).build()) {
+                    @Override
+                    public void onClick(InventoryClickEvent event, OMPlayer omp) {
+                        new DiscordGroupRemoveGUI() {
+                            @Override
+                            protected void onCancel() {
+                                DiscordGroupGUI.this.reopen(omp);
+                            }
+                        }.open(omp);
+                    }
+                });
+
                 {
                     ItemBuilder item = new PlayerSkullBuilder(() -> omp.getName(true), 1, group.getDisplayName());
 
