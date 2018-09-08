@@ -3,6 +3,7 @@ package com.orbitmines.spigot.api.handlers.worlds.flatgenerator;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Biome;
 import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.ChunkGenerator;
 
@@ -24,15 +25,19 @@ public class ChunkGeneratorFlat extends ChunkGenerator {
     }
 
     @Override
-    public ChunkData generateChunkData(World world, Random random, int x, int z, BiomeGrid biome) {
+    public ChunkData generateChunkData(World world, Random random, int xC, int zC, BiomeGrid biome) {
         ChunkData data = createChunkData(world);
 
-//        biome.setBiome(x, z, Biome.PLAINS);
+        for (int x = 0; x < 16; x++) {
+            for (int z = 0; z < 16; z++) {
+                data.setBlock(x, 0, z, Material.BEDROCK);
+                data.setBlock(x, 1, z, Material.DIRT);
+                data.setBlock(x, 2, z, Material.DIRT);
+                data.setBlock(x, 3, z, Material.GRASS_BLOCK);
 
-        data.setBlock(x << 4, 0, z << 4, Material.BEDROCK);
-        data.setBlock(x << 4, 0, z << 4, Material.DIRT);
-        data.setBlock(x << 4, 0, z << 4, Material.DIRT);
-        data.setBlock(x << 4, 0, z << 4, Material.GRASS);
+                biome.setBiome(x, z, Biome.PLAINS);
+            }
+        }
 
         return data;
     }

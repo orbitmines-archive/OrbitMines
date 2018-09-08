@@ -413,6 +413,7 @@ public class DiscordBot {
 
     public enum CustomEmote {
 
+        /* OM Emotes */
         iron_ingot,
         gold_ingot,
         diamond_item,

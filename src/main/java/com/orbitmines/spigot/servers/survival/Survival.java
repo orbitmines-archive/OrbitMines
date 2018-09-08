@@ -402,8 +402,12 @@ public class Survival extends OrbitMinesServer {
                         component.setChatColor(c.getMd5());
                     }
 
+                    if (component.getChatColor() == Color.WHITE.getMd5() && item.getEnchantments().size() > 0) {
+                        component.setChatColor(Color.AQUA.getMd5());
+                    }
+
                     component.setBold(lastColors.contains("§l"));
-                    component.setItalic(lastColors.contains("§o"));
+                    component.setItalic(lastColors.contains("§o") || lastColors.isEmpty() /* Item Renamed */);
                     component.setObfuscated(lastColors.contains("§k"));
                     component.setStrikethrough(lastColors.contains("§m"));
                     component.setUnderlined(lastColors.contains("§n"));

@@ -2,6 +2,7 @@ package com.orbitmines.spigot.api.handlers.worlds.voidgenerator;
 
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.Biome;
 import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.ChunkGenerator;
 
@@ -23,7 +24,14 @@ public class ChunkGeneratorVoid extends ChunkGenerator {
     }
 
     @Override
-    public ChunkData generateChunkData(World world, Random random, int x, int z, BiomeGrid biome) {
+    public ChunkData generateChunkData(World world, Random random, int xC, int zC, BiomeGrid biome) {
+
+        for (int x = 0; x < 16; x++) {
+            for (int z = 0; z < 16; z++) {
+                biome.setBiome(x, z, Biome.PLAINS);
+            }
+        }
+
         return createChunkData(world);
     }
 }

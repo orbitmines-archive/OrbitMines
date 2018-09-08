@@ -70,13 +70,15 @@ public class CommandFly extends VipCommand {
                 omp.sendMessage("Fly", Color.RED, "§7Player §6" + a[1] + " §7is niet online!", "§7Player §6" + a[1] + " §7isn't online!");
             }
         } else if (omp.isEligible(VipRank.DIAMOND)) {
-            Claim claim = survival.getClaimHandler().getClaimAt(p.getLocation(), false, omp.getLastClaim());
-            if (claim != null)
-                omp.setLastClaim(claim);
+            if (!omp.isOpMode()) {
+                Claim claim = survival.getClaimHandler().getClaimAt(p.getLocation(), false, omp.getLastClaim());
+                if (claim != null)
+                    omp.setLastClaim(claim);
 
-            if (claim == null || !claim.canAccess(omp, false)) {
-                omp.sendMessage("Fly", Color.RED, "Je kan alleen vliegen in je claims, of claims waar je §a§l" + Claim.Permission.ACCESS.getName().lang(omp.getLanguage()) + "§7 hebt.", "You are only allowed to fly in your claims, and claims where you have §a§l" + Claim.Permission.ACCESS.getName().lang(omp.getLanguage()) + "§7.");
-                return;
+                if (claim == null || !claim.canAccess(omp, false)) {
+                    omp.sendMessage("Fly", Color.RED, "Je kan alleen vliegen in je claims, of claims waar je §a§l" + Claim.Permission.ACCESS.getName().lang(omp.getLanguage()) + "§7 hebt.", "You are only allowed to fly in your claims, and claims where you have §a§l" + Claim.Permission.ACCESS.getName().lang(omp.getLanguage()) + "§7.");
+                    return;
+                }
             }
 
             p.setAllowFlight(!p.getAllowFlight());

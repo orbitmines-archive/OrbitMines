@@ -321,6 +321,7 @@ public class OrbitMines extends JavaPlugin {
     private void registerCommands() {
         new CommandHelp(this);
         new CommandRules(this);
+        new CommandPatchNotes(this);
 
         new CommandServers(this);
 

@@ -744,4 +744,15 @@ public class BungeePlayer {
 
         return list;
     }
+
+    public static List<BungeePlayer> getPlayersEligeble(StaffRank staffRank) {
+        List<BungeePlayer> list = new ArrayList<>();
+
+        for (BungeePlayer bungeePlayer : players.values()) {
+            if (bungeePlayer.isEligible(staffRank))
+                list.add(bungeePlayer);
+        }
+
+        return list;
+    }
 }

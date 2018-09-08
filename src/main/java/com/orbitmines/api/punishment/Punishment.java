@@ -89,10 +89,7 @@ public class Punishment {
 
     /* returns true when the punishment is expired: when it is no longer taken into account for further offences */
     public boolean hasExpired() {
-        Date date = DateUtils.now();
-        date.setTime(to.getTime() + EXPIRE_IN);
-
-        return pardoned || !isActive() && to.compareTo(date) >= 0;
+        return pardoned || !isActive() && to.compareTo(DateUtils.now()) >= 0;
     }
 
     public String getExpireInString(Language language) {

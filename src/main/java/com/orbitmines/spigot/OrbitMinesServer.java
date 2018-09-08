@@ -175,7 +175,7 @@ public abstract class OrbitMinesServer {
         ComponentMessage.TempTextComponent attachmentComponent = null;
         if (message.getAttachments().size() != 0) {
             net.dv8tion.jda.core.entities.Message.Attachment attachment = message.getAttachments().get(0);
-            attachmentComponent = new ComponentMessage.TempTextComponent(new Message((filtered.equals("") ? "" : " ") + "(File: §l" + attachment.getFileName() + "§r§3)"), ClickEvent.Action.OPEN_URL, new Message(attachment.getUrl()), HoverEvent.Action.SHOW_TEXT, new Message("§7Klik hier om §9§l" + attachment.getFileName() + "§7 te openen.", "§7Click here to open §9§l" + attachment.getFileName() + "§7.")).setChatColor(ChatColor.DARK_AQUA);
+            attachmentComponent = new ComponentMessage.TempTextComponent(new Message((filtered.equals("") ? "" : " ") + "(File: §l" + attachment.getFileName() + "§r§3)"), ClickEvent.Action.OPEN_URL, new Message(attachment.getUrl()), HoverEvent.Action.SHOW_TEXT, new Message("§7Klik hier om §3§l" + attachment.getFileName() + "§7 te openen.", "§7Click here to open §3§l" + attachment.getFileName() + "§7.")).setChatColor(ChatColor.DARK_AQUA);
         }
 
         /* Send per player for commands&mentions */

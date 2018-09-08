@@ -15,11 +15,13 @@ import com.orbitmines.bungeecord.commands.console.CommandDonation;
 import com.orbitmines.bungeecord.commands.moderator.*;
 import com.orbitmines.bungeecord.events.*;
 import com.orbitmines.bungeecord.handlers.*;
+import com.orbitmines.bungeecord.handlers.chat.ComponentMessage;
 import com.orbitmines.bungeecord.runnables.BungeeRunnable;
 import com.orbitmines.bungeecord.statistics.Statistics;
 import com.orbitmines.discordbot.DiscordBot;
 import com.orbitmines.discordbot.handlers.DiscordSquad;
 import com.orbitmines.discordbot.utils.BotToken;
+import com.orbitmines.discordbot.utils.DiscordBungeeUtils;
 import com.orbitmines.discordbot.utils.SkinLibrary;
 import com.vexsoftware.votifier.VoteHandler;
 import com.vexsoftware.votifier.VotifierPlugin;
@@ -340,6 +342,32 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
         for (BungeePlayer omp : BungeePlayer.getPlayers()) {
             if (staffRank == null || omp.isEligible(staffRank))
                 omp.sendMessage(message);
+        }
+    }
+
+    public void toBungee(BungeePlayer omp, ComponentMessage.TempTextComponent prefix, boolean bold, String message, List<BungeePlayer> players) {
+        CachedPlayer sender = CachedPlayer.getPlayer(omp.getUUID());
+
+        ComponentMessage cM = new ComponentMessage();
+
+//        for (ComponentMessage.TempTextComponent component : omp.getChatPrefix()) {
+//            cM.add(component);
+//        }
+
+        cM.add(prefix);
+
+        cM.add(DiscordBungeeUtils.getPlayerMention(omp, omp.getRankPrefix() + omp.getName()));
+
+        cM.add("§7 » ");
+
+        for (BungeePlayer player : players) {
+            ComponentMessage componentMessage = new ComponentMessage(cM);
+
+            for (ComponentMessage.TempTextComponent component : DiscordBungeeUtils.formatMessage(sender, player, player.getRankChatColor(), bold, message)) {
+                componentMessage.add(component);
+            }
+
+            componentMessage.send(player);
         }
     }
 

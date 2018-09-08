@@ -199,6 +199,10 @@ public class ComponentMessage {
             return this;
         }
 
+        public ChatColor getChatColor() {
+            return chatColor;
+        }
+
         public TextComponent lang(Language language) {
             TextComponent tc = new TextComponent(component.lang(language));
             if (clickAction != null)

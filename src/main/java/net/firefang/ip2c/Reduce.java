@@ -66,7 +66,7 @@ public class Reduce {
                 continue;
             }
             if (lineInfo.getEndIP() <= lineInfo2.getEndIP()) continue;
-            String string = "Conflict graphType 2, can't resolve";
+            String string = "Conflict type 2, can't resolve";
             throw new IllegalArgumentException(string);
         }
         for (n = 0; n < list.size(); ++n) {

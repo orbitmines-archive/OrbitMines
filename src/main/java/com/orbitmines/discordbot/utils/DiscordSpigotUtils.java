@@ -4,14 +4,16 @@ package com.orbitmines.discordbot.utils;
  * OrbitMines - @author Fadi Shawki - 2018
  */
 
-import com.orbitmines.api.*;
+import com.orbitmines.api.CachedPlayer;
+import com.orbitmines.api.Color;
+import com.orbitmines.api.StaffRank;
+import com.orbitmines.api.VipRank;
+import com.orbitmines.api.utils.CommandLibrary;
 import com.orbitmines.discordbot.DiscordBot;
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.OrbitMinesServer;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.chat.ComponentMessage;
-import com.orbitmines.spigot.api.handlers.cmd.Command;
-import com.orbitmines.spigot.api.handlers.cmd.StaffCommand;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -63,12 +65,12 @@ public class DiscordSpigotUtils {
 
             /* Command Mentions */
             if (string.contains("/")) {
-                for (Command command : Command.getCommands()) {
-                    if (command instanceof StaffCommand && !receiver.isEligible(((StaffCommand) command).getStaffRank()))
+                for (CommandLibrary command : CommandLibrary.getLibraryAll(server.getServer())) {
+                    if (command.getStaffRank() != null && !receiver.isEligible(command.getStaffRank()))
                         continue;
 
                     for (String alias : command.getAlias()) {
-                        if (!string.contains(alias))
+                        if (!string.endsWith(alias))
                             continue;
 
                         int index = string.indexOf(alias);
@@ -115,9 +117,34 @@ public class DiscordSpigotUtils {
         return new ComponentMessage.TempTextComponent(text, ClickEvent.Action.SUGGEST_COMMAND, "/msg " + omp.getName(true) + " ", HoverEvent.Action.SHOW_TEXT, stringBuilder.toString());
     }
 
-    public static ComponentMessage.TempTextComponent getCommandMention(OMPlayer omp, Command command, String text) {
-        ComponentMessage.TempTextComponent component = command.getHelpMessage(omp, new ComponentMessage()).getComponents().get(0);
-        component.setComponent(new Message(text));
-        return component;
+    public static ComponentMessage.TempTextComponent getCommandMention(OMPlayer omp, CommandLibrary command, String text) {
+        String firstCmd = command.getAlias()[0];
+        String help = command.getArgsHelp(omp.getStaffRank(), omp.getVipRank());
+
+        if (help == null)
+            help = "";
+        else
+            help = " §7" + help;
+
+        StringBuilder aliases = new StringBuilder();
+        if (command.getVipRank() != null)
+            aliases.append("\n§7Required: ").append(command.getVipRank().getDisplayName());
+        else if (command.getStaffRank() != null)
+            aliases.append("\n§7Required: ").append(command.getStaffRank().getDisplayName());
+
+        if (command.getAlias().length > 1) {
+            aliases.append("\n§7Alias: ");
+
+            for (int i = 1; i < command.getAlias().length; i++) {
+                if (i != 1)
+                    aliases.append("§7, ");
+
+                aliases.append("§9").append(command.getAlias()[i]);
+            }
+        }
+
+        aliases.append("\n\n§7§o").append(command.getDescription(omp.getStaffRank(), omp.getVipRank()));
+
+        return new ComponentMessage.TempTextComponent(text, ClickEvent.Action.SUGGEST_COMMAND, firstCmd + " ", HoverEvent.Action.SHOW_TEXT, "§9" + firstCmd + help + aliases.toString());
     }
 }

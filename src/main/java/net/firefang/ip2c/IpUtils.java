@@ -133,7 +133,7 @@ public class IpUtils {
                 continue;
             }
             if (lineInfo2.getEndIP() <= lineInfo.getEndIP()) continue;
-            String string = "Conflict graphType 2, can't resolve";
+            String string = "Conflict type 2, can't resolve";
             throw new IllegalArgumentException(string);
         }
     }

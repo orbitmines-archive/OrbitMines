@@ -272,7 +272,7 @@ public class DiscordSquad {
 
                         String stringUuid = Database.get().getString(Table.DISCORD_GROUP_DATA, TableDiscordGroupData.SELECTED, new Where(TableDiscordGroupData.UUID, omp.getUUID().toString()));
 
-                        if (!stringUuid.equals("")) {
+                        if (stringUuid.equals("")) {
                             Database.get().update(Table.DISCORD_GROUP_DATA, new Set(TableDiscordGroupData.SELECTED, omp.getUUID().toString()), new Where(TableDiscordGroupData.UUID, omp.getUUID().toString()));
                             OrbitMinesBungee.getBungee().getMessageHandler().dataTransfer(PluginMessage.UPDATE_DISCORD_GROUP_DATA, omp.getPlayer(), omp.getUUID().toString());
                         }
@@ -289,7 +289,7 @@ public class DiscordSquad {
 
                         server.sendMessage("Welcome to " + role.getAsMention() + " " + user.getAsMention() + "!").queue();
                         server.sendMessage(" • Use **/discordsquad** in game to manage your squad").queue();
-                        server.sendMessage(" • In order to graphType in your squad graphType **!<message>** in game.").queue();
+                        server.sendMessage(" • In order to type in your squad type **!<message>** in game.").queue();
                         server.sendMessage(" • Use **!list** in Discord to view all online players in game.").queue();
 
                         omp.sendMessage("Discord", Color.BLUE, "Je §9§lDiscord Squad§7 staat klaar!", "Your §9§lDiscord Squad§7 is ready for use!");
@@ -324,18 +324,22 @@ public class DiscordSquad {
         Database.get().update(Table.DISCORD_GROUP_DATA, new Set(TableDiscordGroupData.SELECTED, ""), new Where(TableDiscordGroupData.SELECTED, this.owner.toString()));
 
         getVoiceChannel().delete().queue((channel) -> {
-            omp.sendMessage("Discord", Color.LIME, "Voice Channel gemaakt.", "Successfully created Voice Channel.");
+            omp.sendMessage("Discord", Color.LIME, "Voice Channel verwijderd.", "Successfully deleted Voice Channel.");
 
             getTextChannel().getManager().setName("archive_" + this.owner.toString() + "_" + DateUtils.now().getTime()).setParent(discord.getCategory(BotToken.DEFAULT, "ARCHIVE")).queue((channel2) -> {
-                omp.sendMessage("Discord", Color.LIME, "Text Channel gemaakt.", "Successfully created Text Channel.");
+                omp.sendMessage("Discord", Color.LIME, "Text Channel verwijderd.", "Successfully deleted Text Channel.");
 
                 getCategory().delete().queue((category) -> {
-                    omp.sendMessage("Discord", Color.LIME, "Category gemaakt.", "Successfully created Category.");
+                    omp.sendMessage("Discord", Color.LIME, "Category verwijderd.", "Successfully deleted Category.");
 
                     getRole().delete().queue((role) -> {
-                        omp.sendMessage("Discord", Color.LIME, "Role gemaakt.", "Successfully created Role.");
+                        groups.remove(this);
 
+                        omp.sendMessage("Discord", Color.LIME, "Role verwijderd.", "Successfully deleted Role.");
 
+                        omp.sendMessage("Discord", Color.BLUE, "Je §9§lDiscord Squad§7 is verwijderd!", "Your §9§lDiscord Squad§7 has been deleted!");
+
+                        discord.getChannel(BotToken.DEFAULT, DiscordBot.ChannelType.private_server_log).sendMessage("Successfully deleted **Discord Squad** for " + DiscordUtils.getDisplay(discord, BotToken.DEFAULT, this.owner) + ", Archived Text Channel » " + getTextChannel().getAsMention() + ".").queue();
                     }, (throwable -> {
                         throwable.printStackTrace();
                         omp.sendMessage("Discord", Color.RED, "Er is een probleem met het verwijderen van je Discord Squad.", "An error occurred while deleting your Discord Squad.");

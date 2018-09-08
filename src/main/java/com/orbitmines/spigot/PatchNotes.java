@@ -625,9 +625,9 @@ public class PatchNotes {
                                 .add(new Message(server.getDisplayName() + "§r §0" + version)),
                         new ComponentMessage(),
                         new ComponentMessage()
-                                .add(new Message(feature.color.getChatColor() + "§l" + feature.getName())),
+                                .add(new ComponentMessage.TempTextComponent(new Message(feature.getName())).setChatColor(feature.color.getMd5()).setBold(true)),
                         new ComponentMessage()
-                                .add(new Message("§0" + feature.description)),
+                                .add(new ComponentMessage.TempTextComponent(new Message(feature.description)).setChatColor(Color.BLACK.getMd5())),
                         new ComponentMessage(),
                         image
                 );
@@ -707,7 +707,6 @@ public class PatchNotes {
                                     .add(new Message("       §8§lOrbit§7§lMines")),
                             new ComponentMessage(),
                             new ComponentMessage(),
-                            new ComponentMessage(),
                             new ComponentMessage()
                                     .add(new Message(" §8Server: " + server.getDisplayName())),
                             new ComponentMessage()
@@ -715,8 +714,7 @@ public class PatchNotes {
                             new ComponentMessage()
                                     .add(new Message(" §8" + new Message("Datum", "Date").lang(language) + ": §0" + DateUtils.SIMPLE_FORMAT.format(date))),
                             new ComponentMessage()
-                                    .add(new Message(" §8" + new Message("Naam", "Name").lang(language) + ": §0\"" + name + "\"")),
-                            new ComponentMessage(),
+                                    .add(new ComponentMessage.TempTextComponent(new Message(" " + new Message("Naam", "Name").lang(language) + ": ")).setChatColor(Color.GRAY.getMd5())).add(new ComponentMessage.TempTextComponent("\"" + name + "\"").setChatColor(Color.BLACK.getMd5())),
                             new ComponentMessage(),
                             new ComponentMessage(),
                             versions

@@ -44,7 +44,7 @@ public class PunishGUI extends GUI {
             int slot = getSlot(omp, offence);
 
             Punishment active = handler.getActivePunishment(offence);
-            if (active != null && active.getPunishedBy().getUUID().toString().equals(omp.getUUID().toString())) {
+            if (active != null) {
                 CachedPlayer punishedBy = active.getPunishedBy();
 
                 ItemBuilder builder = new ItemBuilder(Material.BARRIER, 1,
@@ -90,7 +90,7 @@ public class PunishGUI extends GUI {
                     builder.addLore(
                             (punishment.isPardoned() ? "§a§l" + omp.lang("VERGEVEN", "PARDONED") + "§r" :
                                     (punishment.getSeverity() == Severity.WARNING ? "§8§l" + omp.lang("WAARSCHUWING", "WARNING") :
-                                            (punishment.hasExpired() ? "§c§l" + omp.lang("VERLOPEN", "EXPIRED") + "§r" :
+                                            (punishment.hasExpired() ? "§2§l" + omp.lang("VERLOPEN", "EXPIRED") + "§r" :
                                                     "§4§l" + omp.lang("ACTIEF", "ACTIVE") + "§r"
                                             )
                                     )

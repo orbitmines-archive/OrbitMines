@@ -247,7 +247,8 @@ public class PluginMessageHandler implements Listener {
                             if (omp == null)
                                 break;
 
-                            group.destroy();
+                            group.destroy(omp);
+                            break;
                         }
                         case "ADD": {
                             boolean next = true;

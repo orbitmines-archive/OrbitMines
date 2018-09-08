@@ -527,7 +527,7 @@ public class JSONObject {
             // If it did, I would re-implement this with the Enum.valueOf
             // method and place any thrown exception in the JSONException
             throw new JSONException("JSONObject[" + quote(key)
-                    + "] is not an enum of graphType " + quote(clazz.getSimpleName())
+                    + "] is not an enum of type " + quote(clazz.getSimpleName())
                     + ".");
         }
         return val;
