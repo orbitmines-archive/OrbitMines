@@ -4,7 +4,7 @@ import com.orbitmines.api.Server;
 import com.orbitmines.spigot.api.handlers.OrbitMinesMap;
 import com.orbitmines.spigot.servers.hub.handlers.HubDataPointHandler;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalDataPointHandler;
-import com.orbitmines.spigot.servers.uhsurvival2.handlers.UHSurvivalDataPointHandler;
+import com.orbitmines.spigot.servers.uhsurvival.handlers.UHSurvivalDataPointHandler;
 import org.bukkit.Bukkit;
 
 import java.util.*;

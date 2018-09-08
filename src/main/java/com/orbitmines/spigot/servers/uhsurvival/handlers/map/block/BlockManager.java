@@ -1,195 +1,163 @@
 package com.orbitmines.spigot.servers.uhsurvival.handlers.map.block;
 
-import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.api.utils.MathUtils;
 import com.orbitmines.spigot.servers.uhsurvival.UHSurvival;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.UHPlayer;
-import com.orbitmines.spigot.servers.uhsurvival.handlers.tool.Tool;
-import com.orbitmines.spigot.servers.uhsurvival.utils.enums.Enchantment;
-import com.orbitmines.spigot.servers.uhsurvival.utils.enums.ToolType;
-import com.orbitmines.spigot.servers.uhsurvival.utils.enums.World;
+import com.orbitmines.spigot.servers.uhsurvival.handlers.item.tool.Tool;
+import com.orbitmines.spigot.servers.uhsurvival.handlers.item.tool.enchantments.Enchantments;
+import com.orbitmines.spigot.servers.uhsurvival.utils.Enchantment;
+import com.orbitmines.spigot.servers.uhsurvival.utils.ToolType;
 import org.bukkit.Location;
 import org.bukkit.Material;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
-/**
- * Created by Robin on 3/4/2018.
- */
 public class BlockManager {
 
-    private HashMap<Material, Block> blocks;
+    private UHSurvival uhSurvival;
+
+    private HashMap<Material, List<Block>> blocks;
 
     public BlockManager(UHSurvival uhSurvival){
         this.blocks = new HashMap<>();
-        new Blocks(this, uhSurvival);
+        this.uhSurvival = uhSurvival;
+        /* init blocks */
+        new Block(Material.STONE, (byte) 0, ToolType.PICKAXE, 250){};
+        new Block(Material.DIRT, (byte) 0, ToolType.SPADE, 5){};
+        new Block(Material.OAK_LOG, (byte) 0, ToolType.AXE, 5){};
     }
 
-    public boolean breakBlock(UHPlayer player, Location block){
-        Tool tool = player.getUHInventory().getMainHand();
-        Block b = blocks.get(block.getBlock().getType());
-        if(b != null){
-            if(b.canBreakBlock(tool)){
-                tool.addExp((int) b.getBrokeExp());
-                if(MathUtils.randomize(0, 100, (int) b.getOutputChance())) {
-                    b.breakBlock(player, block);
-                }
-                if(tool.isEnchanted(Enchantment.AUTO_SMELT) && b.isSmeltable()){
-                    block.getBlock().setType(Material.AIR);
-                    int amount = 1;
-                    if(b.canApplyFortune()) {
-                         //TODO: ADD FORTUNE WITH MODIFIERS
+    /* BOOLEANS */
+    public boolean breakBlock(UHPlayer player, org.bukkit.block.Block block){
+        Tool tool = player.getToolInventory().getMainHand();
+        Block b = getBlock(block);
+        if(tool != null) {
+            if (b != null) {
+                if (b.canBreakBlock(tool)) {
+                    if (b.canOutput()) {
+                        b.output(player, block.getLocation());
+
                     }
-                    block.getWorld().dropItemNaturally(block, b.getSmeltedItem().setAmount(amount).build());
-                    return true;
+                    tool.addExp(b.getExp());
                 } else {
-                    return false;
+                    return true;
+                }
+            }
+            for (Enchantment enchantment : tool.getEnchantments().keySet()) {
+                if (enchantment.getOutput() instanceof Enchantments.BreakEnchantment) {
+                    if (MathUtils.randomize(0, 100, (int) enchantment.getChance())) {
+                        ((Enchantments.BreakEnchantment) enchantment.getOutput()).output(player, block, tool.getLevel(enchantment));
+                    }
                 }
             }
         }
-        return true;
+        return false;
     }
 
-    void registerBlock(Block block){
-        this.blocks.put(block.getMaterial(), block);
+    /* SETTERS */
+    private void addBlock(Block block){
+        List<Block> blocks = this.blocks.get(block.material);
+        if(blocks == null){
+            blocks = new ArrayList<>();
+        }
+        blocks.add(block);
+        this.blocks.put(block.material, blocks);
     }
 
-    public static abstract class Block {
+    /* GETTERS */
+    private Block getBlock(org.bukkit.block.Block block){
+        List<Block> blocks = this.blocks.get(block.getType());
+        if(blocks != null) {
+            for (Block b : blocks) {
+                if (b.isBlock(block)) {
+                    return b;
+                }
+            }
+        }
+        return null;
+    }
 
-        private World world;
+    /* SUB-CLASSES */
+    public abstract class Block {
 
         private Material material;
         private byte data;
 
-        private ToolType.Type acceptableTool;
-        private ToolType.ToolMaterial minimumToolLevel;
+        private ToolType tool;
+        private ToolType.Material toolMaterial;
 
         private int minimumLevel;
-        private Enchantment requiredEnchantment;
 
-        private boolean smeltable;
-
-        private Material smeltedItem;
-        private byte smeltedByte;
-
-        private boolean appliedFortune;
-
-        private double brokeExp;
+        private double exp;
 
         private double outputChance;
 
-        public Block(World world, Material m, byte data, ToolType.Type acceptableTool){
-            this.world = world;
-            this.material = m;
-            this.data = data;
-            this.acceptableTool = acceptableTool;
-            this.minimumLevel = 0;
-            this.minimumToolLevel = ToolType.ToolMaterial.WOOD;
-            this.requiredEnchantment = null;
-            this.smeltable = false;
-            this.smeltedItem = null;
-            this.smeltedByte = 0;
-            this.appliedFortune = false;
-            this.brokeExp = 0;
-            this.outputChance = 100;
+        public Block(Material material, byte data, ToolType type, double exp){
+            this(material, data, type, ToolType.Material.WOOD, 0, exp, 100);
         }
 
-        public Block(World world, Material material, byte data, ToolType.Type acceptableTool, ToolType.ToolMaterial minimumToolLevel, int minimumLevel, Enchantment requiredEnchantment, boolean smeltable, Material smeltedItem, byte smeltedByte, boolean appliedFortune, double brokeExp, double outputChance) {
-            this.world = world;
+        public Block(Material material, byte data, ToolType type, int minimumLevel, double exp){
+            this(material, data, type, ToolType.Material.WOOD, minimumLevel, exp, 0);
+        }
+
+        public Block(Material material, byte data, ToolType type, ToolType.Material toolMaterial, double exp){
+            this(material, data, type, toolMaterial, 0, exp, 0);
+        }
+
+        public Block(Material material, byte data, ToolType type, ToolType.Material toolMaterial, int minimumLevel, double exp, double outputchance){
             this.material = material;
             this.data = data;
-            this.acceptableTool = acceptableTool;
-            this.minimumToolLevel = minimumToolLevel;
+            this.tool = type;
+            this.toolMaterial = toolMaterial;
             this.minimumLevel = minimumLevel;
-            this.requiredEnchantment = requiredEnchantment;
-            this.smeltable = smeltable;
-            this.smeltedItem = smeltedItem;
-            this.smeltedByte = smeltedByte;
-            this.appliedFortune = appliedFortune;
-            this.brokeExp = brokeExp;
-            this.outputChance = outputChance;
+            this.exp = exp;
+            this.outputChance = outputchance;
+            addBlock(this);
         }
 
-        public boolean canBreakBlock(Tool tool){
-            if(tool.getType() == acceptableTool){
-                if(tool.getToolMaterial() == minimumToolLevel){
-                    if(tool.getLevel() >= minimumLevel){
-                        if(requiredEnchantment != null){
-                            if(tool.isEnchanted(requiredEnchantment)){
-                                return true;
-                            }
-                        } else {
-                            return true;
-                        }
-                    }
+        /* ABSTRACT METHODS */
+        public void output(UHPlayer player, Location block){}
+
+        /* BOOLEANS */
+        boolean canBreakBlock(Tool tool){
+            if(tool.getType() == this.tool){
+                if(tool.getMaterial().ordinal() >= toolMaterial.ordinal()){
+                    return tool.getLevel() >= minimumLevel;
                 }
             }
             return false;
         }
 
-        public ItemBuilder getSmeltedItem(){
-            return new ItemBuilder(smeltedItem, 1, smeltedByte);
+        boolean isBlock(org.bukkit.block.Block block){
+            return block.getType() == material && block.getData() == data;
         }
 
-        public void setSmeltedItem(Material smeltedItem) {
-            this.smeltedItem = smeltedItem;
+        boolean canOutput(){
+            return MathUtils.randomize(0, 100,(int) outputChance);
         }
 
-        public abstract void breakBlock(UHPlayer player, Location block);
-
-        public void setMinimumToolLevel(ToolType.ToolMaterial minimumToolMaterial) {
-            this.minimumToolLevel = minimumToolMaterial;
+        /* GETTERS */
+        double getExp() {
+            return exp;
         }
 
-        public void setMinimumLevel(int minimumLevel) {
+        /* SETTERS */
+
+        public void setMaterial(ToolType.Material toolMaterial) {
+            this.toolMaterial = toolMaterial;
+        }
+
+        public void setLevel(int minimumLevel) {
             this.minimumLevel = minimumLevel;
         }
 
-        public void setSmeltedByte(byte smeltedByte) {
-            this.smeltedByte = smeltedByte;
+        public void setExp(double exp) {
+            this.exp = exp;
         }
 
-        public void setAppliedFortune(boolean appliedFortune) {
-            this.appliedFortune = appliedFortune;
-        }
-
-        public void setRequiredEnchantment(Enchantment requiredEnchantment) {
-            this.requiredEnchantment = requiredEnchantment;
-        }
-
-        public Material getMaterial() {
-            return material;
-        }
-
-        public byte getData() {
-            return data;
-        }
-
-        public double getBrokeExp() {
-            return brokeExp;
-        }
-
-        public void setBrokeExp(double brokeExp) {
-            this.brokeExp = brokeExp;
-        }
-
-        public boolean isSmeltable() {
-            return smeltable;
-        }
-
-        public void setSmeltable(boolean smeltable) {
-            this.smeltable = smeltable;
-        }
-
-        public boolean canApplyFortune(){
-            return appliedFortune;
-        }
-
-        public double getOutputChance() {
-            return outputChance;
-        }
-
-        public void setOutputChance(double outputChance) {
+        public void setChance(double outputChance) {
             this.outputChance = outputChance;
         }
     }

@@ -1,84 +1,68 @@
 package com.orbitmines.spigot.servers.uhsurvival.handlers;
 
 import com.orbitmines.spigot.api.handlers.OMPlayer;
+import com.orbitmines.spigot.api.utils.MathUtils;
 import com.orbitmines.spigot.servers.uhsurvival.UHSurvival;
-import com.orbitmines.spigot.servers.uhsurvival.handlers.map.mapsection.MapSection;
+import com.orbitmines.spigot.servers.uhsurvival.handlers.item.tool.Tool;
+import com.orbitmines.spigot.servers.uhsurvival.handlers.item.tool.ToolInventory;
+import com.orbitmines.spigot.servers.uhsurvival.handlers.item.tool.enchantments.Enchantments;
+import com.orbitmines.spigot.servers.uhsurvival.handlers.map.Map;
+import com.orbitmines.spigot.servers.uhsurvival.handlers.map.MapSection;
+import com.orbitmines.spigot.servers.uhsurvival.handlers.mob.Attacker;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.mob.Mob;
-import com.orbitmines.spigot.servers.uhsurvival.handlers.profile.PlayerProfile;
-import com.orbitmines.spigot.servers.uhsurvival.handlers.tool.Tool;
-import com.orbitmines.spigot.servers.uhsurvival.handlers.tool.ToolInventory;
-import com.orbitmines.spigot.servers.uhsurvival.utils.enums.Action;
-import com.orbitmines.spigot.servers.uhsurvival.utils.enums.Enchantment;
-import com.orbitmines.spigot.servers.uhsurvival.utils.enums.World;
-import org.bukkit.entity.Entity;
+import com.orbitmines.spigot.servers.uhsurvival.utils.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityShootBowEvent;
-import org.bukkit.inventory.ItemStack;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.UUID;
 
-/**
- * Created by Robin on 2/27/2018.
- */
-public class UHPlayer extends OMPlayer {
+public class UHPlayer extends OMPlayer implements Attacker {
 
     private static HashMap<UUID, UHPlayer> players = new HashMap<>();
 
-    private UHSurvival uhSurvival;
-
-    private World world;
-    private MapSection section;
-
+    private MapSection mapSection;
     private ToolInventory inventory;
 
-    private PlayerProfile playerProfile;
+    private UHSurvival instance;
 
     public UHPlayer(UHSurvival uhSurvival, Player player) {
         super(player);
-        this.uhSurvival = uhSurvival;
-        this.playerProfile = PlayerProfile.getProfile(this.getUUID());
-        if (playerProfile.isBanned()) {
-            player.kickPlayer("//TODO: KICK PLAYER MESSAGE!");
+        players.put(getUUID(), this);
+        this.instance = uhSurvival;
+        this.updateMapLocation();
+        this.inventory = new ToolInventory(getInventory());
+    }
+
+    /* MAP METHODS */
+    public MapSection getMapLocation() {
+        return mapSection;
+    }
+
+    public void updateMapLocation(){
+        if(this.mapSection != null) {
+            this.mapSection.removePlayer(this);
+        }
+        Map map = instance.getMap(this.getWorld());
+        if(map != null){
+            this.mapSection = map.getMapSection(this.getLocation());
+            this.mapSection.addPlayer(this);
         }
     }
 
-    /* STATIC METHODS */
-    public static HashMap<UUID, UHPlayer> getUHPlayers() {
-        return players;
-    }
-
-    public static UHPlayer getUHPlayer(UUID id) {
-        return players.get(id);
-    }
-
-    public static UHPlayer getUHPlayer(Player p) {
-        return getUHPlayer(p.getUniqueId());
-    }
-
+    /* OM-PLAYER METHODS */
     @Override
     protected void onLogin() {
-        players.put(getUUID(), this);
-        this.world = World.getWorldByEnvironment(getWorld().getEnvironment());
-        if (world != null && world.getMap() != null) {
-            this.section = world.getMap().getMapSection(getLocation());
-        }
-        this.inventory = new ToolInventory(this.getInventory());
+
     }
 
     @Override
     protected void onLogout() {
-        players.remove(getUUID(), this);
-        if (section != null) {
-            section.removePlayer(this.getUUID());
-        }
-        playerProfile.update(PlayerProfile.SaveType.ALL);
+
     }
 
     @Override
-    public void onVote(int votes) {
+    protected void onFirstLogin() {
 
     }
 
@@ -87,129 +71,88 @@ public class UHPlayer extends OMPlayer {
         return false;
     }
 
-    /* PROFILE METHODS */
-    public PlayerProfile getProfile() {
-        return playerProfile;
-    }
-
-    /* TOOL METHODS */
-    public ToolInventory getUHInventory() {
-        return inventory;
-    }
-
-    /* MAP METHODS */
-    public MapSection getSection() {
-        return section;
-    }
-
-    public World getUHWorld(){
-        return world;
-    }
-
-    public boolean isCloseToEdge(){
-        if(section != null){
-            int x = getLocation().getBlockX();
-            int z = getLocation().getBlockZ();
-            if (section.getMaxX() / x == 1 && section.getMaxX() % x == 5) {
+    /* ATTACKER METHODS TODO!*/
+    @Override
+    public boolean attack(Attacker defender) {
+        if (defender instanceof UHPlayer) {
+            UHPlayer p = (UHPlayer) defender;
+            if (p.getMapLocation().canPvP() && getMapLocation().canPvP()) {
                 return true;
-            } else if (section.getMinX() / x == 0 && x % section.getMinX() == 5) {
-                return true;
-            } else if (section.getMaxZ() / z == 1 && section.getMaxZ() % z == 5) {
-                return true;
-            } else if (section.getMinZ() / z == 0 && z % section.getMinZ() == 5) {
-                return true;
-            }
-            return false;
-        }
-        return false;
-    }
-
-    public void updateMap() {
-        World world = World.getWorldByEnvironment(this.getWorld().getEnvironment());
-        if (world != this.world) {
-            this.world = world;
-            if (!this.world.isLobby()) {
-                MapSection s = this.section;
-                section = this.world.getMap().getMapSection(this.getLocation());
-                s.leave(this);
-                section.enter(this);
-            }
-        } else {
-            MapSection section = this.world.getMap().getMapSection(this.getLocation());
-            if (section != this.section) {
-                MapSection s = this.section;
-                this.section = section;
-                s.leave(this);
-                this.section.enter(this);
             }
         }
-    }
-
-    /*  UH-PLAYERS METHODS  */
-    public void attack(Entity entity, EntityDamageByEntityEvent event) {
-        Tool tool = inventory.getMainHand();
-        if (entity instanceof Player) {
-            UHPlayer defender = getUHPlayer(entity.getUniqueId());
-            if (this.section.canPvP() && defender.getSection().canPvP()) {
-                event.setCancelled(defender.protect(this.getPlayer(), event));
-                if (!event.isCancelled()) {
-                    uhSurvival.getEnchantmentManager().output(tool.getEnchantments(), Action.HIT, event, false);
+        boolean cancelled = defender.defend(this);
+        if (!cancelled) {
+            Tool mainHand = getToolInventory().getMainHand();
+            if (mainHand != null) {
+                if (defender instanceof Mob) {
+                    Mob mob = (Mob) defender;
+                    if (mob.hasMobType()) {
+                        mainHand.addExp(mob.getType().getItemExp());
+                    }
                 }
-            } else {
-                event.setCancelled(true);
-            }
-        } else {
-            Mob mob = world.getMap().getMapSection(entity.getLocation()).getMob(entity);
-            if (mob != null) {
-                mob.protect(uhSurvival, event);
-                if (!event.isCancelled()) {
-                    tool.addExp(mob.getType().getItemExp());
-                    uhSurvival.getEnchantmentManager().output(tool.getEnchantments(), Action.HIT, event, false);
-                }
-            }
-        }
-    }
-
-    public boolean protect(Entity entity, Event event) {
-        Tool[] armor = inventory.getArmor();
-        int addedExp = 0;
-        if (entity instanceof Player) {
-            addedExp = 120;
-        } else {
-            Mob mob = world.getMap().getMapSection(entity.getLocation()).getMob(entity);
-            if (mob != null) {
-                addedExp = mob.getType().getArmorExp();
-            }
-        }
-        HashMap<Enchantment, Integer> enchantment = new HashMap<>();
-        for (Tool piece : armor) {
-            if (piece != null) {
-                piece.addExp(addedExp);
-                for (Enchantment e : piece.getEnchantments().keySet()) {
-                    if (!enchantment.containsKey(e)) {
-                        enchantment.put(e, piece.getEnchantment(e));
-                    } else {
-                        int level = piece.getEnchantment(e) > enchantment.get(e) ? piece.getEnchantment(e) : enchantment.get(e);
-                        enchantment.put(e, level);
+                for (Enchantment enchantment : mainHand.getEnchantments().keySet()) {
+                    if(!cancelled && enchantment.getOutput() instanceof Enchantments.AttackEnchantment) {
+                        if(MathUtils.randomize(0, 100, (int) enchantment.getChance()))
+                        cancelled = ((Enchantments.AttackEnchantment) enchantment.getOutput()).output(this, defender, mainHand.getLevel(enchantment));
                     }
                 }
             }
         }
-        uhSurvival.getEnchantmentManager().output(enchantment, Action.PROTECT, event, false);
-        return false;
+        return cancelled;
     }
 
-    public void shoot(EntityShootBowEvent event) {
-        Tool bow = null;
-        ItemStack b = event.getBow();
-        if (inventory.getMainHand().equals(b)) {
-            bow = inventory.getMainHand();
-        } else if (inventory.getOffHand().equals(b)) {
-            bow = inventory.getOffHand();
+    @Override
+    public boolean defend(Attacker attacker) {
+        HashMap<Enchantment, Integer> enchantments = new HashMap<>();
+        for(Tool tool : getToolInventory().getArmor()){
+            if(tool != null){
+                if(attacker instanceof Mob){
+                    Mob mob = (Mob) attacker;
+                    if(mob.hasMobType()){
+                        tool.addExp(mob.getType().getArmorExp());
+                    }
+                }
+                for(Enchantment enchantment : tool.getEnchantments().keySet()){
+                    if(enchantments.containsKey(enchantment)){
+                        enchantments.put(enchantment, tool.getLevel(enchantment) + enchantments.get(enchantment));
+                    } else {
+                        enchantments.put(enchantment, tool.getLevel(enchantment));
+                    }
+                }
+            }
         }
-        if (bow != null && !event.isCancelled()) {
-            uhSurvival.getEnchantmentManager().output(bow.getEnchantments(), Action.SHOOT, event, true);
-            bow.addExp((int) event.getForce() * 30);
+        boolean cancelled = false;
+        for(Enchantment enchantment : enchantments.keySet()){
+            if(cancelled) break;
+            if(enchantment.getOutput() instanceof Enchantments.AttackEnchantment) {
+                if (MathUtils.randomize(0, 100, (int) enchantment.getChance())) {
+                    cancelled = ((Enchantments.AttackEnchantment) enchantment.getOutput()).output(attacker, this, enchantments.get(enchantment));
+                }
+            }
         }
+        return cancelled;
+    }
+
+    @Override
+    public ToolInventory getToolInventory() {
+        return inventory;
+    }
+
+    @Override
+    public boolean hasInventory() {
+        return true;
+    }
+
+    /* STATIC METHODS */
+    public static UHPlayer getUHPlayer(UUID id){
+        return players.get(id);
+    }
+
+    public static UHPlayer getUHPlayer(Player player){
+        return getUHPlayer(player.getUniqueId());
+    }
+
+    public static Collection<UHPlayer> getUHPlayers(){
+        return players.values();
     }
 }

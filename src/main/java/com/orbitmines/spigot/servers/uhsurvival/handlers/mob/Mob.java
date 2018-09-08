@@ -1,160 +1,108 @@
 package com.orbitmines.spigot.servers.uhsurvival.handlers.mob;
 
-import com.orbitmines.spigot.servers.uhsurvival.UHSurvival;
-import com.orbitmines.spigot.servers.uhsurvival.handlers.UHPlayer;
-import com.orbitmines.spigot.servers.uhsurvival.handlers.map.mapsection.MapSection;
-import com.orbitmines.spigot.servers.uhsurvival.handlers.tool.Tool;
-import com.orbitmines.spigot.servers.uhsurvival.handlers.tool.ToolInventory;
-import com.orbitmines.spigot.servers.uhsurvival.utils.enums.Action;
-import com.orbitmines.spigot.servers.uhsurvival.utils.enums.Enchantment;
-import com.orbitmines.spigot.servers.uhsurvival.utils.enums.World;
+import com.orbitmines.spigot.api.utils.MathUtils;
+import com.orbitmines.spigot.servers.uhsurvival.handlers.item.tool.Tool;
+import com.orbitmines.spigot.servers.uhsurvival.handlers.item.tool.ToolInventory;
+import com.orbitmines.spigot.servers.uhsurvival.handlers.item.tool.enchantments.Enchantments;
+import com.orbitmines.spigot.servers.uhsurvival.utils.Enchantment;
 import org.bukkit.Location;
-import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.event.Event;
-import org.bukkit.event.entity.EntityShootBowEvent;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
 
-/**
- * Created by Robin on 2/28/2018.
- */
-public class Mob {
+public class Mob implements Attacker {
 
-    private int level;
-
-    private World world;
-    private MapSection section;
+    private Entity entity;
+    private ToolInventory inventory;
 
     private MobType type;
 
-    private Entity entity;
+    private int powerLevel;
 
-    private ToolInventory inv;
-
-    private UHPlayer target;
-    private UHPlayer killer;
-
-    public Mob(MobType type, Entity entity, int level){
+    Mob(MobType type, Entity entity){
         this.type = type;
         this.entity = entity;
-        this.level = level;
-        this.world = World.getWorldByEnvironment(entity.getWorld().getEnvironment());
-        this.section = world.getMap().getMapSection(entity.getLocation());
-        if(type.getType().canHoldItems() || type.getType().canWearArmor()) {
-            this.inv = new ToolInventory(((LivingEntity)entity).getEquipment());
+        if(entity instanceof LivingEntity) this.inventory = new ToolInventory(((LivingEntity) entity).getEquipment());
+    }
+
+    @Override
+    public boolean attack(Attacker defender) {
+        /* determining if type has been initialized and running default procedure  */
+        boolean cancelled = defender.defend(this);
+        if (!cancelled && type != null) {
+            cancelled = type.attack(defender, this);
         }
-        this.target = null;
-    }
-
-    /* STANDARD METHODS */
-    public void death(){
-        this.type.death(this);
-        if(entity instanceof LivingEntity){
-            if(((LivingEntity) entity).getKiller() != null){
-                UHPlayer p = UHPlayer.getUHPlayer(((LivingEntity) entity).getKiller().getUniqueId());
-                if(p != null){
-                    setKiller(p);
-                }
-            }
-        }
-    }
-
-    public void spawn(){
-        this.type.spawn(this);
-    }
-
-    public boolean protect(UHSurvival uhSurvival, Event event){
-        Tool[] armor = inv.getArmor();
-        HashMap<Enchantment, Integer> enchantment = new HashMap<>();
-        for(Tool piece : armor){
-            if(piece != null){
-                for(Enchantment e : piece.getEnchantments().keySet()){
-                    if(!enchantment.containsKey(e)) {
-                        enchantment.put(e, piece.getEnchantment(e));
-                    } else {
-                        int level = piece.getEnchantment(e) > enchantment.get(e) ? piece.getEnchantment(e) : enchantment.get(e);
-                        enchantment.put(e, level);
+        if (hasInventory()) {
+            Tool mainHand = inventory.getMainHand();
+            if (mainHand != null && mainHand.isEnchanted()) {
+                for (Enchantment enchantment : mainHand.getEnchantments().keySet()) {
+                    if (!cancelled && enchantment.getOutput() instanceof Enchantments.AttackEnchantment) {
+                        if (MathUtils.randomize(0, 100, (int) enchantment.getChance())) {
+                            cancelled = ((Enchantments.AttackEnchantment) enchantment.getOutput()).output(this, defender, mainHand.getLevel(enchantment));
+                        }
                     }
                 }
             }
         }
-        this.updateMap();
-        uhSurvival.getEnchantmentManager().output(enchantment, Action.PROTECT, event, false);
-        return false;
+        return cancelled;
     }
 
-    public void shoot(UHSurvival uhSurvival, EntityShootBowEvent event) {
-        Tool bow = null;
-        ItemStack b = event.getBow();
-        if (getInventory().getMainHand().equals(b)) {
-            bow = getInventory().getMainHand();
-        } else if (getInventory().getOffHand().equals(b)) {
-            bow = getInventory().getOffHand();
+    @Override
+    public boolean defend(Attacker attacker) {
+        HashMap<Enchantment, Integer> enchantments = new HashMap<>();
+        if(inventory != null){
+            for(Tool tool : inventory.getArmor()){
+                if(tool != null){
+                    for(Enchantment enchantment : tool.getEnchantments().keySet()){
+                        if(enchantments.containsKey(enchantment)){
+                            enchantments.put(enchantment, tool.getLevel(enchantment) + enchantments.get(enchantment));
+                        } else {
+                            enchantments.put(enchantment, tool.getLevel(enchantment));
+                        }
+                    }
+                }
+            }
         }
-        if (bow != null) {
-            uhSurvival.getEnchantmentManager().output(bow.getEnchantments(), Action.SHOOT, event, true);
+        boolean cancelled = false;
+        if(type != null){
+            cancelled = type.defend(attacker, this);
         }
-        updateMap();
+        for(Enchantment enchantment : enchantments.keySet()){
+            if(!cancelled && enchantment.getOutput() instanceof Enchantments.AttackEnchantment) {
+                if (MathUtils.randomize(0, 100, (int) enchantment.getChance())) {
+                    cancelled = ((Enchantments.AttackEnchantment) enchantment.getOutput()).output(attacker, this, enchantments.get(enchantment));
+                }
+            }
+        }
+        return cancelled;
     }
 
-    /* GETTERS */
-    public UHPlayer getTarget() {
-        return target;
+    @Override
+    public ToolInventory getToolInventory() {
+        return inventory;
     }
 
-    public boolean hasTarget(){
-        return target != null;
-    }
-
-    public ToolInventory getInventory() {
-        return inv;
-    }
-
-    public Entity getEntity() {
-        return entity;
-    }
-
-    public UHPlayer getKiller() {
-        return killer;
+    @Override
+    public Location getLocation() {
+        return entity.getLocation();
     }
 
     public MobType getType() {
         return type;
     }
 
-    public int getLevel() {
-        return level;
+    @Override
+    public boolean hasInventory() {
+        return inventory != null;
     }
 
-    public MapSection getSection() {
-        return section;
+    public boolean hasMobType(){
+        return type != null;
     }
 
-    public boolean isInRange(Location location){
-        return location.distance(this.entity.getLocation()) < this.getType().getRadius();
-    }
-
-    public void updateMap(){
-        MapSection newSection = world.getMap().getMapSection(entity.getLocation());
-        if(newSection != null && newSection != section){
-            section.removeMob(this.entity);
-            newSection.addMob(this);
-            section = newSection;
-        }
-    }
-
-    /* SETTERS */
-    public void setTarget(UHPlayer target) {
-        this.target = target;
-        if(entity instanceof Creature){
-            ((Creature) entity).setTarget(target.getPlayer());
-        }
-    }
-
-    public void setKiller(UHPlayer killer) {
-        this.killer = killer;
+    @Override
+    public boolean equals(Object entity) {
+        return (entity instanceof Entity) && entity == this.entity;
     }
 }

@@ -1,97 +1,80 @@
 package com.orbitmines.spigot.servers.uhsurvival.handlers.mob;
 
-import com.orbitmines.spigot.servers.uhsurvival.handlers.dungeon.DungeonManager;
-import com.orbitmines.spigot.servers.uhsurvival.handlers.dungeon.loottable.LootTable;
-import com.orbitmines.spigot.servers.uhsurvival.utils.enums.EntityType;
-import org.bukkit.event.Event;
+import com.orbitmines.spigot.servers.uhsurvival.handlers.map.dungeon.loottable.LootTable;
+import org.bukkit.entity.EntityType;
 
-/**
- * Created by Robin on 2/28/2018.
- */
 public abstract class MobType {
 
-    private String name;
     private EntityType type;
 
-    private double attack;
-    private double specialAttack;
+    private double itemExp;
+    private double armorExp;
 
-    private int itemExp;
-    private int armorExp;
+    private double damage;
 
     private LootTable lootTable;
 
-    private int radius;
-
-    public MobType(String name, EntityType type, String lootTable){
-        this.name = name;
+    public MobType(EntityType type){
         this.type = type;
-        this.lootTable = DungeonManager.getLootTableManager().getLootTable(lootTable);
-        this.radius = 0;
         this.itemExp = 0;
         this.armorExp = 0;
-        this.attack = 0;
-        this.specialAttack = 0;
+        this.damage = 0;
+        this.lootTable = null;
     }
 
     /* ABSTRACT METHODS */
-    public abstract void attack(Event event);
+    public abstract boolean attack(Attacker defender, Mob mob);
 
-    public abstract void death(Mob mob);
+    public abstract boolean defend(Attacker attacker, Mob mob);
+
+    public abstract void die(Mob mob);
 
     public abstract void spawn(Mob mob);
-
-    /* SETTERS */
-    public void setItemExp(int itemExp) {
-        this.itemExp = itemExp;
-    }
-
-    public void setArmorExp(int armorExp) {
-        this.armorExp = armorExp;
-    }
-
-    public void setRadius(int radius) {
-        this.radius = radius;
-    }
-
-    public void setAttack(double attack) {
-        this.attack = attack;
-    }
-
-    public void setSpecialAttack(double specialAttack) {
-        this.specialAttack = specialAttack;
-    }
 
     /* GETTERS */
     public EntityType getType() {
         return type;
     }
 
+    public double getItemExp() {
+        return itemExp;
+    }
+
+    public double getArmorExp() {
+        return armorExp;
+    }
+
+    public double getDamage(){
+        return damage;
+    }
+
     public LootTable getLootTable() {
         return lootTable;
     }
 
-    public double getAttack() {
-        return attack;
+    /* BOOLEAN */
+    public boolean hasLootTable(){
+        return lootTable != null;
     }
 
-    public double getSpecialAttack() {
-        return specialAttack;
+    /* SETTERS */
+    public void setType(EntityType type) {
+        this.type = type;
     }
 
-    public int getRadius() {
-        return radius;
+    public void setItemExp(double itemExp) {
+        this.itemExp = itemExp;
     }
 
-    public int getItemExp() {
-        return itemExp;
+    public void setArmorExp(double armorExp) {
+        this.armorExp = armorExp;
     }
 
-    public int getArmorExp() {
-        return armorExp;
+    public void setDamage(double damage) {
+        this.damage = damage;
     }
 
-    public String getName() {
-        return name;
+    public void setLootTable(LootTable lootTable) {
+        this.lootTable = lootTable;
     }
 }
