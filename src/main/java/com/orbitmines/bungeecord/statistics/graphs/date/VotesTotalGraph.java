@@ -85,6 +85,12 @@ public class VotesTotalGraph extends DateGraphUpdater {
                     public long getMaximum() {
                         return minimum.getTime();
                     }
+
+                    @Override
+                    public long getMillis(long millis) {
+                        /* Adjust to graph */
+                        return millis + type.getMillis();
+                    }
                 };
 
             return null;

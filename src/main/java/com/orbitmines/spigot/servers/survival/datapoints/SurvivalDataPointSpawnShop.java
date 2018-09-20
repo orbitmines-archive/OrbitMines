@@ -171,7 +171,11 @@ public class SurvivalDataPointSpawnShop extends DataPointSign {
                 new RotationItem("Unbreaking III", new ItemBuilder(Material.ENCHANTED_BOOK).addEnchantment(Enchantment.DURABILITY, 3), 1, 5000),
                 new RotationItem("Aqua Infinity", new ItemBuilder(Material.ENCHANTED_BOOK).addEnchantment(Enchantment.WATER_WORKER, 1), 1, 2500),
                 new RotationItem("Silk Touch", new ItemBuilder(Material.ENCHANTED_BOOK).addEnchantment(Enchantment.SILK_TOUCH, 1), 1, 7500)
-        )
+        ),
+
+        SPRUCE_LOG(Material.SPRUCE_LOG, 16, 100),
+        ACACIA_LOG(Material.ACACIA_LOG, 16, 100),
+        /* 24 */
 
         ;
 

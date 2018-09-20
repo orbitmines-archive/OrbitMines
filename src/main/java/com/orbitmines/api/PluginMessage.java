@@ -18,8 +18,6 @@ public enum PluginMessage {
     PARDON(Server.BUNGEECORD),
     MUTE(Server.BUNGEECORD),
 
-    SHUTDOWN(Server.SPIGOT),
-
     MESSAGE_PLAYER(Server.BUNGEECORD),
 
     CHECK_VOTE_CACHE(Server.BUNGEECORD),

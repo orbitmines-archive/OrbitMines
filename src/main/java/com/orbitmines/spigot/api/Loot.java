@@ -72,6 +72,9 @@ public enum Loot {
             if (donation.getUpgradedFrom() != null && omp.getVipRank() != donation.getUpgradedFrom()) {
                 omp.sendMessage("Loot", Color.RED, "§7Je kan dit niet gebruiken omdat je geen " + donation.getUpgradedFrom().getDisplayName() + "§7 bent.", "§7You can't use this because you don't have the " + donation.getUpgradedFrom().getDisplayName() + "§7 rank.");
                 return;
+            } else if (donation.getRank() != null && omp.getVipRank().ordinal() >= donation.getRank().ordinal()) {
+                omp.sendMessage("Loot", Color.RED, "§7Je kan dit niet gebruiken omdat je al een " + omp.getVipRank().getDisplayName() + "§7 bent.", "§7You can't use this because you already have the " + omp.getVipRank().getDisplayName() + "§7 rank.");
+                return;
             }
 
             omp.getPlayer().closeInventory();

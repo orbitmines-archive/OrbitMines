@@ -78,8 +78,14 @@ public abstract class OrbitMinesServer {
         new SpigotRunnable(SpigotRunnable.TimeUnit.SECOND, 2) {
             @Override
             public void run() {
-                if (server.getStatus() != Server.Status.MAINTENANCE) {
-                    server.setStatus(Server.Status.ONLINE);
+                Server.Status status = server.getStatus();
+
+                if (status == Server.Status.RESTARTING) {
+                    Bukkit.shutdown();
+                } else if (status != Server.Status.MAINTENANCE) {
+                    if (status != Server.Status.ONLINE)
+                        server.setStatus(Server.Status.ONLINE);
+
                     maintenanceBossBar.removeAll();
                 } else {
                     for (Player player : Bukkit.getOnlinePlayers()) {

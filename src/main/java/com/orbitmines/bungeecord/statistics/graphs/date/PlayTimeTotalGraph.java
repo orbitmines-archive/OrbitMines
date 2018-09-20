@@ -59,14 +59,14 @@ public class PlayTimeTotalGraph extends DateGraphUpdater {
                 new Instance(Server.HUB.toString(), Server.HUB.getColor(), TableStatsPlayTime.HUB) {
                     @Override
                     protected String getDescription() {
-                        long count = getCount(last, 0);
+                        long count = getCount(last, first);
                         return NumberUtils.locale(count) + " " + (count == 1 ? "Hour" : "Hours");
                     }
                 },
                 new Instance(Server.SURVIVAL.toString(), Server.SURVIVAL.getColor(), TableStatsPlayTime.SURVIVAL) {
                     @Override
                     protected String getDescription() {
-                        long count = getCount(last, 0);
+                        long count = getCount(last, first);
                         return NumberUtils.locale(count) + " " + (count == 1 ? "Hour" : "Hours");
                     }
                 }
@@ -75,7 +75,7 @@ public class PlayTimeTotalGraph extends DateGraphUpdater {
 
         @Override
         protected long getCount(long count, long prevCount) {
-            return (int) ((count - getMainInstance().first) / TimeUnit.HOURS.toSeconds(1));
+            return (int) ((count - prevCount) / TimeUnit.HOURS.toSeconds(1));
         }
 
         @Override
@@ -83,7 +83,7 @@ public class PlayTimeTotalGraph extends DateGraphUpdater {
             return new Instance(type.getThisStatus(), Color.SILVER, mainCountColumn) {
                 @Override
                 protected String getDescription() {
-                    long count = getCount(last, 0);
+                    long count = getCount(last, first);
                     return NumberUtils.locale(count) + " " + (count == 1 ? "Hour" : "Hours");
                 }
             };

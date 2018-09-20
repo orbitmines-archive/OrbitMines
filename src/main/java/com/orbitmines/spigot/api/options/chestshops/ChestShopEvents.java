@@ -59,7 +59,8 @@ public class ChestShopEvents implements Listener {
 
         switch (event.getAction()) {
             case LEFT_CLICK_BLOCK: {
-                new ChestShopViewerGUI(chest).open(omp);
+                if (omp.getItemInMainHand() == null)
+                    new ChestShopViewerGUI(chest).open(omp);
                 break;
             }
             case RIGHT_CLICK_BLOCK: {

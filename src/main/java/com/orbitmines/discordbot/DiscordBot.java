@@ -7,6 +7,8 @@ import com.orbitmines.api.database.Table;
 import com.orbitmines.api.database.Where;
 import com.orbitmines.api.database.tables.TableDiscord;
 import com.orbitmines.api.database.tables.TableServerData;
+import com.orbitmines.api.punishment.Punishment;
+import com.orbitmines.api.punishment.PunishmentHandler;
 import com.orbitmines.discordbot.commands.*;
 import com.orbitmines.discordbot.events.MessageListener;
 import com.orbitmines.discordbot.handlers.DiscordSquad;
@@ -305,12 +307,17 @@ public class DiscordBot {
     }
 
     public void updateRanks(User user) {
-        CachedPlayer player = CachedPlayer.getPlayer(getLinkedUUID(user));
+        UUID uuid = getLinkedUUID(user);
+        CachedPlayer player = CachedPlayer.getPlayer(uuid);
         Guild guild = getGuild(BotToken.DEFAULT);
         Member member = guild.getMember(user);
 
         List<Role> toRemove = new ArrayList<>(member.getRoles());
         List<Role> toAdd = new ArrayList<>();
+
+        /* Muted */
+        if (PunishmentHandler.getHandler(uuid).getActivePunishment(Punishment.Type.MUTE) != null)
+            check(getRole(BotToken.DEFAULT, CustomRole.MUTED), toRemove, toAdd);
 
         StaffRank staffRank = player.getStaffRank();
         if (staffRank != StaffRank.NONE) {
@@ -336,6 +343,28 @@ public class DiscordBot {
             channel.sendMessage("Added " + toString(toAdd) + " to " + user.getAsMention() + ".").queue();
         if (toRemove.size() > 0)
             channel.sendMessage("Removed " + toString(toRemove) + " from " + user.getAsMention() + ".").queue();
+    }
+
+    public void updateMute(User user) {
+        UUID uuid = getLinkedUUID(user);
+        Guild guild = getGuild(BotToken.DEFAULT);
+        Member member = guild.getMember(user);
+
+        boolean muted = PunishmentHandler.getHandler(uuid).getActivePunishment(Punishment.Type.MUTE) != null;
+        List<Role> roles = member.getRoles();
+        Role mutedRole = getRole(BotToken.DEFAULT, CustomRole.MUTED);
+
+        if (muted && !roles.contains(mutedRole)) {
+            guild.getController().addRolesToMember(member, mutedRole).queue();
+
+            TextChannel channel = getChannel(BotToken.DEFAULT, ChannelType.discord_link_log);
+            channel.sendMessage("Added " + mutedRole.getAsMention() + " to " + user.getAsMention() + ".").queue();
+        } else if (!muted && roles.contains(mutedRole)) {
+            guild.getController().removeSingleRoleFromMember(member, mutedRole).queue();
+
+            TextChannel channel = getChannel(BotToken.DEFAULT, ChannelType.discord_link_log);
+            channel.sendMessage("Removed " + mutedRole.getAsMention() + " from " + user.getAsMention() + ".").queue();
+        }
     }
 
     private String toString(List<Role> roles) {
@@ -459,6 +488,8 @@ public class DiscordBot {
 
         STAFF("staff", Color.SILVER, true),
         VIP("vip", Color.SILVER, true),
+
+        MUTED("Muted", Color.GRAY, false),
 
         JOIN("»", Color.LIME, true),
         LEAVE("«", Color.RED, true),

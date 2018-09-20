@@ -8,8 +8,8 @@ import com.orbitmines.api.punishment.Punishment;
 
 public enum Offence {
 
-    GAME_PLAY(new Message("Vals Spelen", "Cheating"), Punishment.Type.BAN),
-    CHAT(new Message("Chat"), Punishment.Type.MUTE),
+    PUNISHMENT(new Message("Punishment"), Punishment.Type.BAN),
+    CHAT(new Message("Chat Mute"), Punishment.Type.MUTE),
     HACKING(new Message("Hacken", "Hacking"), Punishment.Type.BAN),
     SKIN(new Message("Skin"), Punishment.Type.BAN),
     NAME(new Message("Name"), Punishment.Type.BAN),

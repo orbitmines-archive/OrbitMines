@@ -124,6 +124,11 @@ public class BungeePlayer {
             return;
         }
 
+        /* Update Ranks */
+        User linkedUser = bungee.getDiscord().getLinkedUser(BotToken.DEFAULT, getUUID());
+        if (linkedUser != null)
+            bungee.getDiscord().updateMute(linkedUser);
+
         bungee.getProxy().getScheduler().schedule(bungee, () -> {
             bungee.getMessageHandler().dataTransfer(PluginMessage.LOGIN_2FA, player, getUUID().toString());
 
@@ -429,6 +434,12 @@ public class BungeePlayer {
                     mbp.sendMessage("     §7" + mbp.lang("Duur", "Duration") + ": §c" + (severity.getDuration() == Punishment.Duration.PERMANENT ? "§lPERMANENT" : punishment.getExpireInString(mbp.getLanguage())));
                     mbp.sendMessage("§4§m---------------------------------------------");
                     mbp.muteOnSpigot(true);
+
+                    DiscordBot discord = bungee.getDiscord();
+                    User linkedUser = discord.getLinkedUser(BotToken.DEFAULT, mbp.getUUID());
+                    if (linkedUser != null)
+                        discord.updateMute(linkedUser);
+
                 } else {
                     //TODO MESSAGE WHEN BACK ONLINE
                 }
@@ -514,6 +525,15 @@ public class BungeePlayer {
 
             getPunishmentChannel().sendMessage(builder.build()).queue();
         }
+
+        if (offence.getType() != Punishment.Type.MUTE)
+            return;
+
+        /* Remove muted Role */
+        DiscordBot discord = bungee.getDiscord();
+        User linkedUser = discord.getLinkedUser(BotToken.DEFAULT, uuid);
+        if (linkedUser != null)
+            discord.updateMute(linkedUser);
     }
 
     private TextChannel getPunishmentChannel() {

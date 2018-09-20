@@ -183,6 +183,7 @@ public class TPSGraph extends DateGraphUpdater {
 
             NumberAxis axis = (NumberAxis) range[0];
             axis.setLowerBound(toTPS(getMainInstance().bottomCount));
+            axis.setUpperBound(toTPS(getMainInstance().topCount));
 
             return range;
         }

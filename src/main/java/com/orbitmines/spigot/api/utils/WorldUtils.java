@@ -7,23 +7,35 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Chest;
+import org.bukkit.block.data.type.Sign;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /*
 * OrbitMines - @author Fadi Shawki - 2017
 */
 public class WorldUtils {
 
-    private static final BlockFace[] signFaces = new BlockFace[] { BlockFace.DOWN, BlockFace.UP, BlockFace.EAST, BlockFace.NORTH, BlockFace.WEST, BlockFace.SOUTH };
+    private static final Set<BlockFace> signFaces = new HashSet<>(Arrays.asList(BlockFace.DOWN, BlockFace.UP, BlockFace.EAST, BlockFace.NORTH, BlockFace.WEST, BlockFace.SOUTH));
 
     public static Chest getChestAtSign(Location signLocation) {
         Block sign = signLocation.getBlock();
 
+        /* First check chest behind sign, then we check for other nearby chests */
+        Sign signData = (Sign) sign.getBlockData();
+        BlockFace opposite = signData.getRotation().getOppositeFace();
+
+        if (signFaces.contains(opposite)) {
+            Block block = sign.getRelative(opposite);
+
+            if (block.getState() instanceof Chest)
+                return (Chest) block.getState();
+        }
+
+        /* Otherwise switch through all nearby chest locations */
         for (BlockFace face : signFaces) {
             Block block = sign.getRelative(face);
 

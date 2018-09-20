@@ -98,7 +98,7 @@ public class AutoRestart extends BungeeRunnable {
                 for (Server server : Server.values()) {
                     ServerInfo info = bungee.getServer(server);
                     if (info != null)
-                        bungee.getMessageHandler().dataTransfer(PluginMessage.SHUTDOWN, info);
+                        server.setStatus(Server.Status.RESTARTING);
                 }
 
                 /* Shutdown Proxy */

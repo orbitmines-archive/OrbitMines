@@ -115,7 +115,8 @@ public enum Server {
 
         ONLINE("Online", Color.LIME),
         OFFLINE("Offline", Color.RED),
-        MAINTENANCE("Maintenance", Color.FUCHSIA);
+        MAINTENANCE("Maintenance", Color.FUCHSIA),
+        RESTARTING("Restarting", Color.GRAY);
 
         private final String name;
         private final Color color;

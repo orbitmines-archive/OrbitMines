@@ -115,7 +115,7 @@ public class PunishGUI extends GUI {
                         switch (offence) {
 
                             /* First select severity */
-                            case GAME_PLAY:
+                            case PUNISHMENT:
                             case CHAT:
                             case HACKING:
                                 new SeverityGUI(player, offence).open(omp);
@@ -154,8 +154,8 @@ public class PunishGUI extends GUI {
 
         switch (offence) {
 
-            case GAME_PLAY:
-                return new ItemBuilder(Material.GRASS, 1, "§c§l" + name);
+            case PUNISHMENT:
+                return new ItemBuilder(Material.RED_TERRACOTTA, 1, "§c§l" + name);
             case CHAT:
                 return new ItemBuilder(Material.WRITABLE_BOOK, 1, "§c§l" + name);
             case HACKING:
@@ -174,7 +174,7 @@ public class PunishGUI extends GUI {
     private int getSlot(OMPlayer omp, Offence offence) {
         switch (offence) {
 
-            case GAME_PLAY:
+            case PUNISHMENT:
                 return 11;
             case CHAT:
                 return 13;

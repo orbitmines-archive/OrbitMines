@@ -1,6 +1,5 @@
 package com.orbitmines.bungeecord.commands.console;
 
-import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.api.Color;
 import com.orbitmines.api.Donation;
 import com.orbitmines.api.Rarity;
@@ -50,7 +49,7 @@ public class CommandDonation extends ConsoleCommand {
         String currency = a[4];
         String date = a[5].substring(0, 6) + "20" + a[5].substring(6, 8);
         String time = a[6] + ":00";
-        boolean addToLoot = donation != Donation.DONATION && (donation.getRank() == null || CachedPlayer.getPlayer(uuid) == null || CachedPlayer.getPlayer(uuid).getVipRank().ordinal() < donation.getRank().ordinal()) && (a.length < 8 || Boolean.parseBoolean(a[7]));
+        boolean addToLoot = donation != Donation.DONATION && (a.length < 8 || Boolean.parseBoolean(a[7]));
         Donation lootDonation = a.length < 9 ? null : (a[8].equals("-1") ? null : Donation.getById(Integer.parseInt(a[8])));
 
         {
@@ -64,11 +63,11 @@ public class CommandDonation extends ConsoleCommand {
             return;
 
         if (addToLoot) {
-            String description = "&3&l&oDonation (" + date + ")";
+            String description = "&3&l&oDonation (" + date + " " + time + ")";
             /* This is to prevent duplicates in loot, if someone donated for the same item twice. */
             int count = Database.get().getCount(Table.LOOT, new Where(TableLoot.UUID, uuid.toString()), new Where(Where.Operator.LIKE, TableLoot.DESCRIPTION, description + "%"));
 
-            LootUtils.insert(discord, bungee.getToken(), uuid, LootUtils.DONATION, null, Rarity.LEGENDARY, description + " #" + (count + 1), lootDonation != null ? lootDonation.getId() : donation.getId());
+            LootUtils.insert(discord, bungee.getToken(), uuid, LootUtils.DONATION, null, Rarity.LEGENDARY, description + (count == 0 ? "" : " #" + (count + 1)), lootDonation != null ? lootDonation.getId() : donation.getId());
 
             BungeePlayer omp = BungeePlayer.getPlayer(uuid);
             if (omp != null)
