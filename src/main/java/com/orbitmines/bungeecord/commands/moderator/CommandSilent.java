@@ -1,7 +1,7 @@
 package com.orbitmines.bungeecord.commands.moderator;
 
 import com.orbitmines.api.Color;
-import com.orbitmines.api.StaffRank;
+import com.orbitmines.api.utils.CommandLibrary;
 import com.orbitmines.bungeecord.handlers.BungeePlayer;
 import com.orbitmines.bungeecord.handlers.cmd.StaffCommand;
 import net.md_5.bungee.api.event.ChatEvent;
@@ -11,20 +11,8 @@ import net.md_5.bungee.api.event.ChatEvent;
 */
 public class CommandSilent extends StaffCommand {
 
-    private String[] alias = { "/silent" };
-
     public CommandSilent() {
-        super(StaffRank.MODERATOR);
-    }
-
-    @Override
-    public String[] getAlias() {
-        return alias;
-    }
-
-    @Override
-    public String getHelp(BungeePlayer omp) {
-        return null;
+        super(CommandLibrary.SILENT);
     }
 
     @Override

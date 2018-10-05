@@ -1,10 +1,10 @@
 package com.orbitmines.spigot.api.handlers.leaderboard.cmd;
 
 import com.orbitmines.api.Color;
-import com.orbitmines.api.Server;
 import com.orbitmines.api.database.Column;
 import com.orbitmines.api.database.Table;
 import com.orbitmines.api.database.Where;
+import com.orbitmines.api.utils.CommandLibrary;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,8 +16,8 @@ import java.util.Map;
  */
 public abstract class LastEntryCommandLeaderBoard extends DefaultCommandLeaderBoard {
 
-    public LastEntryCommandLeaderBoard(String name, Color color, Server server, int size, Table table, Column uuidColumn, Column column, Where... wheres) {
-        super(name, color, server, size, table, uuidColumn, column, wheres);
+    public LastEntryCommandLeaderBoard(String name, Color color, CommandLibrary library, int size, Table table, Column uuidColumn, Column column, Where... wheres) {
+        super(name, color, library, size, table, uuidColumn, column, wheres);
     }
 
     @Override

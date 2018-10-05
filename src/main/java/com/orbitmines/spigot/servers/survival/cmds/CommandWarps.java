@@ -5,7 +5,7 @@ package com.orbitmines.spigot.servers.survival.cmds;
  */
 
 import com.orbitmines.api.Color;
-import com.orbitmines.api.Server;
+import com.orbitmines.api.utils.CommandLibrary;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.cmd.Command;
 import com.orbitmines.spigot.servers.survival.Survival;
@@ -14,24 +14,12 @@ import com.orbitmines.spigot.servers.survival.handlers.teleportable.Warp;
 
 public class CommandWarps extends Command {
 
-    private String[] alias = { "/warp", "/warps" };
-
     private Survival survival;
 
     public CommandWarps(Survival survival) {
-        super(Server.SURVIVAL);
+        super(CommandLibrary.SURVIVAL_WARP);
 
         this.survival = survival;
-    }
-
-    @Override
-    public String[] getAlias() {
-        return alias;
-    }
-
-    @Override
-    public String getHelp(OMPlayer omp) {
-        return null;
     }
 
     @Override

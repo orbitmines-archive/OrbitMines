@@ -5,8 +5,8 @@ package com.orbitmines.spigot.servers.survival.cmds;
  */
 
 import com.orbitmines.api.CachedPlayer;
-import com.orbitmines.api.Server;
 import com.orbitmines.api.StaffRank;
+import com.orbitmines.api.utils.CommandLibrary;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.cmd.Command;
 import com.orbitmines.spigot.servers.survival.Survival;
@@ -15,24 +15,12 @@ import com.orbitmines.spigot.servers.survival.handlers.SurvivalPlayer;
 
 public class CommandClaims extends Command {
 
-    private String[] alias = { "/claims" };
-
     private final Survival survival;
 
     public CommandClaims(Survival survival) {
-        super(Server.SURVIVAL);
+        super(CommandLibrary.SURVIVAL_CLAIMS);
 
         this.survival = survival;
-    }
-
-    @Override
-    public String[] getAlias() {
-        return alias;
-    }
-
-    @Override
-    public String getHelp(OMPlayer omp) {
-        return omp.isEligible(StaffRank.MODERATOR) ? "(player)" : null;
     }
 
     @Override

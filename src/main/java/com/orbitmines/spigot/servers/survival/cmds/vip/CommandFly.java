@@ -4,7 +4,11 @@ package com.orbitmines.spigot.servers.survival.cmds.vip;
  * OrbitMines - @author Fadi Shawki - 2018
  */
 
-import com.orbitmines.api.*;
+import com.orbitmines.api.Color;
+import com.orbitmines.api.Message;
+import com.orbitmines.api.StaffRank;
+import com.orbitmines.api.VipRank;
+import com.orbitmines.api.utils.CommandLibrary;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.cmd.VipCommand;
 import com.orbitmines.spigot.servers.survival.Survival;
@@ -15,24 +19,12 @@ import org.bukkit.entity.Player;
 
 public class CommandFly extends VipCommand {
 
-    private String[] alias = { "/fly" };
-
     private final Survival survival;
 
     public CommandFly(Survival survival) {
-        super(Server.SURVIVAL, VipRank.DIAMOND);
+        super(CommandLibrary.SURVIVAL_FLY);
 
         this.survival = survival;
-    }
-
-    @Override
-    public String[] getAlias() {
-        return alias;
-    }
-
-    @Override
-    public String getHelp(OMPlayer omp) {
-        return null;
     }
 
     @Override

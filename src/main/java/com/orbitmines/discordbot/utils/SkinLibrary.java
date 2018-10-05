@@ -21,7 +21,7 @@ public class SkinLibrary {
     private static List<String> emoteCache = new ArrayList<>();
 
     public static String getSkinUrl(Type type, UUID uuid) {
-        return type.url + uuid.toString();
+        return type.url + uuid.toString() + ".png?time=" + System.currentTimeMillis();
     }
 
     public static void setupEmote(Guild guild, String name) {

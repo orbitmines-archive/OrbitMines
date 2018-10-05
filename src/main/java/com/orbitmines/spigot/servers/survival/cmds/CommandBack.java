@@ -5,7 +5,7 @@ package com.orbitmines.spigot.servers.survival.cmds;
  */
 
 import com.orbitmines.api.Color;
-import com.orbitmines.api.Server;
+import com.orbitmines.api.utils.CommandLibrary;
 import com.orbitmines.api.utils.NumberUtils;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.cmd.Command;
@@ -15,20 +15,8 @@ import org.bukkit.entity.Player;
 
 public class CommandBack extends Command {
 
-    private String[] alias = { "/back" };
-
     public CommandBack() {
-        super(Server.SURVIVAL);
-    }
-
-    @Override
-    public String[] getAlias() {
-        return alias;
-    }
-
-    @Override
-    public String getHelp(OMPlayer omp) {
-        return null;
+        super(CommandLibrary.SURVIVAL_BACK);
     }
 
     @Override

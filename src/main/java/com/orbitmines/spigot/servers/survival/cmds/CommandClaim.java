@@ -5,7 +5,7 @@ package com.orbitmines.spigot.servers.survival.cmds;
  */
 
 import com.orbitmines.api.Color;
-import com.orbitmines.api.Server;
+import com.orbitmines.api.utils.CommandLibrary;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.cmd.Command;
 import com.orbitmines.spigot.servers.survival.handlers.claim.Claim;
@@ -14,20 +14,8 @@ import org.bukkit.inventory.ItemStack;
 
 public class CommandClaim extends Command {
 
-    private String[] alias = { "/claim", "/claimtool" };
-
     public CommandClaim() {
-        super(Server.SURVIVAL);
-    }
-
-    @Override
-    public String[] getAlias() {
-        return alias;
-    }
-
-    @Override
-    public String getHelp(OMPlayer omp) {
-        return null;
+        super(CommandLibrary.SURVIVAL_CLAIM);
     }
 
     @Override
@@ -44,7 +32,7 @@ public class CommandClaim extends Command {
 
         omp.getInventory().setItem(slot, Claim.CLAIMING_TOOL.build());
         omp.playSound(Sound.ENTITY_ITEM_PICKUP);
-        omp.sendMessage("Claim", Color.LIME, "Je hebt de §a§lClaiming Tool§7 ontvangen.", "§7You have received the §a§lClaiming Tool§7.");
+        omp.sendMessage("Claim", Color.LIME, "Je hebt de " + Claim.CLAIMING_TOOL.getDisplayName() + "§7 ontvangen.", "§7You have received the " + Claim.CLAIMING_TOOL.getDisplayName() + "§7.");
 
         if (inHand != null)
             omp.getInventory().addItem(inHand);

@@ -114,7 +114,7 @@ public class CommandStats extends Command {
         builder.addField("Prisms", NumberUtils.locale(Database.get().getInt(Table.PLAYERS, TablePlayers.PRISMS, new Where(TablePlayers.UUID, player.getUUID().toString()))), true);
         builder.addField("Solars", NumberUtils.locale(Database.get().getInt(Table.PLAYERS, TablePlayers.SOLARS, new Where(TablePlayers.UUID, player.getUUID().toString()))), true);
 
-        builder.setThumbnail(SkinLibrary.getSkinUrl(SkinLibrary.Type.BODY_3D, player.getUUID()) + "/");
+        builder.setThumbnail(SkinLibrary.getSkinUrl(SkinLibrary.Type.BODY_3D, player.getUUID()));
 
         channel.sendMessage(builder.build()).queue();
     }

@@ -594,7 +594,7 @@ public class DiscordBot {
 
         public static Images iconFrom(Server server) {
             try {
-                return Images.valueOf(server.toString().toLowerCase() + "_ICON");
+                return Images.valueOf(server.toString() + "_ICON");
             } catch(NullPointerException | IllegalArgumentException ex) {
                 return ORBITMINES_ICON;
             }
@@ -602,7 +602,7 @@ public class DiscordBot {
 
         public static Images logoFrom(Server server) {
             try {
-                return Images.valueOf(server.toString().toLowerCase() + "_LOGO");
+                return Images.valueOf(server.toString() + "_LOGO");
             } catch(NullPointerException | IllegalArgumentException ex) {
                 return ORBITMINES_LOGO;
             }

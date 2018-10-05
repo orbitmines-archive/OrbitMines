@@ -12,5 +12,9 @@ public interface ItemStackNms {
     ItemStack setCustomSkullTexture(ItemStack item, String name, String value);
 
     void openBook(Player player, WrittenBookBuilder builder);
-    
+
+    ItemStack setMetaData(ItemStack item, String key, String value);
+
+    String getMetaData(ItemStack item, String key);
+
 }

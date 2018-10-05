@@ -4,7 +4,11 @@ package com.orbitmines.spigot.servers.survival.cmds;
  * OrbitMines - @author Fadi Shawki - 2018
  */
 
-import com.orbitmines.api.*;
+import com.orbitmines.api.CachedPlayer;
+import com.orbitmines.api.Color;
+import com.orbitmines.api.Message;
+import com.orbitmines.api.StaffRank;
+import com.orbitmines.api.utils.CommandLibrary;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.chat.ComponentMessage;
 import com.orbitmines.spigot.api.handlers.cmd.Command;
@@ -17,20 +21,8 @@ import java.util.List;
 
 public class CommandHomes extends Command {
 
-    private String[] alias = { "/homes" };
-
     public CommandHomes() {
-        super(Server.SURVIVAL);
-    }
-
-    @Override
-    public String[] getAlias() {
-        return alias;
-    }
-
-    @Override
-    public String getHelp(OMPlayer omp) {
-        return omp.isEligible(StaffRank.ADMIN) ? "(player)" : null;
+        super(CommandLibrary.SURVIVAL_HOMES);
     }
 
     @Override

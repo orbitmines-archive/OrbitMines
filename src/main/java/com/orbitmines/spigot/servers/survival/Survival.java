@@ -35,6 +35,7 @@ import com.orbitmines.spigot.api.handlers.leaderboard.hologram.DefaultHologramLe
 import com.orbitmines.spigot.api.handlers.npc.Hologram;
 import com.orbitmines.spigot.api.handlers.scoreboard.DefaultScoreboard;
 import com.orbitmines.spigot.api.handlers.scoreboard.ScoreboardSet;
+import com.orbitmines.spigot.api.nms.itemstack.ItemStackNms;
 import com.orbitmines.spigot.api.options.chestshops.ChestShopHandler;
 import com.orbitmines.spigot.api.utils.*;
 import com.orbitmines.spigot.servers.hub.datapoints.HubDataPointSpawnpoint;
@@ -59,9 +60,11 @@ import com.orbitmines.spigot.servers.survival.runnables.ClaimAchievementRunnable
 import net.md_5.bungee.api.chat.HoverEvent;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Tameable;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemFlag;
@@ -75,6 +78,8 @@ import java.util.*;
 public class Survival extends OrbitMinesServer {
 
     public static ItemBuilder SPAWNER_MINER = new ItemBuilder(Material.DIAMOND_PICKAXE, 1, "§5§lSpawner Miner", "§7§oOne time use§4").addEnchantment(Enchantment.SILK_TOUCH, 1).unbreakable(true).addFlag(ItemFlag.HIDE_ATTRIBUTES);
+
+    public static ItemBuilder PET_TICKET = new ItemBuilder(Material.NAME_TAG, 1, "§6§lPet Ticket").addEnchantment(Enchantment.DURABILITY, 1).addFlag(ItemFlag.HIDE_ENCHANTS);
 
     private World world;
     private World world_nether;
@@ -92,7 +97,7 @@ public class Survival extends OrbitMinesServer {
                 return new DefaultHologramLeaderBoard(location, 0, () -> "§7§lRichest Players", 10, Table.SURVIVAL_PLAYERS, TableSurvivalPlayers.UUID, TableSurvivalPlayers.EARTH_MONEY) {
                     @Override
                     public String getValue(CachedPlayer player, int count) {
-                        return "§2§l" + count + " " + (count == 1 ? "Credit" : "Credits");
+                        return "§2§l" + NumberUtils.locale(count) + " " + (count == 1 ? "Credit" : "Credits");
                     }
                 };
             }
@@ -314,6 +319,7 @@ public class Survival extends OrbitMinesServer {
         new CommandNearby(this);
 
         new CommandClaim();
+        new CommandPet(this);
         new CommandClaims(this);
         new CommandCredits();
         new CommandPay();
@@ -486,12 +492,6 @@ public class Survival extends OrbitMinesServer {
     }
 
     private void setupClaims() {
-        /* Setup Spawn Protection for The End, so that no-one can claim it */
-        {
-            Claim endClaim = new Claim(this, -1L, "End Claim", DateUtils.now(), new Location(world_the_end, 200, 0, 200), new Location(world_the_end, -200, 0, -200), null, new HashMap<>(), new HashMap<>());
-            claimHandler.addClaim(endClaim, false);
-        }
-
         /* Next ID */
         if (!Database.get().contains(Table.SERVER_DATA, TableServerData.DATA, new Where(TableServerData.SERVER, getServer().toString()), new Where(TableServerData.TYPE, "NEXT_ID")))
             Database.get().insert(Table.SERVER_DATA, Table.SERVER_DATA.values(getServer().toString(), "NEXT_ID", Claim.NEXT_ID + ""));
@@ -563,6 +563,10 @@ public class Survival extends OrbitMinesServer {
             claimHandler.delete(claim);
         }
 
+        /* Setup Spawn Protection for The End, so that no-one can claim it */
+        Claim endClaim = new Claim(Survival.this, Long.MAX_VALUE, "End Claim", DateUtils.now(), new Location(world_the_end, -200, 0, -200), new Location(world_the_end, 200, 0, 200), null, new HashMap<>(), new HashMap<>());
+        claimHandler.addClaim(endClaim, false);
+
         ConsoleUtils.success(claimHandler.getClaims().size() + " Claims loaded.");
     }
 
@@ -612,7 +616,7 @@ public class Survival extends OrbitMinesServer {
                     } else {
                         omp.setLastClaim(claim);
 
-                        if (claim.getOwner().equals(omp.getUUID()) || canEditOtherClaims(omp)) {
+                        if (claim.getOwner() != null && (claim.getOwner().equals(omp.getUUID()) || canEditOtherClaims(omp))) {
                             new ClaimGUI(Survival.this, claim).open(omp);
                         } else {
                             String name = claim.getOwnerName();
@@ -869,8 +873,8 @@ public class Survival extends OrbitMinesServer {
             }
 
             @Override
-            public void onEnter(OMPlayer player) {
-                super.onEnter(player);
+            public void onEnter(OMPlayer player, ItemStack item) {
+                super.onEnter(player, item);
                 SurvivalPlayer omp = (SurvivalPlayer) player;
 
                 omp.playSound(Sound.UI_BUTTON_CLICK);
@@ -890,6 +894,67 @@ public class Survival extends OrbitMinesServer {
                 omp.setScoreboard(new Scoreboard(Survival.this, omp));
 
                 Visualization.revert(omp);
+            }
+        };
+
+        new ItemHoverActionBar(Survival.PET_TICKET, false) {
+            @Override
+            public String getMessage(OMPlayer omp) {
+                ItemStack item = omp.getInventory().getItemInMainHand();
+                String storedUuid = orbitMines.getNms().customItem().getMetaData(item, "StoredUUID");
+
+                if (storedUuid == null)
+                    return omp.lang("§e§lKlik op een huisdier om hem aan deze " + Survival.PET_TICKET.getDisplayName() + " §e§lte linken.", "§e§lClick on a pet to link it to this " + Survival.PET_TICKET.getDisplayName() + "§e§l.");
+
+                Tameable entity = WorldUtils.getEntityByUUID(UUID.fromString(storedUuid), Tameable.class);
+
+                if (entity == null)
+                    return "";
+
+                int blocks = (int) VectorUtils.distance2D(omp.getLocation().toVector(), entity.getLocation().toVector());
+
+                if (blocks <= 5)
+                    return omp.lang("§e§lKlik op het huisdier om zijn nieuwe eigenaar te worden.", "§e§lClick on the pet in order to transfer ownership to you.");
+
+                BlockFace face = WorldUtils.fromYaw(WorldUtils.getYaw(omp.getLocation(), entity.getLocation()));
+
+                StringBuilder stringBuilder = new StringBuilder();
+                String[] parts = face.toString().split("_");
+
+                for (int i = 0; i < parts.length; i++) {
+                    if (i != 0)
+                        stringBuilder.append(" ");
+
+                    stringBuilder.append(parts[i].substring(0, 1).toUpperCase()).append(parts[i].substring(1).toLowerCase());
+                }
+
+                return omp.getWorld().equals(entity.getWorld()) ? "§6§l" + NumberUtils.locale(blocks) + " Blocks§e§l, §6§l" + stringBuilder.toString() : omp.lang("§c§lDit huisdier is niet in jouw wereld.", "§c§lThis pet is not in your world.");
+            }
+
+            @Override
+            public void onEnter(OMPlayer omp, ItemStack item) {
+                super.onEnter(omp, item);
+
+                ItemStackNms nms = orbitMines.getNms().customItem();
+
+                String storedUuid = nms.getMetaData(item, "StoredUUID");
+
+                if (storedUuid == null)
+                    return;
+
+                Tameable entity = WorldUtils.getEntityByUUID(UUID.fromString(storedUuid), Tameable.class);
+
+                if (entity != null && !entity.getLocation().getChunk().isLoaded())
+                    entity.getLocation().getChunk().load();
+
+                if (entity == null || entity.isDead() || !nms.getMetaData(item, "OwnerUUID").equals(entity.getOwner().getUniqueId().toString())) {
+                    omp.getPlayer().getInventory().setItem(omp.getPlayer().getInventory().first(item), null);
+                    PlayerUtils.updateInventory(omp.getPlayer());
+
+                    omp.sendMessage("Pet Ticket", Color.LIME, "Deze " + Survival.PET_TICKET.getDisplayName() + "§7 is verlopen.", "This " + Survival.PET_TICKET.getDisplayName() + "§7 has expired.");
+
+                    leave(omp);
+                }
             }
         };
     }

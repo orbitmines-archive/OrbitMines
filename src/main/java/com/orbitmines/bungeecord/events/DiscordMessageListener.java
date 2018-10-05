@@ -130,7 +130,7 @@ public class DiscordMessageListener extends ListenerAdapter {
         for (BungeePlayer player : players) {
             ComponentMessage componentMessage = new ComponentMessage(cM);
 
-            for (ComponentMessage.TempTextComponent component : DiscordBungeeUtils.formatMessage(sender, player, player.getRankChatColor(), true, filtered)) {
+            for (ComponentMessage.TempTextComponent component : DiscordBungeeUtils.formatMessage(sender, player, chatColor, true, filtered)) {
                 componentMessage.add(component);
             }
 
@@ -195,7 +195,7 @@ public class DiscordMessageListener extends ListenerAdapter {
         for (BungeePlayer player : online) {
             ComponentMessage componentMessage = new ComponentMessage(cM);
 
-            for (ComponentMessage.TempTextComponent component : DiscordBungeeUtils.formatMessage(sender, player, player.getRankChatColor(), true, filtered)) {
+            for (ComponentMessage.TempTextComponent component : DiscordBungeeUtils.formatMessage(sender, player, chatColor, true, filtered)) {
                 componentMessage.add(component);
             }
 

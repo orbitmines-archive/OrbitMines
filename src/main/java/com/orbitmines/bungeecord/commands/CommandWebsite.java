@@ -2,6 +2,7 @@ package com.orbitmines.bungeecord.commands;
 
 import com.orbitmines.api.Color;
 import com.orbitmines.api.Message;
+import com.orbitmines.api.utils.CommandLibrary;
 import com.orbitmines.bungeecord.handlers.BungeePlayer;
 import com.orbitmines.bungeecord.handlers.chat.ComponentMessage;
 import com.orbitmines.bungeecord.handlers.cmd.Command;
@@ -14,16 +15,8 @@ import net.md_5.bungee.api.event.ChatEvent;
 */
 public class CommandWebsite extends Command {
 
-    private String[] alias = { "/website", "/site" };
-
-    @Override
-    public String[] getAlias() {
-        return alias;
-    }
-
-    @Override
-    public String getHelp(BungeePlayer omp) {
-        return null;
+    public CommandWebsite() {
+        super(CommandLibrary.WEBSITE);
     }
 
     @Override

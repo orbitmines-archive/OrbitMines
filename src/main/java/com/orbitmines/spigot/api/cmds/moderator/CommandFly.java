@@ -5,7 +5,7 @@ package com.orbitmines.spigot.api.cmds.moderator;
  */
 
 import com.orbitmines.api.Color;
-import com.orbitmines.api.StaffRank;
+import com.orbitmines.api.utils.CommandLibrary;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.cmd.StaffCommand;
 import org.bukkit.Bukkit;
@@ -13,20 +13,8 @@ import org.bukkit.entity.Player;
 
 public class CommandFly extends StaffCommand {
 
-    private String[] alias = { "/fly" };
-
     public CommandFly() {
-        super(StaffRank.MODERATOR);
-    }
-
-    @Override
-    public String[] getAlias() {
-        return alias;
-    }
-
-    @Override
-    public String getHelp(OMPlayer omp) {
-        return null;
+        super(CommandLibrary.FLY);
     }
 
     @Override

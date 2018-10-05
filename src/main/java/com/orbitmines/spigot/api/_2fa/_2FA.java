@@ -112,6 +112,11 @@ public class _2FA {
             Database.get().insert(Table._2FA, Table._2FA.values(omp.getUUID().toString(), secret));
         }
 
+        if (tasks.containsKey(omp)) {
+            tasks.get(omp).cancel();
+            tasks.remove(omp);
+        }
+
         omp.setLoggedIn(true);
         omp.clearFreeze();
 

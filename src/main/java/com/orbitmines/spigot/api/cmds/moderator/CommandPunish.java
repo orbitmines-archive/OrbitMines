@@ -6,27 +6,15 @@ package com.orbitmines.spigot.api.cmds.moderator;
 
 import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.api.Color;
-import com.orbitmines.api.StaffRank;
+import com.orbitmines.api.utils.CommandLibrary;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.cmd.StaffCommand;
 import com.orbitmines.spigot.servers.hub.gui.punishments.PunishGUI;
 
 public class CommandPunish extends StaffCommand {
 
-    private String[] alias = { "/mod", "/ban", "/unban", "/warn", "/mute" };
-
     public CommandPunish() {
-        super(StaffRank.MODERATOR);
-    }
-
-    @Override
-    public String[] getAlias() {
-        return alias;
-    }
-
-    @Override
-    public String getHelp(OMPlayer omp) {
-        return "<player>";
+        super(CommandLibrary.MOD);
     }
 
     @Override

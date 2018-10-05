@@ -3,7 +3,9 @@ package com.orbitmines.spigot.servers.survival.events;
 import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.api.Color;
 import com.orbitmines.spigot.api.handlers.chat.ActionBar;
+import com.orbitmines.spigot.api.nms.itemstack.ItemStackNms;
 import com.orbitmines.spigot.api.utils.ItemUtils;
+import com.orbitmines.spigot.api.utils.PlayerUtils;
 import com.orbitmines.spigot.api.utils.WorldUtils;
 import com.orbitmines.spigot.servers.survival.Survival;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalPlayer;
@@ -34,6 +36,7 @@ import org.bukkit.event.world.StructureGrowEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffect;
@@ -67,6 +70,10 @@ public class ClaimEvents implements Listener {
                 event.setCancelled(true);
                 SurvivalPlayer.getPlayer((Player) event.getWhoClicked()).sendMessage("Spawner Miner", Color.RED, "Je kan de " + Survival.SPAWNER_MINER.getDisplayName() + " §7niet gebruiken om te craften.", "You can't use the " + Survival.SPAWNER_MINER.getDisplayName() + " §7to craft.");
                 return;
+            } else if (Survival.PET_TICKET.equals(item)) {
+                event.setCancelled(true);
+                SurvivalPlayer.getPlayer((Player) event.getWhoClicked()).sendMessage("Pet Ticket", Color.RED, "Je kan de " + Survival.PET_TICKET.getDisplayName() + " §7niet gebruiken om te craften.", "You can't use the " + Survival.PET_TICKET.getDisplayName() + " §7to craft.");
+                return;
             }
         }
     }
@@ -74,7 +81,7 @@ public class ClaimEvents implements Listener {
     @EventHandler
     public void onAnvil(PrepareAnvilEvent event) {
         for (ItemStack item : event.getInventory().getContents()) {
-            if (!Claim.CLAIMING_TOOL.equals(item) && !Survival.SPAWNER_MINER.equals(item))
+            if (!Claim.CLAIMING_TOOL.equals(item) && !Survival.SPAWNER_MINER.equals(item) && !Survival.PET_TICKET.equals(item))
                 continue;
 
             event.setResult(null);
@@ -166,6 +173,14 @@ public class ClaimEvents implements Listener {
 
     @EventHandler
     public void onInteract(PlayerInteractEntityEvent event) {
+        ItemStack item = event.getPlayer().getInventory().getItemInMainHand();
+        boolean petTicket = Survival.PET_TICKET.equals(item);
+
+        if (petTicket) {
+            event.setCancelled(true);
+            PlayerUtils.updateInventory(event.getPlayer());
+        }
+
         if (!survival.canClaimIn(event.getRightClicked().getWorld()))
             return;
 
@@ -178,25 +193,84 @@ public class ClaimEvents implements Listener {
             if (tameable.isTamed() && tameable.getOwner() != null) {
                 UUID owner = tameable.getOwner().getUniqueId();
 
-                if (owner.equals(omp.getUUID()) || omp.isOpMode()) {
-                    //TODO SWITCH PET OWNERSHIP GUI
-//                    if (playerData.petGiveawayRecipient != null) {
-//                        tameable.setOwner(playerData.petGiveawayRecipient);
-//                        playerData.petGiveawayRecipient = null;
-//                        instance.sendMessage(player, TextMode.Success, Messages.PetGiveawayConfirmation);
-//                        event.setCancelled(true);
-//                    }
+                boolean isOwner = owner.equals(omp.getUUID()) || omp.isOpMode();
+
+                if (petTicket) {
+                    ItemStackNms nms = survival.getOrbitMines().getNms().customItem();
+                    String storedUuid = nms.getMetaData(item, "StoredUUID");
+
+                    if (storedUuid == null) {
+                        if (isOwner) {
+                            for (ItemStack content : omp.getInventory().getContents()) {
+                                String contentStoredUuid = nms.getMetaData(content, "StoredUUID");
+
+                                if (tameable.getUniqueId().toString().equals(contentStoredUuid)) {
+                                    new ActionBar(omp, () -> omp.lang("§c§lJe hebt al een " + Survival.PET_TICKET.getDisplayName() + " §c§lin je inventory voor dit huisdier.", "§c§lYou already have a " + Survival.PET_TICKET.getDisplayName() + " §c§lin your inventory for this pet."), 100).send();
+                                    return;
+                                }
+                            }
+
+                            ItemStack newItem = Survival.PET_TICKET.build();
+                            ItemMeta meta = newItem.getItemMeta();
+
+                            List<String> lore = new ArrayList<>();
+                            CachedPlayer ownerPlayer = CachedPlayer.getPlayer(owner);
+                            String name = ownerPlayer.getRankPrefixColor().getChatColor() + ownerPlayer.getPlayerName();
+                            lore.add(" §7Owner: " + name);
+                            lore.add(" §7Mob: §e" + com.orbitmines.spigot.api.Mob.from(tameable.getType()).getName());
+                            lore.add(" §7Name: §f" + (tameable.getCustomName() != null ? tameable.getCustomName() : "§lUnknown"));
+                            meta.setLore(lore);
+
+                            newItem.setItemMeta(meta);
+
+                            newItem = nms.setMetaData(newItem, "OwnerUUID", owner.toString());
+                            newItem = nms.setMetaData(newItem, "StoredUUID", tameable.getUniqueId().toString());
+
+                            omp.getPlayer().getInventory().setItemInMainHand(newItem);
+
+                            omp.sendMessage("Pet Ticket", Color.LIME, "Je hebt je huisdier gelinked aan deze " + Survival.PET_TICKET.getDisplayName() + "§7.", "You have linked your pet to this " + Survival.PET_TICKET.getDisplayName() + "§7.");
+                        } else {
+                            CachedPlayer ownerPlayer = CachedPlayer.getPlayer(owner);
+                            String name = ownerPlayer.getRankPrefixColor().getChatColor() + ownerPlayer.getPlayerName();
+
+                            new ActionBar(omp, () -> omp.lang("§c§lDat is van " + name + "§c§l!", "§c§lThat belongs to " + name + "§c§l!"), 60).send();
+                        }
+                    } else {
+                        if (tameable.getUniqueId().toString().equals(storedUuid)) {
+                            if (isOwner) {
+                                new ActionBar(omp, () -> omp.lang("§c§lDit dier is al van jou.", "§c§lThis animal is already yours."), 60).send();
+                            } else {
+                                if (survival.getOrbitMines().getNms().customItem().getMetaData(item, "OwnerUUID").equals(owner.toString())) {
+                                    tameable.setOwner(omp.getPlayer());
+                                    omp.getPlayer().getInventory().setItemInMainHand(null);
+                                    omp.sendMessage("Pet Ticket", Color.LIME, "Je bent nu de eigenaar van dit huisdier.", "You have successfully received ownership of this animal.");
+                                } else {
+                                    omp.getPlayer().getInventory().setItemInMainHand(null);
+                                    PlayerUtils.updateInventory(omp.getPlayer());
+
+                                    omp.sendMessage("Pet Ticket", Color.LIME, "Deze " + Survival.PET_TICKET.getDisplayName() + "§7 is verlopen.", "This " + Survival.PET_TICKET.getDisplayName() + "§7 has expired.");
+                                }
+                            }
+                        } else {
+                            if (isOwner)
+                                new ActionBar(omp, () -> omp.lang("§c§lDeze " + Survival.PET_TICKET.getDisplayName() + " §c§lis al gelinked aan een ander dier.", "§c§lThis " + Survival.PET_TICKET.getDisplayName() + " §c§lis already linked to another animal."), 100).send();
+                            else
+                                new ActionBar(omp, () -> omp.lang("§c§lDeze " + Survival.PET_TICKET.getDisplayName() + " §c§lis niet gelinked met dit dier.", "§c§lThis " + Survival.PET_TICKET.getDisplayName() + " §c§lisn't linked to this animal."), 100).send();
+                        }
+                    }
 
                     return;
                 }
 
-                CachedPlayer ownerPlayer = CachedPlayer.getPlayer(owner);
-                String name = ownerPlayer.getRankPrefixColor().getChatColor() + ownerPlayer.getPlayerName();
+                if (!isOwner) {
+                    CachedPlayer ownerPlayer = CachedPlayer.getPlayer(owner);
+                    String name = ownerPlayer.getRankPrefixColor().getChatColor() + ownerPlayer.getPlayerName();
 
-                new ActionBar(omp, () -> omp.lang("§c§lDat is van " + name + "§c§l!", "§c§lThat belongs to " + name + "§c§l!"), 60).send();
+                    new ActionBar(omp, () -> omp.lang("§c§lDat is van " + name + "§c§l!", "§c§lThat belongs to " + name + "§c§l!"), 60).send();
 
-                event.setCancelled(true);
-                return;
+                    event.setCancelled(true);
+                    return;
+                }
             }
         }
 
@@ -235,6 +309,11 @@ public class ClaimEvents implements Listener {
                 event.setCancelled(true);
                 return;
             }
+        }
+
+        if (petTicket) {
+            new ActionBar(omp, () -> omp.lang("§c§lJe kan dit alleen op getemde dieren gebruiken.", "§c§lYou can only use this on tamed animals."), 100).send();
+            return;
         }
     }
 

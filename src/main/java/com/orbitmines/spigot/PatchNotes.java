@@ -44,6 +44,79 @@ public class PatchNotes {
         this.orbitMines = orbitMines;
         this.instances = new HashMap<>();
 
+        add(new Instance(Server.HUB, "v1.2.0", "Chat Mentions, Chat Interactions and more!", "Added features to interact more with the chat, fixed several bugs and some small new features.", "2018-10-04",
+                new Feature(
+                        "CHAT MENTIONS", Color.BLUE,
+                        "The chat will turn orange when your name is mentioned. Commands will be highlighted blue.",
+                        "https://i.imgur.com/VGglWyY.png"
+                ),
+                new Feature(
+                        "PATCH NOTES", Color.RED,
+                        "An option has been added to view previous patch notes when opening the patch notes in game."
+                ),
+                new Feature(
+                        "COMMUNITY GOAL", Color.BLUE,
+                        "The voting community goal has been set to 2,000 votes."
+                ),
+                new Feature(
+                        "PERSONAL ACHIEVEMENTS", Color.FUCHSIA,
+                        "Added three tiers of personal vote achievements. (50, 100 and 150 votes)"
+                ),
+                new Feature(
+                        "DELETE SQUAD", Color.MAROON,
+                        "An option has been added to /squad to delete your current Discord squad."
+                ),
+                new Feature(
+                        "AUTOSELECT SQUAD", Color.BLUE,
+                        "When creating a squad you will automatically select it if you have no other squad selected."
+                ),
+                new Feature(
+                        "MUTE RANK", Color.GRAY,
+                        "Being muted now results in having a muted rank on Discord which prevents you from talking and chatting."
+                ),
+                new Feature(
+                        "NAME HOVER", Color.AQUA,
+                        "Hovering over a players name will display their real name, nick name and Discord tag."
+                ),
+                new Feature(
+                        "CLICK TO PM", Color.LIME,
+                        "Clicking on a player's name will allow you to send private messages to them."
+                ),
+                new Feature(
+                        "TABLIST ORDER", Color.LIME,
+                        "Ranks are now listed from high to low in the tablist."
+                ),
+                new Feature(
+                        "DRAG ITEMS", Color.RED,
+                        "Fixed: You were able to drag items in custom inventories which would result in item loss."
+                ),
+                new Feature(
+                        "SKINS IN STATS", Color.RED,
+                        "Fixed: The skins in !stats weren't always loading properly.",
+                        "https://i.imgur.com/qhXR9Cs.jpg"
+                ),
+                new Feature(
+                        "ACTION BAR FLICKER", Color.RED,
+                        "Fixed: The Action Bar would sometimes flicker between multiple messages."
+                ),
+                new Feature(
+                        "LOOT FIX", Color.RED,
+                        "Fixed: Items from loot would sometimes appear in your inventory when shift-clicking."
+                ),
+                new Feature(
+                        "!ip", Color.BLUE,
+                        "Shows the server IP on Discord."
+                ),
+                new Feature(
+                        "/squad", Color.BLUE,
+                        "Alias for /discordsquad."
+                ),
+                new Feature(
+                        "/patchnotes (server) (version)", Color.BLUE,
+                        "Open the patch notes with this command."
+                )
+        ));
+
         add(new Instance(Server.HUB, "v1.1.0", "Private Discord Server, !list & more", "Private Discord servers, changes to solars and !list on Discord!", "2018-08-11",
                 new Feature(
                         "PRIVATE DISCORD", Color.BLUE,
@@ -64,7 +137,7 @@ public class PatchNotes {
                         "Executed Discord commands in the in-game chats will no longer be shown to online players."
                 ),
                 new Feature(
-                        "GLOBAL MENTIONSS", Color.RED,
+                        "GLOBAL MENTIONS", Color.RED,
                         "You are no longer able to use @everyone and @here, due to potential abuse."
                 ),
                 new Feature(
@@ -232,6 +305,96 @@ public class PatchNotes {
                 new Feature(
                         "/nick <name>|off", Color.BLUE,
                         "Set your nickname, this feature is for GOLD+."
+                )
+        ));
+
+        add(new Instance(Server.SURVIVAL, "v1.2.0", "Nether&End Claiming, Pet Tickets & more!", "You are now able to claim in The Nether&End. We have also added several new features to claiming and a system has been added to transfer pet ownership to other players!", "2018-10-04",
+                new Feature(
+                        "NETHER & END CLAIMING", Color.RED,
+                        "Claiming has been enabled in The Nether & End. You're only allowed to create claims 200 blocks away from 0,0 in The End.",
+                        "https://i.imgur.com/xAUqqYc.jpg"
+                ),
+                new Feature(
+                        "RENAME CLAIMS", Color.LIME,
+                        "You are now able to change the name of a claim.",
+                        "https://i.imgur.com/DTmMYgS.jpg"
+                ),
+                new Feature(
+                        "CLAIMING TOOL", Color.ORANGE,
+                        "The name of your claim will appear in an action bar while standing in your claim and holding the Claiming Tool."
+                ),
+                new Feature(
+                        "FLY DISABLING", Color.WHITE,
+                        "Fly will now be disabled 3 seconds after leaving your claim instead of instantly.",
+                        "https://i.imgur.com/lOGkxds.jpg"
+                ),
+                new Feature(
+                        "ITEM MENTION", Color.WHITE,
+                        "Display the item you are currently holding in your hand in the chat with [item].",
+                        "https://i.imgur.com/rqa1tl1.jpg"
+                ),
+                new Feature(
+                        "SPAWN SHOP", Color.LIME,
+                        "Added Spruce Logs and Acacia Logs to the spawn shop. (16 Logs for 100 Credits)"
+                ),
+                new Feature(
+                        "FLINT AND STEEL", Color.ORANGE,
+                        "You are no longer able to use a flint ant steel near other players."
+                ),
+                new Feature(
+                        "BUCKETS", Color.RED,
+                        "Fixed: Buckets were usable at spawn."
+                ),
+                new Feature(
+                        "DISCORD DEATH MESSAGES", Color.SILVER,
+                        "Death messages will now be displayed in the Discord survival chat channel.",
+                        "https://i.imgur.com/rgt1ONo.jpg"
+                ),
+                new Feature(
+                        "VIEW CHEST SHOP", Color.ORANGE,
+                        "Your hand now has to be empty in order to view the contents of a chest shop."
+                ),
+                new Feature(
+                        "CLAIM MESSAGE", Color.RED,
+                        "Fixed: Just walking in a claim would give you the message: 'You're not allowed to do that here!'."
+                ),
+                new Feature(
+                        "FAVORITE WARPS", Color.RED,
+                        "Fixed: Favorite warps would reset after login back on the server."
+                ),
+                new Feature(
+                        "CRAFTING", Color.RED,
+                        "Fixed: The Claiming Tool and Spawner Miner were usable in a crafting table and anvil."
+                ),
+                new Feature(
+                        "CHEST SHOP", Color.RED,
+                        "Fixed: Chest Shops would sometimes use the wrong chest instead of the one the sign is attached to."
+                ),
+                new Feature(
+                        "/pet", Color.BLUE,
+                        "You are now able to transfer pet ownership with the use of Pet Tickets.",
+                        "https://i.imgur.com/KgkE2IQ.jpg"
+                ),
+                new Feature(
+                        "/claims", Color.BLUE,
+                        "Open an inventory with all your claims.",
+                        "https://i.imgur.com/mGu1idC.jpg"
+                ),
+                new Feature(
+                        "/echest", Color.BLUE,
+                        "Alias for /enderchest."
+                ),
+                new Feature(
+                        "/ec", Color.BLUE,
+                        "Alias for /enderchest."
+                ),
+                new Feature(
+                        "/tph", Color.BLUE,
+                        "Alias for /tphere."
+                ),
+                new Feature(
+                        "/wb", Color.BLUE,
+                        "Alias for /workbench."
                 )
         ));
 
@@ -566,7 +729,7 @@ public class PatchNotes {
         DiscordBot.Images image = DiscordBot.Images.logoFrom(token.getServer());
 
         if (image != null) {
-            File file = image.getFile("patch_notes_logo");
+            File file = image.getFile(image.toString().toLowerCase());
 
             if (file != null)
                 channel.sendFile(file).queue();

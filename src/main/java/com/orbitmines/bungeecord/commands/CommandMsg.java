@@ -8,6 +8,7 @@ import com.orbitmines.api.database.Where;
 import com.orbitmines.api.database.tables.TableFriends;
 import com.orbitmines.api.settings.Settings;
 import com.orbitmines.api.settings.SettingsType;
+import com.orbitmines.api.utils.CommandLibrary;
 import com.orbitmines.bungeecord.handlers.BungeePlayer;
 import com.orbitmines.bungeecord.handlers.cmd.Command;
 import com.orbitmines.spigot.api.handlers.Data;
@@ -23,16 +24,8 @@ import java.util.UUID;
 */
 public class CommandMsg extends Command {
 
-    private String[] alias = { "/msg", "/message", "/m", "/tell", "/whisper", "/t", "/w" };
-
-    @Override
-    public String[] getAlias() {
-        return alias;
-    }
-
-    @Override
-    public String getHelp(BungeePlayer omp) {
-        return "<player> <message>";
+    public CommandMsg() {
+        super(CommandLibrary.MSG);
     }
 
     @Override

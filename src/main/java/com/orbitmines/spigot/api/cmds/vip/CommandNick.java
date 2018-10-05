@@ -5,26 +5,14 @@ package com.orbitmines.spigot.api.cmds.vip;
  */
 
 import com.orbitmines.api.Color;
-import com.orbitmines.api.VipRank;
+import com.orbitmines.api.utils.CommandLibrary;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.cmd.VipCommand;
 
 public class CommandNick extends VipCommand {
 
-    private String[] alias = { "/nick" };
-
     public CommandNick() {
-        super(VipRank.GOLD);
-    }
-
-    @Override
-    public String[] getAlias() {
-        return alias;
-    }
-
-    @Override
-    public String getHelp(OMPlayer omp) {
-        return "<name>|off";
+        super(CommandLibrary.NICK);
     }
 
     @Override

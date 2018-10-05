@@ -1,20 +1,23 @@
 package com.orbitmines.spigot.api.handlers.leaderboard.cmd;
 
+import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.api.Color;
-import com.orbitmines.api.Server;
 import com.orbitmines.api.StaffRank;
 import com.orbitmines.api.VipRank;
 import com.orbitmines.api.database.Column;
 import com.orbitmines.api.database.Database;
 import com.orbitmines.api.database.Table;
 import com.orbitmines.api.database.Where;
-import com.orbitmines.api.CachedPlayer;
+import com.orbitmines.api.utils.CommandLibrary;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.cmd.Command;
 import com.orbitmines.spigot.api.handlers.leaderboard.LeaderBoard;
 import org.bukkit.Location;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /*
  * OrbitMines - @author Fadi Shawki - 29-7-2017
@@ -31,7 +34,7 @@ public abstract class DefaultCommandLeaderBoard extends LeaderBoard {
 
     protected int totalCount;
 
-    public DefaultCommandLeaderBoard(String name, Color color, Server server, int size, Table table, Column uuidColumn, Column column, Where... wheres) {
+    public DefaultCommandLeaderBoard(String name, Color color, CommandLibrary library, int size, Table table, Column uuidColumn, Column column, Where... wheres) {
         super(null, table, uuidColumn, column, wheres);
 
         this.name = name;
@@ -39,16 +42,7 @@ public abstract class DefaultCommandLeaderBoard extends LeaderBoard {
         this.size = size;
         this.ordered = new ArrayList<>();
 
-        command = new Command(server) {
-            @Override
-            public String[] getAlias() {
-                return DefaultCommandLeaderBoard.this.getAlias();
-            }
-
-            @Override
-            public String getHelp(OMPlayer omp) {
-                return DefaultCommandLeaderBoard.this.getHelp();
-            }
+        command = new Command(library) {
 
             @Override
             public void dispatch(OMPlayer omp, String[] a) {
@@ -92,11 +86,7 @@ public abstract class DefaultCommandLeaderBoard extends LeaderBoard {
         };
     }
 
-    public abstract String[] getAlias();
-
     public abstract void onDispatch(OMPlayer omp, String[] a);
-
-    public abstract String getHelp();
 
     @Override
     public void update() {

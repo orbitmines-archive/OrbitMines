@@ -91,6 +91,10 @@ public enum Server {
         }, new Where(TableServers.SERVER, toString()));
     }
 
+    public void resetLastUpdate() {
+        Database.get().update(Table.SERVERS, new Set(TableServers.LAST_UPDATE, System.currentTimeMillis()), new Where(TableServers.SERVER, toString()));
+    }
+
     public String getIp() {
         return Database.get().contains(Table.SERVERS, TableServers.SERVER, new Where(TableServers.SERVER, toString())) ? Database.get().getString(Table.SERVERS, TableServers.IP, new Where(TableServers.SERVER, toString())) : null;
     }

@@ -4,26 +4,14 @@ package com.orbitmines.spigot.api.cmds.vip;
  * OrbitMines - @author Fadi Shawki - 2018
  */
 
-import com.orbitmines.api.VipRank;
+import com.orbitmines.api.utils.CommandLibrary;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.cmd.VipCommand;
 
 public class CommandAfk extends VipCommand {
 
-    private String[] alias = { "/afk" };
-
     public CommandAfk() {
-        super(VipRank.IRON);
-    }
-
-    @Override
-    public String[] getAlias() {
-        return alias;
-    }
-
-    @Override
-    public String getHelp(OMPlayer omp) {
-        return "(reason)";
+        super(CommandLibrary.AFK);
     }
 
     @Override

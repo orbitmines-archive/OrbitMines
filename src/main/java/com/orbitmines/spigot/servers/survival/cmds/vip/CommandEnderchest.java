@@ -5,7 +5,10 @@ package com.orbitmines.spigot.servers.survival.cmds.vip;
  */
 
 import com.mojang.authlib.GameProfile;
-import com.orbitmines.api.*;
+import com.orbitmines.api.CachedPlayer;
+import com.orbitmines.api.Color;
+import com.orbitmines.api.StaffRank;
+import com.orbitmines.api.utils.CommandLibrary;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.cmd.VipCommand;
 import com.orbitmines.spigot.api.runnables.SpigotRunnable;
@@ -21,20 +24,8 @@ import org.bukkit.inventory.Inventory;
 
 public class CommandEnderchest extends VipCommand {
 
-    private String[] alias = { "/enderchest" };
-
     public CommandEnderchest() {
-        super(Server.SURVIVAL, VipRank.DIAMOND);
-    }
-
-    @Override
-    public String[] getAlias() {
-        return alias;
-    }
-
-    @Override
-    public String getHelp(OMPlayer omp) {
-        return omp.isEligible(StaffRank.ADMIN) ? "(player)" : null;
+        super(CommandLibrary.SURVIVAL_ENDERCHEST);
     }
 
     @Override

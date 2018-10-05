@@ -3,6 +3,7 @@ package com.orbitmines.bungeecord.commands.moderator;
 import com.orbitmines.api.Color;
 import com.orbitmines.api.Server;
 import com.orbitmines.api.StaffRank;
+import com.orbitmines.api.utils.CommandLibrary;
 import com.orbitmines.bungeecord.OrbitMinesBungee;
 import com.orbitmines.bungeecord.handlers.BungeePlayer;
 import com.orbitmines.bungeecord.handlers.cmd.StaffCommand;
@@ -19,15 +20,13 @@ import java.util.Map;
 */
 public class CommandMaintenance extends StaffCommand {
 
-    private String[] alias = { "/maintenance" };
-
     private OrbitMinesBungee bungee;
 
     private Map<Server, BungeeRunnable> runnables;
     private Map<Server, BossBar> bossBar;
 
     public CommandMaintenance(OrbitMinesBungee bungee) {
-        super(StaffRank.MODERATOR);
+        super(CommandLibrary.MAINTENANCE);
 
         this.bungee = bungee;
         this.runnables = new HashMap<>();
@@ -44,16 +43,6 @@ public class CommandMaintenance extends StaffCommand {
 //
 //            BungeePlayer.getPlayers().forEach(omp -> omp.getPlayer().unsafe().sendPacket(bossBar));
         }
-    }
-
-    @Override
-    public String[] getAlias() {
-        return alias;
-    }
-
-    @Override
-    public String getHelp(BungeePlayer omp) {
-        return "<server>";
     }
 
     @Override

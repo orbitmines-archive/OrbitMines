@@ -53,4 +53,34 @@ public class ItemStackNms_1_13_R2 implements ItemStackNms {
         ((CraftPlayer) player).getHandle().a(CraftItemStack.asNMSCopy(book), EnumHand.MAIN_HAND);
         player.getInventory().setItemInMainHand(before);
     }
+
+    @Override
+    public ItemStack setMetaData(ItemStack item, String key, String value) {
+        net.minecraft.server.v1_13_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
+
+        NBTTagCompound tag = nmsStack.hasTag() ? nmsStack.getTag() : new NBTTagCompound();
+
+        NBTTagCompound orbitmines = tag.hasKey("OrbitMines") ? tag.getCompound("OrbitMines") : new NBTTagCompound();
+        orbitmines.setString(key, value);
+
+        tag.set("OrbitMines", orbitmines);
+
+        nmsStack.setTag(tag);
+
+        return CraftItemStack.asCraftMirror(nmsStack);
+    }
+
+    @Override
+    public String getMetaData(ItemStack item, String key) {
+        net.minecraft.server.v1_13_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
+
+        NBTTagCompound tag = nmsStack.hasTag() ? nmsStack.getTag() : new NBTTagCompound();
+
+        if (!tag.hasKey("OrbitMines"))
+            return null;
+
+        NBTTagCompound orbitmines = tag.getCompound("OrbitMines");
+
+        return orbitmines.hasKey(key) ? orbitmines.getString(key) : null;
+    }
 }

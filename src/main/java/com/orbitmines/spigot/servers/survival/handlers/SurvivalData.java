@@ -93,7 +93,9 @@ public class SurvivalData extends Data {
             warpSlotPrisms = values.get(WARP_SLOT_PRISMS).equals("1");
 
             for (String warpId : values.get(FAVORITE_WARPS).split("\\|")) {
-                favoriteWarps.add(Long.parseLong(warpId));
+                try {
+                    favoriteWarps.add(Long.parseLong(warpId));
+                } catch(NumberFormatException ex) {}
             }
         }
     }

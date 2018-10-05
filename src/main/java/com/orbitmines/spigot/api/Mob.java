@@ -244,6 +244,14 @@ public enum Mob {
         return null;
     }
 
+    public static Mob from(EntityType type) {
+        for (Mob mob : Mob.values()) {
+            if (mob.getType() == type)
+                return mob;
+        }
+        return null;
+    }
+
     public static Mob random() {
         return RandomUtils.randomFrom(values());
     }

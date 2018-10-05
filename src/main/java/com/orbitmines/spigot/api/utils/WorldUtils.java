@@ -7,7 +7,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Chest;
-import org.bukkit.block.data.type.Sign;
+import org.bukkit.block.data.type.WallSign;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -19,28 +19,28 @@ import java.util.*;
 */
 public class WorldUtils {
 
-    private static final Set<BlockFace> signFaces = new HashSet<>(Arrays.asList(BlockFace.DOWN, BlockFace.UP, BlockFace.EAST, BlockFace.NORTH, BlockFace.WEST, BlockFace.SOUTH));
+    private static final BlockFace[] signFaces = { BlockFace.DOWN, BlockFace.UP, BlockFace.EAST, BlockFace.NORTH, BlockFace.WEST, BlockFace.SOUTH };
 
     public static Chest getChestAtSign(Location signLocation) {
         Block sign = signLocation.getBlock();
 
-        /* First check chest behind sign, then we check for other nearby chests */
-        Sign signData = (Sign) sign.getBlockData();
-        BlockFace opposite = signData.getRotation().getOppositeFace();
+            /* First check chest behind sign, then we check for other nearby chests */
+            if (sign.getState().getBlockData() instanceof WallSign) {
+                WallSign signData = (WallSign) sign.getState().getBlockData();
+                BlockFace opposite = signData.getFacing().getOppositeFace();
 
-        if (signFaces.contains(opposite)) {
-            Block block = sign.getRelative(opposite);
+                Block block = sign.getRelative(opposite);
 
-            if (block.getState() instanceof Chest)
-                return (Chest) block.getState();
-        }
+                if (block.getState() instanceof Chest)
+                    return (Chest) block.getState();
+            }
 
-        /* Otherwise switch through all nearby chest locations */
-        for (BlockFace face : signFaces) {
-            Block block = sign.getRelative(face);
+            /* Otherwise switch through all nearby chest locations */
+            for (BlockFace face : signFaces) {
+                Block block = sign.getRelative(face);
 
-            if (block.getState() instanceof Chest)
-                return (Chest) block.getState();
+                if (block.getState() instanceof Chest)
+                    return (Chest) block.getState();
         }
 
         return null;
@@ -61,6 +61,37 @@ public class WorldUtils {
         }
     }
 
+    private final static Map<UUID, Entity> cache = new HashMap<>();
+
+    public static Entity getEntityByUUID(UUID uuid) {
+        if (cache.containsKey(uuid))
+            return cache.get(uuid);
+
+        for (World world : Bukkit.getWorlds()) {
+            for (Entity entity : world.getEntities()) {
+                if (entity.getUniqueId().equals(uuid)) {
+                    cache.put(uuid, entity);
+                    return entity;
+                }
+            }
+        }
+        return null;
+    }
+
+    public static <T extends Entity> T getEntityByUUID(UUID uuid, Class<T> aClass) {
+        if (cache.containsKey(uuid))
+            return (T) cache.get(uuid);
+
+        for (World world : Bukkit.getWorlds()) {
+            for (T entity : world.getEntitiesByClass(aClass)) {
+                if (entity.getUniqueId().equals(uuid)) {
+                    cache.put(uuid, entity);
+                    return entity;
+                }
+            }
+        }
+        return null;
+    }
 
     public static void lookAt(LivingEntity entity, double x, double z) {
         lookAt(entity, x, entity.getLocation().getY() + 1.75, z);

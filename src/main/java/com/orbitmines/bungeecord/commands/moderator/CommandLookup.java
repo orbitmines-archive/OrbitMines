@@ -1,6 +1,10 @@
 package com.orbitmines.bungeecord.commands.moderator;
 
-import com.orbitmines.api.*;
+import com.orbitmines.api.CachedPlayer;
+import com.orbitmines.api.Color;
+import com.orbitmines.api.IP;
+import com.orbitmines.api.Server;
+import com.orbitmines.api.utils.CommandLibrary;
 import com.orbitmines.api.utils.uuid.UUIDUtils;
 import com.orbitmines.bungeecord.OrbitMinesBungee;
 import com.orbitmines.bungeecord.handlers.BungeePlayer;
@@ -20,24 +24,12 @@ import java.util.UUID;
 */
 public class CommandLookup extends StaffCommand {
 
-    private String[] alias = { "/lookup" };
-
     private OrbitMinesBungee bungee;
 
     public CommandLookup(OrbitMinesBungee bungee) {
-        super(StaffRank.MODERATOR);
+        super(CommandLibrary.LOOKUP);
 
         this.bungee = bungee;
-    }
-
-    @Override
-    public String[] getAlias() {
-        return alias;
-    }
-
-    @Override
-    public String getHelp(BungeePlayer omp) {
-        return "<player>|<uuid>|<ip>";
     }
 
     @Override
@@ -92,7 +84,7 @@ public class CommandLookup extends StaffCommand {
 
                     String lastLoginDisplay = getLastLoginDisplay(ip);
 
-                    cM.add(displayName, ClickEvent.Action.RUN_COMMAND, alias[0] + " " + playerName, HoverEvent.Action.SHOW_TEXT,
+                    cM.add(displayName, ClickEvent.Action.RUN_COMMAND, getAlias()[0] + " " + playerName, HoverEvent.Action.SHOW_TEXT,
                             "§6§lAdvanced Lookup\n" +
                             "§7Name: " + displayName + "\n" +
                             "§7UUID: §6" + player.getUUID().toString() + "\n" +
@@ -108,7 +100,7 @@ public class CommandLookup extends StaffCommand {
                     ComponentMessage cM2 = new ComponentMessage();
                     cM2.add("    §7Last Login: ");
                     int ipHistoryCount = IP.getIpInfo(ip.getLastIp()).size();
-                    cM2.add("§6" + lastLoginDisplay + "§7 / §6" + ip.getLastIp() + " §7(§o" + IpUtils.getCountry(ip.getLastIp()) + "§7)", ClickEvent.Action.RUN_COMMAND, alias[0] + " " + playerName, HoverEvent.Action.SHOW_TEXT,
+                    cM2.add("§6" + lastLoginDisplay + "§7 / §6" + ip.getLastIp() + " §7(§o" + IpUtils.getCountry(ip.getLastIp()) + "§7)", ClickEvent.Action.RUN_COMMAND, getAlias()[0] + " " + playerName, HoverEvent.Action.SHOW_TEXT,
                             "§6§lAdvanced Lookup\n" +
                             "§7IP: " + ip.getLastIp() + "\n" +
                             "\n" +
@@ -201,7 +193,7 @@ public class CommandLookup extends StaffCommand {
 
             int ipHistoryCount = IP.getIpInfo(ipString).size();
 
-            cM.add("§6" + ipString + " §7(§o" + IpUtils.getCountry(ipString) + "§7) / §6" + ips.get(ipString), ClickEvent.Action.RUN_COMMAND, alias[0] + " " + ipString, HoverEvent.Action.SHOW_TEXT,
+            cM.add("§6" + ipString + " §7(§o" + IpUtils.getCountry(ipString) + "§7) / §6" + ips.get(ipString), ClickEvent.Action.RUN_COMMAND, getAlias()[0] + " " + ipString, HoverEvent.Action.SHOW_TEXT,
                     "§6§lAdvanced Lookup\n" +
                     "§7IP: " + ipString + "\n" +
                     "\n" +

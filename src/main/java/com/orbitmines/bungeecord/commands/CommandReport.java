@@ -4,6 +4,7 @@ import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.api.Color;
 import com.orbitmines.api.database.Database;
 import com.orbitmines.api.database.Table;
+import com.orbitmines.api.utils.CommandLibrary;
 import com.orbitmines.api.utils.DateUtils;
 import com.orbitmines.bungeecord.OrbitMinesBungee;
 import com.orbitmines.bungeecord.handlers.BungeePlayer;
@@ -22,22 +23,12 @@ import net.md_5.bungee.api.event.ChatEvent;
 */
 public class CommandReport extends Command {
 
-    private String[] alias = { "/report" };
-
     private OrbitMinesBungee bungee;
 
     public CommandReport(OrbitMinesBungee bungee) {
+        super(CommandLibrary.REPORT);
+
         this.bungee = bungee;
-    }
-
-    @Override
-    public String[] getAlias() {
-        return alias;
-    }
-
-    @Override
-    public String getHelp(BungeePlayer omp) {
-        return "<player> <reason>";
     }
 
     @Override
@@ -92,7 +83,7 @@ public class CommandReport extends Command {
             builder.addField("Reported By", omp.getName(true), true);
             builder.addField("Reason", reason, true);
 
-            builder.setThumbnail(SkinLibrary.getSkinUrl(SkinLibrary.Type.BODY_3D, player.getUUID()) + "/");
+            builder.setThumbnail(SkinLibrary.getSkinUrl(SkinLibrary.Type.BODY_3D, player.getUUID()));
 
             channel.sendMessage(builder.build()).queue();
         }

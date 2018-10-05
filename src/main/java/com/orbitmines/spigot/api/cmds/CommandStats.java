@@ -8,6 +8,7 @@ import com.orbitmines.api.Color;
 import com.orbitmines.api.StaffRank;
 import com.orbitmines.api.settings.Settings;
 import com.orbitmines.api.settings.SettingsType;
+import com.orbitmines.api.utils.CommandLibrary;
 import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.cmd.Command;
@@ -20,20 +21,8 @@ import java.util.UUID;
 
 public class CommandStats extends Command {
 
-    private String[] alias = { "/stats", "/statistics", "/stat" };
-
     public CommandStats() {
-        super(null);
-    }
-
-    @Override
-    public String[] getAlias() {
-        return alias;
-    }
-
-    @Override
-    public String getHelp(OMPlayer omp) {
-        return "(player)";
+        super(CommandLibrary.STATS);
     }
 
     @Override

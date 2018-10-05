@@ -47,7 +47,7 @@ public abstract class ItemHover {
 
                 /* Player has currently no hover in main hand, and offhand equals this hover */
                 if (omp.getCurrentHover() == null && itemBuilder.equals(offHand))
-                    enter(omp);
+                    enter(omp, offHand);
             }
         };
     }
@@ -60,16 +60,16 @@ public abstract class ItemHover {
         return offHandAllowed;
     }
 
-    protected abstract void onEnter(OMPlayer omp);
+    protected abstract void onEnter(OMPlayer omp, ItemStack item);
 
     protected abstract void onLeave(OMPlayer omp);
 
-    public void enter(OMPlayer omp) {
+    public void enter(OMPlayer omp, ItemStack item) {
         if (omp.getCurrentHover() != null)
             omp.getCurrentHover().leave(omp);
 
         omp.setCurrentHover(this);
-        onEnter(omp);
+        onEnter(omp, item);
 
         entered.add(omp);
     }

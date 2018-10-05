@@ -6,6 +6,7 @@ package com.orbitmines.spigot.api.cmds;
 import com.orbitmines.api.*;
 import com.orbitmines.api.database.Table;
 import com.orbitmines.api.database.tables.TableVotes;
+import com.orbitmines.api.utils.CommandLibrary;
 import com.orbitmines.api.utils.DateUtils;
 import com.orbitmines.api.utils.NumberUtils;
 import com.orbitmines.api.utils.TimeUtils;
@@ -20,27 +21,15 @@ import net.md_5.bungee.api.chat.HoverEvent;
 
 public class CommandTopVoters extends DefaultCommandLeaderBoard {
 
-    private String[] alias = { "/topvoters", "/topvoters", "/voters" };
-
     public CommandTopVoters() {
-        super("Top Voters of " + DateUtils.getMonth() + " " + DateUtils.getYear(), Color.BLUE, null, 5, Table.VOTES, TableVotes.UUID, TableVotes.VOTES);
+        super("Top Voters of " + DateUtils.getMonth() + " " + DateUtils.getYear(), Color.BLUE, CommandLibrary.TOPVOTERS, 5, Table.VOTES, TableVotes.UUID, TableVotes.VOTES);
 
         new CommandVote();
     }
 
     @Override
-    public String[] getAlias() {
-        return alias;
-    }
-
-    @Override
     public void onDispatch(OMPlayer omp, String[] a) {
         sendVoteRewardMessage(omp);
-    }
-
-    @Override
-    public String getHelp() {
-        return null;
     }
 
     @Override
@@ -143,20 +132,8 @@ public class CommandTopVoters extends DefaultCommandLeaderBoard {
 
     public class CommandVote extends Command {
 
-        private String[] alias = { "/vote" };
-
         public CommandVote() {
-            super(null);
-        }
-
-        @Override
-        public String[] getAlias() {
-            return alias;
-        }
-
-        @Override
-        public String getHelp(OMPlayer omp) {
-            return null;
+            super(CommandLibrary.VOTE);
         }
 
         @Override

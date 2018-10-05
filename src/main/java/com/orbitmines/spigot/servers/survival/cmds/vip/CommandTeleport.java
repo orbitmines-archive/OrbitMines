@@ -4,7 +4,11 @@ package com.orbitmines.spigot.servers.survival.cmds.vip;
  * OrbitMines - @author Fadi Shawki - 2018
  */
 
-import com.orbitmines.api.*;
+import com.orbitmines.api.Color;
+import com.orbitmines.api.Message;
+import com.orbitmines.api.StaffRank;
+import com.orbitmines.api.VipRank;
+import com.orbitmines.api.utils.CommandLibrary;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.chat.ComponentMessage;
 import com.orbitmines.spigot.api.handlers.cmd.VipCommand;
@@ -17,20 +21,8 @@ import org.bukkit.entity.Player;
 
 public class CommandTeleport extends VipCommand {
 
-    private String[] alias = { "/tp", "/teleport" };
-
     public CommandTeleport() {
-        super(Server.SURVIVAL, VipRank.GOLD);
-    }
-
-    @Override
-    public String[] getAlias() {
-        return alias;
-    }
-
-    @Override
-    public String getHelp(OMPlayer omp) {
-        return "<player>";
+        super(CommandLibrary.SURVIVAL_TP);
     }
 
     @Override

@@ -78,7 +78,7 @@ public class ItemHandlerEvents implements Listener {
                 if (!hover.getItemBuilder().equals(next))
                     continue;
 
-                hover.enter(omp);
+                hover.enter(omp, next);
                 break;
             }
         }

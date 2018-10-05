@@ -128,7 +128,7 @@ public class TPSGraph extends DateGraphUpdater {
                     protected String getDescription() {
                         Instance main = getMainInstance();
 
-                        return NumberUtils.locale(toTPS(main.bottomCount)) + " TPS";
+                        return NumberUtils.locale(toTPS(main.bottomCount)) + " TPS / " + DateUtils.FORMAT.format(main.bottom);
                     }
 
                     @Override

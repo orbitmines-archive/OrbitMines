@@ -2,6 +2,7 @@ package com.orbitmines.bungeecord.commands;
 
 import com.orbitmines.api.Color;
 import com.orbitmines.api.PluginMessage;
+import com.orbitmines.api.utils.CommandLibrary;
 import com.orbitmines.bungeecord.OrbitMinesBungee;
 import com.orbitmines.bungeecord.handlers.BungeePlayer;
 import com.orbitmines.bungeecord.handlers.cmd.Command;
@@ -12,22 +13,12 @@ import net.md_5.bungee.api.event.ChatEvent;
 */
 public class CommandDiscordLink extends Command {
 
-    private String[] alias = { "/discordlink" };
-
     private OrbitMinesBungee bungee;
 
     public CommandDiscordLink(OrbitMinesBungee bungee) {
+        super(CommandLibrary.DISCORDLINK);
+
         this.bungee = bungee;
-    }
-
-    @Override
-    public String[] getAlias() {
-        return alias;
-    }
-
-    @Override
-    public String getHelp(BungeePlayer omp) {
-        return "<Name>#<Id>";
     }
 
     @Override
@@ -56,7 +47,8 @@ public class CommandDiscordLink extends Command {
         switch (bungee.getDiscord().minecraftLink(omp.getUUID(), parts[0], parts[1])) {
 
             case INVALID_USER:
-                omp.sendMessage("Discord", Color.RED, "Ongeldige Discord User, gebruik §9" + getHelp(omp) + "§7.", "Invalid Discord User, make sure to use §9" + getHelp(omp) + "§7.");
+                omp.sendMessage("Discord", Color.RED, "Ongeldige Discord User.", "Invalid Discord User.");
+                getHelpMessage(omp).send(omp);
                 break;
             case SAME_USER:
                 omp.sendMessage("Discord", Color.RED, "Die Discord User is al gelinkt aan je OrbitMines account.", "That Discord User is already linked to your OrbitMines account.");

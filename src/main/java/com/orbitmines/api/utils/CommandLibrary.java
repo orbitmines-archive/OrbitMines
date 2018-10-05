@@ -9,10 +9,7 @@ import com.orbitmines.api.Server;
 import com.orbitmines.api.StaffRank;
 import com.orbitmines.api.VipRank;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public enum CommandLibrary {
 
@@ -21,6 +18,15 @@ public enum CommandLibrary {
         Bungeecord
 
     */
+    HELP(
+            new String[] {
+                    "/help"
+            },
+
+            null,
+
+            "Show list of commands."
+    ),
     MSG(
             new String[] {
                     "/msg", "/message", "/m", "/tell", "/t", "/whisper", "/w"
@@ -28,7 +34,7 @@ public enum CommandLibrary {
 
             "<player> <message>",
 
-            ""
+            "Message a player."
     ),
     DISCORDLINK(
             new String[] {
@@ -37,7 +43,7 @@ public enum CommandLibrary {
 
             "<Name>#<Id>",
 
-            ""
+            "Link your Discord to OrbitMines."
     ),
     REPLY(
             new String[] {
@@ -46,7 +52,7 @@ public enum CommandLibrary {
 
             "<message>",
 
-            ""
+            "Reply to a private message."
     ),
     HUB(
             new String[] {
@@ -55,7 +61,7 @@ public enum CommandLibrary {
 
             null,
 
-            ""
+            "Go to the Hub."
     ),
     SERVER(
             new String[] {
@@ -64,7 +70,7 @@ public enum CommandLibrary {
 
             "(server)",
 
-            ""
+            "Go to a server."
     ),
     LIST(
             new String[] {
@@ -73,7 +79,7 @@ public enum CommandLibrary {
 
             null,
 
-            ""
+            "Open list of online players."
     ),
     WEBSITE(
             new String[] {
@@ -82,7 +88,7 @@ public enum CommandLibrary {
 
             null,
 
-            ""
+            "Get the link to the website."
     ),
     DISCORD(
             new String[] {
@@ -91,7 +97,7 @@ public enum CommandLibrary {
 
             null,
 
-            ""
+            "Get the link to the Discord server."
     ),
     SHOP(
             new String[] {
@@ -100,7 +106,7 @@ public enum CommandLibrary {
 
             null,
 
-            ""
+            "Get the link to the OrbitMines Buycraft store."
     ),
     REPORT(
             new String[] {
@@ -109,7 +115,7 @@ public enum CommandLibrary {
 
             "<player> <reason>",
 
-            ""
+            "Report a player."
     ),
     /*
 
@@ -125,7 +131,7 @@ public enum CommandLibrary {
 
             StaffRank.MODERATOR,
 
-            ""
+            "Show what server a player is on."
     ),
     SEND(
             new String[] {
@@ -136,7 +142,7 @@ public enum CommandLibrary {
 
             StaffRank.MODERATOR,
 
-            ""
+            "Send a player to a server."
     ),
     ANNOUNCEMENT(
             new String[] {
@@ -147,7 +153,7 @@ public enum CommandLibrary {
 
             StaffRank.MODERATOR,
 
-            ""
+            "Edit server announcements."
     ),
     MOTD(
             new String[] {
@@ -158,7 +164,7 @@ public enum CommandLibrary {
 
             StaffRank.MODERATOR,
 
-            ""
+            "Edit message of the day."
     ),
     SILENT(
             new String[] {
@@ -169,7 +175,7 @@ public enum CommandLibrary {
 
             StaffRank.MODERATOR,
 
-            ""
+            "Become invisible."
     ),
     LOOKUP(
             new String[] {
@@ -180,7 +186,7 @@ public enum CommandLibrary {
 
             StaffRank.MODERATOR,
 
-            ""
+            "Show player information."
     ),
     MAINTENANCE(
             new String[] {
@@ -191,7 +197,7 @@ public enum CommandLibrary {
 
             StaffRank.MODERATOR,
 
-            ""
+            "Set a server in maintenance-mode."
     ),
 
     /*
@@ -208,7 +214,7 @@ public enum CommandLibrary {
 
             null,
 
-            ""
+            "Open the rules."
     ),
     PATCH_NOTES(
             null,
@@ -219,7 +225,7 @@ public enum CommandLibrary {
 
             "(server) (version)",
 
-            ""
+            "Open patch notes."
     ),
     SERVERS(
             null,
@@ -230,7 +236,7 @@ public enum CommandLibrary {
 
             null,
 
-            ""
+            "Open server selector."
     ),
     TOPVOTERS(
             null,
@@ -241,7 +247,7 @@ public enum CommandLibrary {
 
             null,
 
-            ""
+            "Show the topvoters of the month."
     ),
     VOTE(
             null,
@@ -252,7 +258,7 @@ public enum CommandLibrary {
 
             null,
 
-            ""
+            "Get the voting links."
     ),
     LOOT(
             null,
@@ -263,7 +269,7 @@ public enum CommandLibrary {
 
             null,
 
-            ""
+            "Open loot inventory."
     ),
     FRIENDS(
             null,
@@ -274,7 +280,7 @@ public enum CommandLibrary {
 
             null,
 
-            ""
+            "Open friends inventory."
     ),
     DISCORDSQUAD(
             null,
@@ -285,7 +291,7 @@ public enum CommandLibrary {
 
             null,
 
-            ""
+            "Open DiscordSquad inventory."
     ),
     STATS(
             null,
@@ -296,7 +302,7 @@ public enum CommandLibrary {
 
             null,
 
-            ""
+            "Open stats inventory."
     ),
     SETTINGS(
             null,
@@ -307,7 +313,7 @@ public enum CommandLibrary {
 
             null,
 
-            ""
+            "Open settings inventory."
     ),
     PRISMS(
             null,
@@ -318,7 +324,7 @@ public enum CommandLibrary {
 
             null,
 
-            ""
+            "Show prism count."
     ),
     SOLARS(
             null,
@@ -329,7 +335,7 @@ public enum CommandLibrary {
 
             null,
 
-            ""
+            "Show solar count."
     ),
     /*
 
@@ -347,7 +353,7 @@ public enum CommandLibrary {
 
             VipRank.IRON,
 
-            ""
+            "Set yourself afk."
     ),
     /*
 
@@ -365,7 +371,7 @@ public enum CommandLibrary {
 
             VipRank.GOLD,
 
-            ""
+            "Set a nickname for yourself."
     ),
     /*
 
@@ -383,7 +389,7 @@ public enum CommandLibrary {
 
             StaffRank.MODERATOR,
 
-            ""
+            "Go into opmode."
     ),
     MOD(
             null,
@@ -396,7 +402,7 @@ public enum CommandLibrary {
 
             StaffRank.MODERATOR,
 
-            ""
+            "Open the moderator inventory."
     ),
     HOLOGRAM(
             null,
@@ -409,7 +415,7 @@ public enum CommandLibrary {
 
             StaffRank.MODERATOR,
 
-            ""
+            "Set a hologram."
     ),
     INVSEE(
             null,
@@ -422,7 +428,7 @@ public enum CommandLibrary {
 
             StaffRank.MODERATOR,
 
-            ""
+            "See inventory of a player."
     ),
     TP(
             null,
@@ -435,7 +441,7 @@ public enum CommandLibrary {
 
             StaffRank.MODERATOR,
 
-            ""
+            "Teleport to a player."
     ),
     FLY(
             null,
@@ -448,7 +454,7 @@ public enum CommandLibrary {
 
             StaffRank.MODERATOR,
 
-            ""
+            "Go into fly mode."
     ),
     /*
 
@@ -459,12 +465,12 @@ public enum CommandLibrary {
             Server.SURVIVAL,
 
             new String[] {
-                    "/fly"
+                    "/spawn"
             },
 
             "(player)",
 
-            ""
+            "Teleport to spawn."
     ),
     SURVIVAL_REGION(
             Server.SURVIVAL,
@@ -475,7 +481,7 @@ public enum CommandLibrary {
 
             "(number)|random",
 
-            ""
+            "Open region inventory."
     ),
     SURVIVAL_NEAR(
             Server.SURVIVAL,
@@ -486,7 +492,7 @@ public enum CommandLibrary {
 
             null,
 
-            ""
+            "Show nearby region."
     ),
     SURVIVAL_CLAIM(
             Server.SURVIVAL,
@@ -497,7 +503,29 @@ public enum CommandLibrary {
 
             null,
 
-            ""
+            "Receive claiming tool."
+    ),
+    SURVIVAL_CLAIMS(
+            Server.SURVIVAL,
+
+            new String[] {
+                    "/claims", "/claimlist"
+            },
+
+            null,
+
+            "Open claim inventory."
+    ),
+    SURVIVAL_PET(
+            Server.SURVIVAL,
+
+            new String[] {
+                    "/pet", "/petticket"
+            },
+
+            null,
+
+            "Get pet-ownershipticket."
     ),
     SURVIVAL_CREDITS(
             Server.SURVIVAL,
@@ -508,7 +536,7 @@ public enum CommandLibrary {
 
             null,
 
-            ""
+            "Show credit count."
     ),
     SURVIVAL_PAY(
             Server.SURVIVAL,
@@ -519,7 +547,7 @@ public enum CommandLibrary {
 
             "<player> <amount>",
 
-            ""
+            "Pay credits to a player."
     ),
     SURVIVAL_PRISMSHOP(
             Server.SURVIVAL,
@@ -530,7 +558,7 @@ public enum CommandLibrary {
 
             null,
 
-            ""
+            "Open prismshop."
     ),
     SURVIVAL_HOME(
             Server.SURVIVAL,
@@ -541,7 +569,7 @@ public enum CommandLibrary {
 
             "(name)",
 
-            ""
+            "Teleport to a set home."
     ),
     SURVIVAL_HOMES(
             Server.SURVIVAL,
@@ -552,7 +580,7 @@ public enum CommandLibrary {
 
             null,
 
-            ""
+            "Show list of homes."
     ),
     SURVIVAL_SETHOME(
             Server.SURVIVAL,
@@ -563,7 +591,7 @@ public enum CommandLibrary {
 
             "<name>",
 
-            ""
+            "Set a home."
     ),
     SURVIVAL_DELHOME(
             Server.SURVIVAL,
@@ -574,7 +602,7 @@ public enum CommandLibrary {
 
             "<name>",
 
-            ""
+            "Delete a home."
     ),
     SURVIVAL_WARP(
             Server.SURVIVAL,
@@ -585,7 +613,7 @@ public enum CommandLibrary {
 
             "(name)",
 
-            ""
+            "Teleport to a set warp."
     ),
     SURVIVAL_MYWARPS(
             Server.SURVIVAL,
@@ -596,7 +624,7 @@ public enum CommandLibrary {
 
             null,
 
-            ""
+            "Open your warp inventory."
     ),
     SURVIVAL_ACCEPT(
             Server.SURVIVAL,
@@ -607,7 +635,7 @@ public enum CommandLibrary {
 
             "<player>",
 
-            ""
+            "Accept a teleport request."
     ),
     SURVIVAL_BACK(
             Server.SURVIVAL,
@@ -618,7 +646,7 @@ public enum CommandLibrary {
 
             null,
 
-            ""
+            "Teleport back to previous location."
     ),
     SURVIVAL_WORKBENCH(
             Server.SURVIVAL,
@@ -631,7 +659,7 @@ public enum CommandLibrary {
 
             VipRank.GOLD,
 
-            ""
+            "Open crafting table."
     ),
     SURVIVAL_ENDERCHEST(
             Server.SURVIVAL,
@@ -644,7 +672,33 @@ public enum CommandLibrary {
 
             VipRank.DIAMOND,
 
-            ""
+            "Open enderchest."
+    ),
+    SURVIVAL_FLY(
+            Server.SURVIVAL,
+
+            new String[] {
+                    "/fly"
+            },
+
+            null,
+
+            VipRank.DIAMOND,
+
+            "Go into fly mode."
+    ),
+    SURVIVAL_TP(
+            Server.SURVIVAL,
+
+            new String[] {
+                    "/tp", "/teleport"
+            },
+
+            "<player>",
+
+            VipRank.GOLD,
+
+            "Send a tp request to a player."
     ),
     SURVIVAL_TPHERE(
             Server.SURVIVAL,
@@ -653,11 +707,11 @@ public enum CommandLibrary {
                     "/tphere", "/teleporthere", "/tph"
             },
 
-            null,
+            "<player>",
 
             VipRank.EMERALD,
 
-            ""
+            "Send a tphere request to a player."
     ),
 
     ;
@@ -748,13 +802,13 @@ public enum CommandLibrary {
         return description;
     }
 
-    private static final Map<PluginMessage.Server, Set<CommandLibrary>> cacheLibrary = new HashMap<>();
+    private static final Map<PluginMessage.Server, List<CommandLibrary>> cacheLibrary = new HashMap<>();
 
-    public static Set<CommandLibrary> getLibrary(PluginMessage.Server serverType) {
+    public static List<CommandLibrary> getLibrary(PluginMessage.Server serverType) {
         if (cacheLibrary.containsKey(serverType))
             return cacheLibrary.get(serverType);
 
-        Set<CommandLibrary> list = new HashSet<>();
+        List<CommandLibrary> list = new ArrayList<>();
 
         for (CommandLibrary commandLibrary : values) {
             if (commandLibrary.serverType == serverType)
@@ -766,13 +820,13 @@ public enum CommandLibrary {
         return list;
     }
 
-    private static final Map<Server, Set<CommandLibrary>> cacheLibraryOnly = new HashMap<>();
+    private static final Map<Server, List<CommandLibrary>> cacheLibraryOnly = new HashMap<>();
 
-    public static Set<CommandLibrary> getLibraryOnly(Server server) {
+    public static List<CommandLibrary> getLibraryOnly(Server server) {
         if (cacheLibraryOnly.containsKey(server))
             return cacheLibraryOnly.get(server);
 
-        Set<CommandLibrary> list = new HashSet<>();
+        List<CommandLibrary> list = new ArrayList<>();
 
         for (CommandLibrary commandLibrary : values) {
             if (commandLibrary.serverType == PluginMessage.Server.SPIGOT && commandLibrary.server == server)
@@ -784,13 +838,13 @@ public enum CommandLibrary {
         return list;
     }
 
-    private static final Map<Server, Set<CommandLibrary>> cacheLibraryAll = new HashMap<>();
+    private static final Map<Server, List<CommandLibrary>> cacheLibraryAll = new HashMap<>();
 
-    public static Set<CommandLibrary> getLibraryAll(Server server) {
+    public static List<CommandLibrary> getLibraryAll(Server server) {
         if (cacheLibraryAll.containsKey(server))
             return cacheLibraryAll.get(server);
 
-        Set<CommandLibrary> list = new HashSet<>();
+        List<CommandLibrary> list = new ArrayList<>();
 
         for (CommandLibrary commandLibrary : values) {
             CommandLibrary unregister = null;

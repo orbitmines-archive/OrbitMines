@@ -416,7 +416,7 @@ public class BungeePlayer {
                 builder.addField("Warned By", punishment.getPunishedBy().getPlayerName(), true);
                 builder.addField("Reason", punishment.getReason(), true);
 
-                builder.setThumbnail(SkinLibrary.getSkinUrl(SkinLibrary.Type.BODY_3D, player.getUUID()) + "/");
+                builder.setThumbnail(SkinLibrary.getSkinUrl(SkinLibrary.Type.BODY_3D, player.getUUID()));
 
                 getPunishmentChannel().sendMessage(builder.build()).queue();
             }
@@ -476,7 +476,7 @@ public class BungeePlayer {
             builder.addField((offence.getType() == Punishment.Type.MUTE ? "Muted" : "Banned") + " By", punishment.getPunishedBy().getPlayerName(), true);
             builder.addField("Reason", punishment.getReason(), true);
 
-            builder.setThumbnail(SkinLibrary.getSkinUrl(SkinLibrary.Type.BODY_3D, player.getUUID()) + "/");
+            builder.setThumbnail(SkinLibrary.getSkinUrl(SkinLibrary.Type.BODY_3D, player.getUUID()));
 
             getPunishmentChannel().sendMessage(builder.build()).queue();
         }
@@ -521,7 +521,7 @@ public class BungeePlayer {
             builder.addField("Pardoned On", active.getPardonedOnString(DateUtils.FORMAT), true);
             builder.addField("Pardoned By", active.getPardonedBy().getPlayerName(), true);
 
-            builder.setThumbnail(SkinLibrary.getSkinUrl(SkinLibrary.Type.BODY_3D, player.getUUID()) + "/");
+            builder.setThumbnail(SkinLibrary.getSkinUrl(SkinLibrary.Type.BODY_3D, player.getUUID()));
 
             getPunishmentChannel().sendMessage(builder.build()).queue();
         }
@@ -534,6 +534,11 @@ public class BungeePlayer {
         User linkedUser = discord.getLinkedUser(BotToken.DEFAULT, uuid);
         if (linkedUser != null)
             discord.updateMute(linkedUser);
+
+        /* Remove Mute */
+        BungeePlayer mbp = BungeePlayer.getPlayer(uuid);
+        if (mbp != null)
+            mbp.muteOnSpigot(false);
     }
 
     private TextChannel getPunishmentChannel() {

@@ -5,7 +5,6 @@ import com.orbitmines.discordbot.DiscordBot;
 import com.orbitmines.discordbot.utils.BotToken;
 import com.orbitmines.discordbot.utils.DiscordSpigotUtils;
 import com.orbitmines.spigot.OrbitMines;
-import com.orbitmines.spigot.api.cmds.CommandHelp;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.cmd.Command;
 import org.bukkit.entity.Player;
@@ -46,9 +45,6 @@ public class CommandPreprocessEvent implements Listener {
         event.setCancelled(true);
 
         command.dispatch(omp, a);
-
-        if (command instanceof CommandHelp)/* Message already sent through Bungeecord */
-            return;
 
         DiscordBot discord = orbitMines.getServerHandler().getDiscord();
         BotToken token = orbitMines.getServerHandler().getToken();

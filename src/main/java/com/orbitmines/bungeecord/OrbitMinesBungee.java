@@ -360,10 +360,12 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
 
         cM.add("§7 » ");
 
+        Color rankChatColor = omp.getRankChatColor();
+
         for (BungeePlayer player : players) {
             ComponentMessage componentMessage = new ComponentMessage(cM);
 
-            for (ComponentMessage.TempTextComponent component : DiscordBungeeUtils.formatMessage(sender, player, player.getRankChatColor(), bold, message)) {
+            for (ComponentMessage.TempTextComponent component : DiscordBungeeUtils.formatMessage(sender, player, rankChatColor, bold, message)) {
                 componentMessage.add(component);
             }
 

@@ -85,6 +85,8 @@ public abstract class OrbitMinesServer {
                 } else if (status != Server.Status.MAINTENANCE) {
                     if (status != Server.Status.ONLINE)
                         server.setStatus(Server.Status.ONLINE);
+                    else
+                        server.resetLastUpdate();
 
                     maintenanceBossBar.removeAll();
                 } else {
@@ -188,7 +190,7 @@ public abstract class OrbitMinesServer {
         for (OMPlayer player : OMPlayer.getPlayers()) {
             ComponentMessage componentMessage = new ComponentMessage(cM);
 
-            for (ComponentMessage.TempTextComponent component : DiscordSpigotUtils.formatMessage(this, sender, player, player.getRankChatColor(), filtered)) {
+            for (ComponentMessage.TempTextComponent component : DiscordSpigotUtils.formatMessage(this, sender, player, chatColor, filtered)) {
                 componentMessage.add(component);
             }
 
@@ -212,10 +214,12 @@ public abstract class OrbitMinesServer {
 
         cM.add("§7 » ");
 
+        Color rankChatColor = omp.getRankChatColor();
+
         for (OMPlayer player : OMPlayer.getPlayers()) {
             ComponentMessage componentMessage = new ComponentMessage(cM);
 
-            for (ComponentMessage.TempTextComponent component : DiscordSpigotUtils.formatMessage(this, sender, player, player.getRankChatColor(), message)) {
+            for (ComponentMessage.TempTextComponent component : DiscordSpigotUtils.formatMessage(this, sender, player, rankChatColor, message)) {
                 componentMessage.add(component);
             }
 

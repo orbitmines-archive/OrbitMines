@@ -41,7 +41,7 @@ public class VotesMonthlyGraph extends DateGraphUpdater {
 
         @Override
         protected long getCount(long count, long prevCount) {
-            return count - getMainInstance().lastZeroOrFirst;
+            return count - prevCount;
         }
 
         @Override
@@ -49,7 +49,7 @@ public class VotesMonthlyGraph extends DateGraphUpdater {
             return new Instance(type.getThisStatus(), Color.BLUE, mainCountColumn) {
                 @Override
                 protected String getDescription() {
-                    long count = getCount(last, 0);
+                    long count = getCount(last, lastZeroOrFirst);
                     return NumberUtils.locale(count) + " " + (count == 1 ? "Vote" : "Votes");
                 }
             };
@@ -62,7 +62,7 @@ public class VotesMonthlyGraph extends DateGraphUpdater {
                 return new Instance(type.getLastStatus(), Color.TEAL, mainCountColumn) {
                     @Override
                     protected String getDescription() {
-                        long count = getCount(last, 0);
+                        long count = getCount(last, lastZeroOrFirst);
                         return NumberUtils.locale(count) + " " + (count == 1 ? "Vote" : "Votes");
                     }
 

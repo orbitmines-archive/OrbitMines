@@ -5,7 +5,7 @@ package com.orbitmines.spigot.api.cmds.moderator;
  */
 
 import com.orbitmines.api.Color;
-import com.orbitmines.api.StaffRank;
+import com.orbitmines.api.utils.CommandLibrary;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.cmd.StaffCommand;
 import org.bukkit.Bukkit;
@@ -14,20 +14,8 @@ import org.bukkit.entity.Player;
 
 public class CommandTeleport extends StaffCommand {
 
-    private String[] alias = { "/tp", "/teleport" };
-
     public CommandTeleport() {
-        super(StaffRank.MODERATOR);
-    }
-
-    @Override
-    public String[] getAlias() {
-        return alias;
-    }
-
-    @Override
-    public String getHelp(OMPlayer omp) {
-        return "<player | player1> (player2 | x) (y) (z)";
+        super(CommandLibrary.TP);
     }
 
     @Override

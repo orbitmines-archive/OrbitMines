@@ -5,7 +5,7 @@ package com.orbitmines.spigot.servers.survival.cmds;
  */
 
 import com.orbitmines.api.Color;
-import com.orbitmines.api.Server;
+import com.orbitmines.api.utils.CommandLibrary;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.cmd.Command;
 import com.orbitmines.spigot.servers.survival.Survival;
@@ -15,24 +15,12 @@ import com.orbitmines.spigot.servers.survival.handlers.teleportable.Home;
 
 public class CommandSetHome extends Command {
 
-    private String[] alias = { "/sethome", "/seth" };
-
     private Survival survival;
 
     public CommandSetHome(Survival survival) {
-        super(Server.SURVIVAL);
+        super(CommandLibrary.SURVIVAL_SETHOME);
 
         this.survival = survival;
-    }
-
-    @Override
-    public String[] getAlias() {
-        return alias;
-    }
-
-    @Override
-    public String getHelp(OMPlayer omp) {
-        return "<" + omp.lang("naam", "name") + ">";
     }
 
     @Override

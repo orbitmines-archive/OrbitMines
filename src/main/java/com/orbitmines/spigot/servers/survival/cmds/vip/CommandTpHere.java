@@ -6,8 +6,7 @@ package com.orbitmines.spigot.servers.survival.cmds.vip;
 
 import com.orbitmines.api.Color;
 import com.orbitmines.api.Message;
-import com.orbitmines.api.Server;
-import com.orbitmines.api.VipRank;
+import com.orbitmines.api.utils.CommandLibrary;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.chat.ComponentMessage;
 import com.orbitmines.spigot.api.handlers.cmd.VipCommand;
@@ -19,20 +18,8 @@ import org.bukkit.entity.Player;
 
 public class CommandTpHere extends VipCommand {
 
-    private String[] alias = { "/tphere", "/teleporthere" };
-
     public CommandTpHere() {
-        super(Server.SURVIVAL, VipRank.EMERALD);
-    }
-
-    @Override
-    public String[] getAlias() {
-        return alias;
-    }
-
-    @Override
-    public String getHelp(OMPlayer omp) {
-        return "<player>";
+        super(CommandLibrary.SURVIVAL_TPHERE);
     }
 
     @Override

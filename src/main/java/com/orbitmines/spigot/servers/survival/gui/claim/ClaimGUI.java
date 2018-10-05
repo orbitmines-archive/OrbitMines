@@ -22,9 +22,7 @@ import com.orbitmines.spigot.api.utils.ColorUtils;
 import com.orbitmines.spigot.servers.survival.Survival;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalPlayer;
 import com.orbitmines.spigot.servers.survival.handlers.claim.Claim;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -58,7 +56,7 @@ public class ClaimGUI extends GUI {
     protected boolean onOpen(OMPlayer player) {
         SurvivalPlayer omp = (SurvivalPlayer) player;
 
-        add(0, 4, new ItemInstance(getClaimIcon(omp, claim).addLore("").addLore(omp.lang("§aKlik hier om te hernoemen.", "§aClick here to rename.")).build()) {
+        add(0, 4, new ItemInstance(getClaimIcon(survival, omp, claim).addLore("").addLore(omp.lang("§aKlik hier om te hernoemen.", "§aClick here to rename.")).build()) {
             @Override
             public void onClick(InventoryClickEvent e, OMPlayer omp) {
                 AnvilNms anvil = survival.getOrbitMines().getNms().anvilGui(omp.getPlayer(), (event) -> {
@@ -412,7 +410,7 @@ public class ClaimGUI extends GUI {
         return maxPage > page;
     }
 
-    public static ItemBuilder getClaimIcon(OMPlayer omp, Claim claim) {
+    public static ItemBuilder getClaimIcon(Survival survival, OMPlayer omp, Claim claim) {
         int x1 = claim.getCorner1().getBlockX();
         int x2 = claim.getCorner2().getBlockX();
         int z1 = claim.getCorner1().getBlockZ();
@@ -425,6 +423,19 @@ public class ClaimGUI extends GUI {
         int x = x1 > x2 ? x1 - (width / 2) : x1 + (width / 2);
         int z = z1 > z2 ? z1 - (height / 2) : z1 + (height / 2);
 
+        World world = claim.getCorner1().getWorld();
+        String worldName;
+        if (world.equals(survival.getWorld()))
+            worldName = "§a§lOverworld";
+        else if (world.equals(survival.getWorld_nether()))
+            worldName = "§c§lThe Nether";
+        else if (world.equals(survival.getWorld_the_end()))
+            worldName = "§8§lThe End";
+        else
+            worldName = "§f§lUnknown";
+
+        String color = ChatColor.getLastColors(worldName);
+
         return new ItemBuilder(Material.STONE_HOE, 1, "§a§l" + claim.getName(),
                 "§7Claim Id: §a§l#" + NumberUtils.locale(claim.getId()),
                 "§7" + omp.lang("Gemaakt door", "Created by") + ": " + claim.getOwnerName(),
@@ -432,7 +443,8 @@ public class ClaimGUI extends GUI {
                 "",
                 "§7" + omp.lang("Oppervlak", "Area") + ": §9§l" + NumberUtils.locale(width) + " x " + NumberUtils.locale(height),
                 "§7Blocks: §9§l" + NumberUtils.locale(area),
-                "§7XZ: §a§l" + NumberUtils.locale(x) + " §7/ §a§l" + NumberUtils.locale(z)
+                "§7World: " + worldName,
+                "§7XZ: " + color + NumberUtils.locale(x) + " §7/ " + color + NumberUtils.locale(z)
         ).addFlag(ItemFlag.HIDE_ATTRIBUTES);
     }
 

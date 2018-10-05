@@ -31,7 +31,7 @@ public class ClaimRemovalGUI extends GUI {
 
         add(2, 4, new EmptyItemInstance(new ItemBuilder(Material.BARRIER, 1, omp.lang("§c§lVerwijder Claim", "§c§lRemove Claim")).build()));
 
-        add(3, 4, new EmptyItemInstance(ClaimGUI.getClaimIcon(omp, claim).build()));
+        add(3, 4, new EmptyItemInstance(ClaimGUI.getClaimIcon(survival, omp, claim).build()));
 
         ItemInstance confirm = new ItemInstance(new ItemBuilder(Material.LIME_STAINED_GLASS_PANE, 1, omp.lang("§a§lBevestigen", "§a§lConfirm")).build()) {
             @Override

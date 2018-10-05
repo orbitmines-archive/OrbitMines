@@ -41,6 +41,9 @@ public class ClaimAchievementRunnable extends SpigotRunnable {
 
             omp.setLastClaim(claim);
 
+            if (claim.getOwner() == null)
+                continue;
+
             String uuid = claim.getOwner().toString();
 
             if (!map.containsKey(uuid))

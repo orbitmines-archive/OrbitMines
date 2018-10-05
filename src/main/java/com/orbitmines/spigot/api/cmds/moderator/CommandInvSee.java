@@ -6,6 +6,7 @@ package com.orbitmines.spigot.api.cmds.moderator;
 
 import com.orbitmines.api.Color;
 import com.orbitmines.api.StaffRank;
+import com.orbitmines.api.utils.CommandLibrary;
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.handlers.GUI;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
@@ -26,20 +27,8 @@ import java.util.Collections;
 
 public class CommandInvSee extends StaffCommand {
 
-    private String[] alias = { "/invsee" };
-
     public CommandInvSee() {
-        super(StaffRank.MODERATOR);
-    }
-
-    @Override
-    public String[] getAlias() {
-        return alias;
-    }
-
-    @Override
-    public String getHelp(OMPlayer omp) {
-        return "<player>";
+        super(CommandLibrary.INVSEE);
     }
 
     @Override

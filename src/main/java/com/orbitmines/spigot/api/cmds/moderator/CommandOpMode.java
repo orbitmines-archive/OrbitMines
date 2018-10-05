@@ -5,26 +5,14 @@ package com.orbitmines.spigot.api.cmds.moderator;
  */
 
 import com.orbitmines.api.Color;
-import com.orbitmines.api.StaffRank;
+import com.orbitmines.api.utils.CommandLibrary;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.cmd.StaffCommand;
 
 public class CommandOpMode extends StaffCommand {
 
-    private String[] alias = { "/opmode" };
-
     public CommandOpMode() {
-        super(StaffRank.MODERATOR);
-    }
-
-    @Override
-    public String[] getAlias() {
-        return alias;
-    }
-
-    @Override
-    public String getHelp(OMPlayer omp) {
-        return null;
+        super(CommandLibrary.OPMODE);
     }
 
     @Override

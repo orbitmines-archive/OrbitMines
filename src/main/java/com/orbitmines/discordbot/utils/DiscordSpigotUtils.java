@@ -99,7 +99,7 @@ public class DiscordSpigotUtils {
         if (omp.getStaffRank() != StaffRank.NONE) {
             stringBuilder.append(omp.getStaffRank().getDisplayName());
 
-            if (omp.getVipRank() != null)
+            if (omp.getVipRank() != VipRank.NONE)
                 stringBuilder.append(" §7/ ").append(omp.getVipRank().getDisplayName());
         } else {
             stringBuilder.append(omp.getVipRank().getDisplayName());

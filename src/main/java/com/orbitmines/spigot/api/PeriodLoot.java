@@ -3,17 +3,20 @@ package com.orbitmines.spigot.api;
  * OrbitMines - @author Fadi Shawki - 12-6-2018
  */
 
+import com.orbitmines.api.Color;
 import com.orbitmines.api.Message;
 import com.orbitmines.api.Server;
 import com.orbitmines.api.VipRank;
 import com.orbitmines.api.database.Column;
 import com.orbitmines.api.database.tables.TablePeriodLoot;
+import com.orbitmines.api.utils.NumberUtils;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.api.handlers.itembuilders.MobEggBuilder;
 import com.orbitmines.spigot.servers.survival.Survival;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalPlayer;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.inventory.ItemFlag;
 
 import java.util.ArrayList;
@@ -25,14 +28,25 @@ public enum PeriodLoot {
     DAILY(TimeUnit.DAYS.toSeconds(1), TablePeriodLoot.DAILY, new MobEggBuilder(Mob.CHICKEN, 1), new ItemBuilder(Material.EGG), new Message("Dagelijkse Beloningen", "Daily Rewards"), new Message("§7- §9§l250 Prisms")) {
         @Override
         public void receive(OMPlayer omp) {
-            omp.addPrisms(250);
+            int prisms = 250;
+
+            omp.addPrisms(prisms);
+
+            omp.playSound(Sound.ENTITY_PLAYER_LEVELUP);
+            omp.sendMessage("Server", Color.BLUE, "§7Je hebt §9§l" + NumberUtils.locale(prisms) + " Prisms§7 ontvangen.", "§7You have received §9§l" + NumberUtils.locale(prisms) + " Prisms§7.");
         }
     },
     MONTHLY(TimeUnit.DAYS.toSeconds(30), TablePeriodLoot.MONTHLY, new MobEggBuilder(Mob.PUFFERFISH, 1), new ItemBuilder(Material.EGG), new Message("Maandelijkse Beloningen", "Monthly Rewards"), new Message("§7- §9§l2,500 Prisms"), new Message("§7- §e§l50 Solars")) {
         @Override
         public void receive(OMPlayer omp) {
-            omp.addPrisms(2500);
-            omp.addSolars(100);
+            int prisms = 2500;
+            int solars = 100;
+
+            omp.addPrisms(prisms);
+            omp.addSolars(solars);
+
+            omp.playSound(Sound.ENTITY_PLAYER_LEVELUP);
+            omp.sendMessage("Server", Color.BLUE, "§7Je hebt §e§l" + NumberUtils.locale(solars) + " Solars§7en §9§l" + NumberUtils.locale(prisms) + " Prisms §7ontvangen.", "§7You have received §e§l" + NumberUtils.locale(solars) + " Solars§7 and §9§l" + NumberUtils.locale(prisms) + " Prisms§7.");
         }
     },
     MONTHLY_VIP(TimeUnit.DAYS.toSeconds(30), TablePeriodLoot.MONTHLY_VIP, null, new ItemBuilder(Material.EGG), new Message("Maandelijkse Rank Beloningen", "Monthly Rank Rewards")) {
@@ -69,23 +83,30 @@ public enum PeriodLoot {
 
         @Override
         public void receive(OMPlayer omp) {
+            int count;
+
             switch (omp.getVipRank()) {
 
-                case NONE:
-                    break;
                 case IRON:
-                    omp.addSolars(150);
+                    count = 150;
                     break;
                 case GOLD:
-                    omp.addSolars(300);
+                    count = 300;
                     break;
                 case DIAMOND:
-                    omp.addSolars(600);
+                    count = 600;
                     break;
                 case EMERALD:
-                    omp.addSolars(1000);
+                    count = 1000;
                     break;
+                default:
+                    return;
             }
+
+            omp.addSolars(count);
+
+            omp.playSound(Sound.ENTITY_PLAYER_LEVELUP);
+            omp.sendMessage("Server", Color.BLUE, "§7Je hebt §e§l" + NumberUtils.locale(count) + " Solars§7 ontvangen.", "§7You have received §e§l" + NumberUtils.locale(count) + " Solars§7.");
         }
     },
     SURVIVAL_BACK_CHARGES(Server.SURVIVAL, TimeUnit.DAYS.toSeconds(30), TablePeriodLoot.SURVIVAL_BACK_CHARGES, new ItemBuilder(Material.ENDER_EYE), new ItemBuilder(Material.EGG), new Message("Maandelijkse Back Charges", "Monthly Back Charges")) {
@@ -108,23 +129,30 @@ public enum PeriodLoot {
         public void receive(OMPlayer player) {
             SurvivalPlayer omp = (SurvivalPlayer) player;
 
+            int count;
+
             switch (omp.getVipRank()) {
 
-                case NONE:
-                    break;
                 case IRON:
-                    omp.addBackCharges(50);
+                    count = 50;
                     break;
                 case GOLD:
-                    omp.addBackCharges(125);
+                    count = 125;
                     break;
                 case DIAMOND:
-                    omp.addBackCharges(200);
+                    count = 200;
                     break;
                 case EMERALD:
-                    omp.addBackCharges(300);
+                    count = 300;
                     break;
+                default:
+                    return;
             }
+
+            omp.addBackCharges(count);
+
+            omp.playSound(Sound.ENTITY_PLAYER_LEVELUP);
+            omp.sendMessage("Server", Color.BLUE, "§7Je hebt §6§l" + NumberUtils.locale(count) + " Back Charges§7 ontvangen.", "§7You have received §6§l" + NumberUtils.locale(count) + " Back Charges§7.");
         }
     },
     SURVIVAL_SPAWNER_ITEM(Server.SURVIVAL, TimeUnit.DAYS.toSeconds(30), TablePeriodLoot.SURVIVAL_SPAWNER_ITEM, new ItemBuilder(Material.DIAMOND_PICKAXE).addFlag(ItemFlag.HIDE_ATTRIBUTES), new ItemBuilder(Material.EGG), new Message("Maandelijkse Spawner Miner", "Monthly Spawner Miner")) {
@@ -146,7 +174,12 @@ public enum PeriodLoot {
                 case EMERALD:
                     omp.getInventory().addItem(Survival.SPAWNER_MINER.build());
                     break;
+                default:
+                    return;
             }
+
+            omp.playSound(Sound.ENTITY_PLAYER_LEVELUP);
+            omp.sendMessage("Server", Color.BLUE, "§7Je hebt een " + Survival.SPAWNER_MINER.getDisplayName() + "§7 ontvangen.", "§7You have received a " + Survival.SPAWNER_MINER.getDisplayName() + "§7.");
         }
     };
 

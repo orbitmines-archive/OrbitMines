@@ -162,7 +162,6 @@ public class LootGUI extends GUI {
                     @Override
                     public void onClick(InventoryClickEvent event, OMPlayer omp) {
                         periodLootData.collect(omp, loot);
-                        omp.playSound(Sound.ENTITY_PLAYER_LEVELUP);
                         reopen(omp);
                     }
                 });

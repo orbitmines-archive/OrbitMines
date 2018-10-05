@@ -101,7 +101,6 @@ public class ComponentMessage {
 
     public static class TempTextComponent {
 
-
         private Message component;
         private final ClickEvent.Action clickAction;
         private Message clickEvent;

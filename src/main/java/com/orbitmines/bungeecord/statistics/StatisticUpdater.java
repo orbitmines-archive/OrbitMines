@@ -17,7 +17,7 @@ public abstract class StatisticUpdater {
     private final TextChannel channel;
 
     public StatisticUpdater(DiscordBot.ChannelType channelType, BungeeRunnable.TimeUnit timeUnit, int count) {
-       this.channelType = channelType;
+        this.channelType = channelType;
         channel = OrbitMinesBungee.getBungee().getDiscord().getChannel(BotToken.DEFAULT, channelType);
 
         new BungeeRunnable(timeUnit, count) {

@@ -50,7 +50,7 @@ public class UniquePlayerGraph extends DateGraphUpdater {
 
         @Override
         protected long getCount(long count, long prevCount) {
-            return count - getMainInstance().first;
+            return count - prevCount;
         }
 
         @Override
@@ -58,7 +58,7 @@ public class UniquePlayerGraph extends DateGraphUpdater {
             return new Instance(type.getThisStatus(), Color.RED, mainCountColumn) {
                 @Override
                 protected String getDescription() {
-                    long count = getCount(last, 0);
+                    long count = getCount(last, first);
                     return NumberUtils.locale(count) + " Unique " + (count == 1 ? "Player" : "Players");
                 }
             };
@@ -71,7 +71,7 @@ public class UniquePlayerGraph extends DateGraphUpdater {
                 return new Instance(type.getLastStatus(), Color.BLUE, mainCountColumn) {
                     @Override
                     protected String getDescription() {
-                        long count = getCount(last, 0);
+                        long count = getCount(last, first);
                         return NumberUtils.locale(count) + " Unique " + (count == 1 ? "Player" : "Players");
                     }
 

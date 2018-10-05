@@ -5,7 +5,7 @@ package com.orbitmines.spigot.api.cmds.moderator;
  */
 
 import com.orbitmines.api.Color;
-import com.orbitmines.api.StaffRank;
+import com.orbitmines.api.utils.CommandLibrary;
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.handlers.NewsHologram;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
@@ -14,20 +14,8 @@ import org.bukkit.entity.Player;
 
 public class CommandHologram extends StaffCommand {
 
-    private String[] alias = { "/hologram" };
-
     public CommandHologram() {
-        super(StaffRank.MODERATOR);
-    }
-
-    @Override
-    public String[] getAlias() {
-        return alias;
-    }
-
-    @Override
-    public String getHelp(OMPlayer omp) {
-        return "list|<name> §7(lines|relocate|delete|create|add|remove|edit)";
+        super(CommandLibrary.HOLOGRAM);
     }
 
     @Override

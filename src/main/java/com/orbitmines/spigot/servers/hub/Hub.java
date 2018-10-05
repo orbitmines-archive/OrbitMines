@@ -54,8 +54,8 @@ public class Hub extends OrbitMinesServer {
     public static Map<Language, WrittenBookBuilder> RULE_BOOK = new HashMap<>();
 
     static {
-        RULE_BOOK.put(Language.DUTCH, new WrittenBookBuilder(1, "§f ", "§8§lOrbit§7§lMines", new TextComponent("   §8§lOrbit§7§lMines§4§lRegels" + "\n" + "§0§m-------------------" + "\n" + "§4NIET§0 Adverteren!" + "\n" + "§0Let op je taalgebruik!" + "\n" + "Luister naar de Staff!" + "\n" + "§4GEEN§0 Bugs gebruiken!" + "\n" + "§4NIET§0 hacken!" + "\n" + "§4NIET§0 spammen!" + "\n" + "§4NIET§0 spelers pesten!" + "\n" + "§0\n" + "§0§lVeel Plezier!")));
-        RULE_BOOK.put(Language.ENGLISH, new WrittenBookBuilder(1, "§f ", "§8§lOrbit§7§lMines", new TextComponent("   §8§lOrbit§7§lMines§4§lRules" + "\n" + "§0§m-------------------" + "\n" + "§4DO NOT§0 Advertise!" + "\n" + "§0Watch your Language!" + "\n" + "Listen to Staff!" + "\n" + "§4DO NOT§0 Abuse Bugs!" + "\n" + "§4DO NOT§0 Hack!" + "\n" + "§4DO NOT§0 Spam!" + "\n" + "§4DO NOT§0 Bully Players!" + "\n" + "§0\n" + "§0§lHave Fun!")));
+        RULE_BOOK.put(Language.DUTCH, new WrittenBookBuilder(1, "§1 ", "§8§lOrbit§7§lMines", new TextComponent("   §8§lOrbit§7§lMines§4§lRegels" + "\n" + "§0§m-------------------" + "\n" + "§4NIET§0 Adverteren!" + "\n" + "§0Let op je taalgebruik!" + "\n" + "Luister naar de Staff!" + "\n" + "§4GEEN§0 Bugs gebruiken!" + "\n" + "§4NIET§0 hacken!" + "\n" + "§4NIET§0 spammen!" + "\n" + "§4NIET§0 spelers pesten!" + "\n" + "§0\n" + "§0§lVeel Plezier!")));
+        RULE_BOOK.put(Language.ENGLISH, new WrittenBookBuilder(1, "§1 ", "§8§lOrbit§7§lMines", new TextComponent("   §8§lOrbit§7§lMines§4§lRules" + "\n" + "§0§m-------------------" + "\n" + "§4DO NOT§0 Advertise!" + "\n" + "§0Watch your Language!" + "\n" + "Listen to Staff!" + "\n" + "§4DO NOT§0 Abuse Bugs!" + "\n" + "§4DO NOT§0 Hack!" + "\n" + "§4DO NOT§0 Spam!" + "\n" + "§4DO NOT§0 Bully Players!" + "\n" + "§0\n" + "§0§lHave Fun!")));
     }
 
     public Hub(OrbitMines orbitMines) {
@@ -203,7 +203,7 @@ public class Hub extends OrbitMinesServer {
             {
                 kit.setItem(0, RULE_BOOK.get(language));
 
-                new ItemHoverActionBar(new ItemBuilder(Material.WRITTEN_BOOK, 1, "§f "), false) {
+                new ItemHoverActionBar(new ItemBuilder(Material.WRITTEN_BOOK, 1, "§1 "), false) {
                     @Override
                     public String getMessage(OMPlayer omp) {
                         return "§4§l" + omp.lang("Regels", "Rules") + "§r §8- §e§l" + omp.lang("Rechtermuisklik", "Right Click");
@@ -212,7 +212,7 @@ public class Hub extends OrbitMinesServer {
             }
 
             {
-                ItemBuilder item = new ItemBuilder(Material.EMERALD, 1, "§f ");
+                ItemBuilder item = new ItemBuilder(Material.EMERALD, 1, "§2 ");
 
                 kit.setItem(1, new KitInteractive.InteractAction(item) {
                     @Override
@@ -232,7 +232,7 @@ public class Hub extends OrbitMinesServer {
             }
 
             {
-                PlayerSkullBuilder item = new PlayerSkullBuilder(() -> kit.getLastUsedBy().getPlayerName(), 1, "§f ");
+                PlayerSkullBuilder item = new PlayerSkullBuilder(() -> kit.getLastUsedBy().getPlayerName(), 1, "§3 ");
 
                 kit.setItem(3, new KitInteractive.InteractAction(item) {
                     @Override
@@ -252,7 +252,7 @@ public class Hub extends OrbitMinesServer {
             }
 
             {
-                ItemBuilder item = new ItemBuilder(Material.ENDER_PEARL, 1, "§f ");
+                ItemBuilder item = new ItemBuilder(Material.ENDER_PEARL, 1, "§4 ");
 
                 kit.setItem(4, new KitInteractive.InteractAction(item) {
                     @Override
@@ -272,7 +272,7 @@ public class Hub extends OrbitMinesServer {
             }
 
             {
-                ItemBuilder item = new ItemBuilder(Material.REDSTONE_TORCH, 1, "§f ");
+                ItemBuilder item = new ItemBuilder(Material.REDSTONE_TORCH, 1, "§5 ");
 
                 kit.setItem(5, new KitInteractive.InteractAction(item) {
                     @Override
@@ -293,7 +293,7 @@ public class Hub extends OrbitMinesServer {
             }
 
             {
-                PlayerSkullBuilder item = new PlayerSkullBuilder(() -> "Discord Skull", 1, "§9 ").setTexture(DiscordBot.SKULL_TEXTURE);
+                PlayerSkullBuilder item = new PlayerSkullBuilder(() -> "Discord Skull", 1, "§6 ").setTexture(DiscordBot.SKULL_TEXTURE);
 
                 kit.setItem(7, new KitInteractive.InteractAction(item) {
                     @Override
@@ -313,7 +313,7 @@ public class Hub extends OrbitMinesServer {
             }
 
             {
-                ItemBuilder item = new ItemBuilder(Material.ENDER_CHEST, 1, "§f ");
+                ItemBuilder item = new ItemBuilder(Material.ENDER_CHEST, 1, "§7 ");
 
                 kit.setItem(8, new KitInteractive.InteractAction(item) {
                     @Override

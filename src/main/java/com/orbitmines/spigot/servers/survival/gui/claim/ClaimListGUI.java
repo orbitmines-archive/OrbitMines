@@ -48,7 +48,7 @@ public class ClaimListGUI extends GUI {
 
         for (Claim claim : getClaimsForPage(claims)) {
             if (claim != null) {
-                ItemBuilder item = ClaimGUI.getClaimIcon(omp, claim);
+                ItemBuilder item = ClaimGUI.getClaimIcon(survival, omp, claim);
 
                 if (claim.isOwner(omp.getUUID()) || survival.canEditOtherClaims(omp))
                     add(slot, new ItemInstance(item.addLore("").addLore(omp.lang("§aKlik hier om te beheren.", "§aClick here to manage.")).build()) {

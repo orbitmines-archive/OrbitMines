@@ -6,6 +6,7 @@ package com.orbitmines.spigot.api.cmds;
 
 import com.orbitmines.api.Color;
 import com.orbitmines.api.Server;
+import com.orbitmines.api.utils.CommandLibrary;
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.PatchNotes;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
@@ -13,24 +14,12 @@ import com.orbitmines.spigot.api.handlers.cmd.Command;
 
 public class CommandPatchNotes extends Command {
 
-    private String[] alias = { "/patchnotes" };
-
     private final OrbitMines orbitMines;
 
     public CommandPatchNotes(OrbitMines orbitMines) {
-        super(null);
+        super(CommandLibrary.PATCH_NOTES);
 
         this.orbitMines = orbitMines;
-    }
-
-    @Override
-    public String[] getAlias() {
-        return alias;
-    }
-
-    @Override
-    public String getHelp(OMPlayer omp) {
-        return "(server) (version)";
     }
 
     @Override

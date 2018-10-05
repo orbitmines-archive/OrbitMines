@@ -7,6 +7,7 @@ import com.orbitmines.spigot.api.runnables.SpigotRunnable;
 import com.orbitmines.spigot.api.utils.PlayerUtils;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
 import java.util.List;
@@ -47,7 +48,7 @@ public abstract class ItemHoverBlockTarget extends ItemHover {
     public abstract void onTargetEnter(OMPlayer omp);
 
     @Override
-    protected void onEnter(OMPlayer omp) {
+    protected void onEnter(OMPlayer omp, ItemStack item) {
         if (isTargeted(omp))
             onTargetEnter(omp);
     }
