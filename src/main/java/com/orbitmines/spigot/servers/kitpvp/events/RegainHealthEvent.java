@@ -25,7 +25,7 @@ public class RegainHealthEvent implements Listener {
 
         /* Increase health regen */
         double amount = event.getAmount() * 1.75;
-        amount *= omp.getSelectedKit().getAttributes().getHealthRegen().getMultiplier();
+        amount *= omp.getSelectedKit().getHealthRegen().getMultiplier();
 
         event.setAmount(amount);
 

@@ -13,6 +13,7 @@ public enum BotToken {
 
     DEFAULT("NDU3NjIzNzI4MDMzODkwMzA0.Dgb74A.phP4ztzrfLPQ-j55f996t4BPZy0", Server.HUB, "hub_chat", "orbitmines"),
     SURVIVAL("NDU4MDA4MDc3OTMzODcxMTE1.DghYyA.rDC9poB4wz0CxScI7dvXQi6tYJk", Server.SURVIVAL, "survival_chat", "survival"),
+    KITPVP("NDk3ODM5MDIxODM0MjQwMDEy.DplAcA.n-YZRxbTaXz5JpkZkNdkbbp8ddM", Server.KITPVP, "kitpvp_chat", "kitpvp"),
     UHSURVIVAL("NDYxNDgwNzYwODU2MjgxMTM4.DhT69w.r8LAkXVzaXYEV8F9ZC9xT7DH0S8", Server.UHSURVIVAL, "uhsurvival_chat", "barrier");
 
     private final String token;

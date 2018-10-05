@@ -21,7 +21,7 @@ public abstract class ItemHover {
     private final ItemBuilder itemBuilder;
     private final boolean offHandAllowed;
 
-    private PlayerRunnable offHandRunnable;
+    private PlayerRunnable runnable;
 
     protected Set<OMPlayer> entered;
 
@@ -32,21 +32,18 @@ public abstract class ItemHover {
 
         itemHovers.add(this);
 
-        if (!offHandAllowed)
-            return;
-
-        offHandRunnable = new PlayerRunnable(SpigotRunnable.TimeUnit.TICK, 1) {
+        runnable = new PlayerRunnable(SpigotRunnable.TimeUnit.TICK, 1) {
             @Override
             public void run(OMPlayer omp) {
                 ItemStack mainHand = omp.getItemInMainHand();
                 ItemStack offHand = omp.getItemInOffHand();
 
                 /* Player has hover, but not in main hand, and not in his off hand, leave that hover */
-                if (omp.getCurrentHover() != null && !omp.getCurrentHover().getItemBuilder().equals(mainHand) && !omp.getCurrentHover().getItemBuilder().equals(offHand))
+                if (omp.getCurrentHover() != null && (!omp.getCurrentHover().getItemBuilder().equals(mainHand) && (!offHandAllowed || !omp.getCurrentHover().getItemBuilder().equals(offHand))))
                     omp.getCurrentHover().leave(omp);
 
                 /* Player has currently no hover in main hand, and offhand equals this hover */
-                if (omp.getCurrentHover() == null && itemBuilder.equals(offHand))
+                if (offHandAllowed && omp.getCurrentHover() == null && itemBuilder.equals(offHand))
                     enter(omp, offHand);
             }
         };
@@ -86,8 +83,8 @@ public abstract class ItemHover {
     public void unregister() {
         itemHovers.remove(this);
 
-        if (offHandRunnable != null)
-            offHandRunnable.cancel();
+        if (runnable != null)
+            runnable.cancel();
     }
 
     public boolean hasEntered(OMPlayer omp) {

@@ -4,6 +4,8 @@ import com.orbitmines.spigot.api.handlers.itembuilders.WrittenBookBuilder;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Map;
+
 /**
  * Created by Fadi on 30-4-2016.
  */
@@ -16,5 +18,7 @@ public interface ItemStackNms {
     ItemStack setMetaData(ItemStack item, String key, String value);
 
     String getMetaData(ItemStack item, String key);
+
+    Map<String, String> getMetaData(ItemStack item);
 
 }

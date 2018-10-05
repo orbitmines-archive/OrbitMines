@@ -2,14 +2,15 @@ package com.orbitmines.spigot.servers.kitpvp.handlers;
 
 import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.api.Color;
+import com.orbitmines.api.utils.NumberUtils;
 import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.chat.ActionBar;
 import com.orbitmines.spigot.api.handlers.chat.ComponentMessage;
 import com.orbitmines.spigot.api.handlers.chat.Title;
 import com.orbitmines.spigot.api.nms.entity.EntityNms;
-import com.orbitmines.spigot.servers.kitpvp.Attributes;
 import com.orbitmines.spigot.servers.kitpvp.KitPvP;
+import net.md_5.bungee.api.chat.HoverEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Sound;
@@ -60,6 +61,7 @@ public class KitPvPPlayer extends OMPlayer {
         getData();
         /* Update Level */
         levelData.update(false);
+        levelData.updateExperienceBar();
 
         /* Set Scoreboard */
         setScoreboard(new KitPvP.Scoreboard(orbitMines, this));
@@ -88,7 +90,8 @@ public class KitPvPPlayer extends OMPlayer {
     @Override
     public Collection<ComponentMessage.TempTextComponent> getChatPrefix() {
         return Arrays.asList(
-                        new ComponentMessage.TempTextComponent(levelData.getPrefix()),
+                        new ComponentMessage.TempTextComponent(levelData.getPrefix(), HoverEvent.Action.SHOW_TEXT, getName() + "\n§7Level: " + levelData.getColor() + "§l" + levelData.getLevel() + "\n" + (levelData.getLevel() == LevelData.maxLevel ? levelData.getColor() + "Max Level" : "§7Next level: §e§l" + NumberUtils.locale(levelData.getCurrentLevelXp()) + " XP §7§l/ " + NumberUtils.locale(levelData.getNextLevelXp()))),
+
                         new ComponentMessage.TempTextComponent(isSpectator() ? " §eSpec " : "")
                 );
     }
@@ -146,6 +149,8 @@ public class KitPvPPlayer extends OMPlayer {
 
         this.selectedKit = null;
         this.killStreak = 0;
+
+        levelData.updateExperienceBar();
     }
 
     /* Joining Map */
@@ -157,6 +162,7 @@ public class KitPvPPlayer extends OMPlayer {
     public void joinMap(KitPvPKit.Level selectedKit) {
         teleportToMap();
         setSelectedKit(selectedKit);
+        player.getInventory().setHeldItemSlot(0);
     }
 
     public void setSelectedKit(KitPvPKit.Level selectedKit) {
@@ -166,11 +172,10 @@ public class KitPvPPlayer extends OMPlayer {
         clearPotionEffects();
 
         /* Apply Attributes */
-        Attributes attributes = selectedKit.getAttributes();
         EntityNms nms = orbitMines.getNms().entity();
-        nms.setAttribute(player, EntityNms.Attribute.MAX_HEALTH, attributes.getMaxHealth());
-        player.setHealth(attributes.getMaxHealth());
-        nms.setAttribute(player, EntityNms.Attribute.KNOCKBACK_RESISTANCE, attributes.getKnockbackResistance());
+        nms.setAttribute(player, EntityNms.Attribute.MAX_HEALTH, selectedKit.getMaxHealth());
+        player.setHealth(selectedKit.getMaxHealth());
+        nms.setAttribute(player, EntityNms.Attribute.KNOCKBACK_RESISTANCE, selectedKit.getKnockbackResistance());
 
         /* Remove Attack Delay */
         nms.setAttribute(player, EntityNms.Attribute.ATTACK_SPEED, 16.0D);
@@ -185,7 +190,7 @@ public class KitPvPPlayer extends OMPlayer {
 
 //        updateNpcs();
 
-        new Title(selectedKit.getHandler().getDisplayName(), "§e§lLevel" + selectedKit.getLevel(), 20, 40, 20).send(this);
+        new Title(selectedKit.getHandler().getDisplayName(), "§a§lLevel " + selectedKit.getLevel(), 20, 40, 20).send(this);
     }
 
     public int getKillStreak() {

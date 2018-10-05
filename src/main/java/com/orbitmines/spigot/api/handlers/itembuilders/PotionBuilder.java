@@ -15,6 +15,10 @@ public class PotionBuilder {
     private boolean particles;
     private boolean icon;
 
+    public PotionBuilder(PotionEffectType type, int amplifier) {
+        this(type, Integer.MAX_VALUE, amplifier, true);
+    }
+
     public PotionBuilder(PotionEffectType type, int duration, int amplifier) {
         this(type, duration, amplifier, true);
     }

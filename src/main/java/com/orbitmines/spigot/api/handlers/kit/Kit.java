@@ -211,7 +211,6 @@ public class Kit {
 
     private boolean setItem(ItemStack item, ItemStack item2) {
         return item2 == null || item.getType() != item2.getType() || item.getAmount() != item2.getAmount() || !item.getItemMeta().getDisplayName().equals(item2.getItemMeta().getDisplayName());
-
     }
 
     private boolean setItem(ItemStack[] contents, int index, ItemStack item) {

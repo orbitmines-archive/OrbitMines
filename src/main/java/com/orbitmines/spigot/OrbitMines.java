@@ -35,6 +35,7 @@ import com.orbitmines.spigot.runnables.NPCRunnable;
 import com.orbitmines.spigot.runnables.ScoreboardRunnable;
 import com.orbitmines.spigot.runnables.ServerSelectorRunnable;
 import net.dv8tion.jda.core.EmbedBuilder;
+import org.bukkit.GameRule;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -187,9 +188,9 @@ public class OrbitMines extends JavaPlugin {
         lobby = OrbitMinesMap.getLobby(server);
 
         World lobbyWorld = worldLoader.fromZip(lobby.getWorldName(), true, lobby.getWorldGenerator());
-        lobbyWorld.setGameRuleValue("doDaylightCycle", "false");
-        lobbyWorld.setGameRuleValue("doMobSpawning", "false");
-        lobbyWorld.setGameRuleValue("doFireTick", "false");
+        lobbyWorld.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+        lobbyWorld.setGameRule(GameRule.DO_MOB_SPAWNING, false);
+        lobbyWorld.setGameRule(GameRule.DO_FIRE_TICK, false);
         lobbyWorld.setTime(18000);
 
         lobby.setWorld(lobbyWorld);

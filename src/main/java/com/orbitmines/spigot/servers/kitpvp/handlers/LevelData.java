@@ -106,7 +106,7 @@ public class LevelData {
 
                 this.level = level;
                 this.nextLevelXp = requiredExperience;
-                this.currentLevelXp = nextLevelXp - experience;
+                this.currentLevelXp = experience;
 
                 return;
             }

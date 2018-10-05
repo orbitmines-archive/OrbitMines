@@ -23,6 +23,7 @@ public class MobEggBuilder extends ItemBuilder {
 
     public MobEggBuilder(Mob mob, MobEggBuilder itemBuilder) {
         super(itemBuilder);
+        itemBuilder.material = mob.getSpawnEggMaterial();
     }
 
     public MobEggBuilder(Mob mob, int amount, String displayName, List<String> lore) {

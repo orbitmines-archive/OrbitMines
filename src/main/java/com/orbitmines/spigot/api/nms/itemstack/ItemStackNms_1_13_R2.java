@@ -13,7 +13,7 @@ import org.bukkit.craftbukkit.v1_13_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.UUID;
+import java.util.*;
 
 public class ItemStackNms_1_13_R2 implements ItemStackNms {
 
@@ -82,5 +82,25 @@ public class ItemStackNms_1_13_R2 implements ItemStackNms {
         NBTTagCompound orbitmines = tag.getCompound("OrbitMines");
 
         return orbitmines.hasKey(key) ? orbitmines.getString(key) : null;
+    }
+
+    @Override
+    public Map<String, String> getMetaData(ItemStack item) {
+        net.minecraft.server.v1_13_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
+
+        NBTTagCompound tag = nmsStack.hasTag() ? nmsStack.getTag() : new NBTTagCompound();
+
+        if (!tag.hasKey("OrbitMines"))
+            return null;
+
+        NBTTagCompound orbitmines = tag.getCompound("OrbitMines");
+
+        Map<String, String> metaData = new HashMap<>();
+
+        for (String key : orbitmines.getKeys()) {
+            metaData.put(key, orbitmines.getString(key));
+        }
+
+        return metaData;
     }
 }

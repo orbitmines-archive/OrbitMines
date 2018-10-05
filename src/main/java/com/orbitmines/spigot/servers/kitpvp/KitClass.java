@@ -6,6 +6,17 @@ package com.orbitmines.spigot.servers.kitpvp;
 
 public enum KitClass {
 
-    FIGTHER,
-    RANGED;
+    MELEE("Melee"),
+    RANGED("Ranged"),
+    SPELLCASTER("Spellcaster");
+
+    private final String name;
+
+    KitClass(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
 }

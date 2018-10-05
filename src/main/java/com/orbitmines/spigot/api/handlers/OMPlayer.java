@@ -33,6 +33,7 @@ import com.orbitmines.spigot.api.handlers.scoreboard.OMScoreboard;
 import com.orbitmines.spigot.api.handlers.scoreboard.ScoreboardSet;
 import com.orbitmines.spigot.api.handlers.timer.Timer;
 import com.orbitmines.spigot.servers.hub.handlers.HubAchievements;
+import com.orbitmines.spigot.servers.kitpvp.handlers.KitPvPData;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalData;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -835,6 +836,9 @@ public abstract class OMPlayer {
 
             case SURVIVAL:
                 data = new SurvivalData(getUUID());
+                break;
+            case KITPVP:
+                data = new KitPvPData(getUUID());
                 break;
             default:
                 return null;

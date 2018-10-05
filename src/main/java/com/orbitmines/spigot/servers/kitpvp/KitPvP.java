@@ -1,8 +1,8 @@
 package com.orbitmines.spigot.servers.kitpvp;
 
-import com.orbitmines.api.CachedPlayer;
+import com.google.common.io.ByteArrayDataInput;
+import com.orbitmines.api.*;
 import com.orbitmines.api.Color;
-import com.orbitmines.api.Language;
 import com.orbitmines.api.Server;
 import com.orbitmines.api.utils.NumberUtils;
 import com.orbitmines.api.utils.RandomUtils;
@@ -11,6 +11,7 @@ import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.OrbitMinesServer;
 import com.orbitmines.spigot.api.events.VoidDamageEvent;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
+import com.orbitmines.spigot.api.handlers.PluginMessageHandler;
 import com.orbitmines.spigot.api.handlers.PreventionSet;
 import com.orbitmines.spigot.api.handlers.chat.ComponentMessage;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
@@ -20,26 +21,29 @@ import com.orbitmines.spigot.api.handlers.kit.KitInteractive;
 import com.orbitmines.spigot.api.handlers.scoreboard.DefaultScoreboard;
 import com.orbitmines.spigot.api.handlers.timer.Timer;
 import com.orbitmines.spigot.api.runnables.SpigotRunnable;
+import com.orbitmines.spigot.api.utils.ItemUtils;
+import com.orbitmines.spigot.api.utils.PlayerUtils;
+import com.orbitmines.spigot.servers.hub.datapoints.HubDataPointSpawnpoint;
 import com.orbitmines.spigot.servers.hub.gui.stats.ServerStatsGUI;
-import com.orbitmines.spigot.servers.kitpvp.events.ExpChangeEvent;
-import com.orbitmines.spigot.servers.kitpvp.events.RegainHealthEvent;
-import com.orbitmines.spigot.servers.kitpvp.events.SpectatorEvents;
-import com.orbitmines.spigot.servers.kitpvp.handlers.CoinBooster;
-import com.orbitmines.spigot.servers.kitpvp.handlers.KitPvPMap;
-import com.orbitmines.spigot.servers.kitpvp.handlers.KitPvPPlayer;
+import com.orbitmines.spigot.servers.kitpvp.datapoints.KitPvPDataPointMapSpawnpoint;
+import com.orbitmines.spigot.servers.kitpvp.datapoints.KitPvPDataPointMapSpectatorSpawnpoint;
+import com.orbitmines.spigot.servers.kitpvp.events.*;
+import com.orbitmines.spigot.servers.kitpvp.handlers.*;
+import com.orbitmines.spigot.servers.kitpvp.handlers.gui.KitSelectorGUI;
+import com.orbitmines.spigot.servers.kitpvp.handlers.kits.KitArcher;
+import com.orbitmines.spigot.servers.kitpvp.handlers.kits.KitKnight;
+import com.orbitmines.spigot.servers.kitpvp.handlers.kits.KitSoldier;
 import org.bukkit.*;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /*
 * OrbitMines - @author Fadi Shawki - 2017
@@ -55,7 +59,12 @@ public class KitPvP extends OrbitMinesServer {
     private List<Location> spawnLocations;
 
     public KitPvP(OrbitMines orbitMines) {
-        super(orbitMines, Server.KITPVP, null);//todo
+        super(orbitMines, Server.KITPVP, new PluginMessageHandler() {
+            @Override
+            public void onReceive(ByteArrayDataInput in, PluginMessage message) {
+
+            }
+        });
     }
 
     @Override
@@ -82,11 +91,14 @@ public class KitPvP extends OrbitMinesServer {
         );
 
         /* Load & Create all Maps from Database */
-        KitPvPMap.loadMaps();
-        nextMapRotation();
+        KitPvPMap.loadMaps(orbitMines.getWorldLoader());
 
         for (KitPvPMap map : KitPvPMap.getMaps()) {
-            preventionSet.prevent(map.getWorld(),
+            map.setupDataPoints();
+
+            World world = map.getWorld();
+
+            preventionSet.prevent(world,
                     PreventionSet.Prevention.BLOCK_BREAK,
                     PreventionSet.Prevention.BLOCK_INTERACTING,
                     PreventionSet.Prevention.BLOCK_PLACE,
@@ -104,17 +116,52 @@ public class KitPvP extends OrbitMinesServer {
                     PreventionSet.Prevention.BUCKET_USAGE,
                     PreventionSet.Prevention.PHYSICAL_INTERACTING_EXCEPT_PLATES
             );
-            map.getWorld().setGameRule(GameRule.DO_MOB_SPAWNING, false);
+            world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
+            world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+            world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
+            world.setGameRule(GameRule.DO_FIRE_TICK, false);
+
+            /* Datapoints */
+            List<Location> spawnLocations = ((KitPvPDataPointMapSpawnpoint) (map.getHandler().getDataPoint(KitPvPMapDataPointHandler.Type.SPAWNPOINT))).getSpawns();
+            List<Location> spectatorLocations = ((KitPvPDataPointMapSpectatorSpawnpoint) (map.getHandler().getDataPoint(KitPvPMapDataPointHandler.Type.SPECTATOR_SPAWNPOINT))).getSpawns();
+            List<Location> voteSigns = new ArrayList<>();//TODO
+
+            map.setup(spawnLocations, spectatorLocations, voteSigns);
         }
+
+        /* Remove trapdoor from PreventionSet: we want players to be able to interact with trapdoors and buttons */
+        ItemUtils.INTERACTABLE.remove(Material.STONE_BUTTON);
+
+        ItemUtils.INTERACTABLE.remove(Material.ACACIA_BUTTON);
+        ItemUtils.INTERACTABLE.remove(Material.BIRCH_BUTTON);
+        ItemUtils.INTERACTABLE.remove(Material.DARK_OAK_BUTTON);
+        ItemUtils.INTERACTABLE.remove(Material.JUNGLE_BUTTON);
+        ItemUtils.INTERACTABLE.remove(Material.OAK_BUTTON);
+        ItemUtils.INTERACTABLE.remove(Material.SPRUCE_BUTTON);
+
+        ItemUtils.INTERACTABLE.remove(Material.ACACIA_TRAPDOOR);
+        ItemUtils.INTERACTABLE.remove(Material.BIRCH_TRAPDOOR);
+        ItemUtils.INTERACTABLE.remove(Material.DARK_OAK_TRAPDOOR);
+        ItemUtils.INTERACTABLE.remove(Material.JUNGLE_TRAPDOOR);
+        ItemUtils.INTERACTABLE.remove(Material.OAK_TRAPDOOR);
+        ItemUtils.INTERACTABLE.remove(Material.SPRUCE_TRAPDOOR);
+
+        /* Start Map rotation */
+        nextMapRotation();
 
         registerKits();
 
         /* Datapoints */
+        spawnLocations = ((HubDataPointSpawnpoint) (orbitMines.getLobby().getHandler().getDataPoint(KitPvPLobbyDataPointHandler.Type.SPAWNPOINT))).getSpawns();
     }
 
     @Override
     public void onDisable() {
 
+    }
+
+    public boolean isSaturday() {
+        return Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY;
     }
 
     public Kit getLobbyKit(KitPvPPlayer omp) {
@@ -159,7 +206,9 @@ public class KitPvP extends OrbitMinesServer {
                     return getSpawnLocation(player);
                 }
             },
+            new DeathEvent(this),
             new ExpChangeEvent(orbitMines),
+            new InteractEvent(),
             new RegainHealthEvent(),
             new SpectatorEvents()
         );
@@ -172,17 +221,23 @@ public class KitPvP extends OrbitMinesServer {
 
     @Override
     protected void registerRunnables() {
+//        new MapResetSignRunnable();
         //TODO
     }
 
     private void registerKits() {
+        {
+            new KitKnight();
+            new KitArcher();
+            new KitSoldier();
+        }
 
         /* Lobby Kit */
         for (Language language : Language.values()) {
             KitInteractive kit = new KitInteractive(language.toString());
 
             {
-                ItemBuilder item = new ItemBuilder(Material.NAME_TAG, 1, "§f ");
+                ItemBuilder item = new ItemBuilder(Material.NAME_TAG, 1, "§1 ");
 
                 kit.setItem(3, new KitInteractive.InteractAction(item) {
                     @Override
@@ -202,7 +257,7 @@ public class KitPvP extends OrbitMinesServer {
             }
 
             {
-                ItemBuilder item = new ItemBuilder(Material.ENDER_PEARL, 1, "§f ");
+                ItemBuilder item = new ItemBuilder(Material.ENDER_PEARL, 1, "§2 ");
 
                 kit.setItem(5, new KitInteractive.InteractAction(item) {
                     @Override
@@ -242,7 +297,7 @@ public class KitPvP extends OrbitMinesServer {
             }
 
             {
-                ItemBuilder item = new ItemBuilder(Material.EMERALD, 1, "§f ");
+                ItemBuilder item = new ItemBuilder(Material.EMERALD, 1, "§3 ");
 
                 kit.setItem(1, new KitInteractive.InteractAction(item) {
                     @Override
@@ -262,7 +317,7 @@ public class KitPvP extends OrbitMinesServer {
             }
 
             {
-                ItemBuilder item = new ItemBuilder(Material.PRISMARINE_SHARD, 1, "§f ");
+                ItemBuilder item = new ItemBuilder(Material.PRISMARINE_SHARD, 1, "§4 ");
 
                 kit.setItem(3, new KitInteractive.InteractAction(item) {
                     @Override
@@ -282,14 +337,16 @@ public class KitPvP extends OrbitMinesServer {
             }
 
             {
-                ItemBuilder item = new ItemBuilder(Material.DIAMOND_CHESTPLATE, 1, "§f ");
+                ItemBuilder item = new ItemBuilder(Material.DIAMOND_CHESTPLATE, 1, "§5 ").addFlag(ItemFlag.HIDE_ATTRIBUTES);
 
                 kit.setItem(4, new KitInteractive.InteractAction(item) {
                     @Override
                     public void onInteract(PlayerInteractEvent event, OMPlayer omp) {
                         event.setCancelled(true);
 
-                        //TODO OPEN KIT SELECTOR
+                        PlayerUtils.updateInventory(omp.getPlayer());
+
+                        new KitSelectorGUI(KitPvP.this).open(omp);
                     }
                 });
 
@@ -302,7 +359,7 @@ public class KitPvP extends OrbitMinesServer {
             }
 
             {
-                ItemBuilder item = new ItemBuilder(Material.SUNFLOWER, 1, "§f ");
+                ItemBuilder item = new ItemBuilder(Material.GOLD_NUGGET, 1, "§6 ");
 
                 kit.setItem(5, new KitInteractive.InteractAction(item) {
                     @Override
@@ -323,7 +380,7 @@ public class KitPvP extends OrbitMinesServer {
             }
 
             {
-                ItemBuilder item = new ItemBuilder(Material.ENDER_PEARL, 1, "§f ");
+                ItemBuilder item = new ItemBuilder(Material.ENDER_PEARL, 1, "§7 ");
 
                 kit.setItem(7, new KitInteractive.InteractAction(item) {
                     @Override
@@ -343,7 +400,7 @@ public class KitPvP extends OrbitMinesServer {
             }
 
             {
-                ItemBuilder item = new ItemBuilder(Material.ENDER_CHEST, 1, "§f ");
+                ItemBuilder item = new ItemBuilder(Material.ENDER_CHEST, 1, "§8 ");
 
                 kit.setItem(8, new KitInteractive.InteractAction(item) {
                     @Override
@@ -383,7 +440,7 @@ public class KitPvP extends OrbitMinesServer {
                     () -> "§m--------------",
                     () -> "",
                     () -> "§7§lKit",
-                    () -> " " + (omp.getSelectedKit() != null ? omp.getSelectedKit().getHandler().getDisplayName() + " §e§l" + omp.getSelectedKit().getLevel() : "§fNONE"),
+                    () -> " " + (omp.getSelectedKit() != null ? omp.getSelectedKit().getHandler().getDisplayName() + " §e§lLvl " + omp.getSelectedKit().getLevel() : "§fNone"),
                     () -> " ",
                     () -> "§6§lCoins",
                     () -> " " + NumberUtils.locale(omp.getCoins()),

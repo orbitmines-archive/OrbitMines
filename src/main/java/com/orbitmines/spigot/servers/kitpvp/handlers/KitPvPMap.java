@@ -11,6 +11,7 @@ import com.orbitmines.api.database.Table;
 import com.orbitmines.api.database.Where;
 import com.orbitmines.api.database.tables.TableMaps;
 import com.orbitmines.api.utils.RandomUtils;
+import com.orbitmines.spigot.api.datapoints.DataPointHandler;
 import com.orbitmines.spigot.api.handlers.OrbitMinesMap;
 import com.orbitmines.spigot.api.handlers.timer.Timer;
 import com.orbitmines.spigot.api.handlers.worlds.WorldLoader;
@@ -19,6 +20,7 @@ import com.orbitmines.spigot.api.utils.LocationUtils;
 import com.orbitmines.spigot.api.utils.WorldUtils;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -115,7 +117,7 @@ public class KitPvPMap extends OrbitMinesMap {
         return maps;
     }
 
-    public static void loadMaps() {
+    public static void loadMaps(WorldLoader worldLoader) {
         /* Get all enabled gamemaps for gamemode */
         List<Map<Column, String>> entries = Database.get().getEntries(Table.MAPS, new Column[] {
 
@@ -135,7 +137,10 @@ public class KitPvPMap extends OrbitMinesMap {
                     entry.get(TableMaps.AUTHORS)
             );
 
-            //TODO setupDatapoints
+            World lobbyWorld = worldLoader.fromZip(map.getWorldName(), true, map.getWorldGenerator());
+            map.setWorld(lobbyWorld);
+
+            map.setHandler(DataPointHandler.getHandler(Server.KITPVP, Type.GAMEMAP));
         }
     }
 }

@@ -225,7 +225,8 @@ public class KitPvPData extends Data {
         public KitData(long kitId) {
             this.kitId = kitId;
 
-            this.unlockedLevel = 0;
+            /* Unlock Knight, Archer & Soldier. */
+            this.unlockedLevel = kitId <= 2 ? 1 : 0;
 
             this.kills = 0;
             this.deaths = 0;
@@ -235,9 +236,9 @@ public class KitPvPData extends Data {
 
         public void load() {
             if (!Database.get().contains(Table.KITPVP_KIT_STATS, new Column[] { TableKitPvPKitStats.UUID }, new Where(TableKitPvPKitStats.UUID, getUUID().toString()), new Where(TableKitPvPKitStats.KIT_ID, kitId))) {
-                Database.get().insert(table, uuid.toString(), kitId + "", unlockedLevel + "", kills + "", deaths + "", bestStreak + "");
+                Database.get().insert(Table.KITPVP_KIT_STATS, uuid.toString(), kitId + "", unlockedLevel + "", kills + "", deaths + "", bestStreak + "");
             } else {
-                Map<Column, String> values = Database.get().getValues(table, new Column[] {
+                Map<Column, String> values = Database.get().getValues(Table.KITPVP_KIT_STATS, new Column[] {
                         TableKitPvPKitStats.UNLOCKED_LEVEL,
                         TableKitPvPKitStats.KILLS,
                         TableKitPvPKitStats.DEATHS,

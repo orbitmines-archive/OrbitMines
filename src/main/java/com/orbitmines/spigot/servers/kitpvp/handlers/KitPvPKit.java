@@ -11,10 +11,9 @@ import com.orbitmines.spigot.servers.kitpvp.Attributes;
 import com.orbitmines.spigot.servers.kitpvp.KitClass;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-public class KitPvPKit {
+public abstract class KitPvPKit {
 
     private static List<KitPvPKit> kits = new ArrayList<>();
 
@@ -25,16 +24,18 @@ public class KitPvPKit {
     protected final KitClass kitClass;
     protected final Level[] levels;
 
-    public KitPvPKit(long id, String name, Color color, ItemBuilder icon, KitClass kitClass, Level... levels) {
+    public KitPvPKit(long id, String name, Color color, ItemBuilder icon, KitClass kitClass) {
         this.id = id;
         this.name = name;
         this.color = color;
         this.icon = icon;
         this.kitClass = kitClass;
-        this.levels = levels;
+        this.levels = registerLevels();
 
         kits.add(this);
     }
+
+    protected abstract Level[] registerLevels();
 
     public long getId() {
         return id;
@@ -91,40 +92,32 @@ public class KitPvPKit {
         return null;
     }
 
-    public class Level {
+    public abstract class Level implements Attributes {
 
-        protected final int price;
         protected final Kit kit;
-        protected final Attributes attributes;
 
-        public Level(Kit kit, Attributes attributes) {
-            this(0, kit, attributes);
+        public Level() {
+            this.kit = registerKit();
         }
 
-        public Level(int price, Kit kit, Attributes attributes) {
-            this.price = price;
-            this.kit = kit;
-            this.attributes = attributes;
-        }
+        public abstract int getPrice();
+
+        protected abstract Kit registerKit();
 
         public KitPvPKit getHandler() {
             return KitPvPKit.this;
-        }
-
-        public int getPrice() {
-            return price;
         }
 
         public Kit getKit() {
             return kit;
         }
 
-        public Attributes getAttributes() {
-            return attributes;
-        }
-
         public int getLevel() {
-            return Arrays.binarySearch(levels, this) + 1;
+            for (int l = 0; l < levels.length; l++) {
+                if (levels[l] == this)
+                    return l + 1;
+            }
+            throw new ArrayIndexOutOfBoundsException();
         }
 
         public void give(KitPvPPlayer omp) {
