@@ -34,7 +34,7 @@ public class CommandPet extends Command {
         if (omp.getInventory().getItem(slot) != null)
             inHand = omp.getInventory().getItem(slot);
 
-        omp.getInventory().setItem(slot, survival.getOrbitMines().getNms().customItem().setMetaData(Survival.PET_TICKET.clone().addLore("§7§oNone linked.").build(), "createdOn", System.currentTimeMillis() + ""));
+        omp.getInventory().setItem(slot, survival.getOrbitMines().getNms().customItem().setMetaData(Survival.PET_TICKET.clone().addLore("§7§oNone linked.").build(), "OrbitMines", "createdOn", System.currentTimeMillis() + ""));
         omp.playSound(Sound.ENTITY_ITEM_PICKUP);
         omp.sendMessage("Claim", Color.LIME, "Je hebt de " + Survival.PET_TICKET.getDisplayName() + "§7 ontvangen.", "§7You have received the " + Survival.PET_TICKET.getDisplayName() + "§7.");
 

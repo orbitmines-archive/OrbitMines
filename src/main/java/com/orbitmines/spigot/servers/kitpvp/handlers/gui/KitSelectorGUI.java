@@ -52,7 +52,7 @@ public class KitSelectorGUI extends GUI {
                 } else {
                     icon.setAmount(level);
 
-                    icon.setDisplayName(icon.getDisplayName() + " §a§lLvL " + level);
+                    icon.setDisplayName(icon.getDisplayName() + " §a§lLvl " + level);
                 }
 
                 icon.addLore("");

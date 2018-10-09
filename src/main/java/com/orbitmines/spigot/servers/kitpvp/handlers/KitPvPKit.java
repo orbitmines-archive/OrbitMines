@@ -9,6 +9,7 @@ import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.api.handlers.kit.Kit;
 import com.orbitmines.spigot.servers.kitpvp.Attributes;
 import com.orbitmines.spigot.servers.kitpvp.KitClass;
+import com.orbitmines.spigot.servers.kitpvp.KitPvP;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,7 @@ public abstract class KitPvPKit {
 
     private static List<KitPvPKit> kits = new ArrayList<>();
 
+    protected final KitPvP kitPvP;
     protected final long id;
     protected final String name;
     protected final Color color;
@@ -24,7 +26,8 @@ public abstract class KitPvPKit {
     protected final KitClass kitClass;
     protected final Level[] levels;
 
-    public KitPvPKit(long id, String name, Color color, ItemBuilder icon, KitClass kitClass) {
+    public KitPvPKit(KitPvP kitPvP, long id, String name, Color color, ItemBuilder icon, KitClass kitClass) {
+        this.kitPvP = kitPvP;
         this.id = id;
         this.name = name;
         this.color = color;
@@ -36,6 +39,10 @@ public abstract class KitPvPKit {
     }
 
     protected abstract Level[] registerLevels();
+
+    public KitPvP getKitPvP() {
+        return kitPvP;
+    }
 
     public long getId() {
         return id;

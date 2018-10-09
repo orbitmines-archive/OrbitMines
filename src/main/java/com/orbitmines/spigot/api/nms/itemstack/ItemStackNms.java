@@ -15,10 +15,10 @@ public interface ItemStackNms {
 
     void openBook(Player player, WrittenBookBuilder builder);
 
-    ItemStack setMetaData(ItemStack item, String key, String value);
+    ItemStack setMetaData(ItemStack item, String tagName, String key, String value);
 
-    String getMetaData(ItemStack item, String key);
+    String getMetaData(ItemStack item, String tagName, String key);
 
-    Map<String, String> getMetaData(ItemStack item);
+    Map<String, String> getMetaData(ItemStack item, String tagName);
 
 }

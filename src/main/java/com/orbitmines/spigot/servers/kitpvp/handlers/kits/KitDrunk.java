@@ -7,29 +7,27 @@ package com.orbitmines.spigot.servers.kitpvp.handlers.kits;
 import com.orbitmines.api.Color;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.api.handlers.itembuilders.PotionBuilder;
-import com.orbitmines.spigot.api.handlers.itembuilders.PotionItemBuilder;
 import com.orbitmines.spigot.api.handlers.kit.Kit;
 import com.orbitmines.spigot.servers.kitpvp.HealthRegen;
 import com.orbitmines.spigot.servers.kitpvp.KitClass;
 import com.orbitmines.spigot.servers.kitpvp.KitPvP;
 import com.orbitmines.spigot.servers.kitpvp.handlers.KitPvPKit;
+import com.orbitmines.spigot.servers.kitpvp.handlers.passives.Passive;
 import com.orbitmines.spigot.servers.kitpvp.handlers.itembuilders.KitItemBuilder;
-import com.orbitmines.spigot.servers.kitpvp.handlers.itembuilders.KitPotionItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.potion.PotionEffectType;
 
-public class KitKnight extends KitPvPKit {
+public class KitDrunk extends KitPvPKit {
 
-    public KitKnight(KitPvP kitPvP) {
+    public KitDrunk(KitPvP kitPvP) {
         super(
                 kitPvP,
 
-                0L, "Knight",
+                5L, "Drunk",
 
-                Color.GREEN,
-                new ItemBuilder(Material.IRON_SWORD).addFlag(ItemFlag.HIDE_ATTRIBUTES),
+                Color.YELLOW,
+                new ItemBuilder(Material.GLASS_BOTTLE),
 
                 KitClass.MELEE
         );
@@ -55,30 +53,33 @@ public class KitKnight extends KitPvPKit {
         protected Kit registerKit() {
             Kit kit = new Kit(name + "_1");
 
-            kit.setItem(0, new KitItemBuilder(this, Material.IRON_SWORD));
-            kit.setItem(1, new KitPotionItemBuilder(this, PotionItemBuilder.Type.SPLASH, new PotionBuilder(PotionEffectType.HEAL, 0)));
+            kit.setItem(0, new KitItemBuilder(this, Material.GLASS_BOTTLE).addPassive(Passive.BLEED, 1).addPassive(Passive.ATTACK_DAMAGE, 5));
+            kit.setItem(1, new KitItemBuilder(this, Material.BOW).addPassive(Passive.ARROW_REGEN, 15));
+            kit.setItem(2, new KitItemBuilder(this, Material.ARROW, 10));
 
-            kit.setHelmet(new KitItemBuilder(this, Material.CHAINMAIL_HELMET));
+            kit.setHelmet(new KitItemBuilder(this, Material.CHAINMAIL_HELMET).addPassive(Passive.LAST_BREATH, 1));
             kit.setChestplate(new KitItemBuilder(this, Material.CHAINMAIL_CHESTPLATE));
             kit.setLeggings(new KitItemBuilder(this, Material.CHAINMAIL_LEGGINGS));
             kit.setBoots(new KitItemBuilder(this, Material.CHAINMAIL_BOOTS));
+
+            kit.addPotionEffect(new PotionBuilder(PotionEffectType.CONFUSION, Integer.MAX_VALUE, 1, true, false, true).build());
 
             return kit;
         }
 
         @Override
         public double getMaxHealth() {
-            return 20D;
+            return 21D;
         }
 
         @Override
         public double getKnockbackResistance() {
-            return 0.0D;
+            return 0D;
         }
 
         @Override
         public HealthRegen getHealthRegen() {
-            return HealthRegen.HIGHEST;
+            return HealthRegen.NORMAL;
         }
     }
 
@@ -93,30 +94,33 @@ public class KitKnight extends KitPvPKit {
         protected Kit registerKit() {
             Kit kit = new Kit(name + "_2");
 
-            kit.setItem(0, new KitItemBuilder(this, Material.IRON_SWORD));
-            kit.setItem(1, new KitPotionItemBuilder(this, PotionItemBuilder.Type.SPLASH, new PotionBuilder(PotionEffectType.HEAL, 1)));
+            kit.setItem(0, new KitItemBuilder(this, Material.GLASS_BOTTLE).addPassive(Passive.BLEED, 2).addPassive(Passive.ATTACK_DAMAGE, 6));
+            kit.setItem(1, new KitItemBuilder(this, Material.BOW).addPassive(Passive.ARROW_REGEN, 13));
+            kit.setItem(2, new KitItemBuilder(this, Material.ARROW, 11));
 
-            kit.setHelmet(new KitItemBuilder(this, Material.CHAINMAIL_HELMET).addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1));
+            kit.setHelmet(new KitItemBuilder(this, Material.CHAINMAIL_HELMET).addPassive(Passive.LAST_BREATH, 1));
             kit.setChestplate(new KitItemBuilder(this, Material.CHAINMAIL_CHESTPLATE));
-            kit.setLeggings(new KitItemBuilder(this, Material.CHAINMAIL_LEGGINGS).addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1));
-            kit.setBoots(new KitItemBuilder(this, Material.CHAINMAIL_BOOTS));
+            kit.setLeggings(new KitItemBuilder(this, Material.CHAINMAIL_LEGGINGS));
+            kit.setBoots(new KitItemBuilder(this, Material.CHAINMAIL_BOOTS).addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1));
+
+            kit.addPotionEffect(new PotionBuilder(PotionEffectType.CONFUSION, Integer.MAX_VALUE, 1, true, false, true).build());
 
             return kit;
         }
 
         @Override
         public double getMaxHealth() {
-            return 20D;
+            return 21D;
         }
 
         @Override
         public double getKnockbackResistance() {
-            return 0.0D;
+            return 0D;
         }
 
         @Override
         public HealthRegen getHealthRegen() {
-            return HealthRegen.HIGHEST;
+            return HealthRegen.NORMAL;
         }
     }
 
@@ -131,30 +135,33 @@ public class KitKnight extends KitPvPKit {
         protected Kit registerKit() {
             Kit kit = new Kit(name + "_3");
 
-            kit.setItem(0, new KitItemBuilder(this, Material.IRON_SWORD).addEnchantment(Enchantment.DAMAGE_ALL, 1));
-            kit.setItem(1, new KitPotionItemBuilder(this, PotionItemBuilder.Type.SPLASH, new PotionBuilder(PotionEffectType.HEAL, 1), false, 2));
+            kit.setItem(0, new KitItemBuilder(this, Material.GLASS_BOTTLE).addPassive(Passive.BLEED, 3).addPassive(Passive.ATTACK_DAMAGE, 6));
+            kit.setItem(1, new KitItemBuilder(this, Material.BOW).addPassive(Passive.ARROW_REGEN, 10));
+            kit.setItem(2, new KitItemBuilder(this, Material.ARROW, 12));
 
-            kit.setHelmet(new KitItemBuilder(this, Material.CHAINMAIL_HELMET).addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1));
-            kit.setChestplate(new KitItemBuilder(this, Material.CHAINMAIL_CHESTPLATE).addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1));
-            kit.setLeggings(new KitItemBuilder(this, Material.CHAINMAIL_LEGGINGS).addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1));
-            kit.setBoots(new KitItemBuilder(this, Material.CHAINMAIL_BOOTS).addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1));
+            kit.setHelmet(new KitItemBuilder(this, Material.DIAMOND_HELMET).addPassive(Passive.LAST_BREATH, 1));
+            kit.setChestplate(new KitItemBuilder(this, Material.CHAINMAIL_CHESTPLATE));
+            kit.setLeggings(new KitItemBuilder(this, Material.CHAINMAIL_LEGGINGS));
+            kit.setBoots(new KitItemBuilder(this, Material.DIAMOND_BOOTS).addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1));
+
+            kit.addPotionEffect(new PotionBuilder(PotionEffectType.CONFUSION, Integer.MAX_VALUE, 1, true, false, true).build());
 
             return kit;
         }
 
         @Override
         public double getMaxHealth() {
-            return 20D;
+            return 21D;
         }
 
         @Override
         public double getKnockbackResistance() {
-            return 0.0D;
+            return 0D;
         }
 
         @Override
         public HealthRegen getHealthRegen() {
-            return HealthRegen.HIGHEST;
+            return HealthRegen.NORMAL;
         }
     }
 }

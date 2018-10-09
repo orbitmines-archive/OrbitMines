@@ -277,7 +277,7 @@ public class PreventionSet {
             if (!worlds.get(Prevention.BLOCK_INTERACTING).contains(block.getWorld()))
                 return;
 
-            if (ItemUtils.INTERACTABLE.contains(block.getType()))
+            if (ItemUtils.INTERACTABLE.contains(block.getType()) && (!ItemUtils.RAILS.contains(block.getType()) || event.getItem() != null && ItemUtils.MINECARTS.contains(event.getItem().getType())))
                 event.setCancelled(true);
         }
     }

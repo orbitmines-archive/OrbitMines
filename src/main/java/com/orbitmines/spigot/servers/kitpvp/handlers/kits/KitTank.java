@@ -6,7 +6,7 @@ package com.orbitmines.spigot.servers.kitpvp.handlers.kits;
 
 import com.orbitmines.api.Color;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
-import com.orbitmines.spigot.api.handlers.itembuilders.LeatherArmorBuilder;
+import com.orbitmines.spigot.api.handlers.itembuilders.PotionBuilder;
 import com.orbitmines.spigot.api.handlers.kit.Kit;
 import com.orbitmines.spigot.servers.kitpvp.HealthRegen;
 import com.orbitmines.spigot.servers.kitpvp.KitClass;
@@ -14,23 +14,23 @@ import com.orbitmines.spigot.servers.kitpvp.KitPvP;
 import com.orbitmines.spigot.servers.kitpvp.handlers.KitPvPKit;
 import com.orbitmines.spigot.servers.kitpvp.handlers.passives.Passive;
 import com.orbitmines.spigot.servers.kitpvp.handlers.itembuilders.KitItemBuilder;
-import com.orbitmines.spigot.servers.kitpvp.handlers.itembuilders.KitLeatherArmorBuilder;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
+import org.bukkit.potion.PotionEffectType;
 
-public class KitSoldier extends KitPvPKit {
+public class KitTank extends KitPvPKit {
 
-    public KitSoldier(KitPvP kitPvP) {
+    public KitTank(KitPvP kitPvP) {
         super(
                 kitPvP,
 
-                2L, "Soldier",
+                4L, "Tank",
 
-                Color.GREEN,
-                new ItemBuilder(Material.IRON_LEGGINGS).addFlag(ItemFlag.HIDE_ATTRIBUTES),
+                Color.YELLOW,
+                new ItemBuilder(Material.IRON_CHESTPLATE).addFlag(ItemFlag.HIDE_ATTRIBUTES),
 
-                KitClass.RANGED
+                KitClass.MELEE
         );
     }
 
@@ -54,31 +54,31 @@ public class KitSoldier extends KitPvPKit {
         protected Kit registerKit() {
             Kit kit = new Kit(name + "_1");
 
-            kit.setItem(0, new KitItemBuilder(this, Material.STONE_SWORD));
-            kit.setItem(1, new KitItemBuilder(this, Material.BOW));
-            kit.setItem(2, new KitItemBuilder(this, Material.ARROW, 20));
+            kit.setItem(0, new KitItemBuilder(this, Material.WOODEN_SWORD).addPassive(Passive.SUCKER_PUNCH, 1).addEnchantment(Enchantment.KNOCKBACK, 1));
 
-            kit.setHelmet(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.HELMET));
-            kit.setChestplate(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.CHESTPLATE));
+            kit.setHelmet(new KitItemBuilder(this, Material.IRON_HELMET));
+            kit.setChestplate(new KitItemBuilder(this, Material.IRON_CHESTPLATE));
             kit.setLeggings(new KitItemBuilder(this, Material.IRON_LEGGINGS));
-            kit.setBoots(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.BOOTS));
+            kit.setBoots(new KitItemBuilder(this, Material.DIAMOND_BOOTS));
+
+            kit.addPotionEffect(new PotionBuilder(PotionEffectType.SLOW, Integer.MAX_VALUE, 1, true, false, true).build());
 
             return kit;
         }
 
         @Override
         public double getMaxHealth() {
-            return 18D;
+            return 25D;
         }
 
         @Override
         public double getKnockbackResistance() {
-            return 0.0D;
+            return 0.25D;
         }
 
         @Override
         public HealthRegen getHealthRegen() {
-            return HealthRegen.NORMAL;
+            return HealthRegen.EXTREMELY_LOW;
         }
     }
 
@@ -93,31 +93,31 @@ public class KitSoldier extends KitPvPKit {
         protected Kit registerKit() {
             Kit kit = new Kit(name + "_2");
 
-            kit.setItem(0, new KitItemBuilder(this, Material.IRON_AXE, 1, "§b§lJarnbjorn").addPassive(Passive.WRECKER_OF_WORLDS, 1));
-            kit.setItem(1, new KitItemBuilder(this, Material.BOW));
-            kit.setItem(2, new KitItemBuilder(this, Material.ARROW, 20));
+            kit.setItem(0, new KitItemBuilder(this, Material.WOODEN_SWORD).addPassive(Passive.SUCKER_PUNCH, 2).addEnchantment(Enchantment.KNOCKBACK, 1));
 
-            kit.setHelmet(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.HELMET).addEnchantment(Enchantment.PROTECTION_PROJECTILE, 1));
-            kit.setChestplate(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.CHESTPLATE));
+            kit.setHelmet(new KitItemBuilder(this, Material.IRON_HELMET));
+            kit.setChestplate(new KitItemBuilder(this, Material.IRON_CHESTPLATE));
             kit.setLeggings(new KitItemBuilder(this, Material.IRON_LEGGINGS));
-            kit.setBoots(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.BOOTS));
+            kit.setBoots(new KitItemBuilder(this, Material.DIAMOND_BOOTS).addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 2));
+
+            kit.addPotionEffect(new PotionBuilder(PotionEffectType.SLOW, Integer.MAX_VALUE, 1, true, false, true).build());
 
             return kit;
         }
 
         @Override
         public double getMaxHealth() {
-            return 18D;
+            return 25D;
         }
 
         @Override
         public double getKnockbackResistance() {
-            return 0.0D;
+            return 0.25D;
         }
 
         @Override
         public HealthRegen getHealthRegen() {
-            return HealthRegen.NORMAL;
+            return HealthRegen.EXTREMELY_LOW;
         }
     }
 
@@ -132,31 +132,31 @@ public class KitSoldier extends KitPvPKit {
         protected Kit registerKit() {
             Kit kit = new Kit(name + "_3");
 
-            kit.setItem(0, new KitItemBuilder(this, Material.IRON_AXE, 1, "§b§lJarnbjorn").addPassive(Passive.WRECKER_OF_WORLDS, 2));
-            kit.setItem(1, new KitItemBuilder(this, Material.BOW));
-            kit.setItem(2, new KitItemBuilder(this, Material.ARROW, 20));
+            kit.setItem(0, new KitItemBuilder(this, Material.STONE_SWORD).addPassive(Passive.SUCKER_PUNCH, 3).addEnchantment(Enchantment.KNOCKBACK, 2));
 
-            kit.setHelmet(new KitItemBuilder(this, Material.IRON_HELMET).addEnchantment(Enchantment.PROTECTION_PROJECTILE, 1));
-            kit.setChestplate(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.CHESTPLATE));
-            kit.setLeggings(new KitItemBuilder(this, Material.IRON_LEGGINGS).addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1));
-            kit.setBoots(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.BOOTS));
+            kit.setHelmet(new KitItemBuilder(this, Material.IRON_HELMET));
+            kit.setChestplate(new KitItemBuilder(this, Material.IRON_CHESTPLATE));
+            kit.setLeggings(new KitItemBuilder(this, Material.IRON_LEGGINGS).addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1).addEnchantment(Enchantment.PROTECTION_PROJECTILE, 2));
+            kit.setBoots(new KitItemBuilder(this, Material.DIAMOND_BOOTS).addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 2));
+
+            kit.addPotionEffect(new PotionBuilder(PotionEffectType.SLOW, Integer.MAX_VALUE, 1, true, false, true).build());
 
             return kit;
         }
 
         @Override
         public double getMaxHealth() {
-            return 18D;
+            return 25D;
         }
 
         @Override
         public double getKnockbackResistance() {
-            return 0.0D;
+            return 0.25D;
         }
 
         @Override
         public HealthRegen getHealthRegen() {
-            return HealthRegen.NORMAL;
+            return HealthRegen.EXTREMELY_LOW;
         }
     }
 }

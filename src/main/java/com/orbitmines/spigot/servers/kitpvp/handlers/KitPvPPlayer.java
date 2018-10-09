@@ -1,7 +1,5 @@
 package com.orbitmines.spigot.servers.kitpvp.handlers;
 
-import com.orbitmines.api.CachedPlayer;
-import com.orbitmines.api.Color;
 import com.orbitmines.api.utils.NumberUtils;
 import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
@@ -9,12 +7,17 @@ import com.orbitmines.spigot.api.handlers.chat.ActionBar;
 import com.orbitmines.spigot.api.handlers.chat.ComponentMessage;
 import com.orbitmines.spigot.api.handlers.chat.Title;
 import com.orbitmines.spigot.api.nms.entity.EntityNms;
+import com.orbitmines.spigot.api.nms.itemstack.ItemStackNms;
 import com.orbitmines.spigot.servers.kitpvp.KitPvP;
+import com.orbitmines.spigot.servers.kitpvp.handlers.passives.DummyEvent;
+import com.orbitmines.spigot.servers.kitpvp.handlers.passives.Passive;
 import net.md_5.bungee.api.chat.HoverEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import javax.annotation.Nullable;
@@ -105,52 +108,64 @@ public class KitPvPPlayer extends OMPlayer {
     }
 
     /* Death & Kills */
-    public void processKill(KitPvPPlayer killed) {
+    public void processKill(PlayerDeathEvent event, KitPvPPlayer killed) {
         addKill();
 
-        //TODO OnKill Effect
+        /* Passives */
+        {
+            ItemStackNms nms = kitPvP.getOrbitMines().getNms().customItem();
+
+            for (ItemStack item : getInventory().getContents()) {
+                if (item == null)
+                    continue;
+
+                Map<Passive, Integer> passives = Passive.from(nms, item, Passive.Interaction.KILL_PLAYER);
+
+                /* No Passives on this item */
+                if (passives == null)
+                    continue;
+
+                for (Passive passive : passives.keySet()) {
+                    passive.getHandler().trigger(event, passives.get(passive));
+                }
+            }
+        }
 
         /* Coins */
         int coins = KitPvP.COINS_PER_KILL;
-        sendMessage("§6§l+" + coins + " Coins");
 
-        coins += applyMultiplier(Color.ORANGE, "Coins", coins, getCoinMultiplier(), vipRank.getDisplayName());
-        if (CoinBooster.ACTIVE != null) {
-            CachedPlayer player = CoinBooster.ACTIVE.getPlayer();
-            coins += applyMultiplier(Color.ORANGE, "Coins", coins, CoinBooster.ACTIVE.getType().getMultiplier(), player.getRankPrefix() + player.getPlayerName() + "'s Booster");
-        }
+        coins += applyMultiplier(coins, getCoinMultiplier());
+        if (CoinBooster.ACTIVE != null)
+            coins += applyMultiplier(coins, CoinBooster.ACTIVE.getType().getMultiplier());
 
         /* Experience */
         int experience = KitPvP.XP_PER_KILL;
-        sendMessage("§e§l+" + experience + " XP");
 
-        experience += applyMultiplier(Color.YELLOW, "XP", experience, getXPMultiplier(), vipRank.getDisplayName());
+        experience += applyMultiplier(experience, getXPMultiplier());
 
         /* Give Rewards */
         addCoinsExperience(coins, experience, true);
 
         /* Kill Hologram */
+        //TODO
     }
 
-    private int applyMultiplier(Color color, String type, int current, double multiplier, String name) {
-        if (multiplier == 1.0D)
-            return 0;
-
-        int added = (int) (current * (1 - multiplier));
-        sendMessage(color.getChatColor() + "§l+" + current + " " + type + " §7(" + name + "§7)");
-
-        return added;
+    private int applyMultiplier(int current, double multiplier) {
+        return (int) (current * (multiplier - 1));
     }
 
-    public void processDeath(@Nullable KitPvPPlayer killer) {
+    public void processDeath(PlayerDeathEvent event, @Nullable KitPvPPlayer killer) {
         addDeath();
-
-
 
         this.selectedKit = null;
         this.killStreak = 0;
 
         levelData.updateExperienceBar();
+
+        //event.setDeathMessage(null);
+        //TODO DEATH MESSAGES + DISCORD
+
+        //TODO SPAWN BED
     }
 
     /* Joining Map */
@@ -176,6 +191,7 @@ public class KitPvPPlayer extends OMPlayer {
         nms.setAttribute(player, EntityNms.Attribute.MAX_HEALTH, selectedKit.getMaxHealth());
         player.setHealth(selectedKit.getMaxHealth());
         nms.setAttribute(player, EntityNms.Attribute.KNOCKBACK_RESISTANCE, selectedKit.getKnockbackResistance());
+        nms.setAttribute(player, EntityNms.Attribute.ATTACK_DAMAGE, 2.0D);
 
         /* Remove Attack Delay */
         nms.setAttribute(player, EntityNms.Attribute.ATTACK_SPEED, 16.0D);
@@ -191,6 +207,23 @@ public class KitPvPPlayer extends OMPlayer {
 //        updateNpcs();
 
         new Title(selectedKit.getHandler().getDisplayName(), "§a§lLevel " + selectedKit.getLevel(), 20, 40, 20).send(this);
+
+        /* Passives on select */
+        ItemStackNms itemStackNms = orbitMines.getNms().customItem();
+        for (ItemStack item : player.getInventory().getContents()) {
+            if (item == null)
+                continue;
+
+            Map<Passive, Integer> passives = Passive.from(itemStackNms, item, Passive.Interaction.ON_SELECT);
+
+            /* No Passives on this item */
+            if (passives == null)
+                continue;
+
+            for (Passive passive : passives.keySet()) {
+                passive.getHandler().trigger(new DummyEvent(kitPvP, this), passives.get(passive));
+            }
+        }
     }
 
     public int getKillStreak() {
@@ -263,8 +296,10 @@ public class KitPvPPlayer extends OMPlayer {
     }
 
     public void addCoins(int amount, boolean notify) {
-        if (notify)
-            new ActionBar(this, () -> "§6+" + amount + " " + (amount == 1 ? "Coin" : "Coins"), 100).send();
+        if (notify) {
+            double coinMultiplier = getCoinMultiplier();
+            new ActionBar(this, () -> "§6+" + amount + " " + (amount == 1 ? "Coin" : "Coins" + (coinMultiplier == 1.0D ? "" : " §7(" + vipRank.getPrefixColor().getChatColor() + "x" + String.format("%.2f", coinMultiplier) + "§7" + (CoinBooster.ACTIVE == null ? "" : ", §ex" + String.format("%.2f", CoinBooster.ACTIVE.getType().getMultiplier()) + "§7") + ")")), 100).send();
+        }
 
         getData().addCoins(amount);
     }
@@ -285,8 +320,10 @@ public class KitPvPPlayer extends OMPlayer {
         if (levelData.getLevel() == LevelData.maxLevel)
             return;
 
-        if (notify)
-            new ActionBar(this, () -> "§e+" + amount + " XP", 100).send();
+        if (notify) {
+            double experienceMultiplier = getXPMultiplier();
+            new ActionBar(this, () -> "§e+" + amount + " XP" + (experienceMultiplier == 1.0D ? "" : " §7(" + vipRank.getPrefixColor().getChatColor() + "x" + String.format("%.2f", experienceMultiplier) + "§7)"), 100).send();
+        }
 
         getData().addExperience(amount);
 
@@ -294,8 +331,21 @@ public class KitPvPPlayer extends OMPlayer {
     }
 
     public void addCoinsExperience(int coins, int experience, boolean notify) {
-        if (notify)
-            new ActionBar(this, () -> "§6§l+" + coins + " " + (coins == 1 ? "Coin" : "Coins") + "§7, " + "§e§l+" + experience + " XP", 100).send();
+        if (notify) {
+            double coinMultiplier = getCoinMultiplier();
+            double experienceMultiplier = getXPMultiplier();
+
+            String message = "§6§l+" + coins + " " + (coins == 1 ? "Coin" : "Coins") + (coinMultiplier == 1.0D ? "" : " §7(" + vipRank.getPrefixColor().getChatColor() + "x" + String.format("%.2f", coinMultiplier) + "§7" + (CoinBooster.ACTIVE == null ? "" : ", §ex" + String.format("%.2f", CoinBooster.ACTIVE.getType().getMultiplier()) + "§7") + ")") + "§7, " + "§e§l+" + experience + " XP" + (experienceMultiplier == 1.0D ? "" : " §7(" + vipRank.getPrefixColor().getChatColor() + "x" + String.format("%.2f", experienceMultiplier) + "§7)");
+
+            new ActionBar(this, () -> message, 100).send();
+
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    sendMessage(message);
+                }
+            }.runTaskLater(orbitMines, 1);
+        }
 
         addCoins(coins, false);
         addExperience(experience, false);

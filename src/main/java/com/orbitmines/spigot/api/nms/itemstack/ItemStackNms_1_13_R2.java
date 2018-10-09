@@ -55,15 +55,15 @@ public class ItemStackNms_1_13_R2 implements ItemStackNms {
     }
 
     @Override
-    public ItemStack setMetaData(ItemStack item, String key, String value) {
+    public ItemStack setMetaData(ItemStack item, String tagName, String key, String value) {
         net.minecraft.server.v1_13_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
 
         NBTTagCompound tag = nmsStack.hasTag() ? nmsStack.getTag() : new NBTTagCompound();
 
-        NBTTagCompound orbitmines = tag.hasKey("OrbitMines") ? tag.getCompound("OrbitMines") : new NBTTagCompound();
+        NBTTagCompound orbitmines = tag.hasKey(tagName) ? tag.getCompound(tagName) : new NBTTagCompound();
         orbitmines.setString(key, value);
 
-        tag.set("OrbitMines", orbitmines);
+        tag.set(tagName, orbitmines);
 
         nmsStack.setTag(tag);
 
@@ -71,31 +71,31 @@ public class ItemStackNms_1_13_R2 implements ItemStackNms {
     }
 
     @Override
-    public String getMetaData(ItemStack item, String key) {
+    public String getMetaData(ItemStack item, String tagName, String key) {
         net.minecraft.server.v1_13_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
 
         NBTTagCompound tag = nmsStack.hasTag() ? nmsStack.getTag() : new NBTTagCompound();
 
-        if (!tag.hasKey("OrbitMines"))
+        if (!tag.hasKey(tagName))
             return null;
 
-        NBTTagCompound orbitmines = tag.getCompound("OrbitMines");
+        NBTTagCompound orbitmines = tag.getCompound(tagName);
 
         return orbitmines.hasKey(key) ? orbitmines.getString(key) : null;
     }
 
     @Override
-    public Map<String, String> getMetaData(ItemStack item) {
+    public HashMap<String, String> getMetaData(ItemStack item, String tagName) {
         net.minecraft.server.v1_13_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
 
         NBTTagCompound tag = nmsStack.hasTag() ? nmsStack.getTag() : new NBTTagCompound();
 
-        if (!tag.hasKey("OrbitMines"))
+        if (!tag.hasKey(tagName))
             return null;
 
-        NBTTagCompound orbitmines = tag.getCompound("OrbitMines");
+        NBTTagCompound orbitmines = tag.getCompound(tagName);
 
-        Map<String, String> metaData = new HashMap<>();
+        HashMap<String, String> metaData = new HashMap<>();
 
         for (String key : orbitmines.getKeys()) {
             metaData.put(key, orbitmines.getString(key));

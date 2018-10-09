@@ -7,31 +7,36 @@ package com.orbitmines.spigot.servers.kitpvp.handlers.kits;
 import com.orbitmines.api.Color;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.api.handlers.itembuilders.LeatherArmorBuilder;
+import com.orbitmines.spigot.api.handlers.itembuilders.PotionBuilder;
+import com.orbitmines.spigot.api.handlers.itembuilders.PotionItemBuilder;
 import com.orbitmines.spigot.api.handlers.kit.Kit;
 import com.orbitmines.spigot.servers.kitpvp.HealthRegen;
 import com.orbitmines.spigot.servers.kitpvp.KitClass;
 import com.orbitmines.spigot.servers.kitpvp.KitPvP;
 import com.orbitmines.spigot.servers.kitpvp.handlers.KitPvPKit;
-import com.orbitmines.spigot.servers.kitpvp.handlers.passives.Passive;
+import com.orbitmines.spigot.servers.kitpvp.handlers.actives.Active;
 import com.orbitmines.spigot.servers.kitpvp.handlers.itembuilders.KitItemBuilder;
 import com.orbitmines.spigot.servers.kitpvp.handlers.itembuilders.KitLeatherArmorBuilder;
+import com.orbitmines.spigot.servers.kitpvp.handlers.itembuilders.KitPotionItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.potion.PotionEffectType;
 
-public class KitArcher extends KitPvPKit {
+public class KitBunny extends KitPvPKit {
 
-    private static final org.bukkit.Color LEATHER_COLOR = org.bukkit.Color.fromRGB(51, 204, 255);
+    private static final org.bukkit.Color LEATHER_COLOR = org.bukkit.Color.WHITE;
 
-    public KitArcher(KitPvP kitPvP) {
+    public KitBunny(KitPvP kitPvP) {
         super(
                 kitPvP,
 
-                1L, "Archer",
+                7L, "Bunny",
 
-                Color.GREEN,
-                new ItemBuilder(Material.BOW),
+                Color.YELLOW,
+                new ItemBuilder(Material.LEATHER_BOOTS).addFlag(ItemFlag.HIDE_ATTRIBUTES),
 
-                KitClass.RANGED
+                KitClass.MELEE
         );
     }
 
@@ -55,31 +60,33 @@ public class KitArcher extends KitPvPKit {
         protected Kit registerKit() {
             Kit kit = new Kit(name + "_1");
 
-            kit.setItem(0, new KitItemBuilder(this, Material.WOODEN_SWORD));
-            kit.setItem(1, new KitItemBuilder(this, Material.BOW).addPassive(Passive.ARROW_REGEN, 14));
-            kit.setItem(2, new KitItemBuilder(this, Material.ARROW, 40));
+            kit.setItem(0, new KitItemBuilder(this, Material.STONE_SWORD));
+            kit.setItem(1, new KitPotionItemBuilder(this, PotionItemBuilder.Type.SPLASH, new PotionBuilder(PotionEffectType.POISON, 45 * 20, 0)));
 
-            kit.setHelmet(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.HELMET, LEATHER_COLOR));
+            kit.setHelmet(new KitItemBuilder(this, Material.IRON_HELMET));
             kit.setChestplate(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.CHESTPLATE, LEATHER_COLOR));
             kit.setLeggings(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.LEGGINGS, LEATHER_COLOR));
-            kit.setBoots(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.BOOTS, LEATHER_COLOR).addEnchantment(Enchantment.PROTECTION_FALL, 1));
+            kit.setBoots(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.BOOTS, LEATHER_COLOR));
+
+            kit.addPotionEffect(new PotionBuilder(PotionEffectType.SPEED, Integer.MAX_VALUE, 0, true, false, true).build());
+            kit.addPotionEffect(new PotionBuilder(PotionEffectType.JUMP, Integer.MAX_VALUE, 3, true, false, true).build());
 
             return kit;
         }
 
         @Override
         public double getMaxHealth() {
-            return 16D;
+            return 18D;
         }
 
         @Override
         public double getKnockbackResistance() {
-            return 0.0D;
+            return 0D;
         }
 
         @Override
         public HealthRegen getHealthRegen() {
-            return HealthRegen.LOW;
+            return HealthRegen.NORMAL;
         }
     }
 
@@ -95,30 +102,33 @@ public class KitArcher extends KitPvPKit {
             Kit kit = new Kit(name + "_2");
 
             kit.setItem(0, new KitItemBuilder(this, Material.STONE_SWORD));
-            kit.setItem(1, new KitItemBuilder(this, Material.BOW).addPassive(Passive.ARROW_REGEN, 12).addPassive(Passive.BOW_LIGHTNING, 1));
-            kit.setItem(2, new KitItemBuilder(this, Material.ARROW, 46));
+            kit.setItem(1, new KitPotionItemBuilder(this, PotionItemBuilder.Type.SPLASH, new PotionBuilder(PotionEffectType.POISON, 45 * 20, 0)));
+            kit.setItem(2, new KitItemBuilder(this, Material.SUGAR).addActive(Active.SUGAR_RUSH, 1));
 
-            kit.setHelmet(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.HELMET, LEATHER_COLOR).addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1));
+            kit.setHelmet(new KitItemBuilder(this, Material.IRON_HELMET).addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1));
             kit.setChestplate(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.CHESTPLATE, LEATHER_COLOR));
             kit.setLeggings(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.LEGGINGS, LEATHER_COLOR));
-            kit.setBoots(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.BOOTS, LEATHER_COLOR).addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1).addEnchantment(Enchantment.PROTECTION_FALL, 1));
+            kit.setBoots(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.BOOTS, LEATHER_COLOR));
+
+            kit.addPotionEffect(new PotionBuilder(PotionEffectType.SPEED, Integer.MAX_VALUE, 0, true, false, true).build());
+            kit.addPotionEffect(new PotionBuilder(PotionEffectType.JUMP, Integer.MAX_VALUE, 3, true, false, true).build());
 
             return kit;
         }
 
         @Override
         public double getMaxHealth() {
-            return 16D;
+            return 18D;
         }
 
         @Override
         public double getKnockbackResistance() {
-            return 0.0D;
+            return 0D;
         }
 
         @Override
         public HealthRegen getHealthRegen() {
-            return HealthRegen.LOW;
+            return HealthRegen.NORMAL;
         }
     }
 
@@ -134,30 +144,34 @@ public class KitArcher extends KitPvPKit {
             Kit kit = new Kit(name + "_3");
 
             kit.setItem(0, new KitItemBuilder(this, Material.STONE_SWORD));
-            kit.setItem(1, new KitItemBuilder(this, Material.BOW).addPassive(Passive.ARROW_REGEN, 10).addPassive(Passive.BOW_LIGHTNING, 2).addEnchantment(Enchantment.ARROW_DAMAGE, 1));
-            kit.setItem(2, new KitItemBuilder(this, Material.ARROW, 54));
+            kit.setItem(1, new KitPotionItemBuilder(this, PotionItemBuilder.Type.SPLASH, new PotionBuilder(PotionEffectType.POISON, 21 * 20, 1)));
+            kit.setItem(2, new KitItemBuilder(this, Material.SUGAR).addActive(Active.SUGAR_RUSH, 1));
+            kit.setItem(3, new KitItemBuilder(this, Material.CARROT, 1, "§6§lKnockback Carrot").addEnchantment(Enchantment.KNOCKBACK, 3).addEnchantment(Enchantment.DAMAGE_ALL, 2));
 
-            kit.setHelmet(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.HELMET, LEATHER_COLOR).addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1));
+            kit.setHelmet(new KitItemBuilder(this, Material.IRON_HELMET).addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1));
             kit.setChestplate(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.CHESTPLATE, LEATHER_COLOR).addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1));
             kit.setLeggings(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.LEGGINGS, LEATHER_COLOR).addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1));
-            kit.setBoots(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.BOOTS, LEATHER_COLOR).addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1).addEnchantment(Enchantment.PROTECTION_FALL, 2));
+            kit.setBoots(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.BOOTS, LEATHER_COLOR).addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1));
+
+            kit.addPotionEffect(new PotionBuilder(PotionEffectType.SPEED, Integer.MAX_VALUE, 0, true, false, true).build());
+            kit.addPotionEffect(new PotionBuilder(PotionEffectType.JUMP, Integer.MAX_VALUE, 3, true, false, true).build());
 
             return kit;
         }
 
         @Override
         public double getMaxHealth() {
-            return 16D;
+            return 18D;
         }
 
         @Override
         public double getKnockbackResistance() {
-            return 0.0D;
+            return 0D;
         }
 
         @Override
         public HealthRegen getHealthRegen() {
-            return HealthRegen.LOW;
+            return HealthRegen.NORMAL;
         }
     }
 }

@@ -72,6 +72,8 @@ public class PotionItemBuilder extends ItemBuilder {
         meta.setDisplayName(displayName);
         meta.setLore((lore == null || lore.size() == 0) ? null : new ArrayList<>(lore));
 
+        meta.setColor(potionBuilders.get(0).getType().getColor());
+
         for (PotionBuilder potionBuilder : potionBuilders) {
             meta.addCustomEffect(potionBuilder.build(), true);
         }

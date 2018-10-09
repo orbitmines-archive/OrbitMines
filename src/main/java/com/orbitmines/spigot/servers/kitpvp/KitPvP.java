@@ -30,9 +30,8 @@ import com.orbitmines.spigot.servers.kitpvp.datapoints.KitPvPDataPointMapSpectat
 import com.orbitmines.spigot.servers.kitpvp.events.*;
 import com.orbitmines.spigot.servers.kitpvp.handlers.*;
 import com.orbitmines.spigot.servers.kitpvp.handlers.gui.KitSelectorGUI;
-import com.orbitmines.spigot.servers.kitpvp.handlers.kits.KitArcher;
-import com.orbitmines.spigot.servers.kitpvp.handlers.kits.KitKnight;
-import com.orbitmines.spigot.servers.kitpvp.handlers.kits.KitSoldier;
+import com.orbitmines.spigot.servers.kitpvp.handlers.kits.*;
+import com.orbitmines.spigot.servers.kitpvp.runnables.PassiveRunnable;
 import org.bukkit.*;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
@@ -42,6 +41,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 
@@ -130,6 +130,7 @@ public class KitPvP extends OrbitMinesServer {
         }
 
         /* Remove trapdoor from PreventionSet: we want players to be able to interact with trapdoors and buttons */
+        ItemUtils.INTERACTABLE.remove(Material.LEVER);
         ItemUtils.INTERACTABLE.remove(Material.STONE_BUTTON);
 
         ItemUtils.INTERACTABLE.remove(Material.ACACIA_BUTTON);
@@ -138,13 +139,6 @@ public class KitPvP extends OrbitMinesServer {
         ItemUtils.INTERACTABLE.remove(Material.JUNGLE_BUTTON);
         ItemUtils.INTERACTABLE.remove(Material.OAK_BUTTON);
         ItemUtils.INTERACTABLE.remove(Material.SPRUCE_BUTTON);
-
-        ItemUtils.INTERACTABLE.remove(Material.ACACIA_TRAPDOOR);
-        ItemUtils.INTERACTABLE.remove(Material.BIRCH_TRAPDOOR);
-        ItemUtils.INTERACTABLE.remove(Material.DARK_OAK_TRAPDOOR);
-        ItemUtils.INTERACTABLE.remove(Material.JUNGLE_TRAPDOOR);
-        ItemUtils.INTERACTABLE.remove(Material.OAK_TRAPDOOR);
-        ItemUtils.INTERACTABLE.remove(Material.SPRUCE_TRAPDOOR);
 
         /* Start Map rotation */
         nextMapRotation();
@@ -206,9 +200,12 @@ public class KitPvP extends OrbitMinesServer {
                     return getSpawnLocation(player);
                 }
             },
+            new DamageByEntityEvent(this),
+            new DamageEvent(this),
             new DeathEvent(this),
             new ExpChangeEvent(orbitMines),
-            new InteractEvent(),
+            new InteractEvent(this),
+            new ProjectileEvents(this),
             new RegainHealthEvent(),
             new SpectatorEvents()
         );
@@ -221,15 +218,21 @@ public class KitPvP extends OrbitMinesServer {
 
     @Override
     protected void registerRunnables() {
+        new PassiveRunnable(this);
 //        new MapResetSignRunnable();
         //TODO
     }
 
     private void registerKits() {
         {
-            new KitKnight();
-            new KitArcher();
-            new KitSoldier();
+            new KitKnight(this);
+            new KitArcher(this);
+            new KitSoldier(this);
+            new KitMage(this);
+            new KitTank(this);
+            new KitDrunk(this);
+            new KitPyro(this);
+            new KitBunny(this);
         }
 
         /* Lobby Kit */
@@ -344,9 +347,14 @@ public class KitPvP extends OrbitMinesServer {
                     public void onInteract(PlayerInteractEvent event, OMPlayer omp) {
                         event.setCancelled(true);
 
-                        PlayerUtils.updateInventory(omp.getPlayer());
-
                         new KitSelectorGUI(KitPvP.this).open(omp);
+
+                        new BukkitRunnable() {
+                            @Override
+                            public void run() {
+                                PlayerUtils.updateInventory(omp.getPlayer());
+                            }
+                        }.runTaskLater(orbitMines, 1);
                     }
                 });
 
@@ -421,7 +429,7 @@ public class KitPvP extends OrbitMinesServer {
                 };
             }
 
-            kit.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0));
+            kit.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0, true, false));
 
             lobbyKit.put(language, kit);
         }
@@ -440,16 +448,16 @@ public class KitPvP extends OrbitMinesServer {
                     () -> "§m--------------",
                     () -> "",
                     () -> "§7§lKit",
-                    () -> " " + (omp.getSelectedKit() != null ? omp.getSelectedKit().getHandler().getDisplayName() + " §e§lLvl " + omp.getSelectedKit().getLevel() : "§fNone"),
+                    () -> " " + (omp.getSelectedKit() != null ? omp.getSelectedKit().getHandler().getDisplayName() + " §a§lLvl " + omp.getSelectedKit().getLevel() : "§fNone"),
                     () -> " ",
                     () -> "§6§lCoins",
                     () -> " " + NumberUtils.locale(omp.getCoins()),
                     () -> "  ",
                     () -> "§c§lKills",
-                    () -> " " + NumberUtils.locale(omp.getKills()) + " ",
+                    () -> " " + (omp.getSelectedKit() == null ? "" : NumberUtils.locale(omp.getKitData(omp.getSelectedKit().getHandler()).getKills()) + " §7/ ") + NumberUtils.locale(omp.getKills()) + " ",
                     () -> "   ",
                     () -> "§4§lDeaths",
-                    () -> " " + NumberUtils.locale(omp.getDeaths()) + "  ",
+                    () -> " " + (omp.getSelectedKit() == null ? "" : NumberUtils.locale(omp.getKitData(omp.getSelectedKit().getHandler()).getDeaths()) + " §7/ ") + NumberUtils.locale(omp.getDeaths()) + "  ",
                     () -> "    "
 
             );

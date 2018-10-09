@@ -32,12 +32,14 @@ import com.orbitmines.spigot.api.handlers.npc.PlayerFreezer;
 import com.orbitmines.spigot.api.handlers.scoreboard.OMScoreboard;
 import com.orbitmines.spigot.api.handlers.scoreboard.ScoreboardSet;
 import com.orbitmines.spigot.api.handlers.timer.Timer;
+import com.orbitmines.spigot.api.runnables.SpigotRunnable;
 import com.orbitmines.spigot.servers.hub.handlers.HubAchievements;
 import com.orbitmines.spigot.servers.kitpvp.handlers.KitPvPData;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalData;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.apache.commons.lang3.ArrayUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -45,6 +47,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -1001,6 +1004,11 @@ public abstract class OMPlayer {
         return player.getInventory();
     }
 
+    public ItemStack[] getCompleteInventory() {
+        PlayerInventory inventory = getInventory();
+        return ArrayUtils.addAll(inventory.getContents(), inventory.getArmorContents());
+    }
+
     public ItemStack getItemInMainHand() {
         return player.getInventory().getItemInMainHand();
     }
@@ -1027,19 +1035,80 @@ public abstract class OMPlayer {
         player.setLevel(0);
         player.setExp(0f);
     }
-    
+
+    private Map<PotionEffectType, PotionEffect> cachedPotions = new HashMap<>();
+    private Map<PotionEffectType, SpigotRunnable> cachedPotionTimers = new HashMap<>();
+
     public void clearPotionEffects() {
         for (PotionEffect effect : player.getActivePotionEffects()) {
             player.removePotionEffect(effect.getType());
         }
+
+        /* Clear cache */
+        cachedPotions.clear();
+        for (SpigotRunnable timer : cachedPotionTimers.values()) {
+            timer.cancel();
+        }
+        cachedPotionTimers.clear();
     }
     
-    public void clearPotionEffect(PotionEffect effect) {
-        player.removePotionEffect(effect.getType());
+    public void clearPotionEffect(PotionEffectType effect) {
+        player.removePotionEffect(effect);
+
+        if (!cachedPotions.containsKey(effect))
+            return;
+
+        /* Add cached potion effect */
+        player.addPotionEffect(cachedPotions.get(effect));
+        /* Clear cached potion effect */
+        cachedPotions.remove(effect);
+        cachedPotionTimers.get(effect).cancel();
     }
     
     public void addPotionEffect(PotionBuilder builder) {
+        PotionEffectType type = builder.getType();
+
+        for (PotionEffect effect : player.getActivePotionEffects()) {
+            if (effect.getType() != type)
+                continue;
+
+            /* Update cache */
+            cachedPotions.put(type, effect);
+            /* Remove potion which is now in cache */
+            player.removePotionEffect(type);
+
+            cachedPotionTimers.put(type, new SpigotRunnable(SpigotRunnable.TimeUnit.SECOND, 1, new SpigotRunnable.Time(SpigotRunnable.TimeUnit.SECOND, 1)) {
+                @Override
+                public void run() {
+                    if (!player.isOnline()) {
+                        cancel();
+                        return;
+                    }
+
+                    if (hasPotionEffect(type))
+                        return;
+
+                    /* Add potion from cache */
+                    player.addPotionEffect(cachedPotions.get(type));
+
+                    /* Clear cache */
+                    cachedPotions.remove(type);
+                    cachedPotionTimers.remove(type);
+                    cancel();
+                }
+            });
+            break;
+        }
+
         player.addPotionEffect(builder.build());
+    }
+
+    public boolean hasPotionEffect(PotionEffectType type) {
+        for (PotionEffect effect : player.getActivePotionEffects()) {
+            if (effect.getType() == type)
+                return true;
+        }
+        return false;
     }
 
     public boolean isMoving(PlayerMoveEvent event) {

@@ -46,7 +46,7 @@ public abstract class Npc {
     public abstract void update();
 
     /* Return the collection of Npcs/Entit(y)(ies) defined under the 'Npc' */
-    protected abstract Collection<Entity> getEntities();
+    public abstract Collection<Entity> getEntities();
 
     /* Add to Npc list */
     protected abstract void addToList();

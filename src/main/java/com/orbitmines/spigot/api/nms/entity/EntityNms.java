@@ -33,6 +33,8 @@ public interface EntityNms {
 
     int nextEntityId();
 
+    void clearArrowsInBody(Player player);
+
     enum Attribute {
 
         MAX_HEALTH,

@@ -121,4 +121,9 @@ public class EntityNms_1_13_R2 implements EntityNms {
             return (int) Math.round(Math.random() * Integer.MAX_VALUE * 0.25);
         }
     }
+
+    @Override
+    public void clearArrowsInBody(Player player) {
+        ((CraftPlayer) player).getHandle().getDataWatcher().set(new DataWatcherObject<>(10, DataWatcherRegistry.b), 0);
+    }
 }

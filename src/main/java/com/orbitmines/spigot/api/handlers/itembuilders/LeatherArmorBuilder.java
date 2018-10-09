@@ -15,10 +15,10 @@ import java.util.List;
 */
 public class LeatherArmorBuilder extends ItemBuilder {
 
-    private Color color;
+    protected Color color;
 
     public LeatherArmorBuilder(Type type) {
-        this(type, Color.WHITE, 1);
+        this(type, null, 1);
     }
 
     public LeatherArmorBuilder(Type type, Color color) {
@@ -65,7 +65,10 @@ public class LeatherArmorBuilder extends ItemBuilder {
         LeatherArmorMeta meta = (LeatherArmorMeta) itemStack.getItemMeta();
         meta.setDisplayName(displayName);
         meta.setLore((lore == null || lore.size() == 0) ? null : new ArrayList<>(lore));
-        meta.setColor(color);
+
+        if (color != null)
+            meta.setColor(color);
+
         for (ItemFlag itemFlag : itemFlags) {
             meta.addItemFlags(itemFlag);
         }

@@ -60,7 +60,7 @@ public class Hologram extends Npc {
     }
 
     @Override
-    protected Collection<Entity> getEntities() {
+    public Collection<Entity> getEntities() {
         List<Entity> armorStands = new ArrayList<>();
         for (Line line : lines) {
             armorStands.add(line.armorStand);

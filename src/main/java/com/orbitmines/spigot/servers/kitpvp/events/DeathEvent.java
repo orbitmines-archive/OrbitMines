@@ -31,6 +31,15 @@ public class DeathEvent implements Listener {
         Player player = event.getEntity();
         KitPvPPlayer omp = KitPvPPlayer.getPlayer(player);
 
+        Player playerKiller = player.getKiller();
+        KitPvPPlayer ompKiller = playerKiller != null ? KitPvPPlayer.getPlayer(playerKiller) : null;
+        /* Handle Kill */
+        if (ompKiller != null)
+            ompKiller.processKill(event, omp);
+
+        /* Handle Death */
+        omp.processDeath(event, ompKiller);
+
         /* Clear Inventory & Potion Effects */
         omp.clearFullInventory();
         omp.clearPotionEffects();
@@ -38,15 +47,6 @@ public class DeathEvent implements Listener {
         /* Set Health */
         kitPvP.getOrbitMines().getNms().entity().setAttribute(player, EntityNms.Attribute.MAX_HEALTH, 20D);
         player.setHealth(20D);
-
-        Player playerKiller = player.getKiller();
-        KitPvPPlayer ompKiller = playerKiller != null ? KitPvPPlayer.getPlayer(playerKiller) : null;
-
-        /* Handle Death */
-        omp.processDeath(ompKiller);
-        /* Handle Kill */
-        if (ompKiller != null)
-            ompKiller.processKill(omp);
 
         /* Teleport to Spawn */
         player.teleport(kitPvP.getSpawnLocation(player));
@@ -58,6 +58,8 @@ public class DeathEvent implements Listener {
                 player.setVelocity(new Vector(0, 0, 0));
                 /* Clear Fire ticks */
                 player.setFireTicks(0);
+                /* Clear Arrows */
+                kitPvP.getOrbitMines().getNms().entity().clearArrowsInBody(player);
                 /* Give Lobby Kit */
                 kitPvP.getLobbyKit(omp).setItems(omp);
                 player.getInventory().setHeldItemSlot(4);

@@ -197,12 +197,12 @@ public class ClaimEvents implements Listener {
 
                 if (petTicket) {
                     ItemStackNms nms = survival.getOrbitMines().getNms().customItem();
-                    String storedUuid = nms.getMetaData(item, "StoredUUID");
+                    String storedUuid = nms.getMetaData(item, "OrbitMines", "StoredUUID");
 
                     if (storedUuid == null) {
                         if (isOwner) {
                             for (ItemStack content : omp.getInventory().getContents()) {
-                                String contentStoredUuid = nms.getMetaData(content, "StoredUUID");
+                                String contentStoredUuid = nms.getMetaData(content, "OrbitMines", "StoredUUID");
 
                                 if (tameable.getUniqueId().toString().equals(contentStoredUuid)) {
                                     new ActionBar(omp, () -> omp.lang("§c§lJe hebt al een " + Survival.PET_TICKET.getDisplayName() + " §c§lin je inventory voor dit huisdier.", "§c§lYou already have a " + Survival.PET_TICKET.getDisplayName() + " §c§lin your inventory for this pet."), 100).send();
@@ -223,8 +223,8 @@ public class ClaimEvents implements Listener {
 
                             newItem.setItemMeta(meta);
 
-                            newItem = nms.setMetaData(newItem, "OwnerUUID", owner.toString());
-                            newItem = nms.setMetaData(newItem, "StoredUUID", tameable.getUniqueId().toString());
+                            newItem = nms.setMetaData(newItem, "OrbitMines", "OwnerUUID", owner.toString());
+                            newItem = nms.setMetaData(newItem, "OrbitMines", "StoredUUID", tameable.getUniqueId().toString());
 
                             omp.getPlayer().getInventory().setItemInMainHand(newItem);
 
@@ -240,7 +240,7 @@ public class ClaimEvents implements Listener {
                             if (isOwner) {
                                 new ActionBar(omp, () -> omp.lang("§c§lDit dier is al van jou.", "§c§lThis animal is already yours."), 60).send();
                             } else {
-                                if (survival.getOrbitMines().getNms().customItem().getMetaData(item, "OwnerUUID").equals(owner.toString())) {
+                                if (survival.getOrbitMines().getNms().customItem().getMetaData(item, "OrbitMines", "OwnerUUID").equals(owner.toString())) {
                                     tameable.setOwner(omp.getPlayer());
                                     omp.getPlayer().getInventory().setItemInMainHand(null);
                                     omp.sendMessage("Pet Ticket", Color.LIME, "Je bent nu de eigenaar van dit huisdier.", "You have successfully received ownership of this animal.");

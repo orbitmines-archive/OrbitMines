@@ -4,6 +4,7 @@ import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.api.utils.PlayerUtils;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
@@ -121,6 +122,32 @@ public class Kit {
                 amount++;
         }
         return amount;
+    }
+
+    public List<ItemBuilder> getItems(Material... materials) {
+        List<ItemBuilder> list = new ArrayList<>();
+        list.addAll(getItems(getContents(), materials));
+        list.addAll(getItems(getArmorContents(), materials));
+        return list;
+    }
+
+    private List<ItemBuilder> getItems(ItemBuilder[] contents, Material... materials) {
+        List<ItemBuilder> list = new ArrayList<>();
+
+        for (ItemBuilder item : contents) {
+            if (item == null)
+                continue;
+
+            for (Material material : materials) {
+                if (item.getMaterial() != material)
+                    continue;
+
+                list.add(item);
+                break;
+            }
+        }
+
+        return list;
     }
 
     public List<PotionEffect> getPotionEffects() {

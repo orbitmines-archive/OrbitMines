@@ -901,7 +901,7 @@ public class Survival extends OrbitMinesServer {
             @Override
             public String getMessage(OMPlayer omp) {
                 ItemStack item = omp.getInventory().getItemInMainHand();
-                String storedUuid = orbitMines.getNms().customItem().getMetaData(item, "StoredUUID");
+                String storedUuid = orbitMines.getNms().customItem().getMetaData(item, "OrbitMines", "StoredUUID");
 
                 if (storedUuid == null)
                     return omp.lang("§e§lKlik op een huisdier om hem aan deze " + Survival.PET_TICKET.getDisplayName() + " §e§lte linken.", "§e§lClick on a pet to link it to this " + Survival.PET_TICKET.getDisplayName() + "§e§l.");
@@ -937,7 +937,7 @@ public class Survival extends OrbitMinesServer {
 
                 ItemStackNms nms = orbitMines.getNms().customItem();
 
-                String storedUuid = nms.getMetaData(item, "StoredUUID");
+                String storedUuid = nms.getMetaData(item, "OrbitMines", "StoredUUID");
 
                 if (storedUuid == null)
                     return;
@@ -947,7 +947,7 @@ public class Survival extends OrbitMinesServer {
                 if (entity != null && !entity.getLocation().getChunk().isLoaded())
                     entity.getLocation().getChunk().load();
 
-                if (entity == null || entity.isDead() || !nms.getMetaData(item, "OwnerUUID").equals(entity.getOwner().getUniqueId().toString())) {
+                if (entity == null || entity.isDead() || !nms.getMetaData(item, "OrbitMines", "OwnerUUID").equals(entity.getOwner().getUniqueId().toString())) {
                     omp.getPlayer().getInventory().setItem(omp.getPlayer().getInventory().first(item), null);
                     PlayerUtils.updateInventory(omp.getPlayer());
 

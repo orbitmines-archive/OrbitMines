@@ -138,6 +138,22 @@ public class ItemUtils {
             Material.YELLOW_SHULKER_BOX
     ));
 
+    public static final Set<Material> RAILS = new HashSet<>(Arrays.asList(
+            Material.RAIL,
+            Material.ACTIVATOR_RAIL,
+            Material.DETECTOR_RAIL,
+            Material.POWERED_RAIL
+    ));
+
+    public static final Set<Material> MINECARTS = new HashSet<>(Arrays.asList(
+            Material.MINECART,
+            Material.CHEST_MINECART,
+            Material.COMMAND_BLOCK_MINECART,
+            Material.FURNACE_MINECART,
+            Material.HOPPER_MINECART,
+            Material.TNT_MINECART
+    ));
+
     public static final Set<Material> EGGS = new HashSet<>(Arrays.asList(
             Material.EGG,
             Material.DRAGON_EGG,
@@ -284,5 +300,71 @@ public class ItemUtils {
         }
 
         return stringBuilder.toString();
+    }
+
+    public static String getName(PotionEffectType effectType) {
+        if (effectType == PotionEffectType.SPEED) {
+            return "Speed";
+        } else if (effectType == PotionEffectType.FAST_DIGGING) {
+            return "Haste";
+        } else if (effectType == PotionEffectType.INCREASE_DAMAGE) {
+            return "Strength";
+        } else if (effectType == PotionEffectType.HEAL) {
+            return "Instant Health";
+        } else if (effectType == PotionEffectType.JUMP) {
+            return "Jump Boost";
+        } else if (effectType == PotionEffectType.REGENERATION) {
+            return "Regeneration";
+        } else if (effectType == PotionEffectType.DAMAGE_RESISTANCE) {
+            return "Resistance";
+        } else if (effectType == PotionEffectType.FIRE_RESISTANCE) {
+            return "Fire Resistance";
+        } else if (effectType == PotionEffectType.WATER_BREATHING) {
+            return "Water Breathing";
+        } else if (effectType == PotionEffectType.INVISIBILITY) {
+            return "Invisibility";
+        } else if (effectType == PotionEffectType.NIGHT_VISION) {
+            return "Night Vision";
+        } else if (effectType == PotionEffectType.HEALTH_BOOST) {
+            return "Health Boost";
+        } else if (effectType == PotionEffectType.ABSORPTION) {
+            return "Absorption";
+        } else if (effectType == PotionEffectType.SATURATION) {
+            return "Saturation";
+        } else if (effectType == PotionEffectType.GLOWING) {
+            return "Glowing";
+        } else if (effectType == PotionEffectType.LUCK) {
+            return "Luck";
+        } else if (effectType == PotionEffectType.CONDUIT_POWER) {
+            return "Conduit Power";
+        } else if (effectType == PotionEffectType.DOLPHINS_GRACE) {
+            return "Dolphins Grace";
+        } else if (effectType == PotionEffectType.SLOW) {
+            return "Slowness";
+        } else if (effectType == PotionEffectType.SLOW_DIGGING) {
+            return "Mining Fatigue";
+        } else if (effectType == PotionEffectType.HARM) {
+            return "Harming";
+        } else if (effectType == PotionEffectType.CONFUSION) {
+            return "Nausea";
+        } else if (effectType == PotionEffectType.BLINDNESS) {
+            return "Blindness";
+        } else if (effectType == PotionEffectType.HUNGER) {
+            return "Hunger";
+        } else if (effectType == PotionEffectType.WEAKNESS) {
+            return "Weakness";
+        } else if (effectType == PotionEffectType.POISON) {
+            return "Poison";
+        } else if (effectType == PotionEffectType.WITHER) {
+            return "Wither";
+        } else if (effectType == PotionEffectType.LEVITATION) {
+            return "Levitation";
+        } else if (effectType == PotionEffectType.UNLUCK) {
+            return "Bad Luck";
+        } else if (effectType == PotionEffectType.SLOW_FALLING) {
+            return "Slow Falling";
+        } else {
+            return null;
+        }
     }
 }

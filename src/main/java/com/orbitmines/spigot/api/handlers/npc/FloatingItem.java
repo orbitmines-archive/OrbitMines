@@ -72,7 +72,7 @@ public class FloatingItem extends Hologram {
     }
 
     @Override
-    protected Collection<Entity> getEntities() {
+    public Collection<Entity> getEntities() {
         Collection<Entity> entities = super.getEntities();
         entities.add(item);
         entities.add(clickBox);

@@ -338,7 +338,7 @@ public class Hub extends OrbitMinesServer {
 
             lobbyKit.put(language, kit);
 
-            kit.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0));
+            kit.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0, true, false));
         }
     }
 

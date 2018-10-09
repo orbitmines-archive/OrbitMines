@@ -226,7 +226,8 @@ public class KitPvPData extends Data {
             this.kitId = kitId;
 
             /* Unlock Knight, Archer & Soldier. */
-            this.unlockedLevel = kitId <= 2 ? 1 : 0;
+//            this.unlockedLevel = kitId <= 2 ? 1 : 0;
+            this.unlockedLevel = 0;
 
             this.kills = 0;
             this.deaths = 0;
@@ -243,7 +244,7 @@ public class KitPvPData extends Data {
                         TableKitPvPKitStats.KILLS,
                         TableKitPvPKitStats.DEATHS,
                         TableKitPvPKitStats.BEST_STREAK
-                }, new Where(TableKitPvPKitStats.UUID, getUUID().toString()));
+                }, new Where(TableKitPvPKitStats.UUID, getUUID().toString()), new Where(TableKitPvPKitStats.KIT_ID, kitId));
 
                 unlockedLevel = Integer.parseInt(values.get(TableKitPvPKitStats.UNLOCKED_LEVEL));
 

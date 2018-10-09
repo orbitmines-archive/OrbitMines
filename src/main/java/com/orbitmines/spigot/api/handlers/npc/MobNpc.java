@@ -101,7 +101,7 @@ public class MobNpc extends Npc {
     }
 
     @Override
-    protected Collection<Entity> getEntities() {
+    public Collection<Entity> getEntities() {
         return Collections.singletonList(entity);
     }
 
