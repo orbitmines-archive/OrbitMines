@@ -848,7 +848,7 @@ public class Survival extends OrbitMinesServer {
 
         new ItemHoverActionBar(Claim.CLAIMING_TOOL, true) {
             @Override
-            public String getMessage(OMPlayer player) {
+            public String getMessage(OMPlayer player, ItemStack itemStack) {
                 SurvivalPlayer omp = (SurvivalPlayer) player;
 
                 if (!canClaimIn(omp.getWorld()))
@@ -873,8 +873,8 @@ public class Survival extends OrbitMinesServer {
             }
 
             @Override
-            public void onEnter(OMPlayer player, ItemStack item) {
-                super.onEnter(player, item);
+            public void onEnter(OMPlayer player, ItemStack item, int slot) {
+                super.onEnter(player, item, slot);
                 SurvivalPlayer omp = (SurvivalPlayer) player;
 
                 omp.playSound(Sound.UI_BUTTON_CLICK);
@@ -899,8 +899,7 @@ public class Survival extends OrbitMinesServer {
 
         new ItemHoverActionBar(Survival.PET_TICKET, false) {
             @Override
-            public String getMessage(OMPlayer omp) {
-                ItemStack item = omp.getInventory().getItemInMainHand();
+            public String getMessage(OMPlayer omp, ItemStack item) {
                 String storedUuid = orbitMines.getNms().customItem().getMetaData(item, "OrbitMines", "StoredUUID");
 
                 if (storedUuid == null)
@@ -932,8 +931,8 @@ public class Survival extends OrbitMinesServer {
             }
 
             @Override
-            public void onEnter(OMPlayer omp, ItemStack item) {
-                super.onEnter(omp, item);
+            public void onEnter(OMPlayer omp, ItemStack item, int slot) {
+                super.onEnter(omp, item, slot);
 
                 ItemStackNms nms = orbitMines.getNms().customItem();
 

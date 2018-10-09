@@ -16,7 +16,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 public class PrismSolarShopGUI extends GUI {
 
     public PrismSolarShopGUI() {
-        newInventory(45, "Prism & Solar Shop");
+        newInventory(45, "§0§lePrism & Solar Shop");
     }
 
     @Override
@@ -70,8 +70,6 @@ public class PrismSolarShopGUI extends GUI {
                     currency.remove(omp, price);
                     give(omp);
                     reopen(omp);
-                } else {
-                    canReceive(omp);
                 }
             } else {
                 omp.playSound(Sound.ENTITY_ENDERMAN_SCREAM);

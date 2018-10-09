@@ -34,6 +34,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -207,7 +208,7 @@ public class Hub extends OrbitMinesServer {
 
                 new ItemHoverActionBar(new ItemBuilder(Material.WRITTEN_BOOK, 1, "§1 "), false) {
                     @Override
-                    public String getMessage(OMPlayer omp) {
+                    public String getMessage(OMPlayer omp, ItemStack itemStack) {
                         return "§4§l" + omp.lang("Regels", "Rules") + "§r §8- §e§l" + omp.lang("Rechtermuisklik", "Right Click");
                     }
                 };
@@ -227,7 +228,7 @@ public class Hub extends OrbitMinesServer {
 
                 new ItemHoverActionBar(item, false) {
                     @Override
-                    public String getMessage(OMPlayer omp) {
+                    public String getMessage(OMPlayer omp, ItemStack itemStack) {
                         return "§a§lStats§r §8- §e§l" + omp.lang("Rechtermuisklik", "Right Click");
                     }
                 };
@@ -247,7 +248,7 @@ public class Hub extends OrbitMinesServer {
 
                 new ItemHoverActionBar(item, false) {
                     @Override
-                    public String getMessage(OMPlayer omp) {
+                    public String getMessage(OMPlayer omp, ItemStack itemStack) {
                         return "§b§l" + omp.lang("Vrienden", "Friends") + "§r §8- §e§l" + omp.lang("Rechtermuisklik", "Right Click");
                     }
                 };
@@ -267,7 +268,7 @@ public class Hub extends OrbitMinesServer {
 
                 new ItemHoverActionBar(item, false) {
                     @Override
-                    public String getMessage(OMPlayer omp) {
+                    public String getMessage(OMPlayer omp, ItemStack itemStack) {
                         return "§3§lServer Selector§r §8- §e§l" + omp.lang("Rechtermuisklik", "Right Click");
                     }
                 };
@@ -288,7 +289,7 @@ public class Hub extends OrbitMinesServer {
 
                 new ItemHoverActionBar(item, false) {
                     @Override
-                    public String getMessage(OMPlayer omp) {
+                    public String getMessage(OMPlayer omp, ItemStack itemStack) {
                         return "§c§l" + omp.lang("Instellingen", "Settings") + "§r §8- §e§l" + omp.lang("Rechtermuisklik", "Right Click");
                     }
                 };
@@ -308,7 +309,7 @@ public class Hub extends OrbitMinesServer {
 
                 new ItemHoverActionBar(item, false) {
                     @Override
-                    public String getMessage(OMPlayer omp) {
+                    public String getMessage(OMPlayer omp, ItemStack itemStack) {
                         return "§9§lDiscord Squad§r §8- §e§l" + omp.lang("Rechtermuisklik", "Right Click");
                     }
                 };
@@ -329,7 +330,7 @@ public class Hub extends OrbitMinesServer {
 
                 new ItemHoverActionBar(item, false) {
                     @Override
-                    public String getMessage(OMPlayer omp) {
+                    public String getMessage(OMPlayer omp, ItemStack itemStack) {
                         return "§9§lCosmetic Perks§r §8- §a§l" + omp.lang("Binnenkort", "Coming Soon");
 //                        return "§9§lCosmetic Perks§r §8- §e§l" + omp.lang("Rechtermuisklik", "Right Click");
                     }

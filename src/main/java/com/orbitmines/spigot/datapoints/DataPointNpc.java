@@ -27,6 +27,7 @@ import com.orbitmines.spigot.servers.hub.gui.LootGUI;
 import com.orbitmines.spigot.servers.survival.gui.SurvivalPrismSolarShopGUI;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.EulerAngle;
@@ -126,11 +127,24 @@ public class DataPointNpc extends DataPointSign {
                 startUpdate(npc);
                 break;
             }
+            case "KITPVP": {
+                MobNpc npc = new MobNpc(Mob.DROWNED, location, getNpcDisplayName(Server.KITPVP));
+                npc.setInteractAction((event, omp) -> omp.connect(Server.KITPVP, true));
+                npc.create();
+
+                npc.setItemInMainHand(new ItemBuilder(Material.IRON_SWORD).build());
+                npc.setHelmet(new ItemBuilder(Material.CHAINMAIL_HELMET).addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1).build());
+                npc.setChestPlate(new ItemBuilder(Material.CHAINMAIL_CHESTPLATE).addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1).build());
+                npc.setLeggings(new ItemBuilder(Material.CHAINMAIL_LEGGINGS).addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1).build());
+                npc.setBoots(new ItemBuilder(Material.CHAINMAIL_BOOTS).addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1).build());
+
+                startUpdate(npc);
+                break;
+            }
             case "FOG":
             case "UHSURVIVAL":
             case "SKYBLOCK":
             case "CREATIVE":
-            case "KITPVP":
             case "PRISON":
             case "EMPTY_SLOT": {
                 MobNpc npc = new MobNpc(Mob.WITHER_SKELETON, location, () -> "§8§lComing Soon");
@@ -294,6 +308,17 @@ public class DataPointNpc extends DataPointSign {
     }
 
     private ScoreboardString[] getNpcDisplayName(Server server) {
+        //TODO REMOVE!
+        if (server == Server.KITPVP)
+            return new ScoreboardString[]{
+                    () -> "§c§lNEW!",
+                    () -> "§8§lOrbit§7§lMines " + server.getDisplayName(),
+                    () -> {
+                        Server.Status status = server.getStatus();
+                        return status != Server.Status.ONLINE ? status.getColor().getChatColor() + "§l" + status.getName() : server.getColor().getChatColor() + "§l" + server.getPlayers() + " §7§l/ " + server.getMaxPlayers();
+                    }
+            };
+
         return new ScoreboardString[]{
                 () -> "§8§lOrbit§7§lMines " + server.getDisplayName(),
                 () -> {

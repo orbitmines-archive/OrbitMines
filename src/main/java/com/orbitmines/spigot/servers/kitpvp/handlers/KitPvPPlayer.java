@@ -335,7 +335,7 @@ public class KitPvPPlayer extends OMPlayer {
             double coinMultiplier = getCoinMultiplier();
             double experienceMultiplier = getXPMultiplier();
 
-            String message = "§6§l+" + coins + " " + (coins == 1 ? "Coin" : "Coins") + (coinMultiplier == 1.0D ? "" : " §7(" + vipRank.getPrefixColor().getChatColor() + "x" + String.format("%.2f", coinMultiplier) + "§7" + (CoinBooster.ACTIVE == null ? "" : ", §ex" + String.format("%.2f", CoinBooster.ACTIVE.getType().getMultiplier()) + "§7") + ")") + "§7, " + "§e§l+" + experience + " XP" + (experienceMultiplier == 1.0D ? "" : " §7(" + vipRank.getPrefixColor().getChatColor() + "x" + String.format("%.2f", experienceMultiplier) + "§7)");
+            String message = "§6§l+" + coins + " " + (coins == 1 ? "Coin" : "Coins") + (coinMultiplier == 1.0D ? (CoinBooster.ACTIVE == null ? "" : " §7(§ex" + String.format("%.2f", CoinBooster.ACTIVE.getType().getMultiplier()) + "§7)") : " §7(" + vipRank.getPrefixColor().getChatColor() + "x" + String.format("%.2f", coinMultiplier) + "§7" + (CoinBooster.ACTIVE == null ? "" : ", §ex" + String.format("%.2f", CoinBooster.ACTIVE.getType().getMultiplier()) + "§7") + ")") + "§7, " + "§e§l+" + experience + " XP" + (experienceMultiplier == 1.0D ? "" : " §7(" + vipRank.getPrefixColor().getChatColor() + "x" + String.format("%.2f", experienceMultiplier) + "§7)");
 
             new ActionBar(this, () -> message, 100).send();
 
@@ -434,7 +434,7 @@ public class KitPvPPlayer extends OMPlayer {
         throw new IllegalStateException();
     }
 
-    private KitPvPData getData() {
+    protected KitPvPData getData() {
         return (KitPvPData) getData(Data.Type.KITPVP);
     }
 

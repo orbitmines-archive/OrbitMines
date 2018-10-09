@@ -94,7 +94,7 @@ public class KitLeatherArmorBuilder extends LeatherArmorBuilder implements KitIt
                 ItemMeta meta = item.getItemMeta();
                 List<String> lore = meta.getLore() != null ? meta.getLore() : new ArrayList<>();
 
-                if (passive == Passive.ARROW_REGEN || passive == Passive.ATTACK_DAMAGE)
+                if (passive.hasBreakLine())
                     lore.add("");
 
                 lore.add(passive.getDisplayName(level));

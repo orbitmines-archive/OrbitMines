@@ -84,7 +84,7 @@ public enum Passive {
     },
 
     /* Armor */
-    LIGHTNING_PROTECTION("Lightning Protection", Color.YELLOW, Interaction.ON_HIT, true, new PassiveLightningProtection()) {
+    LIGHTNING_PROTECTION("Lightning Protection", Color.YELLOW, Interaction.ON_HIT, true, false, new PassiveLightningProtection()) {
         @Override
         public String[] getDescription(int level) {
             PassiveLightningProtection passive = (PassiveLightningProtection) getHandler();
@@ -95,7 +95,7 @@ public enum Passive {
             };
         }
     },
-    LAST_BREATH("Last Breath", Color.BLUE, Interaction.LOW_HEALTH, false, new PassiveLastBreath()) {
+    LAST_BREATH("Last Breath", Color.BLUE, Interaction.LOW_HEALTH, new PassiveLastBreath()) {
         @Override
         public String[] getDescription(int level) {
             PassiveLastBreath passive = (PassiveLastBreath) getHandler();
@@ -111,16 +111,22 @@ public enum Passive {
 
 
     /* Special */
-    ATTACK_DAMAGE("Attack Damage", Color.GREEN, Interaction.ON_SELECT, new PassiveAttackDamage()) {
+    ATTACK_DAMAGE("Attack Damage", Color.GREEN, Interaction.ON_SELECT, false, true, new PassiveAttackDamage()) {
         @Override
         public String getDisplayName(int level) {
             return getColor().getChatColor() + "§o+" + level + ".0 Attack Damage";
         }
     },
-    ARROW_REGEN("Arrow Regen", Color.SILVER, null, new PassiveArrowRegen()) {
+    ARROW_REGEN("Arrow Regen", Color.SILVER, null, false, true, new PassiveArrowRegen()) {
         @Override
         public String getDisplayName(int level) {
             return getColor().getChatColor() + "§o+1 Arrow every " + level + "s";
+        }
+    },
+    PLAYER_TRACKING("Player Tracking", Color.SILVER, null, false, true, new PassivePlayerTracking()) {
+        @Override
+        public String getDisplayName(int level) {
+            return getColor().getChatColor() + "§oTrack nearby players.";
         }
     },
     ;
@@ -129,17 +135,19 @@ public enum Passive {
     private final Color color;
     private final Interaction interaction;
     private final boolean stackable;
+    private final boolean breakLine;
     private final Handler handler;
 
     Passive(String name, Color color, Interaction interaction, Handler handler) {
-        this(name, color, interaction, false, handler);
+        this(name, color, interaction, false, false, handler);
     }
 
-    Passive(String name, Color color, Interaction interaction, boolean stackable, Handler handler) {
+    Passive(String name, Color color, Interaction interaction, boolean stackable, boolean breakLine, Handler handler) {
         this.name = name;
         this.color = color;
         this.interaction = interaction;
         this.stackable = stackable;
+        this.breakLine = breakLine;
         this.handler = handler;
     }
 
@@ -165,6 +173,10 @@ public enum Passive {
 
     public boolean isStackable() {
         return stackable;
+    }
+
+    public boolean hasBreakLine() {
+        return breakLine;
     }
 
     public Handler getHandler() {

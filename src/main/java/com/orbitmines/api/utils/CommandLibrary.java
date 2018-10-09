@@ -714,6 +714,18 @@ public enum CommandLibrary {
             "Send a tphere request to a player."
     ),
 
+    /* KitPvP */
+    KITPVP_PRISMSHOP(
+            Server.KITPVP,
+
+            new String[] {
+                    "/prismshop", "/prismsshop"
+            },
+
+            null,
+
+            "Open prismshop."
+    ),
     ;
 
     public static final CommandLibrary[] values = values();

@@ -99,7 +99,7 @@ public abstract class OMPlayer {
     public OMPlayer(Player player) {
         orbitMines = OrbitMines.getInstance();
         this.player = player;
-        this.displayName = new DisplayName(player.getName());
+        this.displayName = player != null ? new DisplayName(player.getName()) : null;
 
         this.loggedIn = true;
 
@@ -114,7 +114,8 @@ public abstract class OMPlayer {
         this.solars = 0;
         this.prisms = 0;
 
-        this.scoreboard = new OMScoreboard(this);
+        if (player != null)
+            this.scoreboard = new OMScoreboard(this);
 
         this.cooldowns = new HashMap<>();
         this.data = new HashMap<>();
@@ -1069,15 +1070,13 @@ public abstract class OMPlayer {
         PotionEffectType type = builder.getType();
 
         for (PotionEffect effect : player.getActivePotionEffects()) {
-            if (effect.getType() != type)
+            if (!effect.getType().getName().equals(type.getName()))
                 continue;
 
             /* Update cache */
             cachedPotions.put(type, effect);
-            /* Remove potion which is now in cache */
-            player.removePotionEffect(type);
 
-            cachedPotionTimers.put(type, new SpigotRunnable(SpigotRunnable.TimeUnit.SECOND, 1, new SpigotRunnable.Time(SpigotRunnable.TimeUnit.SECOND, 1)) {
+            cachedPotionTimers.put(type, new SpigotRunnable(SpigotRunnable.TimeUnit.TICK, 10, new SpigotRunnable.Time(SpigotRunnable.TimeUnit.SECOND, 1)) {
                 @Override
                 public void run() {
                     if (!player.isOnline()) {
@@ -1100,12 +1099,12 @@ public abstract class OMPlayer {
             break;
         }
 
-        player.addPotionEffect(builder.build());
+        player.addPotionEffect(builder.build(), true);
     }
 
     public boolean hasPotionEffect(PotionEffectType type) {
         for (PotionEffect effect : player.getActivePotionEffects()) {
-            if (effect.getType() == type)
+            if (effect.getType().getName().equals(type.getName()))
                 return true;
         }
         return false;

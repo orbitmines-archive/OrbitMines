@@ -8,6 +8,7 @@ import com.orbitmines.spigot.api.nms.itemstack.ItemStackNms;
 import com.orbitmines.spigot.servers.kitpvp.KitPvP;
 import com.orbitmines.spigot.servers.kitpvp.handlers.KitPvPPlayer;
 import com.orbitmines.spigot.servers.kitpvp.handlers.passives.Passive;
+import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -49,6 +50,9 @@ public class DamageByEntityEvent implements Listener {
             for (Passive passive : passives.keySet()) {
                 passive.getHandler().trigger(event, passives.get(passive));
             }
+        } else if (event.getDamager() instanceof Firework) {
+            event.setCancelled(true);
+            /* Firework used by kits */
         }
     }
 

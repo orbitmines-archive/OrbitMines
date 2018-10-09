@@ -63,7 +63,7 @@ public class ItemHandlerEvents implements Listener {
         ItemStack previous = omp.getInventory().getItem(event.getPreviousSlot());
         if (previous != null) {
             for (ItemHover hover : ItemHover.getItemHovers()) {
-                if (!hover.getItemBuilder().equals(previous))
+                if (!hover.equals(previous))
                     continue;
 
                 hover.leave(omp);
@@ -75,10 +75,10 @@ public class ItemHandlerEvents implements Listener {
         ItemStack next = omp.getInventory().getItem(event.getNewSlot());
         if (next != null) {
             for (ItemHover hover : ItemHover.getItemHovers()) {
-                if (!hover.getItemBuilder().equals(next))
+                if (!hover.equals(next))
                     continue;
 
-                hover.enter(omp, next);
+                hover.enter(omp, next, event.getNewSlot());
                 break;
             }
         }

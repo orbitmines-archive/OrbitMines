@@ -49,7 +49,7 @@ public enum Active {
     }
 
     public String getDisplayName(int level) {
-        return color.getChatColor() + name + " " + NumberUtils.toRoman(level);
+        return color.getChatColor() + name + " " + NumberUtils.toRoman(level) + " §d[ACTIVE]";
     }
 
     public String[] getDescription(int level) {

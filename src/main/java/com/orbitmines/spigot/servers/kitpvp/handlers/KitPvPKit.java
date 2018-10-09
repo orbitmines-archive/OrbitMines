@@ -10,6 +10,7 @@ import com.orbitmines.spigot.api.handlers.kit.Kit;
 import com.orbitmines.spigot.servers.kitpvp.Attributes;
 import com.orbitmines.spigot.servers.kitpvp.KitClass;
 import com.orbitmines.spigot.servers.kitpvp.KitPvP;
+import com.orbitmines.spigot.servers.kitpvp.handlers.itembuilders.KitItemBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -105,6 +106,7 @@ public abstract class KitPvPKit {
 
         public Level() {
             this.kit = registerKit();
+            this.kit.setItem(8, new KitItemBuilder(this, KitPvP.PLAYER_TRACKER));
         }
 
         public abstract int getPrice();

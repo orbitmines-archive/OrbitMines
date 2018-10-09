@@ -48,7 +48,7 @@ public class PassiveRunnable extends PlayerRunnable {
                 continue;
 
             for (Passive passive : passives.keySet()) {
-                if (passive == Passive.ARROW_REGEN) {
+                if (passive == Passive.ARROW_REGEN || passive == Passive.PLAYER_TRACKING) {
                     passive.getHandler().trigger(new DummyEvent(kitPvP, omp), passives.get(passive));
                 } else if (passive.getHandler() instanceof Passive.LowHealthHandler) {
                     DummyEvent event = new DummyEvent(kitPvP, omp);

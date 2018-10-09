@@ -36,19 +36,19 @@ public class CoinBooster {
     }
 
     public void start() {
-        String name = player.getRankPrefix() + player.getPlayerName();
+        String name = player.getRankPrefixColor().getChatColor() + player.getPlayerName();
 
-        orbitMines.broadcast("Booster", Color.ORANGE, name + " §7heeft een " + player.getRankPrefixColor().getChatColor() + type.multiplier + "x Coin Booster §7geactiveerd (§6" + TimeUtils.fromTimeStamp(type.duration.getTicks() * 50, Language.DUTCH) + "§7).", name + " has activated a " + player.getRankPrefixColor().getChatColor() + type.multiplier + "x Coin Booster§7 (§6" + TimeUtils.fromTimeStamp(type.duration.getTicks() * 50, Language.ENGLISH) + "§7).");
+        orbitMines.broadcast("", Color.ORANGE, name + " §7heeft een " + player.getRankPrefixColor().getChatColor() + "§l" + type.multiplier + "x Coin Booster §7geactiveerd (§6" + TimeUtils.fromTimeStamp(type.duration.getTicks() * 50, Language.DUTCH) + "§7).", name + " §7has activated a " + type.getColor().getChatColor() + "§l" + type.multiplier + "x Coin Booster §7(§6" + TimeUtils.fromTimeStamp(type.duration.getTicks() * 50, Language.ENGLISH) + "§7).");
 
         timer = new Timer(type.duration, new SpigotRunnable.Time(SpigotRunnable.TimeUnit.MINUTE, 5)) {
             @Override
             public void onInterval() {
-                orbitMines.broadcast("Booster", Color.ORANGE, name + "'s " + type.multiplier + "x Coin Booster §7verloopt in §6" + TimeUtils.fromTimeStamp(getRemainingTicks() * 50, Language.DUTCH) + "§7.", name + "'s " + type.multiplier + "x Coin Booster §7expires in §6" + TimeUtils.fromTimeStamp(getRemainingTicks() * 50, Language.ENGLISH) + "§7.");
+                orbitMines.broadcast("", Color.ORANGE, name + "'s " + type.getColor().getChatColor() + "§l" + type.multiplier + "x Coin Booster §7verloopt in §6" + TimeUtils.fromTimeStamp(getRemainingTicks() * 50, Language.DUTCH) + "§7.", name + "'s " + type.getColor().getChatColor() + "§l" + type.multiplier + "x Coin Booster §7expires in §6" + TimeUtils.fromTimeStamp(getRemainingTicks() * 50, Language.ENGLISH) + "§7.");
             }
 
             @Override
             public void onFinish() {
-                orbitMines.broadcast("Booster", Color.ORANGE, name + "'s " + type.multiplier + "x Coin Booster §7is verlopen.", name + "'s " + type.multiplier + "x Coin Booster §7has expired.");
+                orbitMines.broadcast("", Color.ORANGE, name + "'s " + type.getColor().getChatColor() + "§l" +  type.multiplier + "x Coin Booster §7is verlopen.", name + "'s " + type.getColor().getChatColor() + "§l" + type.multiplier + "x Coin Booster §7has expired.");
                 ACTIVE = null;
             }
         };
@@ -119,7 +119,7 @@ public class CoinBooster {
         }
 
         public ItemBuilder getIcon() {
-            return icon;
+            return icon.clone();
         }
 
         public SpigotRunnable.Time getDuration() {

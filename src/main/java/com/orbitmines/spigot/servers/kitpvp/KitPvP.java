@@ -19,26 +19,29 @@ import com.orbitmines.spigot.api.handlers.itemhandlers.ItemHoverActionBar;
 import com.orbitmines.spigot.api.handlers.kit.Kit;
 import com.orbitmines.spigot.api.handlers.kit.KitInteractive;
 import com.orbitmines.spigot.api.handlers.scoreboard.DefaultScoreboard;
-import com.orbitmines.spigot.api.handlers.timer.Timer;
-import com.orbitmines.spigot.api.runnables.SpigotRunnable;
 import com.orbitmines.spigot.api.utils.ItemUtils;
 import com.orbitmines.spigot.api.utils.PlayerUtils;
+import com.orbitmines.spigot.api.utils.WorldUtils;
 import com.orbitmines.spigot.servers.hub.datapoints.HubDataPointSpawnpoint;
 import com.orbitmines.spigot.servers.hub.gui.stats.ServerStatsGUI;
+import com.orbitmines.spigot.servers.kitpvp.cmd.CommandPrismShop;
 import com.orbitmines.spigot.servers.kitpvp.datapoints.KitPvPDataPointMapSpawnpoint;
 import com.orbitmines.spigot.servers.kitpvp.datapoints.KitPvPDataPointMapSpectatorSpawnpoint;
 import com.orbitmines.spigot.servers.kitpvp.events.*;
 import com.orbitmines.spigot.servers.kitpvp.handlers.*;
+import com.orbitmines.spigot.servers.kitpvp.handlers.actives.ItemHoverActiveHandler;
+import com.orbitmines.spigot.servers.kitpvp.handlers.gui.CoinBoosterGUI;
+import com.orbitmines.spigot.servers.kitpvp.handlers.gui.KitPvPPrismSolarShopGUI;
 import com.orbitmines.spigot.servers.kitpvp.handlers.gui.KitSelectorGUI;
+import com.orbitmines.spigot.servers.kitpvp.handlers.itembuilders.KitItemBuilder;
 import com.orbitmines.spigot.servers.kitpvp.handlers.kits.*;
+import com.orbitmines.spigot.servers.kitpvp.handlers.passives.Passive;
 import com.orbitmines.spigot.servers.kitpvp.runnables.PassiveRunnable;
 import org.bukkit.*;
-import org.bukkit.boss.BarColor;
-import org.bukkit.boss.BarStyle;
-import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -52,6 +55,8 @@ public class KitPvP extends OrbitMinesServer {
 
     public static final int COINS_PER_KILL = 50;
     public static final int XP_PER_KILL = 10;
+
+    public static KitItemBuilder PLAYER_TRACKER = new KitItemBuilder(null, Material.COMPASS, 1, "§c§lPlayer Tracker").addPassive(Passive.PLAYER_TRACKING, 1);
 
     private Map<Language, Kit> lobbyKit;
     private Map<Language, Kit> spectatorKit;
@@ -209,11 +214,14 @@ public class KitPvP extends OrbitMinesServer {
             new RegainHealthEvent(),
             new SpectatorEvents()
         );
+
+        /* Handle Active Actionbar cooldown timers. */
+        new ItemHoverActiveHandler(this);
     }
 
     @Override
     protected void registerCommands() {
-        //TODO
+        new CommandPrismShop();
     }
 
     @Override
@@ -235,6 +243,27 @@ public class KitPvP extends OrbitMinesServer {
             new KitBunny(this);
         }
 
+        /* Player Tracker */
+        new ItemHoverActionBar(PLAYER_TRACKER, false) {
+            @Override
+            public String getMessage(OMPlayer player, ItemStack itemStack) {
+                KitPvPPlayer omp = (KitPvPPlayer) player;
+
+                OMPlayer closest = WorldUtils.getClosestPlayer(omp, GameMode.SURVIVAL, true);
+
+                if (closest == null)
+                    return "§c§lNo players nearby.";
+
+                return "§c§lTracking: " + closest.getRankPrefixColor().getChatColor() + "§l" + closest.getName(true) + "       §c§l" + omp.lang("Afstand", "Distance") + ": " + closest.getRankPrefixColor().getChatColor() + "§l" + String.format("%.1f", omp.getLocation().distance(closest.getLocation()));
+            }
+
+            @Override
+            public void onEnter(OMPlayer omp, ItemStack item, int slot) {
+                super.onEnter(omp, item, slot);
+                omp.playSound(Sound.UI_BUTTON_CLICK);
+            }
+        };
+
         /* Lobby Kit */
         for (Language language : Language.values()) {
             KitInteractive kit = new KitInteractive(language.toString());
@@ -253,7 +282,7 @@ public class KitPvP extends OrbitMinesServer {
 
                 new ItemHoverActionBar(item, false) {
                     @Override
-                    public String getMessage(OMPlayer omp) {
+                    public String getMessage(OMPlayer omp, ItemStack itemStack) {
                         return "§e§lTeleporter§r §8- §e§l" + omp.lang("Rechtermuisklik", "Right Click");
                     }
                 };
@@ -273,7 +302,7 @@ public class KitPvP extends OrbitMinesServer {
 
                 new ItemHoverActionBar(item, false) {
                     @Override
-                    public String getMessage(OMPlayer omp) {
+                    public String getMessage(OMPlayer omp, ItemStack itemStack) {
                         return "§3§l" + omp.lang("Terug naar Spawn", "Back to Spawn") + "§r §8- §e§l" + omp.lang("Rechtermuisklik", "Right Click");
                     }
                 };
@@ -313,7 +342,7 @@ public class KitPvP extends OrbitMinesServer {
 
                 new ItemHoverActionBar(item, false) {
                     @Override
-                    public String getMessage(OMPlayer omp) {
+                    public String getMessage(OMPlayer omp, ItemStack itemStack) {
                         return "§a§lStats§r §8- §e§l" + omp.lang("Rechtermuisklik", "Right Click");
                     }
                 };
@@ -327,13 +356,13 @@ public class KitPvP extends OrbitMinesServer {
                     public void onInteract(PlayerInteractEvent event, OMPlayer omp) {
                         event.setCancelled(true);
 
-                        //TODO OPEN PRIMSSHOP
+                        new KitPvPPrismSolarShopGUI().open(omp);
                     }
                 });
 
                 new ItemHoverActionBar(item, false) {
                     @Override
-                    public String getMessage(OMPlayer omp) {
+                    public String getMessage(OMPlayer omp, ItemStack itemStack) {
                         return "§9§lPrism Shop§r §8- §e§l" + omp.lang("Rechtermuisklik", "Right Click");
                     }
                 };
@@ -360,7 +389,7 @@ public class KitPvP extends OrbitMinesServer {
 
                 new ItemHoverActionBar(item, false) {
                     @Override
-                    public String getMessage(OMPlayer omp) {
+                    public String getMessage(OMPlayer omp, ItemStack itemStack) {
                         return "§c§lKit Selector§r §8- §e§l" + omp.lang("Rechtermuisklik", "Right Click");
                     }
                 };
@@ -374,15 +403,15 @@ public class KitPvP extends OrbitMinesServer {
                     public void onInteract(PlayerInteractEvent event, OMPlayer omp) {
                         event.setCancelled(true);
 
-//                        if (CoinBooster.ACTIVE != null)
-//                            //open
+                        if (CoinBooster.ACTIVE == null)
+                            new CoinBoosterGUI().open(omp);
                 }
                 });
 
                 new ItemHoverActionBar(item, false) {
                     @Override
-                    public String getMessage(OMPlayer omp) {
-                        return "§6§lCoin Booster§r §8- §e§l" + (CoinBooster.ACTIVE == null ? omp.lang("Rechtermuisklik", "Right Click") : CoinBooster.ACTIVE.getType().getMultiplier() + "x§r §8- §c§l" + TimeUtils.fromTimeStamp(CoinBooster.ACTIVE.getTimer().getRemainingTicks() * 50, omp.getLanguage()));
+                    public String getMessage(OMPlayer omp, ItemStack itemStack) {
+                        return "§6§lCoin Booster§r §8- §e§l" + (CoinBooster.ACTIVE == null ? omp.lang("Rechtermuisklik", "Right Click") : CoinBooster.ACTIVE.getType().getMultiplier() + "x§r §8- §b§l" + TimeUtils.fromTimeStamp(CoinBooster.ACTIVE.getTimer().getRemainingTicks() * 50, omp.getLanguage()));
                     }
                 };
             }
@@ -401,7 +430,7 @@ public class KitPvP extends OrbitMinesServer {
 
                 new ItemHoverActionBar(item, false) {
                     @Override
-                    public String getMessage(OMPlayer omp) {
+                    public String getMessage(OMPlayer omp, ItemStack itemStack) {
                         return "§3§lServer Selector§r §8- §e§l" + omp.lang("Rechtermuisklik", "Right Click");
                     }
                 };
@@ -422,7 +451,7 @@ public class KitPvP extends OrbitMinesServer {
 
                 new ItemHoverActionBar(item, false) {
                     @Override
-                    public String getMessage(OMPlayer omp) {
+                    public String getMessage(OMPlayer omp, ItemStack itemStack) {
                         return "§9§lCosmetic Perks§r §8- §a§l" + omp.lang("Binnenkort", "Coming Soon");
 //                        return "§9§lCosmetic Perks§r §8- §e§l" + omp.lang("Rechtermuisklik", "Right Click");
                     }
@@ -488,41 +517,41 @@ public class KitPvP extends OrbitMinesServer {
                 map.getVotes().clear();
             }
         }
-
-        BossBar bossBar = Bukkit.createBossBar("", BarColor.RED, BarStyle.SOLID);
-
-        /* Start Timer for the next Map */
-        KitPvPMap.TIMER = new Timer(new SpigotRunnable.Time(SpigotRunnable.TimeUnit.HOUR, 1), new SpigotRunnable.Time(SpigotRunnable.TimeUnit.SECOND, 1)) {
-            @Override
-            public void onInterval() {
-                //TODO update VOTE SIGN TIMER
-
-                float progress = getProgress();
-                if (progress > 0.05f) /* 3 minutes */
-                    return;
-
-                bossBar.setProgress(progress / 0.05f); /* 3 minutes */
-                bossBar.setTitle("§7§lMap Switch §8§l|| §c§l" + getNext().getName() + " §8§l|| §c§l" + TimeUtils.fromTimeStamp(getRemainingTicks() * 50, Language.ENGLISH));
-
-                /* 'Tick' sound every second, the last 10 seconds */
-                boolean tickSound = getRemainingTicks() <= 200;
-
-                /* Add Players to BossBar */
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    if (!bossBar.getPlayers().contains(player))
-                        bossBar.addPlayer(player);
-
-                    if (tickSound)
-                        player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 5, 1);
-                }
-            }
-
-            @Override
-            public void onFinish() {
-                bossBar.removeAll();
-                nextMapRotation();
-            }
-        };
+//          TODO
+//        BossBar bossBar = Bukkit.createBossBar("", BarColor.RED, BarStyle.SOLID);
+//
+//        /* Start Timer for the next Map */
+//        KitPvPMap.TIMER = new Timer(new SpigotRunnable.Time(SpigotRunnable.TimeUnit.HOUR, 1), new SpigotRunnable.Time(SpigotRunnable.TimeUnit.SECOND, 1)) {
+//            @Override
+//            public void onInterval() {
+//                //TODO update VOTE SIGN TIMER
+//
+//                float progress = getProgress();
+//                if (progress > 0.05f) /* 3 minutes */
+//                    return;
+//
+//                bossBar.setProgress(progress / 0.05f); /* 3 minutes */
+//                bossBar.setTitle("§7§lMap Switch §8§l|| §c§l" + getNext().getName() + " §8§l|| §c§l" + TimeUtils.fromTimeStamp(getRemainingTicks() * 50, Language.ENGLISH));
+//
+//                /* 'Tick' sound every second, the last 10 seconds */
+//                boolean tickSound = getRemainingTicks() <= 200;
+//
+//                /* Add Players to BossBar */
+//                for (Player player : Bukkit.getOnlinePlayers()) {
+//                    if (!bossBar.getPlayers().contains(player))
+//                        bossBar.addPlayer(player);
+//
+//                    if (tickSound)
+//                        player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 5, 1);
+//                }
+//            }
+//
+//            @Override
+//            public void onFinish() {
+//                bossBar.removeAll();
+//                nextMapRotation();
+//            }
+//        };
     }
 
     private KitPvPMap getNext() {

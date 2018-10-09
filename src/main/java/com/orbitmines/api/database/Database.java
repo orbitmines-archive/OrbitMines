@@ -416,6 +416,40 @@ public class Database {
         return values;
     }
 
+    public List<Map<Column, Long>> getLongEntries(Table table, Where... where) {
+        return getLongEntries(table, table.getColumns(), where);
+    }
+
+    public List<Map<Column, Long>> getLongEntries(Table table, Column column, Where... wheres) {
+        return getLongEntries(table, new Column[] { column }, wheres);
+    }
+
+    public List<Map<Column, Long>> getLongEntries(Table table, Column[] columns, Where... wheres) {
+        List<Map<Column, Long>> values = new ArrayList<>();
+
+        String query = "SELECT " + toString(columns) + " FROM `" + table.toString() + "`" + toString(wheres) + ";";
+
+        try {
+            checkConnection();
+
+            ResultSet rs = connection.prepareStatement(query).executeQuery();
+
+            while (rs.next()) {
+                Map<Column, Long> entry = new HashMap<>();
+                for (Column column : columns) {
+                    entry.put(column, rs.getLong(column.toString()));
+                }
+                values.add(entry);
+            }
+
+            rs.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        return values;
+    }
+
     private String toString(Where... wheres) {
         if (wheres == null || wheres.length == 0)
             return "";

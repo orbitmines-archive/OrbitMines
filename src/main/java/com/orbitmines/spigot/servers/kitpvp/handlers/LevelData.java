@@ -48,31 +48,6 @@ public class LevelData {
         return getColor(level);
     }
 
-    public String getColor(int level) {
-        if (level < 10)
-            return Color.SILVER.getChatColor();
-        else if (level < 20)
-            return Color.FUCHSIA.getChatColor();
-        else if (level < 30)
-            return Color.PURPLE.getChatColor();
-        else if (level < 40)
-            return Color.AQUA.getChatColor();
-        else if (level < 50)
-            return Color.BLUE.getChatColor();
-        else if (level < 60)
-            return Color.TEAL.getChatColor();
-        else if (level < 70)
-            return Color.LIME.getChatColor();
-        else if (level < 80)
-            return Color.GREEN.getChatColor();
-        else if (level < 90)
-            return Color.YELLOW.getChatColor();
-        else if (level < 100)
-            return Color.ORANGE.getChatColor();
-        else
-            return Color.RED.getChatColor();
-    }
-
     public String getPrefix() {
         return getColor() + level + " ";
     }
@@ -127,5 +102,30 @@ public class LevelData {
         }
 
         return experience;
+    }
+
+    public String getColor(int level) {
+        if (level < 10)
+            return Color.SILVER.getChatColor();
+        else if (level < 20)
+            return Color.FUCHSIA.getChatColor();
+        else if (level < 30)
+            return Color.PURPLE.getChatColor();
+        else if (level < 40)
+            return Color.AQUA.getChatColor();
+        else if (level < 50)
+            return Color.BLUE.getChatColor();
+        else if (level < 60)
+            return Color.TEAL.getChatColor();
+        else if (level < 70)
+            return Color.LIME.getChatColor();
+        else if (level < 80)
+            return Color.GREEN.getChatColor();
+        else if (level < 90)
+            return Color.YELLOW.getChatColor();
+        else if (level < 100)
+            return Color.ORANGE.getChatColor();
+        else
+            return Color.RED.getChatColor();
     }
 }

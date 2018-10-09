@@ -5,13 +5,12 @@ package com.orbitmines.spigot.servers.kitpvp.handlers;
  */
 
 import com.orbitmines.api.database.*;
+import com.orbitmines.api.database.Set;
 import com.orbitmines.api.database.tables.kitpvp.TableKitPvPKitStats;
 import com.orbitmines.api.database.tables.kitpvp.TableKitPvPPlayers;
 import com.orbitmines.spigot.api.handlers.Data;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static com.orbitmines.api.database.tables.kitpvp.TableKitPvPPlayers.*;
 
@@ -209,6 +208,16 @@ public class KitPvPData extends Data {
         this.kitData.put(kitId, data);
 
         return data;
+    }
+
+    public List<KitData> getAllKitData() {
+        List<KitData> list = new ArrayList<>();
+
+        for (Map<Column, String> entry : Database.get().getEntries(Table.KITPVP_KIT_STATS, TableKitPvPKitStats.KIT_ID, new Where(TableKitPvPKitStats.UUID, getUUID().toString()))) {
+            list.add(getKitData(Long.parseLong(entry.get(TableKitPvPKitStats.KIT_ID))));
+        }
+
+        return list;
     }
 
     public class KitData {

@@ -227,7 +227,6 @@ public class MobNpc extends Npc {
             case BLAZE:
             case COW:
             case CREEPER:
-            case DROWNED:
             case EVOKER:
             case ILLUSIONER:
             case MUSHROOM_COW:
@@ -247,6 +246,7 @@ public class MobNpc extends Npc {
             case MULE:
             case PIG_ZOMBIE:
             case SKELETON:
+            case DROWNED:
                 return 2;
 
             case DONKEY:

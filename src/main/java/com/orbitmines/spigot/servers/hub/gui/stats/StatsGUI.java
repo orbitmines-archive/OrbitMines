@@ -19,6 +19,9 @@ import com.orbitmines.spigot.api.handlers.data.PlayTimeData;
 import com.orbitmines.spigot.api.handlers.data.VoteData;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.api.handlers.itembuilders.PlayerSkullBuilder;
+import com.orbitmines.spigot.servers.kitpvp.handlers.KitPvPData;
+import com.orbitmines.spigot.servers.kitpvp.handlers.KitPvPPlayer;
+import com.orbitmines.spigot.servers.kitpvp.handlers.LevelData;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalData;
 import com.orbitmines.spigot.servers.survival.handlers.claim.Claim;
 import com.orbitmines.spigot.servers.survival.handlers.teleportable.Home;
@@ -62,10 +65,16 @@ public class StatsGUI extends GUI {
             }
         });
 
+        add(3, 3, new ItemInstance(getItem(player, Server.KITPVP, true)) {
+            @Override
+            public void onClick(InventoryClickEvent event, OMPlayer omp) {
+                new ServerStatsGUI(player, Server.KITPVP).open(omp);
+            }
+        });
+
         EmptyItemInstance item = new EmptyItemInstance(new ItemBuilder(Material.RED_STAINED_GLASS_PANE, 1, new Message("§cOnbekende Galaxies", "§cUnknown Galaxies").lang(player.getLanguage())).build());
 
         add(3, 1, item);
-        add(3, 3, item);
         add(3, 5, item);
         add(3, 7, item);
         add(4, 2, item);
@@ -139,6 +148,47 @@ public class StatsGUI extends GUI {
         switch (server) {
 
             case KITPVP:
+                item.setMaterial(Material.IRON_SWORD);
+                item.addFlag(ItemFlag.HIDE_ATTRIBUTES);
+
+                KitPvPData kitPvP = (KitPvPData) player.getData(Data.Type.KITPVP);
+
+                int[] kits = new int[4];
+
+                for (KitPvPData.KitData kitData : kitPvP.getAllKitData()) {
+                    int level = kitData.getUnlockedLevel();
+
+                    kits[level] = kits[level] + 1;
+                }
+
+                KitPvPPlayer dummy = new KitPvPPlayer(null, null) {
+                    @Override
+                    protected KitPvPData getData() {
+                        return kitPvP;
+                    }
+                };
+                LevelData levelData = dummy.getLevelData();
+                levelData.update(false);
+
+                item.addLore("§7Coins: §6§l" + NumberUtils.locale(kitPvP.getCoins()));
+                item.addLore("§7Level: " + levelData.getColor() + "§l" + levelData.getLevel());
+                item.addLore((levelData.getLevel() == LevelData.maxLevel ? levelData.getColor() + "Max Level" : "§7Next level: §e§l" + NumberUtils.locale(levelData.getCurrentLevelXp()) + " XP §7§l/ " + NumberUtils.locale(levelData.getNextLevelXp())));
+                item.addLore("");
+                item.addLore("§7Kills: §c§l" + NumberUtils.locale(kitPvP.getKills()));
+                item.addLore("§7Deaths: §4§l" + NumberUtils.locale(kitPvP.getDeaths()));
+                item.addLore("§7Best streak: §5§l" + NumberUtils.locale(kitPvP.getBestStreak()));
+                item.addLore("");
+                item.addLore("§7Kits");
+                for (int i = 0; i < kits.length; i++) {
+                    if (kits[i] == 0)
+                        continue;
+
+                    if (i == 0)
+                        item.addLore("  §7Locked: §4§l" + kits[i]);
+                    else
+                        item.addLore("  §7Level " + i + ": §a§l" + kits[i]);
+                }
+                item.addLore("");
                 break;
             case PRISON:
                 break;

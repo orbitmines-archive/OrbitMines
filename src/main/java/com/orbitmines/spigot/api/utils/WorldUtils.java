@@ -2,6 +2,7 @@ package com.orbitmines.spigot.api.utils;
 
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -11,6 +12,7 @@ import org.bukkit.block.data.type.WallSign;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
 
@@ -161,10 +163,17 @@ public class WorldUtils {
     }
 
     public static OMPlayer getClosestPlayer(Location location) {
-        OMPlayer omp = null;
+        return getClosestPlayer(location, null, false);
+    }
+
+    public static OMPlayer getClosestPlayer(Location location, GameMode gameMode, boolean invisible) {
+        Player omp = null;
         double distance = 0;
 
-        for (OMPlayer player : OMPlayer.getPlayers()) {
+        for (Player player : location.getWorld().getPlayers()) {
+            if (gameMode != null && player.getGameMode() != gameMode || invisible && player.hasPotionEffect(PotionEffectType.INVISIBILITY))
+                continue;
+
             double d = location.distance(player.getLocation());
 
             if (omp == null || d < distance) {
@@ -173,8 +182,32 @@ public class WorldUtils {
             }
         }
 
-        return omp;
+        return OMPlayer.getPlayer(omp);
     }
+
+    public static OMPlayer getClosestPlayer(OMPlayer location) {
+        return getClosestPlayer(location, null, false);
+    }
+
+    public static OMPlayer getClosestPlayer(OMPlayer location, GameMode gameMode, boolean invisible) {
+        Player omp = null;
+        double distance = 0;
+
+        for (Player player : location.getWorld().getPlayers()) {
+            if (player == location.getPlayer() || gameMode != null && player.getGameMode() != gameMode || invisible && player.hasPotionEffect(PotionEffectType.INVISIBILITY))
+                continue;
+
+            double d = location.getLocation().distance(player.getLocation());
+
+            if (omp == null || d < distance) {
+                omp = player;
+                distance = d;
+            }
+        }
+
+        return OMPlayer.getPlayer(omp);
+    }
+
 //
 //    public static MiniGamePlayer getClosestPlayer(Location location, boolean spectator) {
 //        MiniGamePlayer omp = null;

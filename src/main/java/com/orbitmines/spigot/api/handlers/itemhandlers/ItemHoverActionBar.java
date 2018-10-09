@@ -21,11 +21,11 @@ public abstract class ItemHoverActionBar extends ItemHover {
         this.actionBars = new HashMap<>();
     }
 
-    public abstract String getMessage(OMPlayer omp);
+    public abstract String getMessage(OMPlayer omp, ItemStack item);
 
     @Override
-    public void onEnter(OMPlayer omp, ItemStack item) {
-        ActionBar actionBar = actionBars.computeIfAbsent(omp, key -> new ActionBar(omp, () -> getMessage(omp), Long.MAX_VALUE));
+    public void onEnter(OMPlayer omp, ItemStack item, int slot) {
+        ActionBar actionBar = actionBars.computeIfAbsent(omp, key -> new ActionBar(omp, () -> getMessage(omp, omp.getInventory().getItem(slot)), Long.MAX_VALUE));
         actionBar.send();
     }
 

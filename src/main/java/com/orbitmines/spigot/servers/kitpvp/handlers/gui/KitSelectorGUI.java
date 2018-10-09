@@ -13,6 +13,7 @@ import com.orbitmines.spigot.servers.kitpvp.KitPvP;
 import com.orbitmines.spigot.servers.kitpvp.handlers.KitPvPData;
 import com.orbitmines.spigot.servers.kitpvp.handlers.KitPvPKit;
 import com.orbitmines.spigot.servers.kitpvp.handlers.KitPvPPlayer;
+import org.bukkit.Sound;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 public class KitSelectorGUI extends GUI {
@@ -110,6 +111,8 @@ public class KitSelectorGUI extends GUI {
 
             add((int) kit.getId(), instance);
         }
+
+        omp.playSound(Sound.ITEM_ARMOR_EQUIP_DIAMOND);
 
         return true;
     }

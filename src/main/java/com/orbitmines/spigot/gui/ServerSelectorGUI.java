@@ -96,10 +96,42 @@ public class ServerSelectorGUI extends GUI {
                                 "§7- " + Server.SURVIVAL.getColor().getChatColor() + "Chest Shops"
                         }
                 }));
+        add(3, 3, getItem(
+                Server.KITPVP,
+                new ItemBuilder(Material.IRON_SWORD, 1).addFlag(ItemFlag.HIDE_ATTRIBUTES),
+                new String[] {
+                        "§7§oGeheime Gladiatoren Arena",
+                        "§7§oClassified Gladiator Arena"
+                },
+                new String[][] {
+                        new String[] {
+                                "§7Een gladiatoren arena opgezet door een",
+                                "§7onbekende generaal en admiraal van OrbitMines",
+                                "§7vloot, bevindt zich op Militaire Basis #27.",
+                                "",
+                                "§7- " + Server.KITPVP.getColor().getChatColor() + "Kits",
+                                "§7- " + Server.KITPVP.getColor().getChatColor() + "Kit Upgrades",
+                                "§7- " + Server.KITPVP.getColor().getChatColor() + "Abilities",
+                                "§7- " + Server.KITPVP.getColor().getChatColor() + "Custom Enchantments",
+                                "§7- " + Server.KITPVP.getColor().getChatColor() + "Level Systeem",
+                                "§7- " + Server.KITPVP.getColor().getChatColor() + "Geen item drops",
+                        },
+                        new String[] {
+                                "§7A gladiator arena setup by an unknown",
+                                "§7general and admiral in the OrbitMines",
+                                "§7fleet, located at Military Base #27.",
+                                "",
+                                "§7- " + Server.KITPVP.getColor().getChatColor() + "Kits",
+                                "§7- " + Server.KITPVP.getColor().getChatColor() + "Kit Upgrades",
+                                "§7- " + Server.KITPVP.getColor().getChatColor() + "Abilities",
+                                "§7- " + Server.KITPVP.getColor().getChatColor() + "Custom Enchantments",
+                                "§7- " + Server.KITPVP.getColor().getChatColor() + "Level System",
+                                "§7- " + Server.KITPVP.getColor().getChatColor() + "No item drops",
+                        }
+                }));
 
         EmptyItemInstance item = new EmptyItemInstance(new ItemBuilder(Material.RED_STAINED_GLASS_PANE, 1, new Message("§cOnbekende Galaxies", "§cUnknown Galaxies").lang(language)).build());
         add(3, 1, item);
-        add(3, 3, item);
         add(3, 5, item);
         add(3, 7, item);
         add(4, 2, item);

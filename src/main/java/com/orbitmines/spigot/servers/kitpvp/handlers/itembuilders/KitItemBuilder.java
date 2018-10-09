@@ -19,7 +19,7 @@ import java.util.*;
 
 public class KitItemBuilder extends ItemBuilder implements KitItem {
 
-    private final KitPvPKit.Level kit;
+    private KitPvPKit.Level kit;
     private final Map<Passive, Integer> passives;
     private final Map<Active, Integer> actives;
 
@@ -43,8 +43,8 @@ public class KitItemBuilder extends ItemBuilder implements KitItem {
         super(itemBuilder);
 
         this.kit = kit;
-        this.passives = new HashMap<>();
-        this.actives = new HashMap<>();
+        this.passives = new HashMap<>(itemBuilder.passives);
+        this.actives = new HashMap<>(itemBuilder.actives);
 
         unbreakable(true);
     }
@@ -57,6 +57,10 @@ public class KitItemBuilder extends ItemBuilder implements KitItem {
         this.actives = new HashMap<>();
 
         unbreakable(true);
+    }
+
+    public void setKit(KitPvPKit.Level kit) {
+        this.kit = kit;
     }
 
     @Override
@@ -101,7 +105,7 @@ public class KitItemBuilder extends ItemBuilder implements KitItem {
                 ItemMeta meta = item.getItemMeta();
                 List<String> lore = meta.getLore() != null ? meta.getLore() : new ArrayList<>();
 
-                if (passive == Passive.ARROW_REGEN || passive == Passive.ATTACK_DAMAGE)
+                if (passive.hasBreakLine())
                     lore.add("");
 
                 lore.add(passive.getDisplayName(level));

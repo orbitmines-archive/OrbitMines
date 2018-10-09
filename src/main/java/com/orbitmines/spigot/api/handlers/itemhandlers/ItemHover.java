@@ -39,34 +39,34 @@ public abstract class ItemHover {
                 ItemStack offHand = omp.getItemInOffHand();
 
                 /* Player has hover, but not in main hand, and not in his off hand, leave that hover */
-                if (omp.getCurrentHover() != null && (!omp.getCurrentHover().getItemBuilder().equals(mainHand) && (!offHandAllowed || !omp.getCurrentHover().getItemBuilder().equals(offHand))))
+                if (omp.getCurrentHover() != null && (!omp.getCurrentHover().equals(mainHand) && (!offHandAllowed || !omp.getCurrentHover().equals(offHand))))
                     omp.getCurrentHover().leave(omp);
 
                 /* Player has currently no hover in main hand, and offhand equals this hover */
                 if (offHandAllowed && omp.getCurrentHover() == null && itemBuilder.equals(offHand))
-                    enter(omp, offHand);
+                    enter(omp, offHand, 41);
             }
         };
     }
 
-    public ItemBuilder getItemBuilder() {
-        return itemBuilder;
-    }
+//    public ItemBuilder getItemBuilder() {
+//        return itemBuilder;
+//    }
 
     public boolean isOffHandAllowed() {
         return offHandAllowed;
     }
 
-    protected abstract void onEnter(OMPlayer omp, ItemStack item);
+    protected abstract void onEnter(OMPlayer omp, ItemStack item, int slot);
 
     protected abstract void onLeave(OMPlayer omp);
 
-    public void enter(OMPlayer omp, ItemStack item) {
+    public void enter(OMPlayer omp, ItemStack item, int slot) {
         if (omp.getCurrentHover() != null)
             omp.getCurrentHover().leave(omp);
 
         omp.setCurrentHover(this);
-        onEnter(omp, item);
+        onEnter(omp, item, slot);
 
         entered.add(omp);
     }
@@ -85,6 +85,10 @@ public abstract class ItemHover {
 
         if (runnable != null)
             runnable.cancel();
+    }
+
+    public boolean equals(ItemStack itemStack) {
+        return itemBuilder.equals(itemStack);
     }
 
     public boolean hasEntered(OMPlayer omp) {

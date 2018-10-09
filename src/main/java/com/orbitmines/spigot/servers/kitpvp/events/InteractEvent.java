@@ -4,6 +4,7 @@ package com.orbitmines.spigot.servers.kitpvp.events;
  * OrbitMines - @author Fadi Shawki - 2018
  */
 
+import com.orbitmines.api.Color;
 import com.orbitmines.spigot.api.nms.itemstack.ItemStackNms;
 import com.orbitmines.spigot.servers.kitpvp.KitPvP;
 import com.orbitmines.spigot.servers.kitpvp.handlers.KitPvPMap;
@@ -64,6 +65,8 @@ public class InteractEvent implements Listener {
                     omp.getInventory().setItem(slot, item);
 
                     /* Trigger active */
+                    String name = active.getColor().getChatColor() + "§l" + active.getName();
+                    omp.sendMessage("Active", Color.BLUE, "Je hebt " + name + "§7 gebruikt.", "You have used " + name + "§7.");
                     handler.trigger(event, omp, level);
                 }
             }

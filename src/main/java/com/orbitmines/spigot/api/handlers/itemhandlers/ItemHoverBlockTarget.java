@@ -48,7 +48,7 @@ public abstract class ItemHoverBlockTarget extends ItemHover {
     public abstract void onTargetEnter(OMPlayer omp);
 
     @Override
-    protected void onEnter(OMPlayer omp, ItemStack item) {
+    protected void onEnter(OMPlayer omp, ItemStack item, int slot) {
         if (isTargeted(omp))
             onTargetEnter(omp);
     }
