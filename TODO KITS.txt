@@ -1,0 +1,99 @@
+
+
+
+
+KING
+hp 20
+king lvl 1 stone sword. gold armor dia helmet.
+king lvl 2 stone sword heal 1. gold armor dia helmet.
+king lvl 3 stone sword sharpness 1 heal 2. gold armor dia helmet.
+heal 1 = regen 2 for 2 sec 10 sec cd
+heal 2 = regen 2 for 3 sec 10 sec cd
+
+SNOW GOLEM 70 % effectieve tegen knockback 	(slow 1)
+hp 25
+snow golem lvl 1 stone sword. leather (white) pumkin head prot 3 (from a player) iron chestplate  
+snow golem lvl 2 stone sword 25 % knockup or 25 % knockback (you can click right mouse butten to change option). leather (white) pumkin head prot 5 (from a player) iron chestplate  
+snow golem lvl 3 stone sword 30 % knockup or 30 % knockback, snowball. leather (white) pumkin head prot 5 (from a player) iron chestplate.
+if snow golem gets a kill than he will get a snowball if he throws it at some1 and it hits than the enemy will be freazed it deals 4 hp dmg (does 8 hp dmg to blaze) and gives the enemy slow 2 and miningfutige 1
+
+JOKER (troll kit vip)
+hp 17
+joker lvl 1 dead bush sharpness 2 has 15 % chance to steal something from the enemy for 5 sec if it is armor and that armor is stronger it will automaticly be aquiped (if he kills the enemy in 5 sec than he will keep the item). full leather changes colour every 5 sec (random) 
+joker lvl 2 dead bush sharpness 3 has 20 % steal something for 5 sec. full leather changes colour every 4 sec (random)
+joker lvl 3 dead bush sharpness 4 has 25 % steal something for 5 sec. full leather changes colour every 3 sec (random)
+speed 2
+
+ENCHANTER
+hp 21
+enchanter lvl 1 book sharpness 4. full leather prot 1 (purple).
+enchanter lvl 2 book sharpness 4 gets a random enchant after every kill. full leather prot 1 (purple).
+enchanter lvl 3 book sharpness 5 gets a random enchant after every kill (his armor can also enchant). full leather prot 1 (purple) (prot 2 on helm and chest).
+
+NINJA
+hp 16
+ninja lvl 1 iron sword. leather armor (black) 
+ninja lvl 2 iron sword invis 4 sec cdr 20 (if he gets dmg or deals dmg his invis will wear out immediatly). leather armor prot 1 boots, leggings 
+ninja lvl 3 iron sword invis 5 sec cdr 20. leather armor prot 1 
+if ninja backstabes his dmg will be 1.25 X
+speed 2
+
+ASSASIN (bounty hunter) 
+assasin lvl 1 stone sword. leather dia boots 
+assasin lvl 1 iron sword. leather dia boots prot 1 boots
+assasin lvl 3 dia sword. leather dia boots 
+speed 1
+if assasin kills his bounty (will be random when he spawns and if some1 has a killingspreak that enemy will also be his bounty he can have multiple bounties at the same time) he will get something out of it
+lvl 1 75 % hp 1 pot 12.5 % 50 + gold 12.5 % hp 2 pot 5 % to get en enchantment 1 % chance to get a good potion effect
+lvl 2 65 % hp 1 pot 15 % 50 + gold 15 % hp 2 pot 7.5 % to get en enchantment 2 % chance to get a good potion effect
+lvl 3 55 % hp 1 pot 17.5 % 50 + gold 20 % hp 2 pot 10 % to get en enchantment 3 % chance to get a good potion effect
+
+
+PIRATE
+hp 10
+pirate lvl 1 golden sword (85 % dmg). dia leather cap (black) slowness 2 (because of heavy armor)
+pirate lvl 2 golden sword (90 % dmg) bird. dia leather cap (black) cap prot 1
+pirate lvl 1 golden sword (95 % dmg) bird, gold. dia leather cap (black) cap prot 2
+bird on his shoulder attacked de enemy for 5 sec takes 1 hit to kill (the bird) deals 2 dmg for each hit if he dies he will respawn in 30 seconds if he didnt die in the 5 sec you can use him again in 15 sec (if he died than in 40 sec)
+gold gets 10% bonus gold  
+
+
+BEAST
+beast lvl 1 iron axe (90% dmg). leather armor 				hp 22
+beast lvl 1 iron axe (95% dmg) beast mode. leather armor prot 1 helm	hp 24
+beast lvl 1 iron axe (100% dmg) beast mode. leather armor prot 2 helm 	hp 26
+if below 33% hp gets the highest hp regen in the game and gives 110% dmg 
+
+
+SORCERER  (u need to upgrade each spell induvidualy) 
+hp 19
+sorcerer blaze rod fire ball stick lightnigh rod. leather armor (red).
+lvl 1 fire ball if u shoot it at the ground the ground will go in fire 4x4 radius (fire will go away in 5 sec) if u shoot it at the enemy it will deal 2 dmg and set the enemy on fire (for 2 sec)  cd 10		(range infinite)
+lvl 2 fire ball if u shoot it at the ground the ground will go in fire 5x5 radius (fire will go away in 7 sec) if u shoot it at the enemy it will deal 3 dmg and set the enemy on fire (for 4 sec)  cd 9.5
+lvl 3 fire ball if u shoot it at the ground the ground will go in fire 6x6 radius (fire will go away in 10 sec) if u shoot it at the enemy it will deal 3 dmg and set the enemy on fire (for 8 sec) cd 9
+lvl 1 lightnigh rod if u shoot it at an enemy it will deal 4 dmg (in a tiny radius just like lightning) cd 5 		(range 50 blocks)
+lvl 2 lightnigh rod if u shoot it at an enemy it will deal 5 dmg (in a tiny radius just like lightning) cd 4		(range 61 blocks)
+lvl 3 lightnigh rod if u shoot it at an enemy it will deal 6 dmg (in a tiny radius just like lightning) cd 3		(range 72 blocks)
+(slimeball needs to be purches first is not in basic kit) will throw like a snowball 
+lvl 1 slime ball if u shoot it at the ground the ground u will make the ground of slime blocks 6x6 radius (slime will go away in 10 sec) if u shoot it at the enemy it will deal 1 dmg and slow the enemy (for 3 sec) cd 15	(range infinite)
+lvl 2 slime ball if u shoot it at the ground the ground u will make the ground of slime blocks 6x6 radius (slime will go away in 12 sec) if u shoot it at the enemy it will deal 1 dmg and slow the enemy (for 4 sec) cd 13	(range infinite)
+lvl 3 slime ball if u shoot it at the ground the ground u will make the ground of slime blocks 7x7 radius (slime will go away in 13 sec) if u shoot it at the enemy it will deal 2 dmg and slow the enemy (for 4 sec) cd 10	(range infinite)
+
+ 
+SPIDER (can climb on walls and move through cobweb like normall regenerates hp when on poison)
+hp 18
+spider lvl 1 spider eye sharpness 4 12.5 % chance to spawn a normall spider on hit. leather armor (black) spider hat prot 3
+spider lvl 2 spider eye sharpness 4 14.5 % chance to spawn a normall spider 5% to spawn a cave spider. leather armor (black) spider hat prot 4
+spider lvl 3 spider eye sharpness 4 15 % chance to spawn a normall spider 8% to spawn a cave spider 2% to spawn an invisable spider 5% chance to poison some1 on hit. leather armor (black) spider hat prot 5
+
+
+MINER
+hp 22 
+miner lvl 1 diamond pickaxe leather armor (grey)
+miner lvl 2 diamond pickaxe sharpness 1 leather armor (grey)
+miner lvl 3 diamond pickaxe sharpness 2 leather armor
+coal    lvl 1 50 %	lvl 2 35 %	lvl 3 25 %
+gold    lvl 1 20 %	lvl 2 27.5 %	lvl 3 32.5 %
+iron    lvl 1 20 %	lvl 2 25%	lvl 3 27.5 %
+diamond lvl 1 10 %	lvl 2 12.5%	lvl 3 15 %
+after he gets a kill he will gain a random ore depending on the ore he will do special things for example gold will give him health regen for 5 sec (regen 1) coal gives him 3 hp back iron gives him 1 hp max plus 3 hp for 5 sec diamond regen for 10 sec (regen 1) plus 1 hp back imidiatly
