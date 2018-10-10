@@ -65,9 +65,9 @@ public class PassiveWreckerOfWorlds implements Passive.Handler<EntityDamageByEnt
     public double getChance(int level) {
         switch (level) {
             case 1:
-                return 1D / 3D;
+                return 0.3D;
             case 2:
-                return 2D / 3D;
+                return 0.6D; //TODO: NERF! MAYBE COOLDOWN!
             default:
                 throw new ArrayIndexOutOfBoundsException();
         }

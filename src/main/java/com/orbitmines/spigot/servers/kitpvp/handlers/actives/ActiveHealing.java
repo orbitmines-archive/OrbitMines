@@ -9,7 +9,7 @@ import org.bukkit.potion.PotionEffectType;
 
 public class ActiveHealing implements Active.Handler {
 
-    private Cooldown cooldown = new Cooldown(10 * 1000); 
+    private Cooldown cooldown = new Cooldown(10 * 1000);
 
     private PotionBuilder builder = new PotionBuilder(PotionEffectType.REGENERATION, 2);
 

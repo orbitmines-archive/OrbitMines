@@ -12,9 +12,9 @@ import com.orbitmines.spigot.servers.kitpvp.HealthRegen;
 import com.orbitmines.spigot.servers.kitpvp.KitClass;
 import com.orbitmines.spigot.servers.kitpvp.KitPvP;
 import com.orbitmines.spigot.servers.kitpvp.handlers.KitPvPKit;
-import com.orbitmines.spigot.servers.kitpvp.handlers.passives.Passive;
 import com.orbitmines.spigot.servers.kitpvp.handlers.itembuilders.KitItemBuilder;
 import com.orbitmines.spigot.servers.kitpvp.handlers.itembuilders.KitLeatherArmorBuilder;
+import com.orbitmines.spigot.servers.kitpvp.handlers.passives.Passive;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
@@ -93,7 +93,7 @@ public class KitSoldier extends KitPvPKit {
         protected Kit registerKit() {
             Kit kit = new Kit(name + "_2");
 
-            kit.setItem(0, new KitItemBuilder(this, Material.IRON_AXE, 1, "§b§lJarnbjorn").addPassive(Passive.ATTACK_DAMAGE, 5).addPassive(Passive.WRECKER_OF_WORLDS, 1).addFlag(ItemFlag.HIDE_ATTRIBUTES));
+            kit.setItem(0, new KitItemBuilder(this, Material.STONE_AXE, 1, "§b§lJarnbjorn").addPassive(Passive.ATTACK_DAMAGE, 5).addPassive(Passive.WRECKER_OF_WORLDS, 1).addFlag(ItemFlag.HIDE_ATTRIBUTES));
             kit.setItem(1, new KitItemBuilder(this, Material.BOW));
             kit.setItem(2, new KitItemBuilder(this, Material.ARROW, 20));
 
@@ -132,7 +132,7 @@ public class KitSoldier extends KitPvPKit {
         protected Kit registerKit() {
             Kit kit = new Kit(name + "_3");
 
-            kit.setItem(0, new KitItemBuilder(this, Material.IRON_AXE, 1, "§b§lJarnbjorn").addPassive(Passive.ATTACK_DAMAGE, 5).addPassive(Passive.WRECKER_OF_WORLDS, 2).addFlag(ItemFlag.HIDE_ATTRIBUTES));
+            kit.setItem(0, new KitItemBuilder(this, Material.STONE_AXE, 1, "§b§lJarnbjorn").addPassive(Passive.ATTACK_DAMAGE, 5).addPassive(Passive.WRECKER_OF_WORLDS, 2).addFlag(ItemFlag.HIDE_ATTRIBUTES));
             kit.setItem(1, new KitItemBuilder(this, Material.BOW));
             kit.setItem(2, new KitItemBuilder(this, Material.ARROW, 20));
 
