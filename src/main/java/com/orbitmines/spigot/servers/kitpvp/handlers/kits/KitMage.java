@@ -54,7 +54,7 @@ public class KitMage extends KitPvPKit {
         protected Kit registerKit() {
             Kit kit = new Kit(name + "_1");
 
-            kit.setItem(0, new KitItemBuilder(this, Material.STONE_SWORD));
+            kit.setItem(0, new KitItemBuilder(this, Material.STONE_SWORD).addPassive(Passive.POTION_BREWER, 1));
             kit.setItem(1, new KitPotionItemBuilder(this, PotionItemBuilder.Type.SPLASH, new PotionBuilder(PotionEffectType.FIRE_RESISTANCE, 30 * 20, 0)));
             kit.setItem(2, new KitPotionItemBuilder(this, PotionItemBuilder.Type.SPLASH, new PotionBuilder(PotionEffectType.WEAKNESS, 15 * 20, 0)));
             kit.setItem(3, new KitPotionItemBuilder(this, PotionItemBuilder.Type.SPLASH, new PotionBuilder(PotionEffectType.HARM, 0)));
@@ -96,7 +96,7 @@ public class KitMage extends KitPvPKit {
         protected Kit registerKit() {
             Kit kit = new Kit(name + "_2");
 
-            kit.setItem(0, new KitItemBuilder(this, Material.STONE_SWORD));
+            kit.setItem(0, new KitItemBuilder(this, Material.STONE_SWORD).addPassive(Passive.POTION_BREWER, 1));
             kit.setItem(1, new KitPotionItemBuilder(this, PotionItemBuilder.Type.SPLASH, new PotionBuilder(PotionEffectType.FIRE_RESISTANCE, 35 * 20, 0)));
             kit.setItem(2, new KitPotionItemBuilder(this, PotionItemBuilder.Type.SPLASH, new PotionBuilder(PotionEffectType.WEAKNESS, 17 * 20, 0)));
             kit.setItem(3, new KitPotionItemBuilder(this, PotionItemBuilder.Type.SPLASH, new PotionBuilder(PotionEffectType.HARM, 1)));

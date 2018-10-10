@@ -1,6 +1,8 @@
 package com.orbitmines.spigot.api.utils;
 
+import com.orbitmines.api.utils.NumberUtils;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 
@@ -300,6 +302,21 @@ public class ItemUtils {
         }
 
         return stringBuilder.toString();
+    }
+
+    public static String getName(Enchantment enchantment, int level) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        String[] parts = enchantment.getKey().getKey().split("_");
+        for (int i = 0; i < parts.length; i++) {
+            if (i != 0)
+                stringBuilder.append(" ");
+
+            stringBuilder.append(parts[i].substring(0, 1).toUpperCase());
+            stringBuilder.append(parts[i].substring(1).toLowerCase());
+        }
+
+        return "§7" + stringBuilder.toString() + " " + NumberUtils.toRoman(level);
     }
 
     public static String getName(PotionEffectType effectType) {

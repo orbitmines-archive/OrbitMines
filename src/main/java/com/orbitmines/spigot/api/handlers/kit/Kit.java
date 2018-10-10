@@ -115,6 +115,28 @@ public class Kit {
         return null;
     }
 
+    public ItemBuilder getItemNotNull(int index) {
+        int i = 0;
+        for (ItemBuilder item : this.contents) {
+            if (item == null)
+                continue;
+
+            if (i == index)
+                return item;
+
+            i++;
+        }
+        return null;
+    }
+
+    public int index(ItemBuilder item) {
+        for (int i = 0; i < this.contents.length; i++) {
+            if (item.equals(this.contents[i]))
+                return i;
+        }
+        return -1;
+    }
+
     public int contentItems() {
         int amount = 0;
         for (ItemBuilder item : getContents()) {

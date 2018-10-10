@@ -24,6 +24,9 @@ import com.orbitmines.spigot.api.utils.PlayerUtils;
 import com.orbitmines.spigot.api.utils.VectorUtils;
 import com.orbitmines.spigot.api.utils.WorldUtils;
 import com.orbitmines.spigot.servers.hub.gui.LootGUI;
+import com.orbitmines.spigot.servers.kitpvp.KitPvP;
+import com.orbitmines.spigot.servers.kitpvp.handlers.KitPvPPlayer;
+import com.orbitmines.spigot.servers.kitpvp.handlers.gui.KitSelectorGUI;
 import com.orbitmines.spigot.servers.survival.gui.SurvivalPrismSolarShopGUI;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -162,11 +165,35 @@ public class DataPointNpc extends DataPointSign {
                 npc.create();
                 break;
             }
+
+
             case "SURVIVAL_SHOP": {
                 MobNpc npc = new MobNpc(Mob.DOLPHIN, location, () -> "§8§lOrbit§7§lMines " + Server.SURVIVAL.getDisplayName(), () -> "§9§lPrism §7§l& §e§lSolar §3§lShop");
                 npc.setInteractAction((event, omp) -> new SurvivalPrismSolarShopGUI().open(omp));
 
                 npc.create();
+                break;
+            }
+            case "KIT_SELECTOR": {
+                PersonalisedMobNpc npc = new PersonalisedMobNpc(Mob.DROWNED, location) {
+                    @Override
+                    public ScoreboardString[] getLines(OMPlayer player) {
+                        KitPvPPlayer omp = (KitPvPPlayer) player;
+                        return new ScoreboardString[] {
+                                () -> "§c§lKit Selector",
+                                null,
+                                () -> "§7§l" + omp.lang("Laatst Geselecteerd:", "Last Selected:"),
+                                () -> omp.getLastSelected().getHandler().getDisplayName() + " §a§lLvl " + omp.getLastSelected().getLevel()
+                        };
+                    }
+                };
+                npc.setInteractAction((event, omp) -> new KitSelectorGUI((KitPvP) OrbitMines.getInstance().getServerHandler()).open(omp));
+
+                npc.create();
+
+                npc.setChestPlate(new ItemBuilder(Material.DIAMOND_CHESTPLATE).build());
+                npc.setItemInMainHand(new ItemBuilder(Material.DIAMOND_CHESTPLATE).build());
+
                 break;
             }
             case "BACK_TO_HUB": {

@@ -14,8 +14,8 @@ import java.util.List;
 */
 public class PotionItemBuilder extends ItemBuilder {
 
-    private ArrayList<PotionBuilder> potionBuilders;
-    private boolean effectHidden;
+    protected ArrayList<PotionBuilder> potionBuilders;
+    protected boolean effectHidden;
 
     public PotionItemBuilder(PotionBuilder potionBuilder) {
         this(Type.NORMAL, potionBuilder);
@@ -47,6 +47,13 @@ public class PotionItemBuilder extends ItemBuilder {
         this.potionBuilders = new ArrayList<>();
         this.potionBuilders.add(potionBuilder);
         this.effectHidden = effectHidden;
+    }
+
+    public PotionItemBuilder(PotionItemBuilder builder) {
+        super(builder.material, builder.amount, builder.displayName, new ArrayList<>(builder.lore));
+
+        this.potionBuilders = new ArrayList<>(builder.potionBuilders);
+        this.effectHidden = builder.effectHidden;
     }
 
     public ArrayList<PotionBuilder> getPotionBuilders() {
@@ -88,7 +95,6 @@ public class PotionItemBuilder extends ItemBuilder {
 
         return modify(itemStack);
     }
-
 
     public enum Type {
 

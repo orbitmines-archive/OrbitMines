@@ -86,7 +86,7 @@ public class KitSelectorGUI extends GUI {
 
                             /* Left Click */
                             case PICKUP_ALL:
-                                // TODO OPEN KIT INVENTORY
+                                new KitInfoGUI(kitPvP, kit, level == 0 ? 1 : level).open(player);
                                 break;
                         }
                     }
@@ -98,12 +98,11 @@ public class KitSelectorGUI extends GUI {
                         switch (event.getAction()) {
                             /* Right Click */
                             case PICKUP_HALF:
-                                ///this is locked
                                 break;
 
                             /* Left Click */
                             case PICKUP_ALL:
-                                // TODO OPEN KIT INVENTORY
+                                new KitInfoGUI(kitPvP, kit, 1).open(player);
                                 break;
                         }
                     }

@@ -11,6 +11,7 @@ import com.orbitmines.spigot.api.utils.ItemUtils;
 import com.orbitmines.spigot.servers.kitpvp.handlers.KitPvPKit;
 import com.orbitmines.spigot.servers.kitpvp.handlers.actives.Active;
 import com.orbitmines.spigot.servers.kitpvp.handlers.passives.Passive;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -22,6 +23,11 @@ public class KitItemBuilder extends ItemBuilder implements KitItem {
     private KitPvPKit.Level kit;
     private final Map<Passive, Integer> passives;
     private final Map<Active, Integer> actives;
+
+    private Set<Passive> newPassives;
+    private Set<Passive> removedPassives;
+    private Set<Active> newActives;
+    private Set<Active> removedActives;
 
     public KitItemBuilder(KitPvPKit.Level kit, Material material) {
         this(kit, material, 1);
@@ -39,7 +45,7 @@ public class KitItemBuilder extends ItemBuilder implements KitItem {
         this(kit, material, amount, displayName, new ArrayList<>(Arrays.asList(lore)));
     }
 
-    public KitItemBuilder(KitPvPKit.Level kit, KitItemBuilder itemBuilder) {
+    public KitItemBuilder(KitPvPKit.Level kit,KitItemBuilder itemBuilder) {
         super(itemBuilder);
 
         this.kit = kit;
@@ -64,6 +70,16 @@ public class KitItemBuilder extends ItemBuilder implements KitItem {
     }
 
     @Override
+    public Map<Passive, Integer> getPassives() {
+        return passives;
+    }
+
+    @Override
+    public Map<Active, Integer> getActives() {
+        return actives;
+    }
+
+    @Override
     public KitItemBuilder addPassive(Passive passive, Integer level) {
         this.passives.put(passive, level);
         return this;
@@ -72,6 +88,30 @@ public class KitItemBuilder extends ItemBuilder implements KitItem {
     @Override
     public KitItemBuilder addActive(Active active, Integer level) {
         this.actives.put(active, level);
+        return this;
+    }
+
+    @Override
+    public KitItemBuilder applyNewPassive(Set newPassives) {
+        this.newPassives = newPassives;
+        return this;
+    }
+
+    @Override
+    public KitItemBuilder applyRemovedPassive(Set removedPassives) {
+        this.removedPassives = removedPassives;
+        return this;
+    }
+
+    @Override
+    public KitItemBuilder applyNewActives(Set newActives) {
+        this.newActives = newActives;
+        return this;
+    }
+
+    @Override
+    public KitItemBuilder applyRemovedActive(Set removedActives) {
+        this.removedActives = removedActives;
         return this;
     }
 
@@ -108,7 +148,18 @@ public class KitItemBuilder extends ItemBuilder implements KitItem {
                 if (passive.hasBreakLine())
                     lore.add("");
 
-                lore.add(passive.getDisplayName(level));
+                if (newPassives != null && newPassives.contains(passive)) {
+                    lore.add("§a§l+NEW! " + passive.getDisplayName(level));
+                } else if (removedPassives != null && removedPassives.contains(passive)) {
+                    lore.add("§c§m" + ChatColor.stripColor(passive.getDisplayName(level)));
+
+                    meta.setLore(lore);
+                    item.setItemMeta(meta);
+                    continue;
+                } else {
+                    lore.add(passive.getDisplayName(level));
+                }
+
                 lore.addAll(Arrays.asList(passive.getDescription(level)));
                 if (passive.isStackable())
                     lore.add("  §2§o[stackable]");
@@ -143,5 +194,10 @@ public class KitItemBuilder extends ItemBuilder implements KitItem {
     @Override
     protected ItemStack modify(ItemStack itemStack) {
         return super.modify(itemStack);
+    }
+
+    @Override
+    public ItemBuilder clone() {
+        return new KitItemBuilder(this.kit, this);
     }
 }

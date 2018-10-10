@@ -6,6 +6,7 @@ import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.chat.ActionBar;
 import com.orbitmines.spigot.api.handlers.chat.ComponentMessage;
 import com.orbitmines.spigot.api.handlers.chat.Title;
+import com.orbitmines.spigot.api.handlers.npc.FloatingItem;
 import com.orbitmines.spigot.api.nms.entity.EntityNms;
 import com.orbitmines.spigot.api.nms.itemstack.ItemStackNms;
 import com.orbitmines.spigot.servers.kitpvp.KitPvP;
@@ -39,6 +40,8 @@ public class KitPvPPlayer extends OMPlayer {
     private boolean spawnProtection;
     private KitPvPKit.Level selectedKit;
     private int killStreak;
+
+    private List<FloatingItem> kitInfo;
 
     public KitPvPPlayer(KitPvP kitPvP, Player player) {
         super(player);

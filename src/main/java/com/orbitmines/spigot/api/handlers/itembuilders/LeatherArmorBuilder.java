@@ -15,6 +15,7 @@ import java.util.List;
 */
 public class LeatherArmorBuilder extends ItemBuilder {
 
+    protected Type type;
     protected Color color;
 
     public LeatherArmorBuilder(Type type) {
@@ -40,7 +41,16 @@ public class LeatherArmorBuilder extends ItemBuilder {
     public LeatherArmorBuilder(Type type, Color color, int amount, String displayName, List<String> lore) {
         super(type.material, amount, displayName, lore);
 
+        this.type = type;
         this.color = color;
+    }
+
+
+    public LeatherArmorBuilder(LeatherArmorBuilder builder) {
+        super(builder.material, builder.amount, builder.displayName, new ArrayList<>(builder.lore));
+
+        this.type = builder.type;
+        this.color = builder.color;
     }
 
     public Color getColor() {

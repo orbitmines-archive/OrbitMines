@@ -25,10 +25,7 @@ import com.orbitmines.spigot.api.handlers.itemhandlers.ItemHover;
 import com.orbitmines.spigot.api.handlers.kit.KitInteractive;
 import com.orbitmines.spigot.api.handlers.leaderboard.LeaderBoard;
 import com.orbitmines.spigot.api.handlers.leaderboard.hologram.PlayerHologramLeaderBoard;
-import com.orbitmines.spigot.api.handlers.npc.MobNpc;
-import com.orbitmines.spigot.api.handlers.npc.Npc;
-import com.orbitmines.spigot.api.handlers.npc.PersonalisedMobNpc;
-import com.orbitmines.spigot.api.handlers.npc.PlayerFreezer;
+import com.orbitmines.spigot.api.handlers.npc.*;
 import com.orbitmines.spigot.api.handlers.scoreboard.OMScoreboard;
 import com.orbitmines.spigot.api.handlers.scoreboard.ScoreboardSet;
 import com.orbitmines.spigot.api.handlers.timer.Timer;
@@ -197,6 +194,10 @@ public abstract class OMPlayer {
             if (npc instanceof PersonalisedMobNpc)
                 ((PersonalisedMobNpc) npc).onLogin(this);
         }
+        for (FloatingItem floatingItem : FloatingItem.getFloatingItems()) {
+            if (floatingItem instanceof PersonalisedFloatingItem)
+                ((PersonalisedFloatingItem) floatingItem).onLogin(this);
+        }
 
         /* Initiate server login */
         onLogin();
@@ -281,6 +282,11 @@ public abstract class OMPlayer {
         for (MobNpc npc : MobNpc.getMobNpcs()) {
             if (npc instanceof PersonalisedMobNpc)
                 ((PersonalisedMobNpc) npc).onLogout(this);
+        }
+
+        for (FloatingItem floatingItem : FloatingItem.getFloatingItems()) {
+            if (floatingItem instanceof PersonalisedFloatingItem)
+                ((PersonalisedFloatingItem) floatingItem).onLogout(this);
         }
 
         /* Remove PlayerFreezer */

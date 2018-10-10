@@ -4,6 +4,8 @@ import com.google.common.io.ByteArrayDataInput;
 import com.orbitmines.api.*;
 import com.orbitmines.api.Color;
 import com.orbitmines.api.Server;
+import com.orbitmines.api.database.Table;
+import com.orbitmines.api.database.tables.kitpvp.TableKitPvPPlayers;
 import com.orbitmines.api.utils.NumberUtils;
 import com.orbitmines.api.utils.RandomUtils;
 import com.orbitmines.api.utils.TimeUtils;
@@ -18,13 +20,19 @@ import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.api.handlers.itemhandlers.ItemHoverActionBar;
 import com.orbitmines.spigot.api.handlers.kit.Kit;
 import com.orbitmines.spigot.api.handlers.kit.KitInteractive;
+import com.orbitmines.spigot.api.handlers.leaderboard.LeaderBoard;
+import com.orbitmines.spigot.api.handlers.leaderboard.podium.DefaultPodiumLeaderBoard;
+import com.orbitmines.spigot.api.handlers.npc.PersonalisedFloatingItem;
 import com.orbitmines.spigot.api.handlers.scoreboard.DefaultScoreboard;
+import com.orbitmines.spigot.api.handlers.scoreboard.ScoreboardString;
 import com.orbitmines.spigot.api.utils.ItemUtils;
 import com.orbitmines.spigot.api.utils.PlayerUtils;
 import com.orbitmines.spigot.api.utils.WorldUtils;
 import com.orbitmines.spigot.servers.hub.datapoints.HubDataPointSpawnpoint;
 import com.orbitmines.spigot.servers.hub.gui.stats.ServerStatsGUI;
 import com.orbitmines.spigot.servers.kitpvp.cmd.CommandPrismShop;
+import com.orbitmines.spigot.servers.kitpvp.datapoints.KitPvPDataPointLobbyKitInfo;
+import com.orbitmines.spigot.servers.kitpvp.datapoints.KitPvPDataPointMapBarrier;
 import com.orbitmines.spigot.servers.kitpvp.datapoints.KitPvPDataPointMapSpawnpoint;
 import com.orbitmines.spigot.servers.kitpvp.datapoints.KitPvPDataPointMapSpectatorSpawnpoint;
 import com.orbitmines.spigot.servers.kitpvp.events.*;
@@ -38,6 +46,7 @@ import com.orbitmines.spigot.servers.kitpvp.handlers.kits.*;
 import com.orbitmines.spigot.servers.kitpvp.handlers.passives.Passive;
 import com.orbitmines.spigot.servers.kitpvp.runnables.PassiveRunnable;
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemFlag;
@@ -62,6 +71,20 @@ public class KitPvP extends OrbitMinesServer {
     private Map<Language, Kit> spectatorKit;
 
     private List<Location> spawnLocations;
+
+    static {
+        new LeaderBoard.Instantiator("KITPVP_KILLS") {
+            @Override
+            public LeaderBoard instantiate(Location location, String[] data) {
+                return new DefaultPodiumLeaderBoard(location, data, 3, Table.KITPVP_PLAYERS, TableKitPvPPlayers.UUID, TableKitPvPPlayers.KILLS) {
+                    @Override
+                    public String getValue(CachedPlayer player, int count) {
+                        return "§c§l" + NumberUtils.locale(count) + " " + (count == 1 ? "Kill" : "Kills");
+                    }
+                };
+            }
+        };
+    }
 
     public KitPvP(OrbitMines orbitMines) {
         super(orbitMines, Server.KITPVP, new PluginMessageHandler() {
@@ -132,6 +155,12 @@ public class KitPvP extends OrbitMinesServer {
             List<Location> voteSigns = new ArrayList<>();//TODO
 
             map.setup(spawnLocations, spectatorLocations, voteSigns);
+
+            for (Block block : ((KitPvPDataPointMapBarrier) (map.getHandler().getDataPoint(KitPvPMapDataPointHandler.Type.BARRIER))).getBarriers()) {
+                for (int y = block.getY(); y < block.getWorld().getMaxHeight(); y++) {
+                    block.getWorld().getBlockAt(block.getX(), y, block.getZ()).setType(Material.BARRIER);
+                }
+            }
         }
 
         /* Remove trapdoor from PreventionSet: we want players to be able to interact with trapdoors and buttons */
@@ -152,6 +181,25 @@ public class KitPvP extends OrbitMinesServer {
 
         /* Datapoints */
         spawnLocations = ((HubDataPointSpawnpoint) (orbitMines.getLobby().getHandler().getDataPoint(KitPvPLobbyDataPointHandler.Type.SPAWNPOINT))).getSpawns();
+
+        Map<Location, KitPvPDataPointLobbyKitInfo.KitInfo> kitInfo = ((KitPvPDataPointLobbyKitInfo) (orbitMines.getLobby().getHandler().getDataPoint(KitPvPLobbyDataPointHandler.Type.KIT_INFO))).getKitInfo();
+        for (Location location : kitInfo.keySet()) {
+            KitPvPDataPointLobbyKitInfo.KitInfo info = kitInfo.get(location);
+
+            PersonalisedFloatingItem npc = new PersonalisedFloatingItem(info.getIcon(), location.subtract(0, 2, 0)) {
+                @Override
+                public ScoreboardString[] getLines(OMPlayer player) {
+                    KitPvPPlayer omp = (KitPvPPlayer) player;
+
+                    return new ScoreboardString[] {
+                            info::getDisplayName,
+                            () -> "§7§o" + info.getDescription(omp.getLastSelected())
+                    };
+                }
+            };
+
+            npc.create();
+        }
     }
 
     @Override
@@ -459,6 +507,9 @@ public class KitPvP extends OrbitMinesServer {
             }
 
             kit.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0, true, false));
+
+            //TODO COSMETIC HELMET
+            kit.setHelmet(new ItemBuilder(Material.WHITE_STAINED_GLASS, 1, "§7Helmet"));
 
             lobbyKit.put(language, kit);
         }

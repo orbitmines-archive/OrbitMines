@@ -8,6 +8,7 @@ import com.orbitmines.spigot.datapoints.DataPointNpc;
 import com.orbitmines.spigot.datapoints.DataPointPatchNotes;
 import com.orbitmines.spigot.servers.hub.datapoints.HubDataPointSpawnpoint;
 import com.orbitmines.spigot.servers.hub.datapoints.HubDataPointStaffHologram;
+import com.orbitmines.spigot.servers.kitpvp.datapoints.KitPvPDataPointLobbyKitInfo;
 
 /*
  * OrbitMines - @author Fadi Shawki - 2018
@@ -49,6 +50,13 @@ public class KitPvPLobbyDataPointHandler extends DataPointHandler {
             @Override
             public DataPoint newInstance() {
                 return new HubDataPointStaffHologram();
+            }
+        },
+
+        KIT_INFO() {
+            @Override
+            public DataPoint newInstance() {
+                return new KitPvPDataPointLobbyKitInfo();
             }
         };
 

@@ -1,6 +1,7 @@
 package com.orbitmines.spigot.servers.kitpvp.handlers.itembuilders;
 
 import com.orbitmines.api.utils.RandomUtils;
+import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.api.handlers.itembuilders.PotionBuilder;
 import com.orbitmines.spigot.api.handlers.itembuilders.PotionItemBuilder;
 import com.orbitmines.spigot.api.nms.itemstack.ItemStackNms;
@@ -21,6 +22,11 @@ public class KitPotionItemBuilder extends PotionItemBuilder implements KitItem {
     private final KitPvPKit.Level kit;
     private final Map<Passive, Integer> passives;
     private final Map<Active, Integer> actives;
+
+    private Set<Passive> newPassives;
+    private Set<Passive> removedPassives;
+    private Set<Active> newActives;
+    private Set<Active> removedActives;
 
     public KitPotionItemBuilder(KitPvPKit.Level kit, PotionBuilder potionBuilder) {
         this(kit, Type.NORMAL, potionBuilder);
@@ -54,6 +60,24 @@ public class KitPotionItemBuilder extends PotionItemBuilder implements KitItem {
         this.actives = new HashMap<>();
     }
 
+    public KitPotionItemBuilder(KitPvPKit.Level kit, KitPotionItemBuilder builder) {
+        super(builder);
+
+        this.kit = kit;
+        this.passives = new HashMap<>(builder.passives);
+        this.actives = new HashMap<>(builder.actives);
+    }
+
+    @Override
+    public Map<Passive, Integer> getPassives() {
+        return passives;
+    }
+
+    @Override
+    public Map<Active, Integer> getActives() {
+        return actives;
+    }
+
     @Override
     public KitPotionItemBuilder addPassive(Passive passive, Integer level) {
         this.passives.put(passive, level);
@@ -63,6 +87,30 @@ public class KitPotionItemBuilder extends PotionItemBuilder implements KitItem {
     @Override
     public KitPotionItemBuilder addActive(Active active, Integer level) {
         this.actives.put(active, level);
+        return this;
+    }
+
+    @Override
+    public KitPotionItemBuilder applyNewPassive(Set newPassives) {
+        this.newPassives = newPassives;
+        return this;
+    }
+
+    @Override
+    public KitPotionItemBuilder applyRemovedPassive(Set removedPassives) {
+        this.removedPassives = removedPassives;
+        return this;
+    }
+
+    @Override
+    public KitPotionItemBuilder applyNewActives(Set newActives) {
+        this.newActives = newActives;
+        return this;
+    }
+
+    @Override
+    public KitPotionItemBuilder applyRemovedActive(Set removedActives) {
+        this.removedActives = removedActives;
         return this;
     }
 
@@ -134,5 +182,10 @@ public class KitPotionItemBuilder extends PotionItemBuilder implements KitItem {
     @Override
     protected ItemStack modify(ItemStack itemStack) {
         return super.modify(itemStack);
+    }
+
+    @Override
+    public ItemBuilder clone() {
+        return new KitPotionItemBuilder(this.kit, this);
     }
 }

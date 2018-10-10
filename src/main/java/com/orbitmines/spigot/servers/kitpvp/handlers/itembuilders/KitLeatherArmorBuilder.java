@@ -1,6 +1,7 @@
 package com.orbitmines.spigot.servers.kitpvp.handlers.itembuilders;
 
 import com.orbitmines.api.utils.RandomUtils;
+import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.api.handlers.itembuilders.LeatherArmorBuilder;
 import com.orbitmines.spigot.api.nms.itemstack.ItemStackNms;
 import com.orbitmines.spigot.api.utils.ItemUtils;
@@ -21,6 +22,11 @@ public class KitLeatherArmorBuilder extends LeatherArmorBuilder implements KitIt
     private final KitPvPKit.Level kit;
     private final Map<Passive, Integer> passives;
     private final Map<Active, Integer> actives;
+
+    private Set<Passive> newPassives;
+    private Set<Passive> removedPassives;
+    private Set<Active> newActives;
+    private Set<Active> removedActives;
 
     public KitLeatherArmorBuilder(KitPvPKit.Level kit, Type type) {
         this(kit, type, null, 1);
@@ -52,6 +58,26 @@ public class KitLeatherArmorBuilder extends LeatherArmorBuilder implements KitIt
         unbreakable(true);
     }
 
+    public KitLeatherArmorBuilder(KitPvPKit.Level kit, KitLeatherArmorBuilder builder) {
+        super(builder);
+
+        this.kit = kit;
+        this.passives = new HashMap<>(builder.passives);
+        this.actives = new HashMap<>(builder.actives);
+
+        unbreakable(true);
+    }
+
+    @Override
+    public Map<Passive, Integer> getPassives() {
+        return passives;
+    }
+
+    @Override
+    public Map<Active, Integer> getActives() {
+        return actives;
+    }
+
     @Override
     public KitLeatherArmorBuilder addPassive(Passive passive, Integer level) {
         this.passives.put(passive, level);
@@ -61,6 +87,30 @@ public class KitLeatherArmorBuilder extends LeatherArmorBuilder implements KitIt
     @Override
     public KitLeatherArmorBuilder addActive(Active active, Integer level) {
         this.actives.put(active, level);
+        return this;
+    }
+
+    @Override
+    public KitLeatherArmorBuilder applyNewPassive(Set newPassives) {
+        this.newPassives = newPassives;
+        return this;
+    }
+
+    @Override
+    public KitLeatherArmorBuilder applyRemovedPassive(Set removedPassives) {
+        this.removedPassives = removedPassives;
+        return this;
+    }
+
+    @Override
+    public KitLeatherArmorBuilder applyNewActives(Set newActives) {
+        this.newActives = newActives;
+        return this;
+    }
+
+    @Override
+    public KitLeatherArmorBuilder applyRemovedActive(Set removedActives) {
+        this.removedActives = removedActives;
         return this;
     }
 
@@ -132,5 +182,10 @@ public class KitLeatherArmorBuilder extends LeatherArmorBuilder implements KitIt
     @Override
     protected ItemStack modify(ItemStack itemStack) {
         return super.modify(itemStack);
+    }
+
+    @Override
+    public ItemBuilder clone() {
+        return new KitLeatherArmorBuilder(this.kit, this);
     }
 }
