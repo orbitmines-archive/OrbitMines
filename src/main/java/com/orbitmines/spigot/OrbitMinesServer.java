@@ -16,6 +16,7 @@ import com.orbitmines.spigot.api.runnables.SpigotRunnable;
 import com.orbitmines.spigot.servers.hub.Hub;
 import com.orbitmines.spigot.servers.kitpvp.KitPvP;
 import com.orbitmines.spigot.servers.survival.Survival;
+import com.orbitmines.spigot.servers.uhsurvival.UHSurvival;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -257,6 +258,8 @@ public abstract class OrbitMinesServer {
                 return null;
             case MINIGAMES:
                 return null;
+            case UHSURVIVAL:
+                return new UHSurvival(orbitMines);
             default:
                 throw new IllegalStateException();
         }

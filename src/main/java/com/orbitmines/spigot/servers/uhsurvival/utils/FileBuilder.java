@@ -45,10 +45,6 @@ public class FileBuilder {
         file.delete();
     }
 
-    public YamlConfiguration getYaml() {
-        return yaml;
-    }
-
     public void set(String name, Object obj) {
         yaml.set(name, obj);
     }

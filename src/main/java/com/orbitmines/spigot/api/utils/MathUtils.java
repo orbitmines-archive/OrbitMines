@@ -18,13 +18,22 @@ public class MathUtils {
         return -1;
     }
 
+    public static double getDouble(String s){
+        try{
+            return Double.parseDouble(s);
+        }catch(NumberFormatException ex){
+            ex.printStackTrace();
+        }
+        return -1;
+    }
+
     public static int clamp(int x, int min, int max){
         return max < x ? max : x < min ? min : x;
     }
 
     public static boolean randomize(int min, int max, int x){
         int r = random.nextInt(max);
-        return min <= x && x <= r;
+        return min <= r && r <= x;
     }
 
     public static int randomInteger(int i) {

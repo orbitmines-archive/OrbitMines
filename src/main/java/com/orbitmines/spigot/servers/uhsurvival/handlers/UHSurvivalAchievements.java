@@ -1,9 +1,5 @@
 package com.orbitmines.spigot.servers.uhsurvival.handlers;
 
-/*
- * OrbitMines - @author Fadi Shawki - 2018
- */
-
 import com.orbitmines.api.Message;
 import com.orbitmines.api.Rarity;
 import com.orbitmines.api.Server;
@@ -15,60 +11,39 @@ public enum UHSurvivalAchievements implements Achievement {
 
     ;
 
-    static {
-
-    }
-
-    private final String name;
-    private final Rarity rarity;
-    private final Loot.Instance[] rewards;
-    private final Message[] description;
-
-    private AchievementHandler handler;
-
-    UHSurvivalAchievements(String name, Rarity rarity, Loot.Instance reward, Message... description) {
-        this(name, rarity, new Loot.Instance[] { reward }, description);
-    }
-
-    UHSurvivalAchievements(String name, Rarity rarity, Loot.Instance[] rewards, Message... description) {
-        this.name = name;
-        this.rarity = rarity;
-        this.rewards = rewards;
-        this.description = description;
-    }
 
     @Override
     public int getId() {
-        return ordinal();
+        return 0;
     }
 
     @Override
     public String getName() {
-        return name;
+        return null;
     }
 
     @Override
     public Server getServer() {
-        return Server.UHSURVIVAL;
+        return null;
     }
 
     @Override
     public Rarity getRarity() {
-        return rarity;
+        return null;
     }
 
     @Override
     public Loot.Instance[] getRewards() {
-        return rewards;
+        return new Loot.Instance[0];
     }
 
     @Override
     public Message[] getDescription() {
-        return description;
+        return new Message[0];
     }
 
     @Override
     public AchievementHandler getHandler() {
-        return handler;
+        return null;
     }
 }

@@ -3,32 +3,32 @@ package com.orbitmines.spigot.servers.uhsurvival;
 import com.google.common.io.ByteArrayDataInput;
 import com.orbitmines.api.PluginMessage;
 import com.orbitmines.api.Server;
-import com.orbitmines.api.StaffRank;
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.OrbitMinesServer;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.PluginMessageHandler;
-import com.orbitmines.spigot.servers.uhsurvival.command.*;
-import com.orbitmines.spigot.servers.uhsurvival.events.*;
+import com.orbitmines.spigot.servers.uhsurvival.commands.DungeonCommand;
+import com.orbitmines.spigot.servers.uhsurvival.event.*;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.UHPlayer;
+import com.orbitmines.spigot.servers.uhsurvival.handlers.item.ItemManager;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.map.Map;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.map.block.BlockManager;
-import com.orbitmines.spigot.servers.uhsurvival.handlers.profile.PlayerProfile;
-import com.orbitmines.spigot.servers.uhsurvival.handlers.profile.food.FoodManager;
-import com.orbitmines.spigot.servers.uhsurvival.handlers.tool.enchantments.EnchantmentManager;
-import com.orbitmines.spigot.servers.uhsurvival.runnables.GameRunnable;
-import com.orbitmines.spigot.servers.uhsurvival.utils.enums.World;
+import com.orbitmines.spigot.servers.uhsurvival.handlers.map.dungeon.loottable.LootTableManager;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-/*
-* OrbitMines - @author Playwarrior - 2017
-*/
+import java.util.ArrayList;
+import java.util.List;
+
 public class UHSurvival extends OrbitMinesServer {
 
-    private FoodManager foodManager;
-    private EnchantmentManager enchantmentManager;
-    private BlockManager blockManager;
+    private List<Map> maps;
+
+    private ItemManager itemManager;
+    private BlockManager  blockManager;
+    private static LootTableManager lootTableManager;
 
     public UHSurvival(OrbitMines orbitMines) {
         super(orbitMines, Server.UHSURVIVAL, new PluginMessageHandler() {
@@ -37,31 +37,25 @@ public class UHSurvival extends OrbitMinesServer {
 
             }
         });
+        lootTableManager = new LootTableManager(this);
+
+        this.maps = new ArrayList<>();
+        this.maps.add(new Map(Bukkit.getWorlds().get(0), -10000, 10000, -10000, 10000));
+        this.blockManager = new BlockManager(this);
+        this.itemManager = new ItemManager();
     }
 
     @Override
     public void onEnable() {
-        this.foodManager = new FoodManager(this);
-        this.enchantmentManager = new EnchantmentManager(this);
-        this.blockManager = new BlockManager(this);
-        for(World world : World.values()){
-            Map map = world.getMap();
-            if(map != null){
-                map.getDungeons().deserialize();
-            }
-        }
-        PlayerProfile.setUpProfiles();
+
     }
 
     @Override
     public void onDisable() {
-        for(World world : World.values()){
-            if(world.getMap() != null){
-                Map map = world.getMap();
-                map.getDungeons().serialize();
-            }
+        lootTableManager.serialize();
+        for(Map map : maps){
+            map.getDM().serialize();
         }
-        PlayerProfile.saveProfiles();
     }
 
     @Override
@@ -80,27 +74,23 @@ public class UHSurvival extends OrbitMinesServer {
     }
 
     @Override
-    public void registerEvents() {
+    protected void registerEvents() {
         registerEvents(new BreakBlockEvent(this),
-                        new EntityDamageEvent(this),
-                        new LoadChunkEvent(),
-                        new MobEvent(),
-                        new ProfileEvents(this),
-                        new MapEvents());
+                new PlayerMoveEvent(),
+                new PlayerInteractEvent(),
+                new SpawnEvent(this),
+                new AttackEvent(this),
+                new EnchantmentEvent());
     }
 
     @Override
-    public void registerCommands() {
-        new DungeonCommand(StaffRank.MODERATOR);
-        new LootTableCommand(StaffRank.DEVELOPER);
-        new EnchantmentCommand(StaffRank.MODERATOR);
-        new ProfileCommands();
-        new MapCommand(StaffRank.MODERATOR);
+    protected void registerCommands() {
+        new DungeonCommand();
     }
 
     @Override
-    public void registerRunnables() {
-        new GameRunnable(this);
+    protected void registerRunnables() {
+
     }
 
     @Override
@@ -108,15 +98,20 @@ public class UHSurvival extends OrbitMinesServer {
 
     }
 
-    public FoodManager getFoodManager() {
-        return foodManager;
+    public Map getMap(World world){
+        for(Map map : maps){
+            if(map.getWorld().equals(world)){
+                return map;
+            }
+        }
+        return null;
     }
 
-    public EnchantmentManager getEnchantmentManager() {
-        return enchantmentManager;
-    }
-
-    public BlockManager getBlockManager() {
+    public BlockManager getBM() {
         return blockManager;
+    }
+
+    public static LootTableManager getLM() {
+        return lootTableManager;
     }
 }

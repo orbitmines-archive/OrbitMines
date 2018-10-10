@@ -97,6 +97,19 @@ public class LocationUtils {
         return blocks;
     }
 
+    public static boolean isBetween(Location loc, Location loc1, Location loc2){
+        int minX = (int) Math.min(loc.getX(), loc1.getX());
+        int maxX = (int) Math.max(loc.getX(), loc1.getX());
+        int minY = (int) Math.min(loc.getY(), loc1.getY());
+        int maxY = (int) Math.max(loc.getY(), loc1.getY());
+        int minZ = (int) Math.min(loc.getZ(), loc1.getZ());
+        int maxZ = (int) Math.max(loc.getZ(), loc1.getZ());
+
+
+
+        return (minX <= loc2.getX() && loc2.getX() <= maxX) && (minY <= loc2.getY() && loc2.getY() <= maxY) && (minZ <= loc2.getZ() && loc2.getZ() <= maxZ);
+    }
+
     public static void addIdenticalBlocksTouching(Block block, List<Block> blocks) {
         blocks.add(block);
 
