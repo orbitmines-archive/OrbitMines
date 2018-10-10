@@ -66,8 +66,10 @@ public abstract class SpigotRunnable {
         if (!runnables.containsKey(time.getTicks()))
             return;
 
-        if (task != null && runnables.get(time.getTicks()).size() == 1) {
-            task.cancel();
+        if (runnables.get(time.getTicks()).size() == 1) {
+            if (task != null)
+                task.cancel();
+
             runnables.remove(time.getTicks());
             return;
         }
@@ -92,6 +94,11 @@ public abstract class SpigotRunnable {
         this.task = new BukkitRunnable() {
             @Override
             public void run() {
+                if (!runnables.containsKey(ticks)) {
+                    SpigotRunnable.this.cancel();
+                    return;
+                }
+
                 for (SpigotRunnable runnable : new ArrayList<>(runnables.get(ticks))) {
                     runnable.run();
                 }

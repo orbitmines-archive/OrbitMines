@@ -31,7 +31,7 @@ public class KitBunny extends KitPvPKit {
         super(
                 kitPvP,
 
-                7L, "Bunny",
+                8L, "Bunny",
 
                 Color.YELLOW,
                 new ItemBuilder(Material.LEATHER_BOOTS).addFlag(ItemFlag.HIDE_ATTRIBUTES),
@@ -53,7 +53,7 @@ public class KitBunny extends KitPvPKit {
 
         @Override
         public int getPrice() {
-            return 0;
+            return 12500;
         }
 
         @Override
@@ -94,7 +94,7 @@ public class KitBunny extends KitPvPKit {
 
         @Override
         public int getPrice() {
-            return 0;
+            return 30000;
         }
 
         @Override
@@ -136,7 +136,7 @@ public class KitBunny extends KitPvPKit {
 
         @Override
         public int getPrice() {
-            return 0;
+            return 70000;
         }
 
         @Override

@@ -87,7 +87,7 @@ public class KitArcher extends KitPvPKit {
 
         @Override
         public int getPrice() {
-            return 0;
+            return 20000;
         }
 
         @Override
@@ -126,7 +126,7 @@ public class KitArcher extends KitPvPKit {
 
         @Override
         public int getPrice() {
-            return 0;
+            return 50000;
         }
 
         @Override

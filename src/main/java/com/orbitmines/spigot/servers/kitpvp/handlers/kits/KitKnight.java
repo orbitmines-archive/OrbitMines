@@ -86,7 +86,7 @@ public class KitKnight extends KitPvPKit {
 
         @Override
         public int getPrice() {
-            return 0;
+            return 20000;
         }
 
         @Override
@@ -124,7 +124,7 @@ public class KitKnight extends KitPvPKit {
 
         @Override
         public int getPrice() {
-            return 0;
+            return 50000;
         }
 
         @Override

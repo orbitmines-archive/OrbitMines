@@ -25,7 +25,7 @@ public class KitPyro extends KitPvPKit {
         super(
                 kitPvP,
 
-                6L, "Pyro",
+                7L, "Pyro",
 
                 Color.YELLOW,
                 new ItemBuilder(Material.GOLDEN_HELMET).addFlag(ItemFlag.HIDE_ATTRIBUTES),
@@ -47,7 +47,7 @@ public class KitPyro extends KitPvPKit {
 
         @Override
         public int getPrice() {
-            return 0;
+            return 12500;
         }
 
         @Override
@@ -86,7 +86,7 @@ public class KitPyro extends KitPvPKit {
 
         @Override
         public int getPrice() {
-            return 0;
+            return 30000;
         }
 
         @Override
@@ -125,7 +125,7 @@ public class KitPyro extends KitPvPKit {
 
         @Override
         public int getPrice() {
-            return 0;
+            return 70000;
         }
 
         @Override

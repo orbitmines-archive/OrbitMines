@@ -642,7 +642,7 @@ public class PatchNotes {
         add(new Instance(Server.KITPVP, "v1.0.0", "KitPvP Release", "", "2018-10-10",
                 new Feature(
                         "KITPVP", Color.RED,
-                        "Hellootjes."
+                        "KitPvP Release!"
                 )
         ));
     }

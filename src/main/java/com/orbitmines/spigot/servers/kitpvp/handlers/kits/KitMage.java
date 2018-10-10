@@ -47,7 +47,7 @@ public class KitMage extends KitPvPKit {
 
         @Override
         public int getPrice() {
-            return 0;
+            return 10000;
         }
 
         @Override
@@ -89,7 +89,7 @@ public class KitMage extends KitPvPKit {
 
         @Override
         public int getPrice() {
-            return 0;
+            return 25000;
         }
 
         @Override
@@ -132,7 +132,7 @@ public class KitMage extends KitPvPKit {
 
         @Override
         public int getPrice() {
-            return 0;
+            return 60000;
         }
 
         @Override

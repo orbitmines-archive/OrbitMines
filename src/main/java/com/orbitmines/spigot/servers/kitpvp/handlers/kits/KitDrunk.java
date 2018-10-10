@@ -24,7 +24,7 @@ public class KitDrunk extends KitPvPKit {
         super(
                 kitPvP,
 
-                5L, "Drunk",
+                6L, "Drunk",
 
                 Color.YELLOW,
                 new ItemBuilder(Material.GLASS_BOTTLE),
@@ -46,7 +46,7 @@ public class KitDrunk extends KitPvPKit {
 
         @Override
         public int getPrice() {
-            return 0;
+            return 12500;
         }
 
         @Override
@@ -87,7 +87,7 @@ public class KitDrunk extends KitPvPKit {
 
         @Override
         public int getPrice() {
-            return 0;
+            return 30000;
         }
 
         @Override
@@ -128,7 +128,7 @@ public class KitDrunk extends KitPvPKit {
 
         @Override
         public int getPrice() {
-            return 0;
+            return 70000;
         }
 
         @Override

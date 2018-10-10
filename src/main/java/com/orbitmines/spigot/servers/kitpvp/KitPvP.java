@@ -208,7 +208,8 @@ public class KitPvP extends OrbitMinesServer {
     }
 
     public boolean isSaturday() {
-        return Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY;
+        return true;
+//        return Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY;
     }
 
     public Kit getLobbyKit(KitPvPPlayer omp) {
@@ -286,10 +287,10 @@ public class KitPvP extends OrbitMinesServer {
             new KitSoldier(this);
             new KitMage(this);
             new KitTank(this);
+            new KitKing(this);
             new KitDrunk(this);
             new KitPyro(this);
             new KitBunny(this);
-            new KitKing(this);
         }
 
         /* Player Tracker */
@@ -367,14 +368,24 @@ public class KitPvP extends OrbitMinesServer {
             KitInteractive kit = new KitInteractive(language.toString());
 
             {
-//                kit.setItem(0, RULE_BOOK.get(language));
-//
-//                new ItemHoverActionBar(new ItemBuilder(Material.WRITTEN_BOOK, 1, "§f "), false) {
-//                    @Override
-//                    public String getMessage(OMPlayer omp) {
-//                        return "§4§l" + omp.lang("Regels", "Rules") + "§r §8- §e§l" + omp.lang("Rechtermuisklik", "Right Click");
-//                    }
-//                };
+                ItemBuilder item = new ItemBuilder(Material.ENDER_EYE, 1, "§0 ");
+
+                kit.setItem(0, new KitInteractive.InteractAction(item) {
+                    @Override
+                    public void onInteract(PlayerInteractEvent event, OMPlayer omp) {
+                        event.setCancelled(true);
+
+                        //TODO SPECTATING
+                    }
+                });
+
+                new ItemHoverActionBar(item, false) {
+                    @Override
+                    public String getMessage(OMPlayer omp, ItemStack itemStack) {
+                        return "§e§lSpectate§r §8- §a§l" + omp.lang("Binnenkort", "Coming Soon");
+//                        return "§e§lSpectate§r §8- §e§l" + omp.lang("Rechtermuisklik", "Right Click");
+                    }
+                };
             }
 
             {

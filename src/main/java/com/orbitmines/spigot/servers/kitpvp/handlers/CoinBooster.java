@@ -70,11 +70,11 @@ public class CoinBooster {
 
     public enum Type {
 
-        DEFAULT(1.25, VipRank.NONE, 250, "Coin Booster", VipRank.NONE.getPrefixColor(), new ItemBuilder(Material.GOLD_NUGGET), new SpigotRunnable.Time(SpigotRunnable.TimeUnit.MINUTE, 30)),
-        IRON(1.5, VipRank.IRON, 250, VipRank.IRON.getName() + " Coin Booster", VipRank.IRON.getPrefixColor(), new ItemBuilder(Material.IRON_INGOT), new SpigotRunnable.Time(SpigotRunnable.TimeUnit.MINUTE, 30)),
-        GOLD(1.75, VipRank.GOLD, 250, VipRank.GOLD.getName() + " Coin Booster", VipRank.GOLD.getPrefixColor(), new ItemBuilder(Material.GOLD_INGOT), new SpigotRunnable.Time(SpigotRunnable.TimeUnit.MINUTE, 30)),
-        DIAMOND(2.0, VipRank.DIAMOND, 250, VipRank.DIAMOND.getName() + " Coin Booster", VipRank.DIAMOND.getPrefixColor(), new ItemBuilder(Material.DIAMOND), new SpigotRunnable.Time(SpigotRunnable.TimeUnit.MINUTE, 30)),
-        EMERALD(2.5, VipRank.EMERALD, 250, VipRank.EMERALD.getName() + " Coin Booster", VipRank.EMERALD.getPrefixColor(), new ItemBuilder(Material.EMERALD), new SpigotRunnable.Time(SpigotRunnable.TimeUnit.MINUTE, 30));
+        DEFAULT(1.25, VipRank.NONE, 250, "Coin Booster", VipRank.NONE.getPrefixColor(), new ItemBuilder(Material.GOLD_NUGGET), new SpigotRunnable.Time(SpigotRunnable.TimeUnit.SECOND, 30 * 60)),
+        IRON(1.5, VipRank.IRON, 250, VipRank.IRON.getName() + " Coin Booster", VipRank.IRON.getPrefixColor(), new ItemBuilder(Material.IRON_INGOT), new SpigotRunnable.Time(SpigotRunnable.TimeUnit.SECOND, 30 * 60)),
+        GOLD(1.75, VipRank.GOLD, 250, VipRank.GOLD.getName() + " Coin Booster", VipRank.GOLD.getPrefixColor(), new ItemBuilder(Material.GOLD_INGOT), new SpigotRunnable.Time(SpigotRunnable.TimeUnit.SECOND, 30 * 60)),
+        DIAMOND(2.0, VipRank.DIAMOND, 250, VipRank.DIAMOND.getName() + " Coin Booster", VipRank.DIAMOND.getPrefixColor(), new ItemBuilder(Material.DIAMOND), new SpigotRunnable.Time(SpigotRunnable.TimeUnit.SECOND, 30 * 60)),
+        EMERALD(2.5, VipRank.EMERALD, 250, VipRank.EMERALD.getName() + " Coin Booster", VipRank.EMERALD.getPrefixColor(), new ItemBuilder(Material.EMERALD), new SpigotRunnable.Time(SpigotRunnable.TimeUnit.SECOND, 30 * 60));
 
         private final double multiplier;
         private final VipRank vipRank;

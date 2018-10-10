@@ -21,7 +21,7 @@ public class KitSelectorGUI extends GUI {
     private final KitPvP kitPvP;
 
     public KitSelectorGUI(KitPvP kitPvP) {
-        newInventory(36, "§0§lKit Selector");
+        newInventory(9, "§0§lKit Selector");
 
         this.kitPvP = kitPvP;
     }
@@ -47,9 +47,12 @@ public class KitSelectorGUI extends GUI {
                 icon.glow();
 
                 if (level == 0) {
+//                    icon.setDisplayName(icon.getDisplayName() + " §d§l§m" + omp.lang("VERGRENDELD", "LOCKED"));
+//
+//                    icon.addLore("§d§lFREE KIT SATURDAY");
                     icon.setDisplayName(icon.getDisplayName() + " §d§l§m" + omp.lang("VERGRENDELD", "LOCKED"));
 
-                    icon.addLore("§d§lFREE KIT SATURDAY");
+                    icon.addLore("§c§lFREE KITS (KITPVP RELEASE)");
                 } else {
                     icon.setAmount(level);
 

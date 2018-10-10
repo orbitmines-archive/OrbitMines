@@ -15,6 +15,7 @@ import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -38,6 +39,9 @@ public class InteractEvent implements Listener {
         }
 
         if (omp.getSelectedKit() != null) {
+            if (event.getAction() != Action.RIGHT_CLICK_BLOCK && event.getAction() != Action.RIGHT_CLICK_AIR)
+                return;
+
             /* In arena */
             ItemStack item = event.getItem();
 

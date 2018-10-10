@@ -22,6 +22,7 @@ import com.orbitmines.spigot.servers.kitpvp.handlers.itembuilders.KitItem;
 import com.orbitmines.spigot.servers.kitpvp.handlers.passives.Passive;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemFlag;
@@ -61,6 +62,35 @@ public class KitInfoGUI extends GUI {
                 new KitSelectorGUI(kitPvP).open(omp);
             }
         });
+
+        int unlockedLevel = omp.getKitData(handler).getUnlockedLevel();
+        if (unlockedLevel >= level) {
+            /* Unlocked */
+            add(5, 8, new EmptyItemInstance(new ItemBuilder(Material.LIME_TERRACOTTA, level, "§a§l" + omp.lang("ONTGRENDELD", "UNLOCKED")).build()));
+        } else if (unlockedLevel == level - 1) {
+            /* Purchase */
+            add(5, 8, new ItemInstance(new ItemBuilder(Material.RED_TERRACOTTA, level, "§4§l" + omp.lang("VERGRENDELD", "LOCKED"), "§7Price: §6§l" + NumberUtils.locale(kit.getPrice()), "", omp.lang("§aKlik hier om te kopen.", "§aClick here to buy.")).build()) {
+                @Override
+                public void onClick(InventoryClickEvent event, OMPlayer player) {
+                    KitPvPPlayer omp = (KitPvPPlayer) player;
+
+                    if (omp.getCoins() >= kit.getPrice()) {
+                        omp.removeCoins(kit.getPrice());
+                        omp.getKitData(handler).setUnlockedLevel(level);
+
+                        omp.playSound(Sound.ENTITY_PLAYER_LEVELUP);
+
+                        reopen(omp);
+                    } else {
+                        omp.playSound(Sound.ENTITY_ENDERMAN_SCREAM);
+                        omp.sendMessage("Shop", Color.RED, "Je hebt niet genoeg §6§lCoins§7.", "You don't have enough §6§lCoins§7.");
+                    }
+                }
+            });
+        } else {
+            /* Can't purchase */
+            add(5, 8, new EmptyItemInstance(new ItemBuilder(Material.GRAY_TERRACOTTA, level, "§8§l" + omp.lang("NIET BESCHIKBAAR", "UNAVAILABLE"), "§8Price: §8§l" + NumberUtils.locale(kit.getPrice())).build()));
+        }
 
         /* Level Buttons */
         {

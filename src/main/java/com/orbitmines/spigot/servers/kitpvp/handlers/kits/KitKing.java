@@ -10,6 +10,7 @@ import com.orbitmines.spigot.servers.kitpvp.handlers.KitPvPKit;
 import com.orbitmines.spigot.servers.kitpvp.handlers.actives.Active;
 import com.orbitmines.spigot.servers.kitpvp.handlers.itembuilders.KitItemBuilder;
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemFlag;
 
 public class KitKing extends KitPvPKit {
 
@@ -18,10 +19,10 @@ public class KitKing extends KitPvPKit {
         super(
                 kitPvP,
 
-                9L, "King",
+                5L, "King",
 
-                Color.AQUA,
-                new ItemBuilder(Material.DIAMOND_HELMET),
+                Color.YELLOW,
+                new ItemBuilder(Material.DIAMOND_HELMET).addFlag(ItemFlag.HIDE_ATTRIBUTES),
 
                 KitClass.MELEE);
     }
@@ -40,7 +41,7 @@ public class KitKing extends KitPvPKit {
 
         @Override
         public int getPrice() {
-            return 0;
+            return 10000;
         }
 
         @Override
@@ -69,7 +70,7 @@ public class KitKing extends KitPvPKit {
 
         @Override
         public HealthRegen getHealthRegen() {
-            return HealthRegen.NORMAL;
+            return HealthRegen.MEDIUM;
         }
     }
 
@@ -77,7 +78,7 @@ public class KitKing extends KitPvPKit {
 
         @Override
         public int getPrice() {
-            return 0;
+            return 25000;
         }
 
         @Override
@@ -106,14 +107,14 @@ public class KitKing extends KitPvPKit {
 
         @Override
         public HealthRegen getHealthRegen() {
-            return HealthRegen.NORMAL;
+            return HealthRegen.MEDIUM;
         }
     }
     private class Level3 extends Level {
 
         @Override
         public int getPrice() {
-            return 0;
+            return 60000;
         }
 
         @Override
@@ -142,7 +143,7 @@ public class KitKing extends KitPvPKit {
 
         @Override
         public HealthRegen getHealthRegen() {
-            return HealthRegen.NORMAL;
+            return HealthRegen.MEDIUM;
         }
     }
 }

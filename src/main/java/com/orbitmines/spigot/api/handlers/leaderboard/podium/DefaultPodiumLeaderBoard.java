@@ -11,7 +11,6 @@ import com.orbitmines.spigot.api.handlers.leaderboard.LeaderBoard;
 import com.orbitmines.spigot.api.handlers.npc.Hologram;
 import com.orbitmines.spigot.api.utils.BlockDataUtils;
 import com.orbitmines.spigot.api.utils.WorldUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -39,7 +38,10 @@ public class DefaultPodiumLeaderBoard extends LeaderBoard {
         int place = Integer.parseInt(data[1]);
         float yaw = Float.parseFloat(data[2]);
 
-        if (podiums.size() != 1) {
+        for (Podium podium : podiums) {
+            if (podium.getPlace() != place)
+                continue;
+
             podiums.add(new Podium(location, place, yaw));
             getLeaderBoards().remove(this);
             return;
@@ -105,16 +107,21 @@ public class DefaultPodiumLeaderBoard extends LeaderBoard {
 
             hologram = new Hologram(location, 0, Hologram.Face.UP);
 
-//            String placeString;
-//            switch (place) {
-//                case 1:
-//                    placeString = "§6§l1"
-//                    break;
-//            }
-//            if (place == 1)
-//                placeString = "§6§l1st";
-//            else if ()
-//                placeString
+            String placeString;
+            switch (place) {
+                case 1:
+                    placeString = "§6§l1st";
+                    break;
+                case 2:
+                    placeString = "§7§l2nd";
+                    break;
+                case 3:
+                    placeString = "§c§l3rd";
+                    break;
+                default:
+                    placeString = "§8§l" + place + "th";
+            }
+            hologram.addLine(() -> placeString, false);
 
             hologram.addLine(() -> {
                 String playerName;
@@ -175,10 +182,10 @@ public class DefaultPodiumLeaderBoard extends LeaderBoard {
             Block block = BlockDataUtils.setBlock(location.getWorld(), location.getBlockX(), location.getBlockY(), location.getBlockZ(), Material.PLAYER_HEAD);
 
             Skull skull = (Skull) block.getState();
-            skull.setOwningPlayer(Bukkit.getOfflinePlayer(uuid));
-            skull.setRotation(WorldUtils.fromYaw(yaw));
+            skull.setOwner(player.getPlayerName());
+            skull.setRotation(WorldUtils.fromYaw(yaw).getOppositeFace());
 
-            block.getState().update(true);
+            skull.update(true, true);
         }
     }
 }

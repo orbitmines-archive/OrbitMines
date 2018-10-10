@@ -15,7 +15,7 @@ public class ActiveHealing implements Active.Handler {
 
     @Override
     public void trigger(PlayerInteractEvent event, KitPvPPlayer omp, int level) {
-        omp.playSound(Sound.ENTITY_PLAYER_LEVELUP);//TODO: HMM RIGHT SOUND?
+        omp.playSound(Sound.ENTITY_GENERIC_DRINK);
 
         builder.setDuration((level + 1) * 20);
         omp.addPotionEffect(builder);

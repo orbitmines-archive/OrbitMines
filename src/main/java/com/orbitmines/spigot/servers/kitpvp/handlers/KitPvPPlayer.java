@@ -1,5 +1,6 @@
 package com.orbitmines.spigot.servers.kitpvp.handlers;
 
+import com.orbitmines.api.Color;
 import com.orbitmines.api.utils.NumberUtils;
 import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
@@ -16,6 +17,7 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Sound;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
@@ -114,6 +116,28 @@ public class KitPvPPlayer extends OMPlayer {
     public void processKill(PlayerDeathEvent event, KitPvPPlayer killed) {
         addKill();
 
+        this.killStreak++;
+        new Title("", "                     §5" + killStreak, 20, 60, 20).send(this);
+
+        if (this.killStreak > 25 || this.killStreak % 5 == 0)
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    orbitMines.broadcast("", Color.PURPLE, getName() + " §7heeft een §5§l" + killStreak + " Kill Streak§7!", getName() + " §7has a §5§l" + killStreak + " Kill Streak");
+                }
+            }.runTaskLater(orbitMines, 1);
+
+        if (this.killStreak > getBestStreak()) {
+            if (this.killStreak >= 3) {
+                sendMessage("", Color.PURPLE, "Je hebt je record verbroken met een §5§l" + this.killStreak + " Kill Streak§7!", "You have broken your record with a §5§l" + this.killStreak + " Kill Streak§7!");
+                playSound(Sound.ENTITY_PLAYER_LEVELUP);
+            }
+
+            setBestStreak(this.killStreak, true);
+        } else if (this.killStreak > getKitData(selectedKit.getHandler()).getBestStreak()) {
+            setBestStreak(this.killStreak, false);
+        }
+
         /* Passives */
         {
             ItemStackNms nms = kitPvP.getOrbitMines().getNms().customItem();
@@ -151,6 +175,7 @@ public class KitPvPPlayer extends OMPlayer {
 
         /* Kill Hologram */
         //TODO
+
     }
 
     private int applyMultiplier(int current, double multiplier) {
@@ -165,8 +190,17 @@ public class KitPvPPlayer extends OMPlayer {
 
         levelData.updateExperienceBar();
 
-        //event.setDeathMessage(null);
-        //TODO DEATH MESSAGES + DISCORD
+        if (killer != null) {
+            if (player.getLastDamageCause().getEntity() instanceof Arrow) {
+                orbitMines.broadcast("", Color.MAROON, getName() + "§7 is doodgeschoten door " + killer.getName() + "§7!", getName() + "§7 was shot by " + killer.getName() + "§7!");
+            } else {
+                orbitMines.broadcast("", Color.MAROON, getName() + "§7 is gedood door " + killer.getName() + "§7!", getName() + "§7 was killed by " + killer.getName() + "§7!");
+            }
+        } else {
+            orbitMines.broadcast("§7" + event.getDeathMessage().replaceAll(getRealName(), getName() + "§7"));
+        }
+
+        event.setDeathMessage(null);
 
         //TODO SPAWN BED
     }
@@ -363,7 +397,7 @@ public class KitPvPPlayer extends OMPlayer {
     }
 
     public void addKill() {
-        getData().addKill(selectedKit.getHandler().getId());
+        getData().addKill((selectedKit != null ? selectedKit : getLastSelected()).getHandler().getId());
     }
 
     /*
@@ -375,7 +409,7 @@ public class KitPvPPlayer extends OMPlayer {
     }
 
     public void addDeath() {
-        getData().addDeath(selectedKit.getHandler().getId());
+        getData().addDeath((selectedKit != null ? selectedKit : getLastSelected()).getHandler().getId());
     }
 
     /*
@@ -386,8 +420,8 @@ public class KitPvPPlayer extends OMPlayer {
         return getData().getBestStreak();
     }
 
-    private void setBestStreak(int bestStreak) {
-        getData().setBestStreak(selectedKit.getHandler().getId(), bestStreak);
+    private void setBestStreak(int bestStreak, boolean total) {
+        getData().setBestStreak((selectedKit != null ? selectedKit : getLastSelected()).getHandler().getId(), bestStreak, total);
     }
 
     /*

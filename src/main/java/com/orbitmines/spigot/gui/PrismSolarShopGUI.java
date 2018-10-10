@@ -16,7 +16,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 public class PrismSolarShopGUI extends GUI {
 
     public PrismSolarShopGUI() {
-        newInventory(45, "§0§lePrism & Solar Shop");
+        newInventory(45, "§0§lPrism & Solar Shop");
     }
 
     @Override

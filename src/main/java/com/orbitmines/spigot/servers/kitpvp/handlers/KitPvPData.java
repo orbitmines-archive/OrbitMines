@@ -160,10 +160,12 @@ public class KitPvPData extends Data {
         return bestStreak;
     }
 
-    public void setBestStreak(long kitId, int bestStreak) {
-        /* Total Stats */
-        this.bestStreak = bestStreak;
-        Database.get().update(Table.KITPVP_PLAYERS, new Set(TableKitPvPPlayers.BEST_STREAK, this.bestStreak), new Where(TableKitPvPPlayers.UUID, getUUID().toString()));
+    public void setBestStreak(long kitId, int bestStreak, boolean total) {
+        if (total) {
+            /* Total Stats */
+            this.bestStreak = bestStreak;
+            Database.get().update(Table.KITPVP_PLAYERS, new Set(TableKitPvPPlayers.BEST_STREAK, this.bestStreak), new Where(TableKitPvPPlayers.UUID, getUUID().toString()));
+        }
 
         /* Kit Stats */
         KitData data = getKitData(kitId);
@@ -235,8 +237,7 @@ public class KitPvPData extends Data {
             this.kitId = kitId;
 
             /* Unlock Knight, Archer & Soldier. */
-//            this.unlockedLevel = kitId <= 2 ? 1 : 0;
-            this.unlockedLevel = 0;
+            this.unlockedLevel = kitId <= 2 ? 1 : 0;
 
             this.kills = 0;
             this.deaths = 0;

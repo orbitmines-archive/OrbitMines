@@ -22,7 +22,7 @@ public class KitSpider extends KitPvPKit {
         super(
                 kitPvP,
 
-                10L, "Spider",
+                9L, "Spider",
 
                 Color.PURPLE,
                 new ItemBuilder(Material.SPIDER_EYE),
