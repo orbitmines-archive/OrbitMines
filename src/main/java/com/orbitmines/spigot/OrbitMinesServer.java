@@ -1,21 +1,30 @@
 package com.orbitmines.spigot;
 
 import com.orbitmines.api.*;
-import com.orbitmines.api.Message;
+import com.orbitmines.api.database.Database;
+import com.orbitmines.api.database.Table;
 import com.orbitmines.discordbot.DiscordBot;
 import com.orbitmines.discordbot.utils.BotToken;
-import com.orbitmines.discordbot.utils.SkinLibrary;
+import com.orbitmines.discordbot.utils.DiscordSpigotUtils;
+import com.orbitmines.discordbot.utils.DiscordUtils;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.PluginMessageHandler;
 import com.orbitmines.spigot.api.handlers.PreventionSet;
 import com.orbitmines.spigot.api.handlers.chat.ComponentMessage;
+import com.orbitmines.spigot.api.options.ApiOption;
 import com.orbitmines.spigot.api.runnables.SpigotRunnable;
 import com.orbitmines.spigot.servers.hub.Hub;
+import com.orbitmines.spigot.servers.kitpvp.KitPvP;
 import com.orbitmines.spigot.servers.survival.Survival;
-import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
+import net.minecraft.server.v1_13_R2.MinecraftServer;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
@@ -24,6 +33,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.PluginManager;
+
+import java.util.List;
+import java.util.UUID;
 
 /*
 * OrbitMines - @author Fadi Shawki - 2017
@@ -48,15 +60,34 @@ public abstract class OrbitMinesServer {
         this.preventionSet = new PreventionSet();
         this.maintenanceBossBar = Bukkit.createBossBar(server.getDisplayName() + " §7§l| " + Server.Status.MAINTENANCE.getDisplayName(), BarColor.PINK, BarStyle.SOLID);
 
+        /* Setup Discord */
+        try {
+            token = BotToken.from(server);
+            discord = new DiscordBot(false, token);
+        } catch(Exception ex) {
+            ex.printStackTrace();
+        }
+
         registerEvents();
+
+        /* register commands */
         registerCommands();
+
         registerRunnables();
 
         new SpigotRunnable(SpigotRunnable.TimeUnit.SECOND, 2) {
             @Override
             public void run() {
-                if (server.getStatus() != Server.Status.MAINTENANCE) {
-                    server.setStatus(Server.Status.ONLINE);
+                Server.Status status = server.getStatus();
+
+                if (status == Server.Status.RESTARTING) {
+                    Bukkit.shutdown();
+                } else if (status != Server.Status.MAINTENANCE) {
+                    if (status != Server.Status.ONLINE)
+                        server.setStatus(Server.Status.ONLINE);
+                    else
+                        server.resetLastUpdate();
+
                     maintenanceBossBar.removeAll();
                 } else {
                     for (Player player : Bukkit.getOnlinePlayers()) {
@@ -67,13 +98,13 @@ public abstract class OrbitMinesServer {
             }
         };
 
-        /* Setup Discord */
-        try {
-            token = BotToken.from(server);
-            discord = new DiscordBot(token);
-        } catch(Exception ex) {
-            ex.printStackTrace();
-        }
+        new SpigotRunnable(SpigotRunnable.TimeUnit.MINUTE, 5) {
+            @Override
+            public void run() {
+                MinecraftServer server = MinecraftServer.getServer();
+                Database.get().insert(Table.STATS_TPS, System.currentTimeMillis() + "", OrbitMinesServer.this.server.toString(), ((long) ((server.recentTps[0] + server.recentTps[1] + server.recentTps[2]) / 3) * 10000L) + "");
+            }
+        };
     }
 
     public abstract void onEnable();
@@ -88,6 +119,11 @@ public abstract class OrbitMinesServer {
     /* OMPlayer is not yet initiated here */
     public abstract Location getSpawnLocation(Player player);
 
+    public abstract GameMode getGameMode();
+
+    /* Word Formatting; [item], /cmd etc.. -> Add component to list */
+    public abstract boolean format(CachedPlayer sender, OMPlayer receiver, Color color, String string, List<ComponentMessage.TempTextComponent> list);
+
     protected abstract void registerEvents();
 
     protected abstract void registerCommands();
@@ -96,8 +132,10 @@ public abstract class OrbitMinesServer {
 
     public abstract void setupNpc(String npcName, Location location);
 
-    public void format(AsyncPlayerChatEvent event, OMPlayer omp) {
-        event.setFormat(omp.getRankPrefix() + omp.getName() + "§7 » " + omp.getRankChatColor().getChatColor() + "%2$s");
+    protected void setup(ApiOption... options) {
+        for (ApiOption option : options) {
+            option.setup(orbitMines);
+        }
     }
 
     public void fromDiscord(Member member, net.dv8tion.jda.core.entities.Message message) {
@@ -113,71 +151,84 @@ public abstract class OrbitMinesServer {
                 } catch (IllegalArgumentException ex1) { }
             }
         }
-        //TODO DISCORD LINK GRAB CACHEDPLAYER
 
         ComponentMessage cM = new ComponentMessage();
 
         String rankPrefix = staffRank != StaffRank.NONE ? staffRank.getPrefix(staffRank.getPrefixColor()) : vipRank.getPrefix(vipRank.getPrefixColor());
         Color chatColor = staffRank != StaffRank.NONE ? staffRank.getChatColor() : vipRank.getChatColor();
+        Color prefixColor = staffRank != StaffRank.NONE ? staffRank.getPrefixColor() : vipRank.getPrefixColor();
 
         cM.add(new Message("§9§lDISCORD§r"));
         cM.add(new Message(" §7» "));
 
         String name = rankPrefix + "@" + member.getEffectiveName();
-        cM.add(new Message(name), HoverEvent.Action.SHOW_TEXT, new Message(rankPrefix + "@" + member.getUser().getName() + "#" + member.getUser().getDiscriminator()));
 
-        String msg = message.getContentDisplay();
-        for (Role role : message.getMentionedRoles()) {
-            msg = msg.replaceAll(role.getAsMention(), "@" + role.getName());
-        }
-        for (TextChannel textChannel : message.getMentionedChannels()) {
-            msg = msg.replaceAll(textChannel.getAsMention(), "#" + textChannel.getName());
-        }
-        for (Member mem : message.getMentionedMembers()) {
-            msg = msg.replaceAll(mem.getAsMention(), "@" + mem.getEffectiveName());
-        }
-        for (Emote emote : message.getEmotes()) {
-            msg = msg.replaceAll(emote.getAsMention(), emote.getName());
+        UUID uuid = discord.getLinkedUUID(member.getUser());
+        CachedPlayer sender = null;
+        String playerName = null;
+
+        if (uuid != null) {
+            sender = CachedPlayer.getPlayer(uuid);
+            playerName = sender.getRankPrefixColor().getChatColor() + sender.getPlayerName();
         }
 
-        cM.add(new Message(" §7» " + chatColor.getChatColor() + msg));
+        cM.add(new Message(name), HoverEvent.Action.SHOW_TEXT, new Message(prefixColor.getChatColor() + "@" + member.getUser().getName() + "#" + member.getUser().getDiscriminator() + "\n§7Rank: " + (staffRank == StaffRank.NONE ? vipRank.getDisplayName() : (vipRank == VipRank.NONE ? staffRank.getDisplayName() : (staffRank.getDisplayName() + " §7/ " + vipRank.getDisplayName()))) + "\n§7IGN: " + (playerName == null ? StaffRank.NONE.getDisplayName() : playerName)));
 
+        cM.add(new Message(" §7» "));
+
+        /* Filter discord mentions */
+        String filtered = DiscordUtils.filterFromDiscord(chatColor.getChatColor(), message);
+
+        /* File Attachment */
+        ComponentMessage.TempTextComponent attachmentComponent = null;
         if (message.getAttachments().size() != 0) {
             net.dv8tion.jda.core.entities.Message.Attachment attachment = message.getAttachments().get(0);
-            cM.add(new Message(" (File: §9§l" + attachment.getFileName() + "§r" + chatColor.getChatColor() + ")"), ClickEvent.Action.OPEN_URL, new Message(attachment.getUrl()), HoverEvent.Action.SHOW_TEXT, new Message("§7Klik hier om §9§l" + attachment.getFileName() + "§7 te openen.", "§7Click here to open §9§l" + attachment.getFileName() + "§7."));
+            attachmentComponent = new ComponentMessage.TempTextComponent(new Message((filtered.equals("") ? "" : " ") + "(File: §l" + attachment.getFileName() + "§r§3)"), ClickEvent.Action.OPEN_URL, new Message(attachment.getUrl()), HoverEvent.Action.SHOW_TEXT, new Message("§7Klik hier om §3§l" + attachment.getFileName() + "§7 te openen.", "§7Click here to open §3§l" + attachment.getFileName() + "§7.")).setChatColor(ChatColor.DARK_AQUA);
         }
 
-        cM.send(OMPlayer.getPlayers());
+        /* Send per player for commands&mentions */
+        for (OMPlayer player : OMPlayer.getPlayers()) {
+            ComponentMessage componentMessage = new ComponentMessage(cM);
+
+            for (ComponentMessage.TempTextComponent component : DiscordSpigotUtils.formatMessage(this, sender, player, chatColor, filtered)) {
+                componentMessage.add(component);
+            }
+
+            if (attachmentComponent != null)
+                componentMessage.add(attachmentComponent);
+
+            componentMessage.send(player);
+        }
+    }
+
+    public void toMinecraft(OMPlayer omp, String message) {
+        CachedPlayer sender = CachedPlayer.getPlayer(omp.getUUID());
+
+        ComponentMessage cM = new ComponentMessage();
+
+        for (ComponentMessage.TempTextComponent component : omp.getChatPrefix()) {
+            cM.add(component);
+        }
+
+        cM.add(DiscordSpigotUtils.getPlayerMention(omp, omp.getRankPrefix() + omp.getName()));
+
+        cM.add("§7 » ");
+
+        Color rankChatColor = omp.getRankChatColor();
+
+        for (OMPlayer player : OMPlayer.getPlayers()) {
+            ComponentMessage componentMessage = new ComponentMessage(cM);
+
+            for (ComponentMessage.TempTextComponent component : DiscordSpigotUtils.formatMessage(this, sender, player, rankChatColor, message)) {
+                componentMessage.add(component);
+            }
+
+            componentMessage.send(player);
+        }
     }
 
     public void toDiscord(AsyncPlayerChatEvent event, OMPlayer omp) {
-        Guild guild = discord.getGuild(token);
-
-        CharSequence text = SkinLibrary.getEmote(guild, omp.getUUID()).getAsMention() + getDiscordRankPrefix(omp) + " **" + omp.getName(true) + "** » ";
-
-        String message = event.getMessage();
-
-        for (Role role : guild.getRoles()) {
-            message = message.replaceAll("@" + role.getName(), role.getAsMention());
-        }
-        for (TextChannel textChannel : guild.getTextChannels()) {
-            message = message.replaceAll("#" + textChannel.getName(), textChannel.getAsMention());
-        }
-        for (Member member : guild.getMembers()) {
-            message = message.replace("@" + member.getEffectiveName() + "#" + member.getUser().getDiscriminator(), member.getAsMention()).replaceAll("@" + member.getEffectiveName(), member.getAsMention()).replaceAll("@" + member.getNickname(), member.getAsMention());
-        }
-        for (Emote emote : guild.getEmotes()) {
-            message = message.replaceAll(":" + emote.getName() + ":", emote.getAsMention());
-        }
-
-        getDiscordChannel().sendMessage(text + message).queue();
-    }
-
-    public String getDiscordRankPrefix(OMPlayer omp) {
-        if (omp.getStaffRank() == StaffRank.NONE)
-            return omp.getVipRank() != VipRank.NONE ? " " + discord.getEmote(token, omp.getVipRank()).getAsMention() + "**" + omp.getRankName() + "**" : "";
-
-        return " **" + omp.getRankName() + "**";
+        getDiscordChannel().sendMessage(DiscordSpigotUtils.getDisplay(discord, token, omp) + " » " + DiscordUtils.filterToDiscord(discord, token, event.getMessage())).queue();
     }
 
     protected void registerEvents(Listener... listeners) {
@@ -191,7 +242,7 @@ public abstract class OrbitMinesServer {
         switch (server) {
 
             case KITPVP:
-                return null;
+                return new KitPvP(orbitMines);
             case PRISON:
                 return null;
             case CREATIVE:

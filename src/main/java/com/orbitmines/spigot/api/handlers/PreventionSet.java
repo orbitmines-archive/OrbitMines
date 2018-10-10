@@ -1,21 +1,15 @@
 package com.orbitmines.spigot.api.handlers;
 
 import com.orbitmines.spigot.OrbitMines;
-import org.bukkit.Material;
+import com.orbitmines.spigot.api.utils.ItemUtils;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.block.LeavesDecayEvent;
-import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.block.*;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.weather.WeatherChangeEvent;
@@ -23,7 +17,10 @@ import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /*
 * OrbitMines - @author Fadi Shawki - 2017
@@ -80,6 +77,9 @@ public class PreventionSet {
             case BLOCK_INTERACTING:
                 listener = new PreventBlockInteracting();
                 break;
+            case BLOCK_SPREAD:
+                listener = new PreventBlockSpread();
+                break;
             case MONSTER_EGG_USAGE:
                 listener = new PreventMonsterEggUsage();
                 break;
@@ -113,6 +113,9 @@ public class PreventionSet {
             case ENTITY_INTERACTING:
                 listener = new PreventEntityInteracting();
                 break;
+            case EXPLOSION_DAMAGE:
+                listener = new PreventExplosionDamage();
+                break;
         }
 
         listeners.put(prevention, listener);
@@ -143,6 +146,7 @@ public class PreventionSet {
         BLOCK_PLACE,
         BLOCK_BREAK,
         BLOCK_INTERACTING,
+        BLOCK_SPREAD,
         MONSTER_EGG_USAGE,
         SWAP_HAND_ITEMS,
         ITEM_DROP,
@@ -153,7 +157,8 @@ public class PreventionSet {
         CLICK_PLAYER_INVENTORY,
         PLAYER_DAMAGE,
         LEAF_DECAY,
-        ENTITY_INTERACTING
+        ENTITY_INTERACTING,
+        EXPLOSION_DAMAGE
 
     }
 
@@ -262,8 +267,6 @@ public class PreventionSet {
 
     public class PreventBlockInteracting implements Listener {
 
-        private final List<Material> notClickable = Arrays.asList(Material.CHEST, Material.ENDER_CHEST, Material.TRAPPED_CHEST, Material.FURNACE, Material.WORKBENCH, Material.ANVIL, Material.ENCHANTMENT_TABLE, Material.DISPENSER, Material.HOPPER, Material.DROPPER, Material.TRAP_DOOR, Material.LEVER, Material.STONE_BUTTON, Material.WOOD_BUTTON, Material.ACACIA_DOOR, Material.ACACIA_FENCE_GATE, Material.BED_BLOCK, Material.BIRCH_DOOR, Material.BIRCH_FENCE_GATE, Material.BREWING_STAND, Material.BURNING_FURNACE, Material.CAKE_BLOCK, Material.CAULDRON, Material.COMMAND, Material.DARK_OAK_DOOR, Material.DARK_OAK_FENCE_GATE, Material.ENDER_PORTAL, Material.FENCE_GATE, Material.FIRE, Material.FLOWER_POT, Material.JUNGLE_DOOR, Material.JUNGLE_FENCE_GATE, Material.JUKEBOX, Material.OBSERVER, Material.REDSTONE_COMPARATOR_OFF, Material.REDSTONE_COMPARATOR_ON, Material.REDSTONE_COMPARATOR, Material.SPRUCE_DOOR, Material.SPRUCE_FENCE_GATE, Material.TRAP_DOOR, Material.WOOD_DOOR, Material.WOODEN_DOOR, Material.RAILS, Material.ACTIVATOR_RAIL, Material.DETECTOR_RAIL, Material.POWERED_RAIL, Material.BLACK_SHULKER_BOX, Material.SILVER_SHULKER_BOX, Material.BLUE_SHULKER_BOX, Material.BROWN_SHULKER_BOX, Material.CYAN_SHULKER_BOX, Material.GRAY_SHULKER_BOX, Material.GREEN_SHULKER_BOX, Material.LIGHT_BLUE_SHULKER_BOX, Material.LIME_SHULKER_BOX, Material.MAGENTA_SHULKER_BOX, Material.ORANGE_SHULKER_BOX, Material.PINK_SHULKER_BOX, Material.PURPLE_SHULKER_BOX, Material.RED_SHULKER_BOX, Material.WHITE_SHULKER_BOX, Material.YELLOW_SHULKER_BOX);
-
         @EventHandler
         public void preventBlockInteracting(PlayerInteractEvent event) {
             if (event.getAction() != Action.RIGHT_CLICK_BLOCK)
@@ -274,8 +277,19 @@ public class PreventionSet {
             if (!worlds.get(Prevention.BLOCK_INTERACTING).contains(block.getWorld()))
                 return;
 
-            if (notClickable.contains(block.getType()))
+            if (ItemUtils.INTERACTABLE.contains(block.getType()) && (!ItemUtils.RAILS.contains(block.getType()) || event.getItem() != null && ItemUtils.MINECARTS.contains(event.getItem().getType())))
                 event.setCancelled(true);
+        }
+    }
+
+    public class PreventBlockSpread implements Listener {
+
+        @EventHandler
+        public void preventBlockInteracting(BlockSpreadEvent event) {
+            if (!worlds.get(Prevention.BLOCK_SPREAD).contains(event.getBlock().getWorld()))
+                return;
+
+            event.setCancelled(true);
         }
     }
 
@@ -288,13 +302,13 @@ public class PreventionSet {
             if (!worlds.get(Prevention.MONSTER_EGG_USAGE).contains(player.getWorld()))
                 return;
 
-            ItemStack item = player.getInventory().getItemInMainHand();
+            ItemStack mainHand = player.getInventory().getItemInMainHand();
+            ItemStack offHand = player.getInventory().getItemInOffHand();
 
-            if (item == null || item.getType() != Material.MONSTER_EGG && item.getType() != Material.EGG)
-                return;
-
-            event.setCancelled(true);
-            OMPlayer.getPlayer(player).updateInventory();
+            if (mainHand != null && ItemUtils.EGGS.contains(mainHand.getType()) || offHand != null && ItemUtils.EGGS.contains(offHand.getType())) {
+                event.setCancelled(true);
+                OMPlayer.getPlayer(player).updateInventory();
+            }
         }
 
         @EventHandler
@@ -304,13 +318,13 @@ public class PreventionSet {
             if (!worlds.get(Prevention.MONSTER_EGG_USAGE).contains(player.getWorld()))
                 return;
 
-            ItemStack item = player.getInventory().getItemInMainHand();
+            ItemStack mainHand = player.getInventory().getItemInMainHand();
+            ItemStack offHand = player.getInventory().getItemInOffHand();
 
-            if (item == null || item.getType() != Material.MONSTER_EGG && item.getType() != Material.EGG)
-                return;
-
-            event.setCancelled(true);
-            OMPlayer.getPlayer(player).updateInventory();
+            if (mainHand != null && ItemUtils.EGGS.contains(mainHand.getType()) || offHand != null && ItemUtils.EGGS.contains(offHand.getType())) {
+                event.setCancelled(true);
+                OMPlayer.getPlayer(player).updateInventory();
+            }
         }
 
         @EventHandler
@@ -320,13 +334,13 @@ public class PreventionSet {
             if (!worlds.get(Prevention.MONSTER_EGG_USAGE).contains(player.getWorld()))
                 return;
 
-            ItemStack item = player.getInventory().getItemInMainHand();
+            ItemStack mainHand = player.getInventory().getItemInMainHand();
+            ItemStack offHand = player.getInventory().getItemInOffHand();
 
-            if (item == null || item.getType() != Material.MONSTER_EGG && item.getType() != Material.EGG)
-                return;
-
-            event.setCancelled(true);
-            OMPlayer.getPlayer(player).updateInventory();
+            if (mainHand != null && ItemUtils.EGGS.contains(mainHand.getType()) || offHand != null && ItemUtils.EGGS.contains(offHand.getType())) {
+                event.setCancelled(true);
+                OMPlayer.getPlayer(player).updateInventory();
+            }
         }
     }
 
@@ -384,7 +398,7 @@ public class PreventionSet {
 
         @EventHandler
         public void preventPhysicalInteracting(PlayerInteractEvent event) {
-            if (event.getAction() != Action.PHYSICAL || !worlds.get(Prevention.PHYSICAL_INTERACTING_EXCEPT_PLATES).contains(event.getPlayer().getWorld()) || event.getClickedBlock().getType() == Material.STONE_PLATE || event.getClickedBlock().getType() != Material.WOOD_PLATE)
+            if (event.getAction() != Action.PHYSICAL || !worlds.get(Prevention.PHYSICAL_INTERACTING_EXCEPT_PLATES).contains(event.getPlayer().getWorld()) || ItemUtils.PRESSURE_PLATES.contains(event.getClickedBlock().getType()))
                 return;
 
             event.setCancelled(true);
@@ -393,11 +407,9 @@ public class PreventionSet {
 
     public class PreventBucketUsage implements Listener {
 
-        private final List<Material> buckets = Arrays.asList(Material.WATER_BUCKET, Material.LAVA_BUCKET);
-
         @EventHandler
         public void preventBucketUsage(PlayerInteractEvent event) {
-            if (event.getAction() != Action.RIGHT_CLICK_BLOCK || !worlds.get(Prevention.BLOCK_INTERACTING).contains(event.getPlayer().getWorld()) || event.getItem() == null || !buckets.contains(event.getItem().getType()))
+            if (event.getAction() != Action.RIGHT_CLICK_BLOCK || !worlds.get(Prevention.BLOCK_INTERACTING).contains(event.getPlayer().getWorld()) || event.getItem() == null || !ItemUtils.BUCKETS.contains(event.getItem().getType()))
                 return;
 
             event.setCancelled(true);
@@ -450,6 +462,17 @@ public class PreventionSet {
         @EventHandler
         public void preventEntityInteracting(PlayerInteractAtEntityEvent event) {
             if (!worlds.get(Prevention.ENTITY_INTERACTING).contains(event.getPlayer().getWorld()))
+                return;
+
+            event.setCancelled(true);
+        }
+    }
+
+    public class PreventExplosionDamage implements Listener {
+
+        @EventHandler
+        public void preventEntityInteracting(EntityExplodeEvent event) {
+            if (!worlds.get(Prevention.EXPLOSION_DAMAGE).contains(event.getLocation().getWorld()))
                 return;
 
             event.setCancelled(true);

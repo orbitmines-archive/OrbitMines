@@ -15,7 +15,7 @@ import com.orbitmines.spigot.servers.hub.handlers.HubPlayer;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
-public class FriendRequestDetailsGUI extends GUI {
+public class FriendRequestDetailsGUI extends GUI implements FriendGUIInstance {
 
     private CachedPlayer friend;
 
@@ -29,7 +29,7 @@ public class FriendRequestDetailsGUI extends GUI {
     protected boolean onOpen(OMPlayer omp) {
         FriendsData data = (FriendsData) omp.getData(Data.Type.FRIENDS);
 
-        add(1, 1, new ItemInstance(new ItemBuilder(Material.BOOK, 1, 0, omp.lang("§a§lAccepteer Vriendschapsverzoek", "§a§lAccept Friend Request")).build()) {
+        add(1, 1, new ItemInstance(new ItemBuilder(Material.BOOK, 1, omp.lang("§a§lAccepteer Vriendschapsverzoek", "§a§lAccept Friend Request")).build()) {
             @Override
             public void onClick(InventoryClickEvent event, OMPlayer omp) {
                 data.onAccept(friend);
@@ -44,14 +44,14 @@ public class FriendRequestDetailsGUI extends GUI {
             }
         });
 
-        add(1, 4, new ItemInstance(new PlayerSkullBuilder(() -> omp.getName(true), 1, omp.lang("§b§lTerug naar Vrienden", "§b§lBack to Friends")).build()) {
+        add(1, 4, new ItemInstance(new PlayerSkullBuilder(() -> omp.getName(true), 1, omp.lang("§b« Terug naar Vrienden", "§b« Back to Friends")).build()) {
             @Override
             public void onClick(InventoryClickEvent event, OMPlayer omp) {
                 new FriendRequestGUI().open(omp);
             }
         });
 
-        add(1, 7, new ItemInstance(new ItemBuilder(Material.BARRIER, 1, 0, omp.lang("§c§lWeiger Vriendschapsverzoek", "§c§lDeny Friend Request")).build()) {
+        add(1, 7, new ItemInstance(new ItemBuilder(Material.BARRIER, 1, omp.lang("§c§lWeiger Vriendschapsverzoek", "§c§lDeny Friend Request")).build()) {
             @Override
             public void onClick(InventoryClickEvent event, OMPlayer omp) {
                 data.onDeny(friend);

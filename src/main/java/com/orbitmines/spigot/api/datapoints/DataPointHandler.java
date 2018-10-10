@@ -3,6 +3,8 @@ package com.orbitmines.spigot.api.datapoints;
 import com.orbitmines.api.Server;
 import com.orbitmines.spigot.api.handlers.OrbitMinesMap;
 import com.orbitmines.spigot.servers.hub.handlers.HubDataPointHandler;
+import com.orbitmines.spigot.servers.kitpvp.handlers.KitPvPLobbyDataPointHandler;
+import com.orbitmines.spigot.servers.kitpvp.handlers.KitPvPMapDataPointHandler;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalDataPointHandler;
 import org.bukkit.Bukkit;
 
@@ -23,7 +25,11 @@ public class DataPointHandler {
 
         //TODO
         handlers.get(Server.HUB).put(OrbitMinesMap.Type.LOBBY, new HubDataPointHandler());
+
         handlers.get(Server.SURVIVAL).put(OrbitMinesMap.Type.LOBBY, new SurvivalDataPointHandler());
+
+        handlers.get(Server.KITPVP).put(OrbitMinesMap.Type.LOBBY, new KitPvPLobbyDataPointHandler());
+        handlers.get(Server.KITPVP).put(OrbitMinesMap.Type.GAMEMAP, new KitPvPMapDataPointHandler());
     }
 
     protected Map<DataPointType, DataPoint> types;

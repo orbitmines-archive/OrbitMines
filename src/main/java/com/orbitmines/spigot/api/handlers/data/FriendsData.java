@@ -3,7 +3,6 @@ package com.orbitmines.spigot.api.handlers.data;
 import com.orbitmines.api.*;
 import com.orbitmines.api.database.*;
 import com.orbitmines.spigot.OrbitMines;
-import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.PluginMessageHandler;
@@ -61,12 +60,13 @@ public class FriendsData extends Data {
     }
 
     public void sendJoinMessage(OMPlayer omp) {
-        messageHandler.dataTransfer(PluginMessage.FAVORITE_FRIEND_MESSAGE, Serializer.serializeUUIDList(friends), getUUID().toString(), omp.getName());
+        messageHandler.dataTransfer(PluginMessage.FAVORITE_FRIEND_MESSAGE, Serializer.serializeUUIDList(friends), getUUID().toString(), omp.getName(true));
     }
 
     /* Inventory Interactions */
     public void onAccept(CachedPlayer friend) {
         onFriendAddition(friend);
+        forceUpdateFor(friend);
     }
 
     public void onDeny(CachedPlayer friend) {
@@ -160,15 +160,6 @@ public class FriendsData extends Data {
     }
 
     private void forceUpdateFor(CachedPlayer friend, Message message) {
-        /* Player is on current server, so no need to update */
-        OMPlayer omp = OMPlayer.getPlayer(friend.getUUID());
-        if (omp != null) {
-            if (message != null)
-                omp.sendMessage(message);
-
-            return;
-        }
-
         /* Player is currently not online, so we do not send the update */
         Server server = friend.getServer();
         if (server == null)

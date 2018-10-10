@@ -16,30 +16,34 @@ import java.util.*;
 */
 public class IP {
 
-    private static List<IP> ips = new ArrayList<>();
+    private static final int MAX_HISTORY = 1000;
+    public static final String UNKNOWN = "UNKNOWN";
+
+    private static Map<UUID, IP> ips = new HashMap<>();
 
     private final UUID uuid;
     private String currentServer;
     private String lastIp;
     private String lastLogin;
     private long lastLoginInMillis;
-    private List<String> allIps;
+    private Map<String, String> allIps;
 
     public IP(UUID uuid, String lastIp) {
-        ips.add(this);
+        ips.put(uuid, this);
 
         this.uuid = uuid;
         this.lastIp = lastIp;
         this.currentServer = null;
         this.lastLogin = getDate(DateUtils.FORMAT);
         updateLastLoginInMillis();
-        this.allIps = new ArrayList<>(Collections.singletonList(lastIp));
+        this.allIps = new HashMap<>();
+        this.allIps.put(lastIp, lastLogin);
 
         updateCurrentServer();
     }
 
-    public IP(UUID uuid, String lastIp, String lastLogin, List<String> allIps) {
-        ips.add(this);
+    public IP(UUID uuid, String lastIp, String lastLogin, Map<String, String> allIps) {
+        ips.put(uuid, this);
 
         this.uuid = uuid;
         this.currentServer = null;
@@ -77,7 +81,7 @@ public class IP {
         return TimeUtils.biggestTimeUnit(System.currentTimeMillis() - lastLoginInMillis, language);
     }
 
-    public List<String> getAllIps() {
+    public Map<String, String> getAllIps() {
         return allIps;
     }
 
@@ -85,13 +89,12 @@ public class IP {
         lastIp = ip;
         lastLogin = getDate(DateUtils.FORMAT);
 
-        /* Max of 3 IPs stored in history */
-        if (!allIps.contains(ip)) {
-            if (allIps.size() == 3)
-                allIps.remove(0);
+        /* Max of 1000 IPs stored in history */
+        if (!allIps.containsKey(ip) && allIps.size() == MAX_HISTORY)
+            allIps.remove(allIps.get(new ArrayList<>(allIps.keySet()).get(0)));
 
-            allIps.add(ip);
-        }
+        allIps.remove(ip);
+        allIps.put(ip, lastLogin);
     }
 
     private String getDate(SimpleDateFormat format) {
@@ -100,8 +103,10 @@ public class IP {
 
     private String serializeHistory() {
         StringBuilder stringBuilder = new StringBuilder();
-        for (String ip : allIps) {
+        for (String ip : allIps.keySet()) {
             stringBuilder.append(ip);
+            stringBuilder.append("~");
+            stringBuilder.append(allIps.get(ip));
             stringBuilder.append("|");
         }
         return stringBuilder.toString().substring(0, stringBuilder.length() -1);
@@ -143,17 +148,13 @@ public class IP {
     }
 
     public static IP getIp(UUID uuid) {
-        for (IP ip : ips) {
-            if (ip.getUuid().toString().equals(uuid.toString()))
-                return ip;
-        }
-        return fromDatabase(uuid);
+        return ips.getOrDefault(uuid, fromDatabase(uuid));
     }
 
     public static List<IP> getIpInfo(String ipString) {
         List<IP> ipList = new ArrayList<>();
-        for (IP ip : ips) {
-            for (String address : ip.getAllIps()) {
+        for (IP ip : ips.values()) {
+            for (String address : ip.getAllIps().keySet()) {
                 if (address.equals(ipString)) {
                     ipList.add(ip);
                     break;
@@ -163,7 +164,7 @@ public class IP {
         return ipList;
     }
 
-    public static List<IP> getIps() {
+    public static Map<UUID, IP> getIps() {
         return ips;
     }
 
@@ -192,9 +193,33 @@ public class IP {
 
         Map<Column, String> values = Database.get().getValues(Table.IPS, new Where(TableIPs.UUID, uuid.toString()));
 
-        List<String> history = new ArrayList<>();
-        Collections.addAll(history, values.get(TableIPs.HISTORY).split("\\|"));
+        Map<String, String> history = new HashMap<>();
+        for (String historyEntry : values.get(TableIPs.HISTORY).split("\\|")) {
+            String[] data = historyEntry.split("~");
+
+            if (data.length == 1)
+                history.put(data[0], UNKNOWN);
+            else
+                history.put(data[0], data[1]);
+        }
 
         return new IP(uuid, values.get(TableIPs.LAST_IP), values.get(TableIPs.LAST_LOGIN), history);
+    }
+
+    public static void loadAll() {
+        for (Map<Column, String> entry : Database.get().getEntries(Table.IPS)) {
+            Map<String, String> history = new HashMap<>();
+
+            for (String historyEntry : entry.get(TableIPs.HISTORY).split("\\|")) {
+                String[] data = historyEntry.split("~");
+
+                if (data.length == 1)
+                    history.put(data[0], UNKNOWN);
+                else
+                    history.put(data[0], data[1]);
+            }
+
+            new IP(UUID.fromString(entry.get(TableIPs.UUID)), entry.get(TableIPs.LAST_IP), entry.get(TableIPs.LAST_LOGIN), history);
+        }
     }
 }

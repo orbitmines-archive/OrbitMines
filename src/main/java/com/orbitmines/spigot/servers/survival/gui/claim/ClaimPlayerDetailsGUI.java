@@ -41,7 +41,7 @@ public class ClaimPlayerDetailsGUI extends GUI {
 
         SurvivalPlayer omp = (SurvivalPlayer) player;
 
-        Claim.Permission current = claim.getMembers().getOrDefault(member.getUUID(), null);
+        Claim.Permission current = claim.getPermission(member.getUUID());
 
         int index = 0;
         for (Claim.Permission permission : Claim.Permission.values()) {
@@ -55,10 +55,15 @@ public class ClaimPlayerDetailsGUI extends GUI {
                 item.addLore("§7- " + color + desc.lang(omp.getLanguage()));
             }
 
+            for (Claim.Permission perm : Claim.Permission.values()) {
+                if (permission.ordinal() > perm.ordinal())
+                    item.addLore("§7- " + color + "§l" + perm.getName().lang(omp.getLanguage()));
+            }
+
             add(1, (current != null ? 1 : 2) + index, new ItemInstance(item.build()) {
                 @Override
                 public void onClick(InventoryClickEvent event, OMPlayer omp) {
-                    claim.getMembers().put(member.getUUID(), permission);
+                    claim.setPermission(member.getUUID(), permission);
                     survival.getClaimHandler().saveClaim(claim);
 
                     if (current != null)
@@ -80,10 +85,10 @@ public class ClaimPlayerDetailsGUI extends GUI {
         });
 
         if (current != null)
-            add(1, 7, new ItemInstance(new ItemBuilder(Material.BARRIER, 1, 0, omp.lang("§c§lVerwijder Speler van Claim", "§c§lRemove Player from Claim")).build()) {
+            add(1, 7, new ItemInstance(new ItemBuilder(Material.BARRIER, 1, omp.lang("§c§lVerwijder Speler van Claim", "§c§lRemove Player from Claim")).build()) {
                 @Override
                 public void onClick(InventoryClickEvent event, OMPlayer omp) {
-                    claim.getMembers().remove(member.getUUID());
+                    claim.clearPermission(member.getUUID());
                     survival.getClaimHandler().saveClaim(claim);
 
                     new ClaimGUI(survival, claim).open(omp);

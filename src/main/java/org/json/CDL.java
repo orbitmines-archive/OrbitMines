@@ -27,7 +27,7 @@ SOFTWARE.
 /**
  * This provides static methods to convert comma delimited text into a
  * JSONArray, and to convert a JSONArray into comma delimited text. Comma
- * delimited text is a very popular format for data interchange. It is
+ * delimited text is a very popular toMinecraft for data interchange. It is
  * understood by most database, spreadsheet, and organizer programs.
  * <p>
  * Each row of text represents a row in a table or a data record. Each row

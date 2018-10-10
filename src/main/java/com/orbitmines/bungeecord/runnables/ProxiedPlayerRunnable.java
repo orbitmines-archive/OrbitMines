@@ -11,7 +11,7 @@ import java.util.*;
 */
 public abstract class ProxiedPlayerRunnable {
     
-    private Map<Long, List<ProxiedPlayerRunnable>> playerRunnables = new HashMap<>();
+    private static final Map<Long, List<ProxiedPlayerRunnable>> playerRunnables = new HashMap<>();
 
     protected OrbitMinesBungee bungee;
     private BungeeRunnable.Time time;
@@ -58,7 +58,7 @@ public abstract class ProxiedPlayerRunnable {
         playerRunnables.put(seconds, new ArrayList<>(Collections.singletonList(this)));
 
         task = bungee.getProxy().getScheduler().schedule(bungee, () -> {
-            List<ProxiedPlayerRunnable> runnables = playerRunnables.get(time.getSeconds());
+            List<ProxiedPlayerRunnable> runnables = new ArrayList<>(playerRunnables.get(time.getSeconds()));
             for (BungeePlayer omp : BungeePlayer.getPlayers()) {
                 for (ProxiedPlayerRunnable runnable : runnables) {
                     runnable.run(omp);

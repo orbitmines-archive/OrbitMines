@@ -3,16 +3,13 @@ package com.orbitmines.spigot.api.cmds;
  * OrbitMines - @author Fadi Shawki - 12-6-2018
  */
 
-import com.orbitmines.api.Color;
-import com.orbitmines.api.Message;
-import com.orbitmines.api.ServerList;
-import com.orbitmines.api.TopVoterReward;
+import com.orbitmines.api.*;
 import com.orbitmines.api.database.Table;
 import com.orbitmines.api.database.tables.TableVotes;
+import com.orbitmines.api.utils.CommandLibrary;
 import com.orbitmines.api.utils.DateUtils;
 import com.orbitmines.api.utils.NumberUtils;
 import com.orbitmines.api.utils.TimeUtils;
-import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.chat.ComponentMessage;
@@ -24,27 +21,15 @@ import net.md_5.bungee.api.chat.HoverEvent;
 
 public class CommandTopVoters extends DefaultCommandLeaderBoard {
 
-    private String[] alias = { "/topvoters", "/topvoters", "/voters" };
-
     public CommandTopVoters() {
-        super("Top Voters of " + DateUtils.getMonth() + " " + DateUtils.getYear(), Color.BLUE, null, 5, Table.VOTES, TableVotes.UUID, TableVotes.VOTES);
+        super("Top Voters of " + DateUtils.getMonth() + " " + DateUtils.getYear(), Color.BLUE, CommandLibrary.TOPVOTERS, 5, Table.VOTES, TableVotes.UUID, TableVotes.VOTES);
 
         new CommandVote();
     }
 
     @Override
-    public String[] getAlias() {
-        return alias;
-    }
-
-    @Override
     public void onDispatch(OMPlayer omp, String[] a) {
         sendVoteRewardMessage(omp);
-    }
-
-    @Override
-    public String getHelp() {
-        return null;
     }
 
     @Override
@@ -77,29 +62,17 @@ public class CommandTopVoters extends DefaultCommandLeaderBoard {
 
             ComponentMessage cM = new ComponentMessage();
             cM.add(new Message("  " + color + "§l" + (i + 1) + ".§r "));
-            cM.add(new Message("§3§l" + reward.getStep() + "€/" + TopVoterReward.STEP_VOTES + " Votes§r §7(OrbitMines Shop Voucher)"), HoverEvent.Action.SHOW_TEXT, new Message(
-                    "§3§l" + reward.getStep() + "€/" + TopVoterReward.STEP_VOTES + " Votes\n" +
-                            "§7§oOrbitMines Shop Voucher\n" +
-                            "\n" +
-                            omp.lang("§7Je krijgt " + reward.getStep() + "€ per " + TopVoterReward.STEP_VOTES + " Votes.\n", "§7You'll receive " + reward.getStep() + "€ per " + TopVoterReward.STEP_VOTES + " Votes.\n") +
-                            omp.lang(
-                                    "\n§7§oVoorbeeld:\nAls je deze maand de top voter bent,\n",
-                                    "\n§7§oExample:\nIf you are the top voter this month,\n"
-                            ) +
-                            omp.lang(
-                                    "§7§oen je hebt 100 votes, krijg je 100/" + TopVoterReward.STEP_VOTES + " = " + (reward.getStep() * 4) + "€.",
-                                    "§7§oand you have 100 votes, then you'll\nreceive 100/"  + TopVoterReward.STEP_VOTES + " = " + (reward.getStep() * 4) + "€."
-                            )
+            cM.add(new Message("§3§l" + reward.getStep() + "€§r §7(OrbitMines Shop Voucher)"), HoverEvent.Action.SHOW_TEXT, new Message(
+                    "§3§l" + reward.getStep() + "€\n" +
+                            "§7§oOrbitMines Shop Voucher"
             ));
             cM.send(omp);
         }
-        omp.sendMessage(" §a§lCommunity Goal");
 
         {
-            ComponentMessage cM = new ComponentMessage();
-            cM.add(new Message("  §7- "));
-            cM.add(new Message("§9§l" + NumberUtils.locale(getTotalCount()) + " §7§l/ " + NumberUtils.locale(TopVoterReward.COMMUNITY_GOAL) + " Votes"), HoverEvent.Action.SHOW_TEXT, new Message(
-                    "§a§lCommunity Goal\n" +
+            /* Community Goal */
+
+            String description = "§a§lCommunity Goal\n" +
                             (getTotalCount() > TopVoterReward.COMMUNITY_GOAL ? omp.lang("§d§lVOLTOOID", "§d§lACHIEVED") : omp.lang("§d§lNOG NIET VOLTOOID", "§c§lNOT YET ACHIEVED")) + "\n" +
                             "\n" +
                             omp.lang(
@@ -113,47 +86,54 @@ public class CommandTopVoters extends DefaultCommandLeaderBoard {
                             omp.lang(
                                     "§7§oen je hebt 100 votes, krijg je " + (100 * TopVoterReward.COMMUNITY_GOAL_SOLARS_PER_VOTE) + " Solars.",
                                     "§7§oand you have 100 votes, then\nyou'll receive " + (100 * TopVoterReward.COMMUNITY_GOAL_SOLARS_PER_VOTE) + " Solars."
-                            )
-            ));
+                            );
+
+            ComponentMessage cM = new ComponentMessage();
+
+            cM.add(new Message(" §a§lCommunity Goal\n"), HoverEvent.Action.SHOW_TEXT, new Message(description));
+            cM.add(new Message("  §7- "));
+            cM.add(new Message("§9§l" + NumberUtils.locale(getTotalCount()) + " §7§l/ " + NumberUtils.locale(TopVoterReward.COMMUNITY_GOAL) + " Votes"), HoverEvent.Action.SHOW_TEXT, new Message(description));
             cM.send(omp);
         }
 
-        omp.sendMessage(" §a§l" + omp.lang("Maandelijkse", "Monthly") + " Achievement");
         {
-            ComponentMessage cM = new ComponentMessage();
-            cM.add(new Message("  §7- "));
+            /* Personal Achievements */
 
             int votes = ((VoteData) omp.getData(Data.Type.VOTES)).getVotes();
+            TopVoterReward.PersonalAchievement current = null;
+            for (int i = 0; i < TopVoterReward.MONTHLY_ACHIEVEMENT_VOTES.length; i++) {
+                if (i == 0 || votes > TopVoterReward.MONTHLY_ACHIEVEMENT_VOTES[i - 1].getVotes())
+                    current = TopVoterReward.MONTHLY_ACHIEVEMENT_VOTES[i];
+            }
 
-            cM.add(new Message("§9§l" + votes + " §7§l/ " + TopVoterReward.MONTHLY_ACHIEVEMENT_VOTES + " Votes"), HoverEvent.Action.SHOW_TEXT, new Message(
-                    "§a§l" + omp.lang("Maandelijkse", "Monthly") + " Achievement" + "\n" +
-                            (votes > 50 ? omp.lang("§d§lVOLTOOID", "§d§lACHIEVED") : omp.lang("§d§lNOG NIET VOLTOOID", "§c§lNOT YET ACHIEVED")) + "\n" +
-                            "\n" +
-                            omp.lang(
-                                    "§7Je krijgt §9§l" + NumberUtils.locale(TopVoterReward.MONTHLY_ACHIEVEMENT_PRISMS) + "§7 Prisms§7.",
-                                    "§7You'll receive §9§l" + NumberUtils.locale(TopVoterReward.MONTHLY_ACHIEVEMENT_PRISMS) + " Prisms§7."
-                            )
-            ));
+            ComponentMessage cM = new ComponentMessage();
+            StringBuilder description = new StringBuilder("§a§l" + omp.lang("Maandelijkse", "Monthly") + " Achievement");
+
+            for (TopVoterReward.PersonalAchievement achievement : TopVoterReward.MONTHLY_ACHIEVEMENT_VOTES) {
+                description.append("\n\n").append("§a§lTier ").append(NumberUtils.toRoman(achievement.getTier())).append(" §7» ");
+
+                if (votes > achievement.getVotes())
+                    description.append(omp.lang("§d§lVOLTOOID", "§d§lACHIEVED"));
+                else
+                    description.append("§9§l").append(votes).append(" §7§l/ ").append(achievement.getVotes());
+
+                if (achievement.getPrisms() != 0)
+                    description.append("\n §7- §9§l").append(NumberUtils.locale(achievement.getPrisms())).append(" Prisms");
+                if (achievement.getSolars() != 0)
+                    description.append("\n §7- §e§l").append(NumberUtils.locale(achievement.getSolars())).append(" Solars");
+            }
+
+            cM.add(new Message(" §a§l" + omp.lang("Maandelijkse", "Monthly") + " Achievement " + NumberUtils.toRoman(current.getTier()) + "\n"), HoverEvent.Action.SHOW_TEXT, new Message(description.toString()));
+            cM.add(new Message("  §7- "));
+            cM.add(new Message("§9§l" + votes + " §7§l/ " + current.getVotes() + " Votes"), HoverEvent.Action.SHOW_TEXT, new Message(description.toString()));
             cM.send(omp);
         }
     }
 
     public class CommandVote extends Command {
 
-        private String[] alias = { "/vote" };
-
         public CommandVote() {
-            super(null);
-        }
-
-        @Override
-        public String[] getAlias() {
-            return alias;
-        }
-
-        @Override
-        public String getHelp(OMPlayer omp) {
-            return null;
+            super(CommandLibrary.VOTE);
         }
 
         @Override
@@ -162,7 +142,7 @@ public class CommandTopVoters extends DefaultCommandLeaderBoard {
             data.updateVoteTimeStamps();
 
             omp.sendMessage("");
-            omp.sendMessage(" §7§lOrbit§8§lMines §9§lVote Links");
+            omp.sendMessage(" §8§lOrbit§7§lMines §9§lVote Links");
 
             ServerList[] serverLists = ServerList.values();
             for (int i = 0; i < serverLists.length; i++) {

@@ -1,6 +1,7 @@
 package com.orbitmines.spigot.api.handlers.worlds.flatgenerator;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.generator.BlockPopulator;
@@ -24,37 +25,20 @@ public class ChunkGeneratorFlat extends ChunkGenerator {
     }
 
     @Override
-    public short[][] generateExtBlockSections(World w, Random r, int xC, int zC, BiomeGrid biomes) {
-        short[][] res = new short[w.getMaxHeight() / 16][];
+    public ChunkData generateChunkData(World world, Random random, int xC, int zC, BiomeGrid biome) {
+        ChunkData data = createChunkData(world);
 
-        int x;
-        int z;
+        for (int x = 0; x < 16; x++) {
+            for (int z = 0; z < 16; z++) {
+                data.setBlock(x, 0, z, Material.BEDROCK);
+                data.setBlock(x, 1, z, Material.DIRT);
+                data.setBlock(x, 2, z, Material.DIRT);
+                data.setBlock(x, 3, z, Material.GRASS_BLOCK);
 
-        for (x = 0; x < 16; x++) {
-            for (z = 0; z < 16; z++) {
-                biomes.setBiome(x, z, Biome.PLAINS);
-
-                setBlock(res, x, 0, z, (short) 7);
-                setBlock(res, x, 1, z, (short) 3);
-                setBlock(res, x, 2, z, (short) 3);
-                setBlock(res, x, 3, z, (short) 2);
+                biome.setBiome(x, z, Biome.PLAINS);
             }
         }
 
-        return res;
-    }
-
-    private void setBlock(byte[][] res, int x, int y, int z, byte b) {
-        if (res[y >> 4] == null) {
-            res[y >> 4] = new byte[4096];
-        }
-        res[y >> 4][((y & 0xF) << 8) | (z << 4) | x] = b;
-    }
-
-    private void setBlock(short[][] res, int x, int y, int z, short s) {
-        if (res[y >> 4] == null) {
-            res[y >> 4] = new short[4096];
-        }
-        res[y >> 4][((y & 0xF) << 8) | (z << 4) | x] = s;
+        return data;
     }
 }

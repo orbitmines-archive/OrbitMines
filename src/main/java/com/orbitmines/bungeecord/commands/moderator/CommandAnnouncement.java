@@ -2,7 +2,7 @@ package com.orbitmines.bungeecord.commands.moderator;
 
 import com.orbitmines.api.Color;
 import com.orbitmines.api.Message;
-import com.orbitmines.api.StaffRank;
+import com.orbitmines.api.utils.CommandLibrary;
 import com.orbitmines.bungeecord.OrbitMinesBungee;
 import com.orbitmines.bungeecord.handlers.AnnouncementHandler;
 import com.orbitmines.bungeecord.handlers.BungeePlayer;
@@ -19,22 +19,10 @@ public class CommandAnnouncement extends StaffCommand {
 
     private OrbitMinesBungee bungee;
 
-    private String[] alias = { "/announcement" };
-
     public CommandAnnouncement() {
-        super(StaffRank.MODERATOR);
+        super(CommandLibrary.ANNOUNCEMENT);
 
         this.bungee = OrbitMinesBungee.getBungee();
-    }
-
-    @Override
-    public String[] getAlias() {
-        return alias;
-    }
-
-    @Override
-    public String getHelp(BungeePlayer omp) {
-        return "list|delete|add|remove|title|subtitle";
     }
 
     @Override

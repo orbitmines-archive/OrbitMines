@@ -156,7 +156,7 @@ public class GriefPrevention extends JavaPlugin {
 //			} else {
 //				GriefPrevention.sendMessage(player, TextMode.Success, Messages.CreateClaimSuccess);
 //
-//				//link to a video demo of land claiming, based on world type
+//				//link to a video demo of land claiming, based on world graphType
 //				if (GriefPrevention.instance.creativeRulesApply(player.getLocation())) {
 //					GriefPrevention.sendMessage(player, TextMode.Instr, Messages.CreativeBasicsVideo2, DataStore.CREATIVE_VIDEO_URL);
 //				} else if (GriefPrevention.instance.claimsEnabledForWorld(player.getLocation().getWorld())) {
@@ -176,7 +176,7 @@ public class GriefPrevention extends JavaPlugin {
 //		//extendclaim
 //		if (cmd.getName().equalsIgnoreCase("extendclaim") && player != null) {
 //			if (args.length < 1) {
-//				//link to a video demo of land claiming, based on world type
+//				//link to a video demo of land claiming, based on world graphType
 //				if (GriefPrevention.instance.creativeRulesApply(player.getLocation())) {
 //					GriefPrevention.sendMessage(player, TextMode.Instr, Messages.CreativeBasicsVideo2, DataStore.CREATIVE_VIDEO_URL);
 //				} else if (GriefPrevention.instance.claimsEnabledForWorld(player.getLocation().getWorld())) {
@@ -189,7 +189,7 @@ public class GriefPrevention extends JavaPlugin {
 //			try {
 //				amount = Integer.parseInt(args[0]);
 //			} catch (NumberFormatException e) {
-//				//link to a video demo of land claiming, based on world type
+//				//link to a video demo of land claiming, based on world graphType
 //				if (GriefPrevention.instance.creativeRulesApply(player.getLocation())) {
 //					GriefPrevention.sendMessage(player, TextMode.Instr, Messages.CreativeBasicsVideo2, DataStore.CREATIVE_VIDEO_URL);
 //				} else if (GriefPrevention.instance.claimsEnabledForWorld(player.getLocation().getWorld())) {

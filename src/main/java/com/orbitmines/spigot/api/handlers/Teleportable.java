@@ -24,6 +24,8 @@ public abstract class Teleportable {
 
     public abstract String getName();
 
+    public abstract void onTeleport(OMPlayer omp, Location from, Location to);
+
     public void teleport(OMPlayer omp) {
         if (omp.getTeleportingTo() != null)
             omp.getTeleportingTimer().cancel();
@@ -41,11 +43,16 @@ public abstract class Teleportable {
 
             @Override
             public void onFinish() {
+                Location location = getLocation();
+                location.getChunk().load();
+
+                onTeleport(omp, omp.getLocation(), location);
+
                 omp.setTeleportingTo(null);
                 omp.setTeleportingTimer(null);
 
-                omp.getPlayer().teleport(getLocation());
-                omp.playSound(Sound.ENTITY_ENDERMEN_TELEPORT);
+                omp.getPlayer().teleport(location);
+                omp.playSound(Sound.ENTITY_ENDERMAN_TELEPORT);
 
                 new Title(new Message(""), new Message("§7§l" + omp.lang("Geteleporteerd naar", "Teleported to") + " " + getColor().getChatColor() + "§l" + getName() + "§7§l."), 0, 40, 0).send(omp);
             }

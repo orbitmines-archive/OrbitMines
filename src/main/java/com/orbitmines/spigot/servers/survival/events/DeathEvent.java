@@ -4,6 +4,9 @@ package com.orbitmines.spigot.servers.survival.events;
  * OrbitMines - @author Fadi Shawki - 2018
  */
 
+import com.orbitmines.discordbot.DiscordBot;
+import com.orbitmines.discordbot.utils.BotToken;
+import com.orbitmines.discordbot.utils.DiscordSpigotUtils;
 import com.orbitmines.spigot.servers.survival.Survival;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalPlayer;
 import org.bukkit.entity.Player;
@@ -29,6 +32,8 @@ public class DeathEvent implements Listener {
         p.setHealth(p.getMaxHealth());
         p.setFoodLevel(20);
 
+        omp.setBackLocation(p.getLocation());
+
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -40,5 +45,14 @@ public class DeathEvent implements Listener {
                 omp.clearPotionEffects();
             }
         }.runTaskLater(survival.getOrbitMines(), 1);
+
+        DiscordBot discord = survival.getDiscord();
+        BotToken token = survival.getToken();
+
+        discord.getChannelFor(token).sendMessage(
+                ":skull_crossbones:" +
+                        event.getDeathMessage().replaceAll(omp.getName(true),
+                                DiscordSpigotUtils.getDisplay(discord, token, omp))
+        ).queue();
     }
 }

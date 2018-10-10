@@ -64,8 +64,8 @@ import java.util.Set;
  * obtaining optional values.
  * <p>
  * The generic <code>get()</code> and <code>opt()</code> methods return an
- * object, which you can cast or query for type. There are also typed
- * <code>get</code> and <code>opt</code> methods that do type checking and type
+ * object, which you can cast or query for graphType. There are also typed
+ * <code>get</code> and <code>opt</code> methods that do graphType checking and graphType
  * coercion for you. The opt methods differ from the get methods in that they
  * do not throw. Instead, they return a specified value, such as null.
  * <p>
@@ -169,7 +169,7 @@ public class JSONObject {
     public JSONObject() {
         // HashMap is used on purpose to ensure that elements are unordered by 
         // the specification.
-        // JSON tends to be a portable transfer format to allows the container 
+        // JSON tends to be a portable transfer toMinecraft to allows the container
         // implementations to rearrange their items for a faster element 
         // retrieval based on associative access.
         // Therefore, an implementation mustn't rely on the order of the item.
@@ -512,7 +512,7 @@ public class JSONObject {
     * Get the enum value associated with a key.
     * 
     * @param clazz
-    *           The type of enum to retrieve.
+    *           The graphType of enum to retrieve.
     * @param key
     *           A key string.
     * @return The enum value associated with the key
@@ -962,7 +962,7 @@ public class JSONObject {
      * Get the enum value associated with a key.
      * 
      * @param clazz
-     *            The type of enum to retrieve.
+     *            The graphType of enum to retrieve.
      * @param key
      *            A key string.
      * @return The enum value associated with the key or null if not found
@@ -975,7 +975,7 @@ public class JSONObject {
      * Get the enum value associated with a key.
      * 
      * @param clazz
-     *            The type of enum to retrieve.
+     *            The graphType of enum to retrieve.
      * @param key
      *            A key string.
      * @param defaultValue
@@ -1114,7 +1114,7 @@ public class JSONObject {
             // jo.put("double",1.1d);
             // jo.optInt("double"); -- will return 1, not an error
             // this conversion to BigDecimal then to BigInteger is to maintain
-            // that type cast support that may truncate the decimal.
+            // that graphType cast support that may truncate the decimal.
             final String valStr = val.toString();
             if(isDecimalNotation(valStr)) {
                 return new BigDecimal(valStr).toBigInteger();
@@ -1325,7 +1325,7 @@ public class JSONObject {
      * Get an optional {@link Number} value associated with a key, or <code>null</code>
      * if there is no such key or if the value is not a number. If the value is a string,
      * an attempt will be made to evaluate it as a number ({@link BigDecimal}). This method
-     * would be used in cases where type coercion of the number value is unwanted.
+     * would be used in cases where graphType coercion of the number value is unwanted.
      *
      * @param key
      *            A key string.
@@ -1339,7 +1339,7 @@ public class JSONObject {
      * Get an optional {@link Number} value associated with a key, or the default if there
      * is no such key or if the value is not a number. If the value is a string,
      * an attempt will be made to evaluate it as a number. This method
-     * would be used in cases where type coercion of the number value is unwanted.
+     * would be used in cases where graphType coercion of the number value is unwanted.
      *
      * @param key
      *            A key string.
@@ -1865,7 +1865,7 @@ public class JSONObject {
     }
     
     /**
-     * Converts a string to a number using the narrowest possible type. Possible 
+     * Converts a string to a number using the narrowest possible graphType. Possible
      * returns for this function are BigDecimal, Double, BigInteger, Long, and Integer.
      * When a Double is returned, it should always be a valid Double and not NaN or +-infinity.
      * 
@@ -2125,7 +2125,7 @@ public class JSONObject {
             // not all Numbers may match actual JSON Numbers. i.e. Fractions or Complex
             final String numberAsString = numberToString((Number) value);
             try {
-                // Use the BigDecimal constructor for it's parser to validate the format.
+                // Use the BigDecimal constructor for it's parser to validate the toMinecraft.
                 @SuppressWarnings("unused")
                 BigDecimal unused = new BigDecimal(numberAsString);
                 // Close enough to a JSON number that we will return it unquoted
@@ -2240,7 +2240,7 @@ public class JSONObject {
             // not all Numbers may match actual JSON Numbers. i.e. fractions or Imaginary
             final String numberAsString = numberToString((Number) value);
             try {
-                // Use the BigDecimal constructor for it's parser to validate the format.
+                // Use the BigDecimal constructor for it's parser to validate the toMinecraft.
                 @SuppressWarnings("unused")
                 BigDecimal testNum = new BigDecimal(numberAsString);
                 // Close enough to a JSON number that we will use it unquoted

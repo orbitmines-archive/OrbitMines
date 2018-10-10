@@ -11,10 +11,13 @@ import com.orbitmines.api.settings.SettingsType;
 import com.orbitmines.api.utils.DateUtils;
 import com.orbitmines.api.utils.NumberUtils;
 import com.orbitmines.discordbot.DiscordBot;
-import com.orbitmines.discordbot.utils.SkinLibrary;
+import com.orbitmines.discordbot.utils.BotToken;
+import com.orbitmines.discordbot.utils.DiscordSpigotUtils;
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.Freezer;
 import com.orbitmines.spigot.api.Loot;
+import com.orbitmines.spigot.api.handlers.achievements.StoredProgressAchievement;
+import com.orbitmines.spigot.api.handlers.chat.ComponentMessage;
 import com.orbitmines.spigot.api.handlers.chat.Title;
 import com.orbitmines.spigot.api.handlers.data.*;
 import com.orbitmines.spigot.api.handlers.itembuilders.PotionBuilder;
@@ -22,15 +25,18 @@ import com.orbitmines.spigot.api.handlers.itemhandlers.ItemHover;
 import com.orbitmines.spigot.api.handlers.kit.KitInteractive;
 import com.orbitmines.spigot.api.handlers.leaderboard.LeaderBoard;
 import com.orbitmines.spigot.api.handlers.leaderboard.hologram.PlayerHologramLeaderBoard;
-import com.orbitmines.spigot.api.handlers.npc.MobNpc;
-import com.orbitmines.spigot.api.handlers.npc.PersonalisedMobNpc;
-import com.orbitmines.spigot.api.handlers.npc.PlayerFreezer;
+import com.orbitmines.spigot.api.handlers.npc.*;
 import com.orbitmines.spigot.api.handlers.scoreboard.OMScoreboard;
 import com.orbitmines.spigot.api.handlers.scoreboard.ScoreboardSet;
 import com.orbitmines.spigot.api.handlers.timer.Timer;
+import com.orbitmines.spigot.api.runnables.SpigotRunnable;
+import com.orbitmines.spigot.servers.hub.handlers.HubAchievements;
+import com.orbitmines.spigot.servers.kitpvp.handlers.KitPvPData;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalData;
-import net.dv8tion.jda.core.entities.Guild;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.apache.commons.lang3.ArrayUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -38,6 +44,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -48,19 +55,25 @@ import java.util.*;
 */
 public abstract class OMPlayer {
 
-    protected static List<OMPlayer> players = new ArrayList<>();
+    protected static Map<Player, OMPlayer> players = new HashMap<>();
+
+//    protected static Map<StaffRank, List<Player>> staff = new HashMap<>();
+//    protected static Map<VipRank, List<Player>> vips = new HashMap<>();
 
     protected OrbitMines orbitMines;
     protected final Player player;
     protected final DisplayName displayName;
 
     private boolean loggedIn;
+    private boolean firstLogin;
 
     private boolean opMode;
 
     protected StaffRank staffRank;
     protected VipRank vipRank;
     protected Language language;
+    protected boolean hasScoreboard;
+    protected boolean muted;
     protected boolean silent;
     protected int solars;
     protected int prisms;
@@ -83,7 +96,7 @@ public abstract class OMPlayer {
     public OMPlayer(Player player) {
         orbitMines = OrbitMines.getInstance();
         this.player = player;
-        this.displayName = new DisplayName(player.getName());
+        this.displayName = player != null ? new DisplayName(player.getName()) : null;
 
         this.loggedIn = true;
 
@@ -92,11 +105,14 @@ public abstract class OMPlayer {
         this.staffRank = StaffRank.NONE;
         this.vipRank = VipRank.NONE;
         this.language = Language.ENGLISH;
+        this.hasScoreboard = true;
+        this.muted = false;
         this.silent = false;
         this.solars = 0;
         this.prisms = 0;
 
-        this.scoreboard = new OMScoreboard(this);
+        if (player != null)
+            this.scoreboard = new OMScoreboard(this);
 
         this.cooldowns = new HashMap<>();
         this.data = new HashMap<>();
@@ -108,8 +124,14 @@ public abstract class OMPlayer {
     /* Called before the player logs out */
     protected abstract void onLogout();
 
+    /* Called when player logs into this server for the first time */
+    protected abstract void onFirstLogin();
+
     /* Called when a player receives knock back, example: gadgets */
     public abstract boolean canReceiveVelocity();
+
+    /* Chat Prefix */
+    public abstract Collection<ComponentMessage.TempTextComponent> getChatPrefix();
 
     /*
 
@@ -120,26 +142,33 @@ public abstract class OMPlayer {
      */
 
     public void login() {
-        players.add(this);
+        players.put(player, this);
 
         /* Update Players */
         orbitMines.getServerHandler().getServer().setPlayers(Bukkit.getOnlinePlayers().size());
 
         if (!Database.get().contains(Table.PLAYERS, TablePlayers.UUID, new Where(TablePlayers.UUID, getUUID().toString()))) {
-            Database.get().insert(Table.PLAYERS, getUUID().toString(), getRealName(), staffRank.toString(), vipRank.toString(), DateUtils.FORMAT.format(DateUtils.now()), language.toString(), SettingsType.ENABLED.toString(), SettingsType.ENABLED.toString(), SettingsType.ENABLED.toString(), silent ? "1" : "0", solars + "", prisms + "");
+            Database.get().insert(Table.PLAYERS, getUUID().toString(), getRealName(), "", staffRank.toString(), vipRank.toString(), DateUtils.FORMAT.format(DateUtils.now()), language.toString(), hasScoreboard ? "1" : "0", Settings.PRIVATE_MESSAGES.getDefaultType().toString(), Settings.PLAYER_VISIBILITY.getDefaultType().toString(), Settings.GADGETS.getDefaultType().toString(), Settings.STATS.getDefaultType().toString(), silent ? "1" : "0", solars + "", prisms + "");
         } else {
             Map<Column, String> values = Database.get().getValues(Table.PLAYERS, new Column[]{
+                    TablePlayers.NICK,
                     TablePlayers.STAFFRANK,
                     TablePlayers.VIPRANK,
                     TablePlayers.LANGUAGE,
+                    TablePlayers.SCOREBOARD,
                     TablePlayers.SILENT,
                     TablePlayers.SOLARS,
                     TablePlayers.PRISMS,
             }, new Where(TablePlayers.UUID, getUUID().toString()));
 
+            String nickName = values.get(TablePlayers.NICK);
+            if (nickName != null && !nickName.equals(""))
+                this.displayName.setName("*" + nickName + "*");
+
             staffRank = StaffRank.valueOf(values.get(TablePlayers.STAFFRANK));
             vipRank = VipRank.valueOf(values.get(TablePlayers.VIPRANK));
             language = Language.valueOf(values.get(TablePlayers.LANGUAGE));
+            hasScoreboard = "1".equals(values.get(TablePlayers.SCOREBOARD));
             silent = "1".equals(values.get(TablePlayers.SILENT));
             solars = Integer.parseInt(values.get(TablePlayers.SOLARS));
             prisms = Integer.parseInt(values.get(TablePlayers.PRISMS));
@@ -165,9 +194,19 @@ public abstract class OMPlayer {
             if (npc instanceof PersonalisedMobNpc)
                 ((PersonalisedMobNpc) npc).onLogin(this);
         }
+        for (FloatingItem floatingItem : FloatingItem.getFloatingItems()) {
+            if (floatingItem instanceof PersonalisedFloatingItem)
+                ((PersonalisedFloatingItem) floatingItem).onLogin(this);
+        }
 
         /* Initiate server login */
         onLogin();
+
+        PlayTimeData data = (PlayTimeData) getData(Data.Type.PLAY_TIME);
+        if (data.getPlayTime().get(orbitMines.getServerHandler().getServer()) == 0F) {
+            firstLogin = true;
+            onFirstLogin();
+        }
 
         /* Join Message */
         if (silent) {
@@ -176,15 +215,24 @@ public abstract class OMPlayer {
             orbitMines.broadcast(" §a» " + getName() + "§a is gejoind.", " §a» " + getName() + "§a has joined.");
 
             DiscordBot discord = orbitMines.getServerHandler().getDiscord();
-            Guild guild = discord.getGuild(orbitMines.getServerHandler().getToken());
-            orbitMines.getServerHandler().getDiscordChannel().sendMessage(guild.getRolesByName("»", true).get(0).getAsMention() + " " + SkinLibrary.getEmote(guild, getUUID()).getAsMention() + orbitMines.getServerHandler().getDiscordRankPrefix(this) + " **" + getName(true) + "** has joined.").queue();
+            BotToken token = orbitMines.getServerHandler().getToken();
+            orbitMines.getServerHandler().getDiscordChannel().sendMessage(discord.getRole(token, DiscordBot.CustomRole.JOIN).getAsMention() + " " + DiscordSpigotUtils.getDisplay(discord, token, this) + " has joined.").queue();
         }
+
+        /* Update Silent */
+        updateSilent();
 
         new BukkitRunnable() {
             @Override
             public void run() {
                 if (!player.isOnline())
                     return;
+
+                /* Hide other npcs that shouldn't be visible */
+                for (Npc npc : Npc.getNpcs()) {
+                    if (npc.getWatchers() != null && !npc.getWatchers().contains(player))
+                        npc.hideFor(player);
+                }
 
                 /* Update current server */
                 IP ip = IP.getIp(player.getUniqueId());
@@ -215,8 +263,8 @@ public abstract class OMPlayer {
             orbitMines.broadcast(" §c« " + getName() + "§c is weggegaan.", " §c« " + getName() + "§c has left.");
 
             DiscordBot discord = orbitMines.getServerHandler().getDiscord();
-            Guild guild = discord.getGuild(orbitMines.getServerHandler().getToken());
-            orbitMines.getServerHandler().getDiscordChannel().sendMessage(guild.getRolesByName("«", true).get(0).getAsMention() + " " + SkinLibrary.getEmote(guild, getUUID()).getAsMention() + orbitMines.getServerHandler().getDiscordRankPrefix(this) + " **" + getName(true) + "** has left.").queue();
+            BotToken token = orbitMines.getServerHandler().getToken();
+            orbitMines.getServerHandler().getDiscordChannel().sendMessage(discord.getRole(token, DiscordBot.CustomRole.LEAVE).getAsMention() + " " + DiscordSpigotUtils.getDisplay(discord, token, this) + " has left.").queue();
         }
 
         orbitMines.getServerHandler().getServer().setPlayers(Bukkit.getOnlinePlayers().size() -1);
@@ -236,6 +284,11 @@ public abstract class OMPlayer {
                 ((PersonalisedMobNpc) npc).onLogout(this);
         }
 
+        for (FloatingItem floatingItem : FloatingItem.getFloatingItems()) {
+            if (floatingItem instanceof PersonalisedFloatingItem)
+                ((PersonalisedFloatingItem) floatingItem).onLogout(this);
+        }
+
         /* Remove PlayerFreezer */
         PlayerFreezer freezer = PlayerFreezer.getFreezer(player);
         if (freezer != null)
@@ -248,23 +301,51 @@ public abstract class OMPlayer {
         if (teleportingTo != null)
             teleportingTimer.cancel();
 
-        players.remove(this);
+        players.remove(player);
     }
 
     public void defaultTabList() {
-        orbitMines.getNms().tabList().send(Collections.singletonList(player), "\n§8§lOrbit§7§lMines\n" + orbitMines.getServerHandler().getServer().getDisplayName() + "\n", "\n    §7Website: §6§lwww.orbitmines.com§r    \n    §7" + lang("Winkel", "Shop") + ": §3§lshop.orbitmines.com§r    \n    §7Twitter: §b§l@OrbitMines§r    \n\n    §7Vote: §9§l/vote§r    \n");
+        orbitMines.getNms().tabList().send(Collections.singletonList(player), "\n§8§lOrbit§7§lMines\n" + orbitMines.getServerHandler().getServer().getDisplayName() + "\n", "\n    §7Website: §6§lwww.orbitmines.com§r    \n    §7" + lang("Winkel", "Shop") + ": §3§lorbitmines.buycraft.net§r    \n    §7Discord: §9§lQjVGJMe    \n    §7Twitter: §b§l@OrbitMines§r    \n\n    §7Vote: §9§l/vote§r    \n§7");
     }
 
     public void on2FALogin() {
-        sendMessage("§7§m----------------------------------------");
-        sendMessage(" §8§lOrbit§7§lMines §8- " + orbitMines.getServerHandler().getServer().getDisplayName());
+        sendMessage("§7§m----------------------------------------------");
+        sendMessage("  §8§lOrbit§7§lMines §8- " + orbitMines.getServerHandler().getServer().getDisplayName());
         sendMessage(" ");
-        sendMessage(" §7Website: §6§lwww.orbitmines.com");
-        sendMessage(" §7" + lang("Winkel", "Shop") + ": §3§lshop.orbitmines.com");
-        sendMessage(" §7Twitter: §b§l@OrbitMines");
-        sendMessage(" §7" + lang("Voten", "Vote") + ": §9§l/vote");
+
+        {
+            ComponentMessage cM = new ComponentMessage();
+            cM.add(new Message("  §7Website: "));
+            cM.add(new Message("§6§lwww.orbitmines.com"), ClickEvent.Action.OPEN_URL, new Message("https://www.orbitmines.com"), HoverEvent.Action.SHOW_TEXT, new Message("§7Open §6https://www.orbitmines.com"));
+            cM.send(this);
+        }
+        {
+            ComponentMessage cM = new ComponentMessage();
+            cM.add(new Message("  §7Winkel: ", "  §7Shop: "));
+            cM.add(new Message("§3§lorbitmines.buycraft.net"), ClickEvent.Action.OPEN_URL, new Message("https://orbitmines.buycraft.net"), HoverEvent.Action.SHOW_TEXT, new Message("§7Open §3https://orbitmines.buycraft.net"));
+            cM.send(this);
+        }
+        {
+            ComponentMessage cM = new ComponentMessage();
+            cM.add(new Message("  §7Discord: "));
+            cM.add(new Message("§9§lQjVGJMe"), ClickEvent.Action.OPEN_URL, new Message("https://discord.gg/QjVGJMe"), HoverEvent.Action.SHOW_TEXT, new Message("§7Open §9https://discord.gg/QjVGJMe"));
+            cM.send(this);
+        }
+        {
+            ComponentMessage cM = new ComponentMessage();
+            cM.add(new Message("  §7Twitter: "));
+            cM.add(new Message("§b§l@OrbitMines"), ClickEvent.Action.OPEN_URL, new Message("https://twitter.com/OrbitMines"), HoverEvent.Action.SHOW_TEXT, new Message("§7Open §bhttps://twitter.com/OrbitMines"));
+            cM.send(this);
+        }
+        {
+            ComponentMessage cM = new ComponentMessage();
+            cM.add(new Message("  §7Voten: ", "  §7Vote: "));
+            cM.add(new Message("§9§l/vote"), ClickEvent.Action.RUN_COMMAND, new Message("/vote"), HoverEvent.Action.SHOW_TEXT, new Message("§9/vote"));
+            cM.send(this);
+        }
+
         sendMessage(" ");
-        sendMessage("§7§m----------------------------------------");
+        sendMessage("§7§m---------------------------------------------");
 
         checkCachedVotes();
     }
@@ -308,8 +389,23 @@ public abstract class OMPlayer {
                 Monthly Vote Achievement
          */
 
-        if (data.getVotes() >= TopVoterReward.MONTHLY_ACHIEVEMENT_VOTES && (data.getVotes() - votes) < TopVoterReward.MONTHLY_ACHIEVEMENT_VOTES)
-            ((LootData) getData(Data.Type.LOOT)).add(Loot.PRISMS, Rarity.UNCOMMON, "§a§l§oMonthly Achievement " + DateUtils.getMonth() + " " + DateUtils.getYear(), TopVoterReward.MONTHLY_ACHIEVEMENT_PRISMS);
+        for (TopVoterReward.PersonalAchievement achievement : TopVoterReward.MONTHLY_ACHIEVEMENT_VOTES) {
+            if (data.getVotes() >= achievement.getVotes() && (data.getVotes() - votes) < achievement.getVotes()) {
+                LootData lootData = ((LootData) getData(Data.Type.LOOT));
+
+                String tierString = NumberUtils.toRoman(achievement.getTier());
+
+                if (achievement.getPrisms() != 0)
+                    lootData.add(Loot.PRISMS, Rarity.UNCOMMON, "§a§l§oMonthly Achievement " + tierString + " " + DateUtils.getMonth() + " " + DateUtils.getYear(), achievement.getPrisms());
+
+                if (achievement.getSolars() != 0)
+                    lootData.add(Loot.SOLARS, Rarity.RARE, "§a§l§oMonthly Achievement " + tierString + " " + DateUtils.getMonth() + " " + DateUtils.getYear(), achievement.getSolars());
+            }
+        }
+
+        StoredProgressAchievement handler = (StoredProgressAchievement) HubAchievements.ORBITMINES_SUPPORTER.getHandler();
+        if (handler.hasCompleted(this))
+            handler.complete(this, true);
     }
 
     /*
@@ -360,6 +456,10 @@ public abstract class OMPlayer {
         this.loggedIn = loggedIn;
     }
 
+    public boolean isFirstLogin() {
+        return firstLogin;
+    }
+
     /*
         OpMode
      */
@@ -382,7 +482,7 @@ public abstract class OMPlayer {
     }
 
     public void setStaffRank(StaffRank staffRank) {
-        Title t = new Title(new Message(""), new Message("§7Je bent nu een " + staffRank.getDisplayName() + "§7!", "§7You are now " + staffRank.getDisplayName() + " " + (staffRank == StaffRank.OWNER ? "an" : "a") + "§7!"), 20, 80, 20);
+        Title t = new Title(new Message(""), new Message("§7Je bent nu een " + staffRank.getDisplayName() + "§7!", "§7You are now " + (staffRank == StaffRank.OWNER ? "an" : "a") + " " + staffRank.getDisplayName() + "§7!"), 20, 80, 20);
         t.send(this);
 
         Database.get().update(Table.PLAYERS, new Set(TablePlayers.STAFFRANK, staffRank.toString()), new Where(TablePlayers.UUID, getUUID().toString()));
@@ -401,7 +501,7 @@ public abstract class OMPlayer {
     }
 
     public void setVipRank(VipRank vipRank) {
-        Title t = new Title(new Message(""), new Message("§7Je bent nu een " + vipRank.getDisplayName() + "§7!", "§7You are now " + vipRank.getDisplayName() + " " + (vipRank == VipRank.EMERALD || vipRank == VipRank.IRON ? "an" : "a") + "§7!"), 20, 80, 20);
+        Title t = new Title(new Message(""), new Message("§7Je bent nu een " + vipRank.getDisplayName() + "§7!", "§7You are now " + (vipRank == VipRank.EMERALD || vipRank == VipRank.IRON ? "an" : "a") + " " + vipRank.getDisplayName() + "§7!"), 20, 80, 20);
         t.send(this);
 
         Database.get().update(Table.PLAYERS, new Set(TablePlayers.VIPRANK, vipRank.toString()), new Where(TablePlayers.UUID, getUUID().toString()));
@@ -412,7 +512,7 @@ public abstract class OMPlayer {
     }
 
     public boolean isEligible(VipRank vipRank) {
-        return this.vipRank.ordinal() >= vipRank.ordinal() || opMode;
+        return this.vipRank.ordinal() >= vipRank.ordinal() || opMode || this.staffRank.ordinal() >= StaffRank.ADMIN.ordinal();
     }
 
     public void updateRanks() {
@@ -451,6 +551,18 @@ public abstract class OMPlayer {
     }
 
     /*
+        Muted
+     */
+
+    public boolean isMuted() {
+        return muted;
+    }
+
+    public void setMuted(boolean muted) {
+        this.muted = muted;
+    }
+
+    /*
         Silent
      */
 
@@ -468,6 +580,11 @@ public abstract class OMPlayer {
 
     public void updateSilent() {
         this.silent = Database.get().getBoolean(Table.PLAYERS, TablePlayers.SILENT, new Where(TablePlayers.UUID, getUUID().toString()));
+
+        if (silent)
+            player.setGameMode(GameMode.SPECTATOR);
+        else
+            player.setGameMode(orbitMines.getServerHandler().getGameMode());
     }
 
     /*
@@ -539,27 +656,53 @@ public abstract class OMPlayer {
     }
 
     public void setAfk(String afk) {
-        this.afk = afk;
-
         String playerName = getName();
 
         if (afk != null) {
             if (afk.equals("null"))
-                orbitMines.broadcast("Afk", Color.BLUE, "§7 " + playerName + "§7 is nu §6AFK§7.", "§7 " + playerName + "§7 is now §6AFK§7.");
+                orbitMines.broadcast("Afk", Color.BLUE, playerName + "§7 is nu §6AFK§7.", playerName + "§7 is now §6AFK§7.");
             else
-                orbitMines.broadcast("Afk", Color.BLUE, "§7 " + playerName + "§7 is nu §6AFK§7. (§7" + afk + "§7)", "§7 " + playerName + "§7 is now §6AFK§7. (§7" + afk + "§7)");
+                orbitMines.broadcast("Afk", Color.BLUE, playerName + "§7 is nu §6AFK§7. (§7" + afk + "§7)", playerName + "§7 is now §6AFK§7. (§7" + afk + "§7)");
         } else {
             if (this.afk.equals("null"))
-                orbitMines.broadcast("Afk", Color.BLUE, "§7 " + playerName + "§7 is niet meer §6AFK§7.", "§7 " + playerName + "§7 is no longer §6AFK§7.");
+                orbitMines.broadcast("Afk", Color.BLUE, playerName + "§7 is niet meer §6AFK§7.", playerName + "§7 is no longer §6AFK§7.");
             else
-                orbitMines.broadcast("Afk", Color.BLUE, "§7 " + playerName + "§7 is niet meer §6AFK§7. (§7" + this.afk + "§7)", "§7 " + playerName + "§7 is no longer §6AFK§7. (§7" + this.afk + "§7)");
+                orbitMines.broadcast("Afk", Color.BLUE, playerName + "§7 is niet meer §6AFK§7. (§7" + this.afk + "§7)", playerName + "§7 is no longer §6AFK§7. (§7" + this.afk + "§7)");
         }
         this.afk = afk;
     }
 
     /*
+        Nickname
+     */
+
+    public void setNickName(String nickName) {
+        this.displayName.setName("*" + nickName + "*");
+
+        Database.get().update(Table.PLAYERS, new Set(TablePlayers.NICK, nickName), new Where(TablePlayers.UUID, getUUID().toString()));
+    }
+
+    public void clearNickName() {
+        this.displayName.setName(this.displayName.getInitialName());
+
+        Database.get().update(Table.PLAYERS, new Set(TablePlayers.NICK, ""), new Where(TablePlayers.UUID, getUUID().toString()));
+    }
+
+    /*
         Scoreboard
      */
+
+    public boolean hasScoreboard() {
+        return hasScoreboard;
+    }
+
+    public void setHasScoreboard(boolean hasScoreboard) {
+        this.hasScoreboard = hasScoreboard;
+
+        updateScoreboard();
+
+        Database.get().update(Table.PLAYERS, new Set(TablePlayers.SCOREBOARD, hasScoreboard), new Where(TablePlayers.UUID, getUUID().toString()));
+    }
 
     public OMScoreboard getScoreboard() {
         return scoreboard;
@@ -682,11 +825,17 @@ public abstract class OMPlayer {
             case FRIENDS:
                 data = new FriendsData(getUUID());
                 break;
+            case DISCORD_GROUPS:
+                data = new DiscordGroupData(getUUID());
+                break;
             case SETTINGS:
                 data = new SettingsData(getUUID());
                 break;
             case PLAY_TIME:
                 data = new PlayTimeData(getUUID());
+                break;
+            case ACHIEVEMENTS:
+                data = new AchievementsData(getUUID());
                 break;
             case LOOT:
                 data = new LootData(getUUID());
@@ -697,6 +846,9 @@ public abstract class OMPlayer {
 
             case SURVIVAL:
                 data = new SurvivalData(getUUID());
+                break;
+            case KITPVP:
+                data = new KitPvPData(getUUID());
                 break;
             default:
                 return null;
@@ -730,6 +882,10 @@ public abstract class OMPlayer {
 
     public void setName(String name) {
         displayName.setName(name);
+    }
+
+    public boolean hasNickname() {
+        return displayName.hasChanged();
     }
 
     public String getPrefix() {
@@ -855,6 +1011,11 @@ public abstract class OMPlayer {
         return player.getInventory();
     }
 
+    public ItemStack[] getCompleteInventory() {
+        PlayerInventory inventory = getInventory();
+        return ArrayUtils.addAll(inventory.getContents(), inventory.getArmorContents());
+    }
+
     public ItemStack getItemInMainHand() {
         return player.getInventory().getItemInMainHand();
     }
@@ -881,19 +1042,78 @@ public abstract class OMPlayer {
         player.setLevel(0);
         player.setExp(0f);
     }
-    
+
+    private Map<PotionEffectType, PotionEffect> cachedPotions = new HashMap<>();
+    private Map<PotionEffectType, SpigotRunnable> cachedPotionTimers = new HashMap<>();
+
     public void clearPotionEffects() {
         for (PotionEffect effect : player.getActivePotionEffects()) {
             player.removePotionEffect(effect.getType());
         }
+
+        /* Clear cache */
+        cachedPotions.clear();
+        for (SpigotRunnable timer : cachedPotionTimers.values()) {
+            timer.cancel();
+        }
+        cachedPotionTimers.clear();
     }
     
-    public void clearPotionEffect(PotionEffect effect) {
-        player.removePotionEffect(effect.getType());
+    public void clearPotionEffect(PotionEffectType effect) {
+        player.removePotionEffect(effect);
+
+        if (!cachedPotions.containsKey(effect))
+            return;
+
+        /* Add cached potion effect */
+        player.addPotionEffect(cachedPotions.get(effect));
+        /* Clear cached potion effect */
+        cachedPotions.remove(effect);
+        cachedPotionTimers.get(effect).cancel();
     }
     
     public void addPotionEffect(PotionBuilder builder) {
-        player.addPotionEffect(builder.build());
+        PotionEffectType type = builder.getType();
+
+        for (PotionEffect effect : player.getActivePotionEffects()) {
+            if (!effect.getType().getName().equals(type.getName()))
+                continue;
+
+            /* Update cache */
+            cachedPotions.put(type, effect);
+
+            cachedPotionTimers.put(type, new SpigotRunnable(SpigotRunnable.TimeUnit.TICK, 10, new SpigotRunnable.Time(SpigotRunnable.TimeUnit.SECOND, 1)) {
+                @Override
+                public void run() {
+                    if (!player.isOnline()) {
+                        cancel();
+                        return;
+                    }
+
+                    if (hasPotionEffect(type))
+                        return;
+
+                    /* Add potion from cache */
+                    player.addPotionEffect(cachedPotions.get(type));
+
+                    /* Clear cache */
+                    cachedPotions.remove(type);
+                    cachedPotionTimers.remove(type);
+                    cancel();
+                }
+            });
+            break;
+        }
+
+        player.addPotionEffect(builder.build(), true);
+    }
+
+    public boolean hasPotionEffect(PotionEffectType type) {
+        for (PotionEffect effect : player.getActivePotionEffects()) {
+            if (effect.getType().getName().equals(type.getName()))
+                return true;
+        }
+        return false;
     }
 
     public boolean isMoving(PlayerMoveEvent event) {
@@ -957,31 +1177,19 @@ public abstract class OMPlayer {
      */
 
     public static OMPlayer getPlayer(Player player) {
-        for (OMPlayer omp : players) {
-            if (omp.getPlayer() == player)
-                return omp;
-        }
-        return null;
+        return player == null ? null : players.getOrDefault(player, null);
     }
 
     public static OMPlayer getPlayer(String name) {
-        for (OMPlayer omp : players) {
-            if (omp.getName(true).equalsIgnoreCase(name))
-                return omp;
-        }
-        return null;
+        return getPlayer(Bukkit.getPlayer(name));
     }
 
     public static OMPlayer getPlayer(UUID uuid) {
-        for (OMPlayer omp : players) {
-            if (omp.getUUID().toString().equals(uuid.toString()))
-                return omp;
-        }
-        return null;
+        return getPlayer(Bukkit.getPlayer(uuid));
     }
 
-    public static List<OMPlayer> getPlayers() {
-        return players;
+    public static Collection<OMPlayer> getPlayers() {
+        return players.values();
     }
 
 }

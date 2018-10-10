@@ -21,7 +21,7 @@ public class TestCommand extends Command {
     private String[] alias = { "testcmd" };
 
     public TestCommand() {
-        super(BotToken.DEFAULT);
+        super(BotToken.DEFAULT, "Test");
     }
 
     @Override
@@ -32,6 +32,11 @@ public class TestCommand extends Command {
     @Override
     public String getHelp() {
         return null;
+    }
+
+    @Override
+    public boolean isBungeeCommand() {
+        return true;
     }
 
     @Override

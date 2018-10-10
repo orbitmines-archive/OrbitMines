@@ -5,26 +5,15 @@ package com.orbitmines.spigot.api.cmds;
  */
 
 import com.orbitmines.api.Color;
+import com.orbitmines.api.utils.CommandLibrary;
 import com.orbitmines.api.utils.NumberUtils;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.cmd.Command;
 
 public class CommandSolars extends Command {
 
-    private String[] alias = { "/solars" };
-
     public CommandSolars() {
-        super(null);
-    }
-
-    @Override
-    public String[] getAlias() {
-        return alias;
-    }
-
-    @Override
-    public String getHelp(OMPlayer omp) {
-        return null;
+        super(CommandLibrary.SOLARS);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.orbitmines.spigot.api.nms.anvilgui;
 
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
@@ -12,6 +13,10 @@ public interface AnvilNms {
     void open();
 
     HashMap<AnvilSlot, ItemStack> getItems();
+
+    ItemStack getSlot(Player p, int slot);
+
+    void setSlot(AnvilSlot slot, ItemStack item);
 
     enum AnvilSlot {
 
@@ -42,6 +47,7 @@ public interface AnvilNms {
 
     class AnvilClickEvent {
 
+        private AnvilNms anvilNms;
         private AnvilSlot slot;
 
         private String name;
@@ -49,9 +55,14 @@ public interface AnvilNms {
         private boolean close = true;
         private boolean destroy = true;
 
-        public AnvilClickEvent(AnvilSlot slot, String name) {
+        public AnvilClickEvent(AnvilNms anvilNms, AnvilSlot slot, String name) {
+            this.anvilNms = anvilNms;
             this.slot = slot;
             this.name = name;
+        }
+
+        public AnvilNms getAnvilNms() {
+            return anvilNms;
         }
 
         public AnvilSlot getSlot() {

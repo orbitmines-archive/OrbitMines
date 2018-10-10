@@ -8,6 +8,7 @@ import com.orbitmines.api.Color;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.Teleportable;
 import com.orbitmines.spigot.servers.survival.Survival;
+import com.orbitmines.spigot.servers.survival.handlers.SurvivalPlayer;
 import org.bukkit.Location;
 
 public class SurvivalSpawn extends Teleportable {
@@ -36,5 +37,11 @@ public class SurvivalSpawn extends Teleportable {
     @Override
     public String getName() {
         return "Spawn";
+    }
+
+    @Override
+    public void onTeleport(OMPlayer player, Location from, Location to) {
+        SurvivalPlayer omp = (SurvivalPlayer) player;
+        omp.setBackLocation(from);
     }
 }

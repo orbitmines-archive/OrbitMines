@@ -3,7 +3,6 @@ package com.orbitmines.spigot.servers.hub.datapoints;
 import com.orbitmines.api.utils.uuid.UUIDUtils;
 import com.orbitmines.spigot.api.datapoints.DataPointLoader;
 import com.orbitmines.spigot.api.datapoints.DataPointSign;
-import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 
@@ -19,7 +18,7 @@ public class HubDataPointStaffHologram extends DataPointSign {
     private Map<Location, UUID> staffHolograms;
 
     public HubDataPointStaffHologram() {
-        super("STAFF_HOLO", Type.IRON_PLATE, Material.WOOL, DyeColor.BLACK.getWoolData());
+        super("STAFF_HOLO", Type.IRON_PLATE, Material.BLACK_WOOL);
 
         staffHolograms = new HashMap<>();
     }

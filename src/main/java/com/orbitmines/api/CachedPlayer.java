@@ -4,7 +4,11 @@ import com.orbitmines.api.database.Database;
 import com.orbitmines.api.database.Table;
 import com.orbitmines.api.database.Where;
 import com.orbitmines.api.database.tables.TablePlayers;
+import com.orbitmines.api.punishment.PunishmentHandler;
 import com.orbitmines.api.utils.uuid.UUIDUtils;
+import com.orbitmines.discordbot.DiscordBot;
+import com.orbitmines.discordbot.utils.BotToken;
+import net.dv8tion.jda.core.entities.User;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -56,6 +60,14 @@ public class CachedPlayer {
         return Database.get().getString(Table.PLAYERS, TablePlayers.FIRST_LOGIN, new Where(TablePlayers.UUID, getUUID().toString()));
     }
 
+    public Long getDiscordId() {
+        return DiscordBot.getInstance().getLinkedId(uuid);
+    }
+
+    public User getDiscordUser(BotToken token) {
+        return DiscordBot.getInstance().getUserById(token, getDiscordId());
+    }
+
     public String getLastOnline() {
         updateIP();
         ip.updateLastLogin();
@@ -86,6 +98,10 @@ public class CachedPlayer {
             ip.update();
             return null;
         }
+    }
+
+    public PunishmentHandler getPunishmentHandler() {
+        return PunishmentHandler.getHandler(uuid);
     }
 
     private void updateIP() {

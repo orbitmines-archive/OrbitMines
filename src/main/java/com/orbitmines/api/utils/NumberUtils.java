@@ -46,4 +46,8 @@ public class NumberUtils {
     public static String locale(long number) {
         return NumberFormat.getNumberInstance(Locale.US).format(number);
     }
+
+    public static String locale(double number) {
+        return NumberFormat.getNumberInstance(Locale.US).format(number);
+    }
 }

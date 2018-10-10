@@ -32,7 +32,7 @@ public class ServerSelectorGUI extends GUI {
 
         newInventory(54, "§0§lServer Selector");
 
-        EmptyItemInstance item = new EmptyItemInstance(new ItemBuilder(Material.STAINED_GLASS_PANE, 1, 15, "§f").build());
+        EmptyItemInstance item = new EmptyItemInstance(new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE, 1, "§f").build());
         for (int i = 0; i < inventory.getSize(); i++) {
             add(i, item);
         }
@@ -48,7 +48,7 @@ public class ServerSelectorGUI extends GUI {
     public void update() {
         add(1, 4, getItem(
                 Server.HUB,
-                new ItemBuilder(Material.STAINED_CLAY, 1, 8),
+                new ItemBuilder(Material.LIGHT_GRAY_TERRACOTTA, 1),
                 new String[] {
                         "§7§oMaanbasis",
                         "§7§oMoonbase"
@@ -77,11 +77,11 @@ public class ServerSelectorGUI extends GUI {
                                 "§7van het grootste belang is.",
                                 "",
                                 "§7- " + Server.SURVIVAL.getColor().getChatColor() + "Regions",
-                                "§7- " + Server.SURVIVAL.getColor().getChatColor() + "Custom Claims",
+                                "§7- " + Server.SURVIVAL.getColor().getChatColor() + "Land Claims",
                                 "§7- " + Server.SURVIVAL.getColor().getChatColor() + NumberUtils.locale(Region.WORLD_BORDER) + "x" + NumberUtils.locale(Region.WORLD_BORDER) + " Wereld",
-                                "§7- " + Server.SURVIVAL.getColor().getChatColor() + "Economie",
                                 "§7- " + Server.SURVIVAL.getColor().getChatColor() + "Homes",
-                                "§7- " + Server.SURVIVAL.getColor().getChatColor() + "Warps"
+                                "§7- " + Server.SURVIVAL.getColor().getChatColor() + "Warps",
+                                "§7- " + Server.SURVIVAL.getColor().getChatColor() + "Chest Shops"
                         },
                         new String[] {
                                 "§7The most recent OrbitMines colony",
@@ -89,23 +89,53 @@ public class ServerSelectorGUI extends GUI {
                                 "§7survival is of the utmost importance.",
                                 "",
                                 "§7- " + Server.SURVIVAL.getColor().getChatColor() + "Regions",
-                                "§7- " + Server.SURVIVAL.getColor().getChatColor() + "Custom Claims",
+                                "§7- " + Server.SURVIVAL.getColor().getChatColor() + "Land Claims",
                                 "§7- " + Server.SURVIVAL.getColor().getChatColor() + NumberUtils.locale(Region.WORLD_BORDER) + "x" + NumberUtils.locale(Region.WORLD_BORDER) + " World",
-                                "§7- " + Server.SURVIVAL.getColor().getChatColor() + "Economy",
                                 "§7- " + Server.SURVIVAL.getColor().getChatColor() + "Homes",
-                                "§7- " + Server.SURVIVAL.getColor().getChatColor() + "Warps"
+                                "§7- " + Server.SURVIVAL.getColor().getChatColor() + "Warps",
+                                "§7- " + Server.SURVIVAL.getColor().getChatColor() + "Chest Shops"
+                        }
+                }));
+        add(3, 3, getItem(
+                Server.KITPVP,
+                new ItemBuilder(Material.IRON_SWORD, 1).addFlag(ItemFlag.HIDE_ATTRIBUTES),
+                new String[] {
+                        "§7§oGeheime Gladiatoren Arena",
+                        "§7§oClassified Gladiator Arena"
+                },
+                new String[][] {
+                        new String[] {
+                                "§7Een gladiatoren arena opgezet door een",
+                                "§7onbekende generaal en admiraal van OrbitMines",
+                                "§7vloot, bevindt zich op Militaire Basis #27.",
+                                "",
+                                "§7- " + Server.KITPVP.getColor().getChatColor() + "Kits",
+                                "§7- " + Server.KITPVP.getColor().getChatColor() + "Kit Upgrades",
+                                "§7- " + Server.KITPVP.getColor().getChatColor() + "Abilities",
+                                "§7- " + Server.KITPVP.getColor().getChatColor() + "Custom Enchantments",
+                                "§7- " + Server.KITPVP.getColor().getChatColor() + "Level Systeem",
+                                "§7- " + Server.KITPVP.getColor().getChatColor() + "Geen item drops",
+                        },
+                        new String[] {
+                                "§7A gladiator arena setup by an unknown",
+                                "§7general and admiral in the OrbitMines",
+                                "§7fleet, located at Military Base #27.",
+                                "",
+                                "§7- " + Server.KITPVP.getColor().getChatColor() + "Kits",
+                                "§7- " + Server.KITPVP.getColor().getChatColor() + "Kit Upgrades",
+                                "§7- " + Server.KITPVP.getColor().getChatColor() + "Abilities",
+                                "§7- " + Server.KITPVP.getColor().getChatColor() + "Custom Enchantments",
+                                "§7- " + Server.KITPVP.getColor().getChatColor() + "Level System",
+                                "§7- " + Server.KITPVP.getColor().getChatColor() + "No item drops",
                         }
                 }));
 
-        EmptyItemInstance item = new EmptyItemInstance(new ItemBuilder(Material.STAINED_GLASS_PANE, 1, 14, new Message("§cOnbekende Galaxies", "§cUnknown Galaxies").lang(language)).build());
+        EmptyItemInstance item = new EmptyItemInstance(new ItemBuilder(Material.RED_STAINED_GLASS_PANE, 1, new Message("§cOnbekende Galaxies", "§cUnknown Galaxies").lang(language)).build());
         add(3, 1, item);
-        add(3, 3, item);
         add(3, 5, item);
         add(3, 7, item);
         add(4, 2, item);
         add(4, 6, item);
-
-//        updateForPlayers(); TODO, DOES IT UPDATE? TO PREVENT FLICKERING ITEM, DISABLED FOR NOW
     }
 
     private ItemInstance getItem(Server server, ItemBuilder item, String[] underline, String[][] comments) {
@@ -129,7 +159,7 @@ public class ServerSelectorGUI extends GUI {
         }
 
         return new ItemInstance(item
-                .setDisplayName("§7§lOrbit§8§lMines " + server.getDisplayName())
+                .setDisplayName("§8§lOrbit§7§lMines " + server.getDisplayName())
                 .setLore(lore)
                 .build()) {
             @Override

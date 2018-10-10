@@ -72,7 +72,7 @@ public class RegionGUI extends GUI {
                         }
                     });
                 } else {
-                    add(row, slot, new EmptyItemInstance(region.getIcon().setMaterial(Material.STAINED_GLASS_PANE).setDurability((short) 15).setDisplayName("§8§lRegion §a§l" + (region.getId() + 1)).setLore(Collections.singletonList(" §8§lUNKNOWN")).build()));
+                    add(row, slot, new EmptyItemInstance(region.getIcon().setMaterial(Material.BLACK_STAINED_GLASS_PANE).setDisplayName("§8§lRegion §a§l" + (region.getId() + 1)).setLore(Collections.singletonList(" §8§lUNKNOWN")).build()));
                 }
             }
         }

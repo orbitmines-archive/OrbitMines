@@ -3,7 +3,7 @@ package com.orbitmines.bungeecord.commands.moderator;
 import com.orbitmines.api.Color;
 import com.orbitmines.api.Message;
 import com.orbitmines.api.Server;
-import com.orbitmines.api.StaffRank;
+import com.orbitmines.api.utils.CommandLibrary;
 import com.orbitmines.bungeecord.OrbitMinesBungee;
 import com.orbitmines.bungeecord.handlers.BungeePlayer;
 import com.orbitmines.bungeecord.handlers.chat.ComponentMessage;
@@ -17,24 +17,12 @@ import net.md_5.bungee.api.event.ChatEvent;
 */
 public class CommandFind extends StaffCommand {
 
-    private String[] alias = { "/find" };
-
     private OrbitMinesBungee bungee;
 
     public CommandFind(OrbitMinesBungee bungee) {
-        super(StaffRank.MODERATOR);
+        super(CommandLibrary.FIND);
 
         this.bungee = bungee;
-    }
-
-    @Override
-    public String[] getAlias() {
-        return alias;
-    }
-
-    @Override
-    public String getHelp(BungeePlayer omp) {
-        return "<player>";
     }
 
     @Override

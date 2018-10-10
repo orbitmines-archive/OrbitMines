@@ -5,7 +5,7 @@ package com.orbitmines.spigot.servers.survival.cmds;
  */
 
 import com.orbitmines.api.Color;
-import com.orbitmines.api.Server;
+import com.orbitmines.api.utils.CommandLibrary;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.cmd.Command;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalPlayer;
@@ -13,20 +13,8 @@ import com.orbitmines.spigot.servers.survival.handlers.teleportable.Home;
 
 public class CommandDelHome extends Command {
 
-    private String[] alias = { "/delhome", "/delh" };
-
     public CommandDelHome() {
-        super(Server.SURVIVAL);
-    }
-
-    @Override
-    public String[] getAlias() {
-        return alias;
-    }
-
-    @Override
-    public String getHelp(OMPlayer omp) {
-        return "<" + omp.lang("naam", "name") + ">";
+        super(CommandLibrary.SURVIVAL_DELHOME);
     }
 
     @Override

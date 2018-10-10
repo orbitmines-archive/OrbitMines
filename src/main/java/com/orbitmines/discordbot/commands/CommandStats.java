@@ -38,7 +38,7 @@ public class CommandStats extends Command {
     private final DiscordBot bot;
 
     public CommandStats(DiscordBot bot) {
-        super(BotToken.DEFAULT);
+        super(BotToken.DEFAULT, "Display General Stats for a specific Player.");
 
         this.bot = bot;
     }
@@ -51,6 +51,11 @@ public class CommandStats extends Command {
     @Override
     public String getHelp() {
         return "<player>";
+    }
+
+    @Override
+    public boolean isBungeeCommand() {
+        return true;
     }
 
     @Override
@@ -82,6 +87,7 @@ public class CommandStats extends Command {
 
         builder.addField("Rank", staffRank == StaffRank.NONE ? vipRank.getName() : (vipRank == VipRank.NONE ? staffRank.getName() : (staffRank.getName() + " / " + vipRank.getName())), false);
 
+        //TODO CHECK SETTINGS
 
         {
             PlayTimeData data = new PlayTimeData(player.getUUID());
@@ -108,7 +114,7 @@ public class CommandStats extends Command {
         builder.addField("Prisms", NumberUtils.locale(Database.get().getInt(Table.PLAYERS, TablePlayers.PRISMS, new Where(TablePlayers.UUID, player.getUUID().toString()))), true);
         builder.addField("Solars", NumberUtils.locale(Database.get().getInt(Table.PLAYERS, TablePlayers.SOLARS, new Where(TablePlayers.UUID, player.getUUID().toString()))), true);
 
-        builder.setThumbnail(SkinLibrary.getSkinUrl(SkinLibrary.Type.BODY_3D, player.getUUID()) + "/");
+        builder.setThumbnail(SkinLibrary.getSkinUrl(SkinLibrary.Type.BODY_3D, player.getUUID()));
 
         channel.sendMessage(builder.build()).queue();
     }

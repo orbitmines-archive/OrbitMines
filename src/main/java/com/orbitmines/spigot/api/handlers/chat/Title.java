@@ -1,12 +1,12 @@
 package com.orbitmines.spigot.api.handlers.chat;
 
-import com.orbitmines.api.Language;
 import com.orbitmines.api.Message;
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
-import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 
 /*
 * OrbitMines - @author Fadi Shawki - 29-7-2017
@@ -20,6 +20,10 @@ public class Title {
     private int fadeIn;
     private int stay;
     private int fadeOut;
+
+    public Title(String title, String subTitle, int fadeIn, int stay, int fadeOut) {
+        this(new Message(title), new Message(subTitle), fadeIn, stay, fadeOut);
+    }
 
     public Title(Message title, Message subTitle, int fadeIn, int stay, int fadeOut) {
         plugin = OrbitMines.getInstance();
@@ -40,16 +44,8 @@ public class Title {
     }
 
     public void send(Collection<? extends OMPlayer> players) {
-        Map<Language, List<Player>> perLanguage = new HashMap<>();
-        for (OMPlayer player : players) {
-            if (!perLanguage.containsKey(player.getLanguage()))
-                perLanguage.put(player.getLanguage(), new ArrayList<>());
-
-            perLanguage.get(player.getLanguage()).add(player.getPlayer());
-        }
-
-        for (Language language : perLanguage.keySet()) {
-            plugin.getNms().title().send(perLanguage.get(language), title.lang(language), subTitle.lang(language), fadeIn, stay, fadeOut);
+        for (OMPlayer omp : players) {
+            omp.getPlayer().sendTitle(omp.lang(title), omp.lang(subTitle), fadeIn, stay, fadeOut);
         }
     }
 

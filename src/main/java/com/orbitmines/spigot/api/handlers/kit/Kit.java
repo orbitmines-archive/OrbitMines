@@ -4,20 +4,24 @@ import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.api.utils.PlayerUtils;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /*
 * OrbitMines - @author Fadi Shawki - 29-7-2017
 */
 public class Kit {
-    private static List<Kit> kits = new ArrayList<>();
 
-    private String name;
+    private static Map<String, Kit> kits = new HashMap<>();
+
+    private final String name;
     private ItemBuilder[] armorContents;
     private ItemBuilder[] contents;
     private ItemBuilder itemOffHand;
@@ -27,7 +31,7 @@ public class Kit {
     private CachedPlayer lastUsedBy;
 
     public Kit(String name) {
-        kits.add(this);
+        kits.put(name, this);
 
         this.name = name;
         this.armorContents = new ItemBuilder[4];
@@ -37,10 +41,6 @@ public class Kit {
 
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public ItemBuilder getHelmet() {
@@ -115,6 +115,28 @@ public class Kit {
         return null;
     }
 
+    public ItemBuilder getItemNotNull(int index) {
+        int i = 0;
+        for (ItemBuilder item : this.contents) {
+            if (item == null)
+                continue;
+
+            if (i == index)
+                return item;
+
+            i++;
+        }
+        return null;
+    }
+
+    public int index(ItemBuilder item) {
+        for (int i = 0; i < this.contents.length; i++) {
+            if (item.equals(this.contents[i]))
+                return i;
+        }
+        return -1;
+    }
+
     public int contentItems() {
         int amount = 0;
         for (ItemBuilder item : getContents()) {
@@ -122,6 +144,32 @@ public class Kit {
                 amount++;
         }
         return amount;
+    }
+
+    public List<ItemBuilder> getItems(Material... materials) {
+        List<ItemBuilder> list = new ArrayList<>();
+        list.addAll(getItems(getContents(), materials));
+        list.addAll(getItems(getArmorContents(), materials));
+        return list;
+    }
+
+    private List<ItemBuilder> getItems(ItemBuilder[] contents, Material... materials) {
+        List<ItemBuilder> list = new ArrayList<>();
+
+        for (ItemBuilder item : contents) {
+            if (item == null)
+                continue;
+
+            for (Material material : materials) {
+                if (item.getMaterial() != material)
+                    continue;
+
+                list.add(item);
+                break;
+            }
+        }
+
+        return list;
     }
 
     public List<PotionEffect> getPotionEffects() {
@@ -212,7 +260,6 @@ public class Kit {
 
     private boolean setItem(ItemStack item, ItemStack item2) {
         return item2 == null || item.getType() != item2.getType() || item.getAmount() != item2.getAmount() || !item.getItemMeta().getDisplayName().equals(item2.getItemMeta().getDisplayName());
-
     }
 
     private boolean setItem(ItemStack[] contents, int index, ItemStack item) {
@@ -267,11 +314,6 @@ public class Kit {
     }
 
     public static Kit getKit(String name) {
-        for (Kit kit : kits) {
-            if (kit.getName().equals(name)) {
-                return kit;
-            }
-        }
-        return null;
+        return kits.getOrDefault(name, null);
     }
 }

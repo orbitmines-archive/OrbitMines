@@ -12,7 +12,7 @@ import java.util.*;
 */
 public abstract class PlayerRunnable {
 
-    private Map<Long, List<PlayerRunnable>> playerRunnables = new HashMap<>();
+    private static final Map<Long, List<PlayerRunnable>> playerRunnables = new HashMap<>();
 
     protected OrbitMines orbitMines;
     private SpigotRunnable.Time time;
@@ -61,7 +61,7 @@ public abstract class PlayerRunnable {
         this.task = new BukkitRunnable() {
             @Override
             public void run() {
-                List<PlayerRunnable> runnables = playerRunnables.get(time.getTicks());
+                List<PlayerRunnable> runnables = new ArrayList<>(playerRunnables.get(time.getTicks()));
                 for (OMPlayer omp : OMPlayer.getPlayers()) {
                     for (PlayerRunnable runnable : runnables) {
                         runnable.run(omp);

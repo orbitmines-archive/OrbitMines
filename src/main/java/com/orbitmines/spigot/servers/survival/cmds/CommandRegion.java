@@ -5,7 +5,7 @@ package com.orbitmines.spigot.servers.survival.cmds;
  */
 
 import com.orbitmines.api.Color;
-import com.orbitmines.api.Server;
+import com.orbitmines.api.utils.CommandLibrary;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.cmd.Command;
 import com.orbitmines.spigot.servers.survival.Survival;
@@ -14,24 +14,12 @@ import com.orbitmines.spigot.servers.survival.handlers.region.Region;
 
 public class CommandRegion extends Command {
 
-    private String[] alias = { "/region", "/regions", "/rg" };
-
     private final Survival survival;
 
     public CommandRegion(Survival survival) {
-        super(Server.SURVIVAL);
+        super(CommandLibrary.SURVIVAL_REGION);
 
         this.survival = survival;
-    }
-
-    @Override
-    public String[] getAlias() {
-        return alias;
-    }
-
-    @Override
-    public String getHelp(OMPlayer omp) {
-        return "(" + omp.lang("nummer", "number") + ")|random";
     }
 
     @Override
@@ -41,11 +29,13 @@ public class CommandRegion extends Command {
             new RegionGUI(survival).open(omp);
         } else if (a.length == 2) {
             if (a[1].equalsIgnoreCase("random")) {
-                Region region = Region.randomTeleportable();
-                if (omp.getWorld() == survival.getOrbitMines().getLobby().getWorld())
+                Region region = Region.randomTeleportable(omp.isFirstLogin()); /* We don't want new players to be spawning in regions under water, after that it's fine. */
+                if (omp.getWorld() == survival.getOrbitMines().getLobby().getWorld()) {
                     omp.getPlayer().teleport(region.getLocation());
-                else
+                    omp.sendMessage("Teleporter", Color.LIME, "§7" + omp.lang("Geteleporteerd naar", "Teleported to") + " " + region.getColor().getChatColor() + region.getName() + "§7.");
+                } else {
                     region.teleport(omp);
+                }
                 return;
             }
             int id;
@@ -59,10 +49,12 @@ public class CommandRegion extends Command {
 
             if (id > 0 && id <= Region.TELEPORTABLE) {
                 Region region = Region.getRegion(id - 1);
-                if (omp.getWorld() == survival.getOrbitMines().getLobby().getWorld())
+                if (omp.getWorld() == survival.getOrbitMines().getLobby().getWorld()) {
                     omp.getPlayer().teleport(region.getLocation());
-                else
+                    omp.sendMessage("Teleporter", Color.LIME, "§7" + omp.lang("Geteleporteerd naar", "Teleported to") + " " + region.getColor().getChatColor() + region.getName() + "§7.");
+                } else {
                     region.teleport(omp);
+                }
                 return;
             }
 

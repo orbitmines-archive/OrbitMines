@@ -13,13 +13,9 @@ import java.util.List;
 * OrbitMines - @author Fadi Shawki - 29-7-2017
 */
 public class PotionItemBuilder extends ItemBuilder {
-//    1.8
-//    if (splash) {
-//        durability = (short) (durability | 16384);
-//    }
 
-    private ArrayList<PotionBuilder> potionBuilders;
-    private boolean effectHidden;
+    protected ArrayList<PotionBuilder> potionBuilders;
+    protected boolean effectHidden;
 
     public PotionItemBuilder(PotionBuilder potionBuilder) {
         this(Type.NORMAL, potionBuilder);
@@ -46,11 +42,18 @@ public class PotionItemBuilder extends ItemBuilder {
     }
 
     public PotionItemBuilder(Type type, PotionBuilder potionBuilder, boolean effectHidden, int amount, String displayName, List<String> lore) {
-        super(type.material, amount, 0, displayName, lore);
+        super(type.material, amount, displayName, lore);
 
         this.potionBuilders = new ArrayList<>();
         this.potionBuilders.add(potionBuilder);
         this.effectHidden = effectHidden;
+    }
+
+    public PotionItemBuilder(PotionItemBuilder builder) {
+        super(builder.material, builder.amount, builder.displayName, new ArrayList<>(builder.lore));
+
+        this.potionBuilders = new ArrayList<>(builder.potionBuilders);
+        this.effectHidden = builder.effectHidden;
     }
 
     public ArrayList<PotionBuilder> getPotionBuilders() {
@@ -71,15 +74,16 @@ public class PotionItemBuilder extends ItemBuilder {
 
     @Override
     public ItemStack build() {
-        ItemStack itemStack = new ItemStack(material, amount, durability);
+        ItemStack itemStack = new ItemStack(material, amount, damage);
         PotionMeta meta = (PotionMeta) itemStack.getItemMeta();
         meta.setDisplayName(displayName);
         meta.setLore((lore == null || lore.size() == 0) ? null : new ArrayList<>(lore));
 
+        meta.setColor(potionBuilders.get(0).getType().getColor());
+
         for (PotionBuilder potionBuilder : potionBuilders) {
             meta.addCustomEffect(potionBuilder.build(), true);
         }
-        meta.setColor(potionBuilders.get(0).getColor());
 
         if (effectHidden)
             addFlag(ItemFlag.HIDE_POTION_EFFECTS);
@@ -91,7 +95,6 @@ public class PotionItemBuilder extends ItemBuilder {
 
         return modify(itemStack);
     }
-
 
     public enum Type {
 

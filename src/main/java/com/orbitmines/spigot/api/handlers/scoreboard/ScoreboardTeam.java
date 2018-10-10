@@ -1,5 +1,6 @@
 package com.orbitmines.spigot.api.handlers.scoreboard;
 
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
@@ -14,6 +15,7 @@ public class ScoreboardTeam {
     private List<Player> players;
     private String prefix;
     private String suffix;
+    private ChatColor color;
     private boolean allowFriendlyFire;
     private boolean canSeeFriendlyInvisibles;
     private Map<Team.Option, Team.OptionStatus> options;
@@ -25,6 +27,7 @@ public class ScoreboardTeam {
     public ScoreboardTeam(String name, List<Player> players) {
         this.name = name;
         this.players = players;
+        this.color = ChatColor.WHITE;
         this.allowFriendlyFire = true;
         this.canSeeFriendlyInvisibles = false;
         this.options = new HashMap<>();
@@ -48,6 +51,10 @@ public class ScoreboardTeam {
         this.suffix = suffix;
     }
 
+    public void setColor(ChatColor color) {
+        this.color = color;
+    }
+
     public void setAllowFriendlyFire(boolean allowFriendlyFire) {
         this.allowFriendlyFire = allowFriendlyFire;
     }
@@ -66,18 +73,27 @@ public class ScoreboardTeam {
             t = scoreboard.registerNewTeam(name);
 
         for (Player player : players) {
-            t.addEntry(player.getName());
+            if (!t.hasEntry(player.getName()))
+                t.addEntry(player.getName());
         }
 
-        if (prefix != null)
+        if (prefix != null && !t.getPrefix().equals(prefix))
             t.setPrefix(prefix);
-        if (suffix != null)
+        if (suffix != null && !t.getSuffix().equals(suffix))
             t.setSuffix(suffix);
 
-        t.setAllowFriendlyFire(allowFriendlyFire);
-        t.setCanSeeFriendlyInvisibles(canSeeFriendlyInvisibles);
+        if (t.getColor() != color)
+            t.setColor(color);
+
+        if (t.allowFriendlyFire() != allowFriendlyFire)
+            t.setAllowFriendlyFire(allowFriendlyFire);
+
+        if (t.canSeeFriendlyInvisibles() != canSeeFriendlyInvisibles)
+            t.setCanSeeFriendlyInvisibles(canSeeFriendlyInvisibles);
+
         for (Team.Option option : options.keySet()) {
-            t.setOption(option, options.get(option));
+            if (t.getOption(option) != options.get(option))
+                t.setOption(option, options.get(option));
         }
     }
 }

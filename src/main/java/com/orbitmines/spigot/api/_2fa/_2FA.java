@@ -112,6 +112,11 @@ public class _2FA {
             Database.get().insert(Table._2FA, Table._2FA.values(omp.getUUID().toString(), secret));
         }
 
+        if (tasks.containsKey(omp)) {
+            tasks.get(omp).cancel();
+            tasks.remove(omp);
+        }
+
         omp.setLoggedIn(true);
         omp.clearFreeze();
 
@@ -131,8 +136,11 @@ public class _2FA {
         tempKeys.remove(omp);
 
         /* Restore Inventory */
-        omp.getPlayer().getInventory().setContents(contents.get(omp));
-        omp.getPlayer().getInventory().setArmorContents(armorContents.get(omp));
+        if (contents.containsKey(omp))
+            omp.getPlayer().getInventory().setContents(contents.get(omp));
+
+        if (armorContents.containsKey(omp))
+            omp.getPlayer().getInventory().setArmorContents(armorContents.get(omp));
 
         contents.remove(omp);
         armorContents.remove(omp);
@@ -163,7 +171,7 @@ public class _2FA {
         } else {
             MapView mapView = Bukkit.createMap(omp.getWorld());
 
-            ItemStack item = new ItemBuilder(Material.MAP, 1, mapView.getId(), "§c§l2FA").build();
+            ItemStack item = new ItemBuilder(Material.MAP, 1, "§c§l2FA").setDamage(mapView.getId()).build();//TODO DOES THIS STILL WORK ? DAMAGE=MAPVIEW.GETID
 
             omp.getPlayer().getInventory().setItem(0, item);
             omp.getPlayer().getInventory().setHeldItemSlot(0);

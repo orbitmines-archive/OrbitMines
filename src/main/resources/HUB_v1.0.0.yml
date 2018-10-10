@@ -1,0 +1,109 @@
+v1.0.0:
+  Server: HUB
+  Name: 'OM Release'
+  Description: 'The first OrbitMines release, containing commands, stats, loot and many other features!'
+  Date: '2018-07-23'
+  Features:
+    'HUB':
+      Color: TEAL
+      Description: 'We have a new Hub fitting our Space Themed server fitting our server and lore built by ReddReaperz.'
+      Image: 'https://i.imgur.com/TGpD01Y.jpg'
+    'PATCH NOTES':
+      Color: RED
+      Description: 'With the patch notes users will be able to view additions and changes to OrbitMines more easily through the ''Patch Notes'' npc in game or through Discord.'
+      Image: 'https://i.imgur.com/EsOVG5S.jpg'
+    'SERVER SELECTOR':
+      Color: TEAL
+      Description: 'The Server Selector is the fastest way to switch servers on OrbitMines and we gave it a cool new look.'
+      Image: 'https://i.imgur.com/73Z0iVe.jpg'
+    'SPACE TURTLE':
+      Color: LIME
+      Description: 'The SpaceTurtle is the way to receive rewards and vote on our server. It also makes the work of our developers a lot easier so that''s also fun :D.'
+      Image: 'https://i.imgur.com/NuhCkbY.jpg'
+    'FRIENDS':
+      Color: AQUA
+      Description: 'You can now add other players as Friends or Favorite friends and instantly see when they join the server, or to easily give them access to your stuff.'
+      Image: 'https://i.imgur.com/vXmPhk6.jpg'
+    'STATS':
+      Color: LIME
+      Description: 'Through Stats you can view all your statics on OrbitMines, how long you have played, when you joined, the amount of times you voted and a lot more.'
+      Image: 'https://i.imgur.com/eXrrtAh.jpg'
+    'ACHIEVEMENTS':
+      Color: FUCHSIA
+      Description: 'After a long time of ''Coming Soon'' we have added Achievements to OrbitMines which you can access through your Stats.'
+      Image: 'https://i.imgur.com/v9SiNeT.jpg'
+    'SETTINGS':
+      Color: RED
+      Description: 'You can now specify these settings; Private Messages, Player Visibility, Stats & Language with use of the Friends system..'
+      Image: 'https://i.imgur.com/pfh2P1w.jpg'
+    'VOTING SYSTEM':
+      Color: BLUE
+      Description: 'We now have an automatic voting system that reward the top 3 players, but also the entire server if the community goal is reached.'
+      Image: 'https://i.imgur.com/mb85nN0.jpg'
+    'DISCORD':
+      Color: BLUE
+      Description: 'We have created a link between Discord & OrbitMines which allows you to easily chat with players on our server and access statistics from the server.'
+      Image: 'https://i.imgur.com/1Zb1zbv.jpg'
+    '/msg <player> <message>':
+      Color: BLUE
+      Description: 'Send Private Messages.'
+    '/discordlink <Name>#<Id>':
+      Color: BLUE
+      Description: 'Link your OrbitMines account with your Discord User.'
+    '/reply <message>':
+      Color: BLUE
+      Description: 'Reply to a Private Message.'
+    '/hub':
+      Color: BLUE
+      Description: 'Connect to the Hub.'
+    '/server <server>':
+      Color: BLUE
+      Description: 'Connect to a specific Server.'
+    '/list':
+      Color: BLUE
+      Description: 'Show all players online.'
+    '/website':
+      Color: BLUE
+      Description: 'Display our website url.'
+    '/shop':
+      Color: BLUE
+      Description: 'Display our shop url.'
+    '/report <player> <reason>':
+      Color: BLUE
+      Description: 'Report a player for breaking the rules.'
+    '/rules':
+      Color: BLUE
+      Description: 'Open the Rule Book..'
+    '/servers':
+      Color: BLUE
+      Description: 'Open the Server Selector.'
+    '/topvoters':
+      Color: BLUE
+      Description: 'Display the Top Voters.'
+    '/vote':
+      Color: BLUE
+      Description: 'Display the Vote Links.'
+    '/loot':
+      Color: BLUE
+      Description: 'Interact with the SpaceTurtle.'
+    '/friends':
+      Color: BLUE
+      Description: 'Open the Friends GUI.'
+    '/stats <player>':
+      Color: BLUE
+      Description: 'Open Stats for a specific player.'
+    '/settings':
+      Color: BLUE
+      Description: 'Open your Settings.'
+    '/prisms':
+      Color: BLUE
+      Description: 'Display your Prisms.'
+    '/solars':
+      Color: BLUE
+      Description: 'Display your Solars.'
+    '/afk (reason)':
+      Color: BLUE
+      Description: 'Go afk, this feature is for IRON+.'
+    '/nick <name>|off':
+      Color: BLUE
+      Description: 'Set your nickname, this feature is for GOLD+.'

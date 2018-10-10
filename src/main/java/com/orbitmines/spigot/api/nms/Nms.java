@@ -1,18 +1,140 @@
 package com.orbitmines.spigot.api.nms;
 
 import com.orbitmines.spigot.OrbitMines;
-import com.orbitmines.spigot.api.nms.actionbar.*;
-import com.orbitmines.spigot.api.nms.anvilgui.*;
-import com.orbitmines.spigot.api.nms.armorstand.*;
-import com.orbitmines.spigot.api.nms.entity.*;
-import com.orbitmines.spigot.api.nms.firework.*;
-import com.orbitmines.spigot.api.nms.itemstack.*;
-import com.orbitmines.spigot.api.nms.npc.*;
-import com.orbitmines.spigot.api.nms.npc.chicken.*;
-import com.orbitmines.spigot.api.nms.particles.*;
-import com.orbitmines.spigot.api.nms.tablist.*;
-import com.orbitmines.spigot.api.nms.title.*;
-import com.orbitmines.spigot.api.nms.world.*;
+import com.orbitmines.spigot.api.nms.actionbar.ActionBarNms;
+import com.orbitmines.spigot.api.nms.actionbar.ActionBarNms_1_13_R2;
+import com.orbitmines.spigot.api.nms.anvilgui.AnvilNms;
+import com.orbitmines.spigot.api.nms.anvilgui.AnvilNms_1_13_R2;
+import com.orbitmines.spigot.api.nms.armorstand.ArmorStandNms;
+import com.orbitmines.spigot.api.nms.armorstand.ArmorStandNms_1_13_R2;
+import com.orbitmines.spigot.api.nms.bednpc.BedNpcNms;
+import com.orbitmines.spigot.api.nms.bednpc.BedNpcNms_1_13_R2;
+import com.orbitmines.spigot.api.nms.entity.EntityNms;
+import com.orbitmines.spigot.api.nms.entity.EntityNms_1_13_R2;
+import com.orbitmines.spigot.api.nms.firework.FireworkNms;
+import com.orbitmines.spigot.api.nms.firework.FireworkNms_1_13_R2;
+import com.orbitmines.spigot.api.nms.itemstack.ItemStackNms;
+import com.orbitmines.spigot.api.nms.itemstack.ItemStackNms_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.NpcNms;
+import com.orbitmines.spigot.api.nms.npc.NpcNms_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.bat.BatNpc;
+import com.orbitmines.spigot.api.nms.npc.bat.BatNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.blaze.BlazeNpc;
+import com.orbitmines.spigot.api.nms.npc.blaze.BlazeNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.cave_spider.CaveSpiderNpc;
+import com.orbitmines.spigot.api.nms.npc.cave_spider.CaveSpiderNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.chicken.ChickenNpc;
+import com.orbitmines.spigot.api.nms.npc.chicken.ChickenNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.cod.CodNpc;
+import com.orbitmines.spigot.api.nms.npc.cod.CodNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.cow.CowNpc;
+import com.orbitmines.spigot.api.nms.npc.cow.CowNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.creeper.CreeperNpc;
+import com.orbitmines.spigot.api.nms.npc.creeper.CreeperNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.dolphin.DolphinNpc;
+import com.orbitmines.spigot.api.nms.npc.dolphin.DolphinNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.donkey.DonkeyNpc;
+import com.orbitmines.spigot.api.nms.npc.donkey.DonkeyNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.drowned.DrownedNpc;
+import com.orbitmines.spigot.api.nms.npc.drowned.DrownedNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.elder_guardian.ElderGuardianNpc;
+import com.orbitmines.spigot.api.nms.npc.elder_guardian.ElderGuardianNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.ender_dragon.EnderDragonNpc;
+import com.orbitmines.spigot.api.nms.npc.ender_dragon.EnderDragonNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.enderman.EndermanNpc;
+import com.orbitmines.spigot.api.nms.npc.enderman.EndermanNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.endermite.EndermiteNpc;
+import com.orbitmines.spigot.api.nms.npc.endermite.EndermiteNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.evoker.EvokerNpc;
+import com.orbitmines.spigot.api.nms.npc.evoker.EvokerNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.ghast.GhastNpc;
+import com.orbitmines.spigot.api.nms.npc.ghast.GhastNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.giant.GiantNpc;
+import com.orbitmines.spigot.api.nms.npc.giant.GiantNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.guardian.GuardianNpc;
+import com.orbitmines.spigot.api.nms.npc.guardian.GuardianNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.horse.HorseNpc;
+import com.orbitmines.spigot.api.nms.npc.horse.HorseNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.husk.HuskNpc;
+import com.orbitmines.spigot.api.nms.npc.husk.HuskNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.illusioner.IllusionerNpc;
+import com.orbitmines.spigot.api.nms.npc.illusioner.IllusionerNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.iron_golem.IronGolemNpc;
+import com.orbitmines.spigot.api.nms.npc.iron_golem.IronGolemNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.llama.LlamaNpc;
+import com.orbitmines.spigot.api.nms.npc.llama.LlamaNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.magma_cube.MagmaCubeNpc;
+import com.orbitmines.spigot.api.nms.npc.magma_cube.MagmaCubeNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.mule.MuleNpc;
+import com.orbitmines.spigot.api.nms.npc.mule.MuleNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.mushroom_cow.MushroomCowNpc;
+import com.orbitmines.spigot.api.nms.npc.mushroom_cow.MushroomCowNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.ocelot.OcelotNpc;
+import com.orbitmines.spigot.api.nms.npc.ocelot.OcelotNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.parrot.ParrotNpc;
+import com.orbitmines.spigot.api.nms.npc.parrot.ParrotNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.phantom.PhantomNpc;
+import com.orbitmines.spigot.api.nms.npc.phantom.PhantomNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.pig.PigNpc;
+import com.orbitmines.spigot.api.nms.npc.pig.PigNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.pig_zombie.PigZombieNpc;
+import com.orbitmines.spigot.api.nms.npc.pig_zombie.PigZombieNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.polar_bear.PolarBearNpc;
+import com.orbitmines.spigot.api.nms.npc.polar_bear.PolarBearNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.pufferfish.PufferFishNpc;
+import com.orbitmines.spigot.api.nms.npc.pufferfish.PufferFishNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.rabbit.RabbitNpc;
+import com.orbitmines.spigot.api.nms.npc.rabbit.RabbitNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.salmon.SalmonNpc;
+import com.orbitmines.spigot.api.nms.npc.salmon.SalmonNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.sheep.SheepNpc;
+import com.orbitmines.spigot.api.nms.npc.sheep.SheepNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.shulker.ShulkerNpc;
+import com.orbitmines.spigot.api.nms.npc.shulker.ShulkerNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.silverfish.SilverfishNpc;
+import com.orbitmines.spigot.api.nms.npc.silverfish.SilverfishNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.skeleton.SkeletonNpc;
+import com.orbitmines.spigot.api.nms.npc.skeleton.SkeletonNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.skeleton_horse.SkeletonHorseNpc;
+import com.orbitmines.spigot.api.nms.npc.skeleton_horse.SkeletonHorseNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.slime.SlimeNpc;
+import com.orbitmines.spigot.api.nms.npc.slime.SlimeNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.snowman.SnowmanNpc;
+import com.orbitmines.spigot.api.nms.npc.snowman.SnowmanNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.spider.SpiderNpc;
+import com.orbitmines.spigot.api.nms.npc.spider.SpiderNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.squid.SquidNpc;
+import com.orbitmines.spigot.api.nms.npc.squid.SquidNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.stray.StrayNpc;
+import com.orbitmines.spigot.api.nms.npc.stray.StrayNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.tropical_fish.TropicalFishNpc;
+import com.orbitmines.spigot.api.nms.npc.tropical_fish.TropicalFishNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.turtle.TurtleNpc;
+import com.orbitmines.spigot.api.nms.npc.turtle.TurtleNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.vex.VexNpc;
+import com.orbitmines.spigot.api.nms.npc.vex.VexNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.villager.VillagerNpc;
+import com.orbitmines.spigot.api.nms.npc.villager.VillagerNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.vindicator.VindicatorNpc;
+import com.orbitmines.spigot.api.nms.npc.vindicator.VindicatorNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.witch.WitchNpc;
+import com.orbitmines.spigot.api.nms.npc.witch.WitchNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.wither.WitherNpc;
+import com.orbitmines.spigot.api.nms.npc.wither.WitherNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.wither_skeleton.WitherSkeletonNpc;
+import com.orbitmines.spigot.api.nms.npc.wither_skeleton.WitherSkeletonNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.wolf.WolfNpc;
+import com.orbitmines.spigot.api.nms.npc.wolf.WolfNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.zombie.ZombieNpc;
+import com.orbitmines.spigot.api.nms.npc.zombie.ZombieNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.zombie_horse.ZombieHorseNpc;
+import com.orbitmines.spigot.api.nms.npc.zombie_horse.ZombieHorseNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.npc.zombie_villager.ZombieVillagerNpc;
+import com.orbitmines.spigot.api.nms.npc.zombie_villager.ZombieVillagerNpc_1_13_R2;
+import com.orbitmines.spigot.api.nms.tablist.TabListNms;
+import com.orbitmines.spigot.api.nms.tablist.TabListNms_1_13_R2;
+import com.orbitmines.spigot.api.nms.world.WorldNms;
+import com.orbitmines.spigot.api.nms.world.WorldNms_1_13_R2;
 import com.orbitmines.spigot.api.utils.ConsoleUtils;
 import org.bukkit.entity.Player;
 
@@ -27,62 +149,77 @@ public class Nms {
     /* NPCs */
     private NpcNms npcNms;
 
-//    private BatNpc batNpc;
-//    private BlazeNpc blazeNpc;
-//    private CaveSpiderNpc caveSpiderNpc;
+    private BatNpc batNpc;
+    private BlazeNpc blazeNpc;
+    private CaveSpiderNpc caveSpiderNpc;
     private ChickenNpc chickenNpc;
-//    private CowNpc cowNpc;
-//    private CreeperNpc creeperNpc;
-//    private EndermanNpc endermanNpc;
-//    private EndermiteNpc endermiteNpc;
-//    private EvokerNpc evokerNpc;
-//    private GhastNpc ghastNpc;
-//    private GuardianNpc guardianNpc;
-//    private HorseNpc horseNpc;
-//    private IronGolemNpc ironGolemNpc;
-//    private LlamaNpc llamaNpc;
-//    private MagmaCubeNpc magmaCubeNpc;
-//    private MuleNpc muleNpc;
-//    private MushroomCowNpc mushroomCowNpc;
-//    private OcelotNpc ocelotNpc;
-//    private PigNpc pigNpc;
-//    private PigZombieNpc pigZombieNpc;
-//    private PolarBearNpc polarBearNpc;
-//    private RabbitNpc rabbitNpc;
-//    private SheepNpc sheepNpc;
-//    private SilverfishNpc silverfishNpc;
-//    private SkeletonNpc skeletonNpc;
-//    private SkeletonHorseNpc skeletonHorseNpc;
-//    private SlimeNpc slimeNpc;
-//    private SnowmanNpc snowmanNpc;
-//    private SpiderNpc spiderNpc;
-//    private SquidNpc squidNpc;
-//    private StrayNpc strayNpc;
-//    private VexNpc vexNpc;
-//    private VillagerNpc villagerNpc;
-//    private VindicatorNpc vindicatorNpc;
-//    private WitchNpc witchNpc;
-//    private WitherSkeletonNpc witherSkeletonNpc;
-//    private WitherNpc witherNpc;
-//    private WolfNpc wolfNpc;
-//    private ZombieNpc zombieNpc;
-//    private ZombieHorseNpc zombieHorseNpc;
-//    private ZombieHuskNpc zombieHuskNpc;
+    private CodNpc codNpc;
+    private CowNpc cowNpc;
+    private CreeperNpc creeperNpc;
+    private DolphinNpc dolphinNpc;
+    private DonkeyNpc donkeyNpc;
+    private DrownedNpc drownedNpc;
+    private ElderGuardianNpc elderGuardianNpc;
+    private EnderDragonNpc enderDragonNpc;
+    private EndermanNpc endermanNpc;
+    private EndermiteNpc endermiteNpc;
+    private EvokerNpc evokerNpc;
+    private GhastNpc ghastNpc;
+    private GiantNpc giantNpc;
+    private GuardianNpc guardianNpc;
+    private HorseNpc horseNpc;
+    private HuskNpc huskNpc;
+    private IllusionerNpc illusionerNpc;
+    private IronGolemNpc ironGolemNpc;
+    private LlamaNpc llamaNpc;
+    private MagmaCubeNpc magmaCubeNpc;
+    private MuleNpc muleNpc;
+    private MushroomCowNpc mushroomCowNpc;
+    private OcelotNpc ocelotNpc;
+    private ParrotNpc parrotNpc;
+    private PhantomNpc phantomNpc;
+    private PigNpc pigNpc;
+    private PigZombieNpc pigZombieNpc;
+    private PolarBearNpc polarBearNpc;
+    private PufferFishNpc pufferFishNpc;
+    private RabbitNpc rabbitNpc;
+    private SalmonNpc salmonNpc;
+    private SheepNpc sheepNpc;
+    private ShulkerNpc shulkerNpc;
+    private SilverfishNpc silverfishNpc;
+    private SkeletonNpc skeletonNpc;
+    private SkeletonHorseNpc skeletonHorseNpc;
+    private SlimeNpc slimeNpc;
+    private SnowmanNpc snowmanNpc;
+    private SpiderNpc spiderNpc;
+    private SquidNpc squidNpc;
+    private StrayNpc strayNpc;
+    private TropicalFishNpc tropicalFishNpc;
+    private TurtleNpc turtleNpc;
+    private VexNpc vexNpc;
+    private VillagerNpc villagerNpc;
+    private VindicatorNpc vindicatorNpc;
+    private WitchNpc witchNpc;
+    private WitherNpc witherNpc;
+    private WitherSkeletonNpc witherSkeletonNpc;
+    private WolfNpc wolfNpc;
+    private ZombieNpc zombieNpc;
+    private ZombieHorseNpc zombieHorseNpc;
+    private ZombieVillagerNpc zombieVillagerNpc;
+
 
     /* Entity */
     private EntityNms entityNms;
-    /* Title */
-    private TitleNms titleNms;
     /* ActionBar */
     private ActionBarNms actionBarNms;
     /* ItemStack */
     private ItemStackNms itemStackNms;
     /* ArmorStand */
     private ArmorStandNms armorStandNms;
+    /* BedNpc */
+    private BedNpcNms bedNpcNms;
     /* Firework */
     private FireworkNms fireworkNms;
-    /* Particles */
-    private ParticleNms particleNms;
     /* TabList */
     private TabListNms tabListNms;
     /* World */
@@ -115,475 +252,84 @@ public class Nms {
 
         switch (version) {
 
-            case "v1_8_R1": // 1.8 - 1.8.1
+            case "v1_13_R2": // 1.13.1 - ?
                 /* NPCs */
-                npcNms = new NpcNms_1_8_R1();
-                npc().setClassFields();
+                npcNms = new NpcNms_1_13_R2();
 
-//                batNpc = new BatNpc_1_8_R1();
-//                blazeNpc = new BlazeNpc_1_8_R1();
-//                caveSpiderNpc = new CaveSpiderNpc_1_8_R1();
-                chickenNpc = new ChickenNpc_v1_8_R1(npcNms);
-//                cowNpc = new CowNpc_1_8_R1();
-//                creeperNpc = new CreeperNpc_1_8_R1();
-//                endermanNpc = new EndermanNpc_1_8_R1();
-//                endermiteNpc = new EndermiteNpc_1_8_R1();
-//                ghastNpc = new GhastNpc_1_8_R1();
-//                guardianNpc = new GuardianNpc_1_8_R1();
-//                horseNpc = new HorseNpc_1_8_R1();
-//                ironGolemNpc = new IronGolemNpc_1_8_R1();
-//                magmaCubeNpc = new MagmaCubeNpc_1_8_R1();
-//                mushroomCowNpc = new MushroomCowNpc_1_8_R1();
-//                ocelotNpc = new OcelotNpc_1_8_R1();
-//                pigNpc = new PigNpc_1_8_R1();
-//                pigZombieNpc = new PigZombieNpc_1_8_R1();
-//                rabbitNpc = new RabbitNpc_1_8_R1();
-//                sheepNpc = new SheepNpc_1_8_R1();
-//                silverfishNpc = new SilverfishNpc_1_8_R1();
-//                skeletonNpc = new SkeletonNpc_1_8_R1();
-//                slimeNpc = new SlimeNpc_1_8_R1();
-//                snowmanNpc = new SnowmanNpc_1_8_R1();
-//                spiderNpc = new SpiderNpc_1_8_R1();
-//                squidNpc = new SquidNpc_1_8_R1();
-//                villagerNpc = new VillagerNpc_1_8_R1();
-//                witchNpc = new WitchNpc_1_8_R1();
-//                witherNpc = new WitherNpc_1_8_R1();
-//                wolfNpc = new WolfNpc_1_8_R1();
-//                zombieNpc = new ZombieNpc_1_8_R1();
+                batNpc = new BatNpc_1_13_R2(npcNms);
+                blazeNpc = new BlazeNpc_1_13_R2(npcNms);
+                caveSpiderNpc = new CaveSpiderNpc_1_13_R2(npcNms);
+                chickenNpc = new ChickenNpc_1_13_R2(npcNms);
+                codNpc = new CodNpc_1_13_R2(npcNms);
+                cowNpc = new CowNpc_1_13_R2(npcNms);
+                creeperNpc = new CreeperNpc_1_13_R2(npcNms);
+                dolphinNpc = new DolphinNpc_1_13_R2(npcNms);
+                donkeyNpc = new DonkeyNpc_1_13_R2(npcNms);
+                drownedNpc = new DrownedNpc_1_13_R2(npcNms);
+                elderGuardianNpc = new ElderGuardianNpc_1_13_R2(npcNms);
+                enderDragonNpc = new EnderDragonNpc_1_13_R2(npcNms);
+                endermanNpc = new EndermanNpc_1_13_R2(npcNms);
+                endermiteNpc = new EndermiteNpc_1_13_R2(npcNms);
+                evokerNpc = new EvokerNpc_1_13_R2(npcNms);
+                ghastNpc = new GhastNpc_1_13_R2(npcNms);
+                giantNpc = new GiantNpc_1_13_R2(npcNms);
+                guardianNpc = new GuardianNpc_1_13_R2(npcNms);
+                horseNpc = new HorseNpc_1_13_R2(npcNms);
+                huskNpc = new HuskNpc_1_13_R2(npcNms);
+                illusionerNpc = new IllusionerNpc_1_13_R2(npcNms);
+                ironGolemNpc = new IronGolemNpc_1_13_R2(npcNms);
+                llamaNpc = new LlamaNpc_1_13_R2(npcNms);
+                magmaCubeNpc = new MagmaCubeNpc_1_13_R2(npcNms);
+                muleNpc = new MuleNpc_1_13_R2(npcNms);
+                mushroomCowNpc = new MushroomCowNpc_1_13_R2(npcNms);
+                ocelotNpc = new OcelotNpc_1_13_R2(npcNms);
+                parrotNpc = new ParrotNpc_1_13_R2(npcNms);
+                phantomNpc = new PhantomNpc_1_13_R2(npcNms);
+                pigNpc = new PigNpc_1_13_R2(npcNms);
+                pigZombieNpc = new PigZombieNpc_1_13_R2(npcNms);
+                polarBearNpc = new PolarBearNpc_1_13_R2(npcNms);
+                pufferFishNpc = new PufferFishNpc_1_13_R2(npcNms);
+                rabbitNpc = new RabbitNpc_1_13_R2(npcNms);
+                salmonNpc = new SalmonNpc_1_13_R2(npcNms);
+                sheepNpc = new SheepNpc_1_13_R2(npcNms);
+                shulkerNpc = new ShulkerNpc_1_13_R2(npcNms);
+                silverfishNpc = new SilverfishNpc_1_13_R2(npcNms);
+                skeletonNpc = new SkeletonNpc_1_13_R2(npcNms);
+                skeletonHorseNpc = new SkeletonHorseNpc_1_13_R2(npcNms);
+                slimeNpc = new SlimeNpc_1_13_R2(npcNms);
+                snowmanNpc = new SnowmanNpc_1_13_R2(npcNms);
+                spiderNpc = new SpiderNpc_1_13_R2(npcNms);
+                squidNpc = new SquidNpc_1_13_R2(npcNms);
+                strayNpc = new StrayNpc_1_13_R2(npcNms);
+                tropicalFishNpc = new TropicalFishNpc_1_13_R2(npcNms);
+                turtleNpc = new TurtleNpc_1_13_R2(npcNms);
+                vexNpc = new VexNpc_1_13_R2(npcNms);
+                villagerNpc = new VillagerNpc_1_13_R2(npcNms);
+                vindicatorNpc = new VindicatorNpc_1_13_R2(npcNms);
+                witchNpc = new WitchNpc_1_13_R2(npcNms);
+                witherNpc = new WitherNpc_1_13_R2(npcNms);
+                witherSkeletonNpc = new WitherSkeletonNpc_1_13_R2(npcNms);
+                wolfNpc = new WolfNpc_1_13_R2(npcNms);
+                zombieNpc = new ZombieNpc_1_13_R2(npcNms);
+                zombieHorseNpc = new ZombieHorseNpc_1_13_R2(npcNms);
+                zombieVillagerNpc = new ZombieVillagerNpc_1_13_R2(npcNms);
 
                 /* Entity */
-                entityNms = new EntityNms_1_8_R1();
-                /* Titles */
-                titleNms = new TitleNms_1_8_R1();
+                entityNms = new EntityNms_1_13_R2();
                 /* ActionBar */
-                actionBarNms = new ActionBarNms_1_8_R1();
+                actionBarNms = new ActionBarNms_1_13_R2();
                 /* ItemStack */
-                itemStackNms = new ItemStackNms_1_8_R1();
+                itemStackNms = new ItemStackNms_1_13_R2();
                 /* ArmorStand */
-                armorStandNms = new ArmorStandNms_1_8_R1();
+                armorStandNms = new ArmorStandNms_1_13_R2();
+                /* BedNpc */
+                bedNpcNms = new BedNpcNms_1_13_R2(orbitMines);
                 /* Firework */
-                fireworkNms = new FireworkNms_1_8_R1();
-                /* Particles */
-                particleNms = new ParticleNms_1_8_R1();
+                fireworkNms = new FireworkNms_1_13_R2(orbitMines);
                 /* TabList */
-                tabListNms = new TabListNms_1_8_R1();
+                tabListNms = new TabListNms_1_13_R2();
                 /* World */
-                worldNms = new WorldNms_1_8_R1();
-
-                break;
-            case "v1_8_R2": // 1.8.3
-                /* NPCs */
-                npcNms = new NpcNms_1_8_R2();
-                npc().setClassFields();
-
-//                batNpc = new BatNpc_1_8_R2();
-//                blazeNpc = new BlazeNpc_1_8_R2();
-//                caveSpiderNpc = new CaveSpiderNpc_1_8_R2();
-                chickenNpc = new ChickenNpc_v1_8_R2(npcNms);
-//                cowNpc = new CowNpc_1_8_R2();
-//                creeperNpc = new CreeperNpc_1_8_R2();
-//                endermanNpc = new EndermanNpc_1_8_R2();
-//                endermiteNpc = new EndermiteNpc_1_8_R2();
-//                ghastNpc = new GhastNpc_1_8_R2();
-//                guardianNpc = new GuardianNpc_1_8_R2();
-//                horseNpc = new HorseNpc_1_8_R2();
-//                ironGolemNpc = new IronGolemNpc_1_8_R2();
-//                magmaCubeNpc = new MagmaCubeNpc_1_8_R2();
-//                mushroomCowNpc = new MushroomCowNpc_1_8_R2();
-//                ocelotNpc = new OcelotNpc_1_8_R2();
-//                pigNpc = new PigNpc_1_8_R2();
-//                pigZombieNpc = new PigZombieNpc_1_8_R2();
-//                rabbitNpc = new RabbitNpc_1_8_R2();
-//                sheepNpc = new SheepNpc_1_8_R2();
-//                silverfishNpc = new SilverfishNpc_1_8_R2();
-//                skeletonNpc = new SkeletonNpc_1_8_R2();
-//                slimeNpc = new SlimeNpc_1_8_R2();
-//                snowmanNpc = new SnowmanNpc_1_8_R2();
-//                spiderNpc = new SpiderNpc_1_8_R2();
-//                squidNpc = new SquidNpc_1_8_R2();
-//                villagerNpc = new VillagerNpc_1_8_R2();
-//                witchNpc = new WitchNpc_1_8_R2();
-//                witherNpc = new WitherNpc_1_8_R2();
-//                wolfNpc = new WolfNpc_1_8_R2();
-//                zombieNpc = new ZombieNpc_1_8_R2();
-
-                /* Entity */
-                entityNms = new EntityNms_1_8_R2();
-                /* Titles */
-                titleNms = new TitleNms_1_8_R2();
-                /* ActionBar */
-                actionBarNms = new ActionBarNms_1_8_R2();
-                /* ItemStack */
-                itemStackNms = new ItemStackNms_1_8_R2();
-                /* ArmorStand */
-                armorStandNms = new ArmorStandNms_1_8_R2();
-                /* Firework */
-                fireworkNms = new FireworkNms_1_8_R2();
-                /* Particles */
-                particleNms = new ParticleNms_1_8_R2();
-                /* TabList */
-                tabListNms = new TabListNms_1_8_R2();
-                /* World */
-                worldNms = new WorldNms_1_8_R2();
-
-                break;
-            case "v1_8_R3": // 1.8.7 - 1.8.9
-                /* NPCs */
-                npcNms = new NpcNms_1_8_R3();
-                npc().setClassFields();
-
-//                batNpc = new BatNpc_1_8_R3();
-//                blazeNpc = new BlazeNpc_1_8_R3();
-//                caveSpiderNpc = new CaveSpiderNpc_1_8_R3();
-                chickenNpc = new ChickenNpc_v1_8_R3(npcNms);
-//                cowNpc = new CowNpc_1_8_R3();
-//                creeperNpc = new CreeperNpc_1_8_R3();
-//                endermanNpc = new EndermanNpc_1_8_R3();
-//                endermiteNpc = new EndermiteNpc_1_8_R3();
-//                ghastNpc = new GhastNpc_1_8_R3();
-//                guardianNpc = new GuardianNpc_1_8_R3();
-//                horseNpc = new HorseNpc_1_8_R3();
-//                ironGolemNpc = new IronGolemNpc_1_8_R3();
-//                magmaCubeNpc = new MagmaCubeNpc_1_8_R3();
-//                mushroomCowNpc = new MushroomCowNpc_1_8_R3();
-//                ocelotNpc = new OcelotNpc_1_8_R3();
-//                pigNpc = new PigNpc_1_8_R3();
-//                pigZombieNpc = new PigZombieNpc_1_8_R3();
-//                rabbitNpc = new RabbitNpc_1_8_R3();
-//                sheepNpc = new SheepNpc_1_8_R3();
-//                silverfishNpc = new SilverfishNpc_1_8_R3();
-//                skeletonNpc = new SkeletonNpc_1_8_R3();
-//                slimeNpc = new SlimeNpc_1_8_R3();
-//                snowmanNpc = new SnowmanNpc_1_8_R3();
-//                spiderNpc = new SpiderNpc_1_8_R3();
-//                squidNpc = new SquidNpc_1_8_R3();
-//                villagerNpc = new VillagerNpc_1_8_R3();
-//                witchNpc = new WitchNpc_1_8_R3();
-//                witherNpc = new WitherNpc_1_8_R3();
-//                wolfNpc = new WolfNpc_1_8_R3();
-//                zombieNpc = new ZombieNpc_1_8_R3();
-
-                /* Entity */
-                entityNms = new EntityNms_1_8_R3();
-                /* Titles */
-                titleNms = new TitleNms_1_8_R3();
-                /* ActionBar */
-                actionBarNms = new ActionBarNms_1_8_R3();
-                /* ItemStack */
-                itemStackNms = new ItemStackNms_1_8_R3();
-                /* ArmorStand */
-                armorStandNms = new ArmorStandNms_1_8_R3();
-                /* Firework */
-                fireworkNms = new FireworkNms_1_8_R3();
-                /* Particles */
-                particleNms = new ParticleNms_1_8_R3();
-                /* TabList */
-                tabListNms = new TabListNms_1_8_R3();
-                /* World */
-                worldNms = new WorldNms_1_8_R3();
-
-                break;
-            case "v1_9_R1": // 1.9 - 1.9.2
-                /* NPCs */
-                npcNms = new NpcNms_1_9_R1();
-                npc().setClassFields();
-
-//                batNpc = new BatNpc_1_9_R1();
-//                blazeNpc = new BlazeNpc_1_9_R1();
-//                caveSpiderNpc = new CaveSpiderNpc_1_9_R1();
-                chickenNpc = new ChickenNpc_v1_9_R1(npcNms);
-//                cowNpc = new CowNpc_1_9_R1();
-//                creeperNpc = new CreeperNpc_1_9_R1();
-//                endermanNpc = new EndermanNpc_1_9_R1();
-//                endermiteNpc = new EndermiteNpc_1_9_R1();
-//                ghastNpc = new GhastNpc_1_9_R1();
-//                guardianNpc = new GuardianNpc_1_9_R1();
-//                horseNpc = new HorseNpc_1_9_R1();
-//                ironGolemNpc = new IronGolemNpc_1_9_R1();
-//                magmaCubeNpc = new MagmaCubeNpc_1_9_R1();
-//                mushroomCowNpc = new MushroomCowNpc_1_9_R1();
-//                ocelotNpc = new OcelotNpc_1_9_R1();
-//                pigNpc = new PigNpc_1_9_R1();
-//                pigZombieNpc = new PigZombieNpc_1_9_R1();
-//                rabbitNpc = new RabbitNpc_1_9_R1();
-//                sheepNpc = new SheepNpc_1_9_R1();
-//                silverfishNpc = new SilverfishNpc_1_9_R1();
-//                skeletonNpc = new SkeletonNpc_1_9_R1();
-//                slimeNpc = new SlimeNpc_1_9_R1();
-//                snowmanNpc = new SnowmanNpc_1_9_R1();
-//                spiderNpc = new SpiderNpc_1_9_R1();
-//                squidNpc = new SquidNpc_1_9_R1();
-//                villagerNpc = new VillagerNpc_1_9_R1();
-//                witchNpc = new WitchNpc_1_9_R1();
-//                witherNpc = new WitherNpc_1_9_R1();
-//                wolfNpc = new WolfNpc_1_9_R1();
-//                zombieNpc = new ZombieNpc_1_9_R1();
-
-                /* Entity */
-                entityNms = new EntityNms_1_9_R1();
-                /* Titles */
-                titleNms = new TitleNms_1_9_R1();
-                /* ActionBar */
-                actionBarNms = new ActionBarNms_1_9_R1();
-                /* ItemStack */
-                itemStackNms = new ItemStackNms_1_9_R1();
-                /* ArmorStand */
-                armorStandNms = new ArmorStandNms_1_9_R1();
-                /* Firework */
-                fireworkNms = new FireworkNms_1_9_R1();
-                /* Particles */
-                particleNms = new ParticleNms_1_9_R1();
-                /* TabList */
-                tabListNms = new TabListNms_1_9_R1();
-                /* World */
-                worldNms = new WorldNms_1_9_R1();
-
-                break;
-            case "v1_9_R2": // 1.9.4
-                /* NPCs */
-                npcNms = new NpcNms_1_9_R2();
-                npc().setClassFields();
-
-//                batNpc = new BatNpc_1_9_R2();
-//                blazeNpc = new BlazeNpc_1_9_R2();
-//                caveSpiderNpc = new CaveSpiderNpc_1_9_R2();
-                chickenNpc = new ChickenNpc_v1_9_R2(npcNms);
-//                cowNpc = new CowNpc_1_9_R2();
-//                creeperNpc = new CreeperNpc_1_9_R2();
-//                endermanNpc = new EndermanNpc_1_9_R2();
-//                endermiteNpc = new EndermiteNpc_1_9_R2();
-//                ghastNpc = new GhastNpc_1_9_R2();
-//                guardianNpc = new GuardianNpc_1_9_R2();
-//                horseNpc = new HorseNpc_1_9_R2();
-//                ironGolemNpc = new IronGolemNpc_1_9_R2();
-//                magmaCubeNpc = new MagmaCubeNpc_1_9_R2();
-//                mushroomCowNpc = new MushroomCowNpc_1_9_R2();
-//                ocelotNpc = new OcelotNpc_1_9_R2();
-//                pigNpc = new PigNpc_1_9_R2();
-//                pigZombieNpc = new PigZombieNpc_1_9_R2();
-//                rabbitNpc = new RabbitNpc_1_9_R2();
-//                sheepNpc = new SheepNpc_1_9_R2();
-//                silverfishNpc = new SilverfishNpc_1_9_R2();
-//                skeletonNpc = new SkeletonNpc_1_9_R2();
-//                slimeNpc = new SlimeNpc_1_9_R2();
-//                snowmanNpc = new SnowmanNpc_1_9_R2();
-//                spiderNpc = new SpiderNpc_1_9_R2();
-//                squidNpc = new SquidNpc_1_9_R2();
-//                villagerNpc = new VillagerNpc_1_9_R2();
-//                witchNpc = new WitchNpc_1_9_R2();
-//                witherNpc = new WitherNpc_1_9_R2();
-//                wolfNpc = new WolfNpc_1_9_R2();
-//                zombieNpc = new ZombieNpc_1_9_R2();
-
-                /* Entity */
-                entityNms = new EntityNms_1_9_R2();
-                /* Titles */
-                titleNms = new TitleNms_1_9_R2();
-                /* ActionBar */
-                actionBarNms = new ActionBarNms_1_9_R2();
-                /* ItemStack */
-                itemStackNms = new ItemStackNms_1_9_R2();
-                /* ArmorStand */
-                armorStandNms = new ArmorStandNms_1_9_R2();
-                /* Firework */
-                fireworkNms = new FireworkNms_1_9_R2();
-                /* Particles */
-                particleNms = new ParticleNms_1_9_R2();
-                /* TabList */
-                tabListNms = new TabListNms_1_9_R2();
-                /* World */
-                worldNms = new WorldNms_1_9_R2();
-
-                break;
-            case "v1_10_R1": // 1.10 -  1.10.2
-                /* NPCs */
-                npcNms = new NpcNms_1_10_R1();
-                npc().setClassFields();
-
-//                batNpc = new BatNpc_1_10_R1();
-//                blazeNpc = new BlazeNpc_1_10_R1();
-//                caveSpiderNpc = new CaveSpiderNpc_1_10_R1();
-                chickenNpc = new ChickenNpc_v1_10_R1(npcNms);
-//                cowNpc = new CowNpc_1_10_R1();
-//                creeperNpc = new CreeperNpc_1_10_R1();
-//                endermanNpc = new EndermanNpc_1_10_R1();
-//                endermiteNpc = new EndermiteNpc_1_10_R1();
-//                ghastNpc = new GhastNpc_1_10_R1();
-//                guardianNpc = new GuardianNpc_1_10_R1();
-//                horseNpc = new HorseNpc_1_10_R1();
-//                ironGolemNpc = new IronGolemNpc_1_10_R1();
-//                magmaCubeNpc = new MagmaCubeNpc_1_10_R1();
-//                mushroomCowNpc = new MushroomCowNpc_1_10_R1();
-//                ocelotNpc = new OcelotNpc_1_10_R1();
-//                pigNpc = new PigNpc_1_10_R1();
-//                pigZombieNpc = new PigZombieNpc_1_10_R1();
-//                polarBearNpc = new PolarBearNpc_1_10_R1();
-//                rabbitNpc = new RabbitNpc_1_10_R1();
-//                sheepNpc = new SheepNpc_1_10_R1();
-//                silverfishNpc = new SilverfishNpc_1_10_R1();
-//                skeletonNpc = new SkeletonNpc_1_10_R1();
-//                slimeNpc = new SlimeNpc_1_10_R1();
-//                snowmanNpc = new SnowmanNpc_1_10_R1();
-//                spiderNpc = new SpiderNpc_1_10_R1();
-//                squidNpc = new SquidNpc_1_10_R1();
-//                villagerNpc = new VillagerNpc_1_10_R1();
-//                witchNpc = new WitchNpc_1_10_R1();
-//                witherNpc = new WitherNpc_1_10_R1();
-//                wolfNpc = new WolfNpc_1_10_R1();
-//                zombieNpc = new ZombieNpc_1_10_R1();
-
-                /* Entity */
-                entityNms = new EntityNms_1_10_R1();
-                /* Titles */
-                titleNms = new TitleNms_1_10_R1();
-                /* ActionBar */
-                actionBarNms = new ActionBarNms_1_10_R1();
-                /* ItemStack */
-                itemStackNms = new ItemStackNms_1_10_R1();
-                /* ArmorStand */
-                armorStandNms = new ArmorStandNms_1_10_R1();
-                /* Firework */
-                fireworkNms = new FireworkNms_1_10_R1();
-                /* Particles */
-                particleNms = new ParticleNms_1_10_R1();
-                /* TabList */
-                tabListNms = new TabListNms_1_10_R1();
-                /* World */
-                worldNms = new WorldNms_1_10_R1();
-
-                break;
-            case "v1_11_R1": // 1.11 - 1.11.2
-                /* NPCs */
-                npcNms = new NpcNms_1_11_R1();
-                npc().setClassFields();
-
-//                batNpc = new BatNpc_1_11_R1();
-//                blazeNpc = new BlazeNpc_1_11_R1();
-//                caveSpiderNpc = new CaveSpiderNpc_1_11_R1();
-                chickenNpc = new ChickenNpc_v1_11_R1(npcNms);
-//                cowNpc = new CowNpc_1_11_R1();
-//                creeperNpc = new CreeperNpc_1_11_R1();
-//                endermanNpc = new EndermanNpc_1_11_R1();
-//                endermiteNpc = new EndermiteNpc_1_11_R1();
-//                evokerNpc = new EvokerNpc_1_11_R1();
-//                ghastNpc = new GhastNpc_1_11_R1();
-//                guardianNpc = new GuardianNpc_1_11_R1();
-//                horseNpc = new HorseNpc_1_11_R1();
-//                ironGolemNpc = new IronGolemNpc_1_11_R1();
-//                llamaNpc = new LlamaNpc_1_11_R1();
-//                magmaCubeNpc = new MagmaCubeNpc_1_11_R1();
-//                muleNpc = new MuleNpc_1_11_R1();
-//                mushroomCowNpc = new MushroomCowNpc_1_11_R1();
-//                ocelotNpc = new OcelotNpc_1_11_R1();
-//                pigNpc = new PigNpc_1_11_R1();
-//                pigZombieNpc = new PigZombieNpc_1_11_R1();
-//                polarBearNpc = new PolarBearNpc_1_11_R1();
-//                rabbitNpc = new RabbitNpc_1_11_R1();
-//                sheepNpc = new SheepNpc_1_11_R1();
-//                silverfishNpc = new SilverfishNpc_1_11_R1();
-//                skeletonNpc = new SkeletonNpc_1_11_R1();
-//                skeletonHorseNpc = new SkeletonHorseNpc_1_11_R1();
-//                slimeNpc = new SlimeNpc_1_11_R1();
-//                snowmanNpc = new SnowmanNpc_1_11_R1();
-//                spiderNpc = new SpiderNpc_1_11_R1();
-//                squidNpc = new SquidNpc_1_11_R1();
-//                strayNpc = new StrayNpc_1_11_R1();
-//                vexNpc = new VexNpc_1_11_R1();
-//                villagerNpc = new VillagerNpc_1_11_R1();
-//                vindicatorNpc = new VindicatorNpc_1_11_R1();
-//                witchNpc = new WitchNpc_1_11_R1();
-//                witherNpc = new WitherNpc_1_11_R1();
-//                witherSkeletonNpc = new WitherSkeletonNpc_1_11_R1();
-//                wolfNpc = new WolfNpc_1_11_R1();
-//                zombieNpc = new ZombieNpc_1_11_R1();
-//                zombieHorseNpc = new ZombieHorseNpc_1_11_R1();
-//                zombieHuskNpc = new ZombieHuskNpc_1_11_R1();
-
-                /* Entity */
-                entityNms = new EntityNms_1_11_R1();
-                /* Titles */
-                titleNms = new TitleNms_1_11_R1();
-                /* ActionBar */
-                actionBarNms = new ActionBarNms_1_11_R1();
-                /* ItemStack */
-                itemStackNms = new ItemStackNms_1_11_R1();
-                /* ArmorStand */
-                armorStandNms = new ArmorStandNms_1_11_R1();
-                /* Firework */
-                fireworkNms = new FireworkNms_1_11_R1();
-                /* Particles */
-                particleNms = new ParticleNms_1_11_R1();
-                /* TabList */
-                tabListNms = new TabListNms_1_11_R1();
-                /* World */
-                worldNms = new WorldNms_1_11_R1();
-
-                break;
-            case "v1_12_R1": // 1.12 - ?
-                /* NPCs */
-                npcNms = new NpcNms_1_12_R1();
-                npc().setClassFields();
-
-//                batNpc = new BatNpc_1_12_R1();
-//                blazeNpc = new BlazeNpc_1_12_R1();
-//                caveSpiderNpc = new CaveSpiderNpc_1_12_R1();
-                chickenNpc = new ChickenNpc_v1_12_R1(npcNms);
-//                cowNpc = new CowNpc_1_12_R1();
-//                creeperNpc = new CreeperNpc_1_12_R1();
-//                endermanNpc = new EndermanNpc_1_12_R1();
-//                endermiteNpc = new EndermiteNpc_1_12_R1();
-//                evokerNpc = new EvokerNpc_1_12_R1();
-//                ghastNpc = new GhastNpc_1_12_R1();
-//                guardianNpc = new GuardianNpc_1_12_R1();
-//                horseNpc = new HorseNpc_1_12_R1();
-//                ironGolemNpc = new IronGolemNpc_1_12_R1();
-//                llamaNpc = new LlamaNpc_1_12_R1();
-//                magmaCubeNpc = new MagmaCubeNpc_1_12_R1();
-//                muleNpc = new MuleNpc_1_12_R1();
-//                mushroomCowNpc = new MushroomCowNpc_1_12_R1();
-//                ocelotNpc = new OcelotNpc_1_12_R1();
-//                pigNpc = new PigNpc_1_12_R1();
-//                pigZombieNpc = new PigZombieNpc_1_12_R1();
-//                polarBearNpc = new PolarBearNpc_1_12_R1();
-//                rabbitNpc = new RabbitNpc_1_12_R1();
-//                sheepNpc = new SheepNpc_1_12_R1();
-//                silverfishNpc = new SilverfishNpc_1_12_R1();
-//                skeletonNpc = new SkeletonNpc_1_12_R1();
-//                skeletonHorseNpc = new SkeletonHorseNpc_1_12_R1();
-//                slimeNpc = new SlimeNpc_1_12_R1();
-//                snowmanNpc = new SnowmanNpc_1_12_R1();
-//                spiderNpc = new SpiderNpc_1_12_R1();
-//                squidNpc = new SquidNpc_1_12_R1();
-//                strayNpc = new StrayNpc_1_12_R1();
-//                vexNpc = new VexNpc_1_12_R1();
-//                villagerNpc = new VillagerNpc_1_12_R1();
-//                vindicatorNpc = new VindicatorNpc_1_12_R1();
-//                witchNpc = new WitchNpc_1_12_R1();
-//                witherNpc = new WitherNpc_1_12_R1();
-//                witherSkeletonNpc = new WitherSkeletonNpc_1_12_R1();
-//                wolfNpc = new WolfNpc_1_12_R1();
-//                zombieNpc = new ZombieNpc_1_12_R1();
-//                zombieHorseNpc = new ZombieHorseNpc_1_12_R1();
-//                zombieHuskNpc = new ZombieHuskNpc_1_12_R1();
-
-                /* Entity */
-                entityNms = new EntityNms_1_12_R1();
-                /* Titles */
-                titleNms = new TitleNms_1_12_R1();
-                /* ActionBar */
-                actionBarNms = new ActionBarNms_1_12_R1();
-                /* ItemStack */
-                itemStackNms = new ItemStackNms_1_12_R1();
-                /* ArmorStand */
-                armorStandNms = new ArmorStandNms_1_12_R1();
-                /* Firework */
-                fireworkNms = new FireworkNms_1_12_R1();
-                /* Particles */
-                particleNms = new ParticleNms_1_12_R1();
-                /* TabList */
-                tabListNms = new TabListNms_1_12_R1();
-                /* World */
-                worldNms = new WorldNms_1_12_R1();
+                worldNms = new WorldNms_1_13_R2();
 
                 break;
             default:
@@ -605,10 +351,6 @@ public class Nms {
         return entityNms;
     }
 
-    public TitleNms title() {
-        return titleNms;
-    }
-
     public ActionBarNms actionBar() {
         return actionBarNms;
     }
@@ -619,22 +361,8 @@ public class Nms {
 
     public AnvilNms anvilGui(Player player, AnvilNms.AnvilClickEventHandler handler, AnvilNms.AnvilCloseEvent closeEvent) {
         switch (version) {
-            case "v1_8_R1": // 1.8 - 1.8.1
-                return new AnvilNms_1_8_R1(player, handler, closeEvent);
-            case "v1_8_R2": // 1.8.3
-                return new AnvilNms_1_8_R2(player, handler, closeEvent);
-            case "v1_8_R3": // 1.8.7 - 1.8.9
-                return new AnvilNms_1_8_R3(player, handler, closeEvent);
-            case "v1_9_R1": // 1.9 - 1.9.2
-                return new AnvilNms_1_9_R1(player, handler, closeEvent);
-            case "v1_9_R2": // 1.9.4
-                return new AnvilNms_1_9_R2(player, handler, closeEvent);
-            case "v1_10_R1": // 1.10 - 1.10.2
-                return new AnvilNms_1_10_R1(player, handler, closeEvent);
-            case "v1_11_R1": // 1.11 - 1.11.2
-                return new AnvilNms_1_11_R1(player, handler, closeEvent);
-            case "v1_12_R1": // 1.12 - ?
-                return new AnvilNms_1_12_R1(player, handler, closeEvent);
+            case "v1_13_R2": // 1.13.1 - ?
+                return new AnvilNms_1_13_R2(player, handler, closeEvent);
         }
         return null;
     }
@@ -647,183 +375,251 @@ public class Nms {
         return armorStandNms;
     }
 
-    public FireworkNms firework() {
-        return fireworkNms;
+    public BedNpcNms bedNpc() {
+        return bedNpcNms;
     }
 
-    public ParticleNms particle() {
-        return particleNms;
+    public FireworkNms firework() {
+        return fireworkNms;
     }
 
     public TabListNms tabList() {
         return tabListNms;
     }
 
+    public WorldNms world() {
+        return worldNms;
+    }
+
     /*
         Npcs
      */
 
-//    public BatNpc getBatNpc() {
-//        return batNpc;
-//    }
-//
-//    public BlazeNpc getBlazeNpc() {
-//        return blazeNpc;
-//    }
-//
-//    public CaveSpiderNpc getCaveSpiderNpc() {
-//        return caveSpiderNpc;
-//    }
+    public BatNpc getBatNpc() {
+        return batNpc;
+    }
+
+    public BlazeNpc getBlazeNpc() {
+        return blazeNpc;
+    }
+
+    public CaveSpiderNpc getCaveSpiderNpc() {
+        return caveSpiderNpc;
+    }
 
     public ChickenNpc getChickenNpc() {
         return chickenNpc;
     }
-//
-//    public CowNpc getCowNpc() {
-//        return cowNpc;
-//    }
-//
-//    public CreeperNpc getCreeperNpc() {
-//        return creeperNpc;
-//    }
-//
-//    public EndermanNpc getEndermanNpc() {
-//        return endermanNpc;
-//    }
-//
-//    public EndermiteNpc getEndermiteNpc() {
-//        return endermiteNpc;
-//    }
-//
-//    public EvokerNpc getEvokerNpc() {
-//        return evokerNpc;
-//    }
-//
-//    public GhastNpc getGhastNpc() {
-//        return ghastNpc;
-//    }
-//
-//    public GuardianNpc getGuardianNpc() {
-//        return guardianNpc;
-//    }
-//
-//    public HorseNpc getHorseNpc() {
-//        return horseNpc;
-//    }
-//
-//    public IronGolemNpc getIronGolemNpc() {
-//        return ironGolemNpc;
-//    }
-//
-//    public LlamaNpc getLlamaNpc() {
-//        return llamaNpc;
-//    }
-//
-//    public MagmaCubeNpc getMagmaCubeNpc() {
-//        return magmaCubeNpc;
-//    }
-//
-//    public MuleNpc getMuleNpc() {
-//        return muleNpc;
-//    }
-//
-//    public MushroomCowNpc getMushroomCowNpc() {
-//        return mushroomCowNpc;
-//    }
-//
-//    public OcelotNpc getOcelotNpc() {
-//        return ocelotNpc;
-//    }
-//
-//    public PigNpc getPigNpc() {
-//        return pigNpc;
-//    }
-//
-//    public PigZombieNpc getPigZombieNpc() {
-//        return pigZombieNpc;
-//    }
-//
-//    public PolarBearNpc getPolarBearNpc() {
-//        return polarBearNpc;
-//    }
-//
-//    public RabbitNpc getRabbitNpc() {
-//        return rabbitNpc;
-//    }
-//
-//    public SheepNpc getSheepNpc() {
-//        return sheepNpc;
-//    }
-//
-//    public SilverfishNpc getSilverfishNpc() {
-//        return silverfishNpc;
-//    }
-//
-//    public SkeletonNpc getSkeletonNpc() {
-//        return skeletonNpc;
-//    }
-//
-//    public SkeletonHorseNpc getSkeletonHorseNpc() {
-//        return skeletonHorseNpc;
-//    }
-//
-//    public SlimeNpc getSlimeNpc() {
-//        return slimeNpc;
-//    }
-//
-//    public SnowmanNpc getSnowmanNpc() {
-//        return snowmanNpc;
-//    }
-//
-//    public SpiderNpc getSpiderNpc() {
-//        return spiderNpc;
-//    }
-//
-//    public SquidNpc getSquidNpc() {
-//        return squidNpc;
-//    }
-//
-//    public StrayNpc getStrayNpc() {
-//        return strayNpc;
-//    }
-//
-//    public VexNpc getVexNpc() {
-//        return vexNpc;
-//    }
-//
-//    public VillagerNpc getVillagerNpc() {
-//        return villagerNpc;
-//    }
-//
-//    public VindicatorNpc getVindicatorNpc() {
-//        return vindicatorNpc;
-//    }
-//
-//    public WitchNpc getWitchNpc() {
-//        return witchNpc;
-//    }
-//
-//    public WitherNpc getWitherNpc() {
-//        return witherNpc;
-//    }
-//
-//    public WitherSkeletonNpc getWitherSkeletonNpc() {
-//        return witherSkeletonNpc;
-//    }
-//
-//    public WolfNpc getWolfNpc() {
-//        return wolfNpc;
-//    }
-//
-//    public ZombieNpc getZombieNpc() {
-//        return zombieNpc;
-//    }
-//
-//    public ZombieHorseNpc getZombieHorseNpc() {
-//        return zombieHorseNpc;
-//    }
-//
-//    public ZombieHuskNpc getZombieHuskNpc() {
-//        return zombieHuskNpc;
-//    }
+
+    public CodNpc getCodNpc() {
+        return codNpc;
+    }
+
+    public CowNpc getCowNpc() {
+        return cowNpc;
+    }
+
+    public CreeperNpc getCreeperNpc() {
+        return creeperNpc;
+    }
+
+    public DolphinNpc getDolphinNpc() {
+        return dolphinNpc;
+    }
+
+    public DonkeyNpc getDonkeyNpc() {
+        return donkeyNpc;
+    }
+
+    public DrownedNpc getDrownedNpc() {
+        return drownedNpc;
+    }
+
+    public ElderGuardianNpc getElderGuardianNpc() {
+        return elderGuardianNpc;
+    }
+
+    public EnderDragonNpc getEnderDragonNpc() {
+        return enderDragonNpc;
+    }
+
+    public EndermanNpc getEndermanNpc() {
+        return endermanNpc;
+    }
+
+    public EndermiteNpc getEndermiteNpc() {
+        return endermiteNpc;
+    }
+
+    public EvokerNpc getEvokerNpc() {
+        return evokerNpc;
+    }
+
+    public GhastNpc getGhastNpc() {
+        return ghastNpc;
+    }
+
+    public GiantNpc getGiantNpc() {
+        return giantNpc;
+    }
+
+    public GuardianNpc getGuardianNpc() {
+        return guardianNpc;
+    }
+
+    public HorseNpc getHorseNpc() {
+        return horseNpc;
+    }
+
+    public HuskNpc getHuskNpc() {
+        return huskNpc;
+    }
+
+    public IllusionerNpc getIllusionerNpc() {
+        return illusionerNpc;
+    }
+
+    public IronGolemNpc getIronGolemNpc() {
+        return ironGolemNpc;
+    }
+
+    public LlamaNpc getLlamaNpc() {
+        return llamaNpc;
+    }
+
+    public MagmaCubeNpc getMagmaCubeNpc() {
+        return magmaCubeNpc;
+    }
+
+    public MuleNpc getMuleNpc() {
+        return muleNpc;
+    }
+
+    public MushroomCowNpc getMushroomCowNpc() {
+        return mushroomCowNpc;
+    }
+
+    public OcelotNpc getOcelotNpc() {
+        return ocelotNpc;
+    }
+
+    public ParrotNpc getParrotNpc() {
+        return parrotNpc;
+    }
+
+    public PhantomNpc getPhantomNpc() {
+        return phantomNpc;
+    }
+
+    public PigNpc getPigNpc() {
+        return pigNpc;
+    }
+
+    public PigZombieNpc getPigZombieNpc() {
+        return pigZombieNpc;
+    }
+
+    public PolarBearNpc getPolarBearNpc() {
+        return polarBearNpc;
+    }
+
+    public PufferFishNpc getPufferFishNpc() {
+        return pufferFishNpc;
+    }
+
+    public RabbitNpc getRabbitNpc() {
+        return rabbitNpc;
+    }
+
+    public SalmonNpc getSalmonNpc() {
+        return salmonNpc;
+    }
+
+    public SheepNpc getSheepNpc() {
+        return sheepNpc;
+    }
+
+    public ShulkerNpc getShulkerNpc() {
+        return shulkerNpc;
+    }
+
+    public SilverfishNpc getSilverfishNpc() {
+        return silverfishNpc;
+    }
+
+    public SkeletonNpc getSkeletonNpc() {
+        return skeletonNpc;
+    }
+
+    public SkeletonHorseNpc getSkeletonHorseNpc() {
+        return skeletonHorseNpc;
+    }
+
+    public SlimeNpc getSlimeNpc() {
+        return slimeNpc;
+    }
+
+    public SnowmanNpc getSnowmanNpc() {
+        return snowmanNpc;
+    }
+
+    public SpiderNpc getSpiderNpc() {
+        return spiderNpc;
+    }
+
+    public SquidNpc getSquidNpc() {
+        return squidNpc;
+    }
+
+    public StrayNpc getStrayNpc() {
+        return strayNpc;
+    }
+
+    public TropicalFishNpc getTropicalFishNpc() {
+        return tropicalFishNpc;
+    }
+
+    public TurtleNpc getTurtleNpc() {
+        return turtleNpc;
+    }
+
+    public VexNpc getVexNpc() {
+        return vexNpc;
+    }
+
+    public VillagerNpc getVillagerNpc() {
+        return villagerNpc;
+    }
+
+    public VindicatorNpc getVindicatorNpc() {
+        return vindicatorNpc;
+    }
+
+    public WitchNpc getWitchNpc() {
+        return witchNpc;
+    }
+
+    public WitherNpc getWitherNpc() {
+        return witherNpc;
+    }
+
+    public WitherSkeletonNpc getWitherSkeletonNpc() {
+        return witherSkeletonNpc;
+    }
+
+    public WolfNpc getWolfNpc() {
+        return wolfNpc;
+    }
+
+    public ZombieNpc getZombieNpc() {
+        return zombieNpc;
+    }
+
+    public ZombieHorseNpc getZombieHorseNpc() {
+        return zombieHorseNpc;
+    }
+
+    public ZombieVillagerNpc getZombieVillagerNpc() {
+        return zombieVillagerNpc;
+    }
 }

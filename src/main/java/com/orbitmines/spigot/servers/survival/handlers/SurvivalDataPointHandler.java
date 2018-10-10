@@ -5,8 +5,12 @@ import com.orbitmines.spigot.api.datapoints.DataPointHandler;
 import com.orbitmines.spigot.api.datapoints.DataPointType;
 import com.orbitmines.spigot.datapoints.DataPointLeaderBoard;
 import com.orbitmines.spigot.datapoints.DataPointNpc;
+import com.orbitmines.spigot.datapoints.DataPointPatchNotes;
 import com.orbitmines.spigot.servers.hub.datapoints.HubDataPointSpawnpoint;
 import com.orbitmines.spigot.servers.hub.datapoints.HubDataPointStaffHologram;
+import com.orbitmines.spigot.servers.survival.datapoints.SurvivalDataPointEndReset;
+import com.orbitmines.spigot.servers.survival.datapoints.SurvivalDataPointNetherReset;
+import com.orbitmines.spigot.servers.survival.datapoints.SurvivalDataPointSpawnShop;
 
 /*
  * OrbitMines - @author Fadi Shawki - 2018
@@ -31,6 +35,12 @@ public class SurvivalDataPointHandler extends DataPointHandler {
                 return new DataPointNpc();
             }
         },
+        PATCH_NOTES() {
+            @Override
+            public DataPoint newInstance() {
+                return new DataPointPatchNotes();
+            }
+        },
 
         SPAWNPOINT() {
             @Override
@@ -42,6 +52,25 @@ public class SurvivalDataPointHandler extends DataPointHandler {
             @Override
             public DataPoint newInstance() {
                 return new HubDataPointStaffHologram();
+            }
+        },
+
+        NETHER_RESET() {
+            @Override
+            public DataPoint newInstance() {
+                return new SurvivalDataPointNetherReset();
+            }
+        },
+        END_RESET() {
+            @Override
+            public DataPoint newInstance() {
+                return new SurvivalDataPointEndReset();
+            }
+        },
+        SPAWN_SHOP() {
+            @Override
+            public DataPoint newInstance() {
+                return new SurvivalDataPointSpawnShop();
             }
         };
 

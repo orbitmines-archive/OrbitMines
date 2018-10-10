@@ -4,6 +4,7 @@ import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.nms.entity.EntityNms;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -45,7 +46,7 @@ public abstract class Npc {
     public abstract void update();
 
     /* Return the collection of Npcs/Entit(y)(ies) defined under the 'Npc' */
-    protected abstract Collection<? extends Entity> getEntities();
+    public abstract Collection<Entity> getEntities();
 
     /* Add to Npc list */
     protected abstract void addToList();
@@ -164,11 +165,27 @@ public abstract class Npc {
     public static Npc getNpc(Entity entity) {
         for (Npc npc : npcs) {
             for (Entity en : npc.getEntities()) {
-                if (en == entity) //TODO, might not work?
+                if (en == entity)
                     return npc;
             }
         }
         return null;
+    }
+
+    public static List<Npc> getNpcIn(World world) {
+        List<Npc> list = new ArrayList<>();
+
+        loop:
+        for (Npc npc : npcs) {
+            for (Entity entity : npc.getEntities()) {
+                if (entity.getWorld() == world)
+                    list.add(npc);
+
+                continue loop;
+            }
+        }
+
+        return list;
     }
 
     public interface InteractAction {

@@ -3,30 +3,38 @@ package com.orbitmines.spigot.servers.survival.handlers;
 import com.orbitmines.api.Color;
 import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
+import com.orbitmines.spigot.api.handlers.chat.ActionBar;
+import com.orbitmines.spigot.api.handlers.chat.ComponentMessage;
 import com.orbitmines.spigot.servers.survival.Survival;
 import com.orbitmines.spigot.servers.survival.handlers.claim.Claim;
 import com.orbitmines.spigot.servers.survival.handlers.claim.Visualization;
+import com.orbitmines.spigot.servers.survival.handlers.region.Region;
 import com.orbitmines.spigot.servers.survival.handlers.teleportable.Home;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /*
 * OrbitMines - @author Fadi Shawki - 2017
 */
 public class SurvivalPlayer extends OMPlayer {
     
-    protected static List<SurvivalPlayer> players = new ArrayList<>();
+    protected static Map<Player, SurvivalPlayer> players = new HashMap<>();
 
     private final Survival survival;
 
     private List<Home> homes;
 
+    private Set<String> tpRequests;
+    private Set<String> tpHereRequests;
+
     private java.util.Set<Survival.Settings> settings;
+
+    private Region lastRegion;
 
     private Claim.ToolType claimToolType;
     private Visualization visualization;
@@ -46,27 +54,61 @@ public class SurvivalPlayer extends OMPlayer {
 
     @Override
     protected void onLogin() {
-        players.add(this);
+        players.put(player, this);
+
+        Location logOutLocation = getData().getLogoutLocation();
+        if (logOutLocation != null && (logOutLocation.getWorld().getName().equals(survival.getWorld_nether().getName()) || logOutLocation.getWorld().getName().equals(survival.getWorld_the_end().getName())))
+            player.teleport(logOutLocation);
+
+        if (getData().hasLogoutFly()) {
+            player.setAllowFlight(true);
+            player.setFlying(true);
+        }
 
         homes = Home.getHomesFor(getUUID());
 
-        setScoreboard(new Survival.Scoreboard(orbitMines, this));
+        this.tpRequests = new HashSet<>();
+        this.tpHereRequests = new HashSet<>();
 
-        //TODO remove
-        player.getInventory().setItem(0, Claim.CLAIMING_TOOL.build());
+        setScoreboard(new Survival.Scoreboard(survival, this));
     }
 
     @Override
     protected void onLogout() {
+        updateLogoutLocation();
+        updateLogoutFly();
 
-        players.remove(this);
+        players.remove(player);
+    }
+
+    @Override
+    protected void onFirstLogin() {
+        if (player.getInventory().getItem(8) == null)
+            player.getInventory().setItem(8, Claim.CLAIMING_TOOL.build());
+
+        if (player.getInventory().getItem(7) == null)
+            player.getInventory().setItem(7, new ItemStack(Material.COOKED_BEEF, 3));
+
+        /* Action Bars so New Players know how to join the world */
+        new ActionBar(this, () -> lang("§7§lGebruik §a§l/region random§7§l of §a§l/region§7§l om naar de wereld te gaan!", "§7§lUse §a§l/region random§7§l or §a§l/region§7§l to join the world!"), Integer.MAX_VALUE) {
+            @Override
+            public void onRun() {
+                if (!player.getWorld().getName().equals(survival.getLobbySpawn().getWorld().getName()))
+                    forceStop();
+            }
+        }.send();
     }
 
     @Override
     public boolean canReceiveVelocity() {
         return true;
     }
-    
+
+    @Override
+    public Collection<ComponentMessage.TempTextComponent> getChatPrefix() {
+        return Collections.emptyList();
+    }
+
     /*
 
 
@@ -108,6 +150,62 @@ public class SurvivalPlayer extends OMPlayer {
     }
 
     /*
+        BackLocation
+     */
+
+    public Location getBackLocation() {
+        return getData().getBackLocation();
+    }
+
+    public void setBackLocation(Location backLocation) {
+        getData().setBackLocation(backLocation);
+    }
+
+    /*
+        BackCharges
+     */
+
+    public int getBackCharges() {
+        return getData().getBackCharges();
+    }
+
+    public void addBackCharges(int amount) {
+        getData().addBackCharges(amount);
+    }
+
+    public void removeBackCharges(int amount) {
+        getData().removeBackCharges(amount);
+    }
+
+    /*
+        LastBedEnter
+     */
+
+    public void updateLastBedEnter() {
+        getData().updateLastBedEnter();
+
+        new ActionBar(this, () -> lang("§7§lPhantom spawning is uitgezet voor §a§ltwee uur§7§l.", "§7§lPhantom spawning has been disabled for §a§ltwo hours§7§l."), 100).send();
+    }
+
+    public boolean canSpawnPhantom() {
+        return getData().canSpawnPhantom();
+    }
+
+    /*
+        LogoutLocation
+     */
+    public void updateLogoutLocation() {
+        getData().setLogoutLocation(player.getLocation());
+    }
+
+    /*
+        LogoutFly
+     */
+    public void updateLogoutFly() {
+        getData().setLogoutFly(player.isFlying());
+    }
+
+    /*
         Extra Homes
      */
 
@@ -115,8 +213,8 @@ public class SurvivalPlayer extends OMPlayer {
         return getData().getExtraHomes();
     }
 
-    public void setExtraHomes(int extraHomes) {
-        getData().setExtraHomes(extraHomes);
+    public void addExtraHomes(int extraHomes) {
+        getData().setExtraHomes(getExtraHomes() + extraHomes);
     }
 
     public int getHomesAllowed() {
@@ -199,6 +297,26 @@ public class SurvivalPlayer extends OMPlayer {
     }
 
     /*
+        Tp Requests
+     */
+
+    public Set<String> getTpRequests() {
+        return tpRequests;
+    }
+
+    public boolean hasTpRequestFrom(String name) {
+        return tpRequests.contains(name);
+    }
+
+    public Set<String> getTpHereRequests() {
+        return tpHereRequests;
+    }
+
+    public boolean hasTpHereRequestFrom(String name) {
+        return tpHereRequests.contains(name);
+    }
+
+    /*
         Settings
      */
 
@@ -217,6 +335,18 @@ public class SurvivalPlayer extends OMPlayer {
             this.settings.remove(settings);
 
         //TODO UPDATE
+    }
+
+    /*
+        Region
+     */
+
+    public Region getLastRegion() {
+        return lastRegion;
+    }
+
+    public void setLastRegion(Region lastRegion) {
+        this.lastRegion = lastRegion;
     }
 
     /*
@@ -292,30 +422,18 @@ public class SurvivalPlayer extends OMPlayer {
      */
 
     public static SurvivalPlayer getPlayer(Player player) {
-        for (SurvivalPlayer omp : players) {
-            if (omp.getPlayer() == player)
-                return omp;
-        }
-        throw new IllegalStateException();
+        return player == null ? null : players.getOrDefault(player, null);
     }
 
     public static SurvivalPlayer getPlayer(String name) {
-        for (SurvivalPlayer omp : players) {
-            if (omp.getName(true).equalsIgnoreCase(name))
-                return omp;
-        }
-        throw new IllegalStateException();
+        return getPlayer(Bukkit.getPlayer(name));
     }
 
     public static SurvivalPlayer getPlayer(UUID uuid) {
-        for (SurvivalPlayer omp : players) {
-            if (omp.getUUID().toString().equals(uuid.toString()))
-                return omp;
-        }
-        throw new IllegalStateException();
+        return getPlayer(Bukkit.getPlayer(uuid));
     }
 
-    public static List<SurvivalPlayer> getSurvivalPlayers() {
-        return players;
+    public static Collection<SurvivalPlayer> getSurvivalPlayers() {
+        return players.values();
     }
 }

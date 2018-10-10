@@ -12,7 +12,7 @@ public class TableIPs extends Table {
     public static final Column CURRENT_SERVER = new Column("CurrentServer", Column.Type.VARCHAR, 32);
     public static final Column LAST_IP = new Column("LastIp", Column.Type.VARCHAR, 32);
     public static final Column LAST_LOGIN = new Column("LastLogin", Column.Type.DATETIME);
-    public static final Column HISTORY = new Column("History", Column.Type.VARCHAR, 16 * 3); /* 3 IPs */
+    public static final Column HISTORY = new Column("History", Column.Type.TEXT); /* 3000 IPs */
 
     public TableIPs() {
         super("IPs", UUID, CURRENT_SERVER, LAST_IP, LAST_LOGIN, HISTORY);

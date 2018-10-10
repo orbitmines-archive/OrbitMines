@@ -9,8 +9,12 @@ import com.orbitmines.api.Color;
 import com.orbitmines.api.PluginMessage;
 import com.orbitmines.api.Server;
 import com.orbitmines.spigot.OrbitMines;
+import com.orbitmines.spigot.api.handlers.achievements.EmptyAchievementHandler;
 import com.orbitmines.spigot.api.handlers.data.FriendsData;
 import com.orbitmines.spigot.api.utils.ConsoleUtils;
+import com.orbitmines.spigot.servers.hub.gui.discordgroup.DiscordGroupGUIInstance;
+import com.orbitmines.spigot.servers.hub.gui.friends.FriendGUIInstance;
+import com.orbitmines.spigot.servers.hub.handlers.HubAchievements;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.Messenger;
@@ -72,7 +76,7 @@ public abstract class PluginMessageHandler implements PluginMessageListener {
 
         if (channel.equals(PluginMessage.CHANNEL)) {
             String msg = in.readUTF();
-            ConsoleUtils.warn(msg);
+            ConsoleUtils.msg(msg);//debug
 
             PluginMessage message;
             try {
@@ -92,8 +96,12 @@ public abstract class PluginMessageHandler implements PluginMessageListener {
 
                     break;
                 }
-                case SHUTDOWN: {
-                    Bukkit.shutdown();
+                case MUTE: {
+                    OMPlayer omp = OMPlayer.getPlayer(UUID.fromString(in.readUTF()));
+
+                    if (omp != null)
+                        omp.setMuted(Boolean.parseBoolean(in.readUTF()));
+
                     break;
                 }
                 case CHECK_VOTE_CACHE: {
@@ -101,6 +109,40 @@ public abstract class PluginMessageHandler implements PluginMessageListener {
 
                     if (omp != null)
                         omp.checkCachedVotes();
+
+                    break;
+                }
+                case UPDATE_DISCORD_GROUP_DATA: {
+                    OMPlayer omp = OMPlayer.getPlayer(UUID.fromString(in.readUTF()));
+
+                    if (omp == null)
+                        break;
+
+                    omp.getData(Data.Type.DISCORD_GROUPS).load();
+
+                    /* Update Inventory */
+                    GUI gui = omp.getLastInventory();
+                    if (gui == null)
+                        break;
+                    else if (gui instanceof DiscordGroupGUIInstance && gui.hasOpened(omp))
+                        gui.reopen(omp);
+
+                    break;
+                }
+                case UPDATE_FRIENDS: {
+                    OMPlayer omp = OMPlayer.getPlayer(UUID.fromString(in.readUTF()));
+
+                    if (omp == null)
+                        break;
+
+                    omp.getData(Data.Type.FRIENDS).load();
+
+                    /* Update Inventory */
+                    GUI gui = omp.getLastInventory();
+                    if (gui == null)
+                        break;
+                    else if (gui instanceof FriendGUIInstance && gui.hasOpened(omp))
+                        gui.reopen(omp);
 
                     break;
                 }
@@ -129,6 +171,15 @@ public abstract class PluginMessageHandler implements PluginMessageListener {
                     if (omp != null)
                         omp.updateRanks();
 
+                    break;
+                }
+                case CHECK_DISCORD_LINK_ACHIEVEMENT: {
+                    OMPlayer omp = OMPlayer.getPlayer(UUID.fromString(in.readUTF()));
+
+                    if (omp != null) {
+                        EmptyAchievementHandler handler = (EmptyAchievementHandler) HubAchievements.DISCORD_LINK.getHandler();
+                        handler.complete(omp, true);
+                    }
                     break;
                 }
                 case UPDATE_LANGUAGE: {

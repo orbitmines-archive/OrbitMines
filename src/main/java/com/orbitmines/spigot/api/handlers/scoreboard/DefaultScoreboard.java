@@ -3,6 +3,7 @@ package com.orbitmines.spigot.api.handlers.scoreboard;
 import com.orbitmines.api.StaffRank;
 import com.orbitmines.api.VipRank;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
+import com.orbitmines.spigot.api.utils.ColorUtils;
 import org.apache.commons.lang.ArrayUtils;
 
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ import java.util.Map;
 /*
 * OrbitMines - @author Fadi Shawki - 29-7-2017
 */
-public class DefaultScoreboard extends ScoreboardSet {
+public abstract class DefaultScoreboard extends ScoreboardSet {
 
     private List<ScoreboardTeam> teams;
     private Map<StaffRank, ScoreboardTeam> staffRankTeams;
@@ -30,8 +31,14 @@ public class DefaultScoreboard extends ScoreboardSet {
         ArrayUtils.reverse(staffRanks);
 
         for (StaffRank rank : staffRanks) {
-            ScoreboardTeam team = new ScoreboardTeam(rank.toString());
-            team.setPrefix(rank.getPrefix(rank.getPrefixColor()));
+            if (rank == StaffRank.NONE)
+                continue;
+
+            ScoreboardTeam team = new ScoreboardTeam(getTeamName(rank));
+
+            team.setPrefix(rank.getPrefix(null) + "§r ");
+
+            team.setColor(ColorUtils.toChatColor(rank.getPrefixColor()));
 
             teams.add(team);
             staffRankTeams.put(rank, team);
@@ -41,12 +48,50 @@ public class DefaultScoreboard extends ScoreboardSet {
         ArrayUtils.reverse(vipRanks);
 
         for (VipRank rank : vipRanks) {
-            ScoreboardTeam team = new ScoreboardTeam(rank.toString());
-            team.setPrefix(rank.getPrefix(rank.getPrefixColor()));
+            ScoreboardTeam team = new ScoreboardTeam(getTeamName(rank));
+
+            if (rank != VipRank.NONE)
+                team.setPrefix(rank.getPrefix(null) + "§r ");
+
+            team.setColor(ColorUtils.toChatColor(rank.getPrefixColor()));
 
             teams.add(team);
             vipRankTeams.put(rank, team);
         }
+    }
+
+    /* Order ranks in tablist */
+    private String getTeamName(StaffRank staffRank) {
+        switch (staffRank) {
+
+            case OWNER:
+                return "a";
+            case ADMIN:
+                return "b";
+            case DEVELOPER:
+                return "c";
+            case MODERATOR:
+                return "d";
+            case BUILDER:
+                return "e";
+        }
+        throw new IllegalStateException();
+    }
+    private String getTeamName(VipRank vipRank) {
+        switch (vipRank) {
+
+            case EMERALD:
+                return "f";
+            case DIAMOND:
+                return "g";
+            case GOLD:
+                return "h";
+            case IRON:
+                return "i";
+            case NONE:
+                return "j";
+        }
+        throw new IllegalStateException();
     }
 
     @Override

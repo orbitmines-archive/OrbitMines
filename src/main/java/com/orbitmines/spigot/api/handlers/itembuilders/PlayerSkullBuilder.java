@@ -36,7 +36,7 @@ public class PlayerSkullBuilder extends ItemBuilder {
     }
 
     public PlayerSkullBuilder(ScoreboardString playerName, int amount, String displayName, List<String> lore) {
-        super(Material.SKULL_ITEM, amount, 3, displayName, lore);
+        super(Material.PLAYER_HEAD, amount, displayName, lore);
 
         this.playerName = playerName;
     }
@@ -63,7 +63,7 @@ public class PlayerSkullBuilder extends ItemBuilder {
 
     @Override
     public ItemStack build() {
-        ItemStack itemStack = new ItemStack(material, amount, durability);
+        ItemStack itemStack = new ItemStack(material, amount, damage);
         SkullMeta meta = (SkullMeta) itemStack.getItemMeta();
         meta.setDisplayName(displayName);
         meta.setLore((lore == null || lore.size() == 0) ? null : new ArrayList<>(lore));

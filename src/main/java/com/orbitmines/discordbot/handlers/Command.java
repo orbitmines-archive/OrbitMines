@@ -1,5 +1,6 @@
 package com.orbitmines.discordbot.handlers;
 
+import com.orbitmines.discordbot.DiscordBot;
 import com.orbitmines.discordbot.utils.BotToken;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
@@ -19,17 +20,21 @@ public abstract class Command {
 
     private static List<Command> commands = new ArrayList<>();
 
-    private final BotToken token;
+    protected final BotToken token;
+    protected final String description;
 
-    public Command(BotToken token) {
+    public Command(BotToken token, String description) {
         commands.add(this);
 
         this.token = token;
+        this.description = description;
     }
 
     public abstract String[] getAlias();
 
     public abstract String getHelp();
+
+    public abstract boolean isBungeeCommand();
 
     /* a[0] = '!<command>' */
     public abstract void dispatch(MessageReceivedEvent event, User user, MessageChannel channel, Message msg, String[] a);
@@ -38,15 +43,44 @@ public abstract class Command {
         return token;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public String getHelpMessage() {
+        String firstCmd = getAlias()[0];
+        String help = getHelp();
+
+        if (help == null)
+            help = "";
+        else
+            help = " " + help;
+
+        return PREFIX + firstCmd + help;
+    }
+
     public void unregister() {
         commands.remove(this);
     }
 
     public static Command getCommand(BotToken token, String cmd) {
+        boolean isBungee = DiscordBot.getInstance().isBungee();
+
         for (Command command : commands) {
-            if (command.getToken() != token)
+            if (command.getToken() != token || isBungee && !command.isBungeeCommand() || !isBungee && command.isBungeeCommand())
                 continue;
 
+            for (String alias : command.getAlias()) {
+                if (cmd.equalsIgnoreCase(PREFIX + alias))
+                    return command;
+            }
+        }
+
+        return null;
+    }
+
+    public static Command getCommandFromName(String cmd) {
+        for (Command command : commands) {
             for (String alias : command.getAlias()) {
                 if (cmd.equalsIgnoreCase(PREFIX + alias))
                     return command;

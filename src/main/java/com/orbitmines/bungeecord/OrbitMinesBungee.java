@@ -11,12 +11,18 @@ import com.orbitmines.api.database.Table;
 import com.orbitmines.api.database.tables.TableIPs;
 import com.orbitmines.api.database.tables.TableServers;
 import com.orbitmines.bungeecord.commands.*;
+import com.orbitmines.bungeecord.commands.console.CommandDonation;
 import com.orbitmines.bungeecord.commands.moderator.*;
 import com.orbitmines.bungeecord.events.*;
 import com.orbitmines.bungeecord.handlers.*;
+import com.orbitmines.bungeecord.handlers.chat.ComponentMessage;
 import com.orbitmines.bungeecord.runnables.BungeeRunnable;
+import com.orbitmines.bungeecord.statistics.Statistics;
 import com.orbitmines.discordbot.DiscordBot;
+import com.orbitmines.discordbot.handlers.DiscordSquad;
 import com.orbitmines.discordbot.utils.BotToken;
+import com.orbitmines.discordbot.utils.DiscordBungeeUtils;
+import com.orbitmines.discordbot.utils.SkinLibrary;
 import com.vexsoftware.votifier.VoteHandler;
 import com.vexsoftware.votifier.VotifierPlugin;
 import com.vexsoftware.votifier.bungee.events.VotifierEvent;
@@ -78,6 +84,8 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
 
     private int maxPlayers;
 
+    private String resourceFolder;
+
     private MotdHandler motdHandler;
     private AnnouncementHandler announcementHandler;
 
@@ -90,13 +98,15 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
     private BotToken token;
     private DiscordBot discord;
 
+    private Statistics statistics;
+
     @Override
     public void onEnable() {
         bungee = this;
 
         /* Setup Config Files */
         configHandler = new ConfigHandler(this);
-        configHandler.setup("settings");
+        configHandler.setup("settings", "resources");
 
         /* Setup Database */
         Configuration settings = configHandler.get("settings");
@@ -122,6 +132,9 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
             maxPlayers += Integer.parseInt(entry.get(TableServers.MAX_PLAYERS));
         }
 
+        /* Update Resources Folder */
+        resourceFolder = configHandler.get("resources").getString("path");
+
         /* Setup MotdHandler */
         motdHandler = new MotdHandler();
         /* Setup AnnouncementHandler */
@@ -135,10 +148,25 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
         /* Setup Discord */
         try {
             token = BotToken.DEFAULT;
-            discord = new DiscordBot(token);
+            discord = new DiscordBot(true, token);
         } catch(Exception ex) {
             ex.printStackTrace();
         }
+
+        discord.setupCustomEmojis();
+        discord.setupCustomRoles(token);
+
+        /* Clear all Player Emojis */
+        SkinLibrary.deleteAllExistingEmotes(discord.getGuild(token));
+
+        /* Setup all Discord Groups */
+        DiscordSquad.setup(discord);
+
+        /* Setup all IPs */
+        IP.loadAll();
+
+        /* Setup Statistics */
+        statistics = new Statistics();
 
         /* Register */
         registerCommands();
@@ -151,6 +179,11 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
         );
         registerRunnables();
         setupVotifier();
+
+        discord.getJDA(token).addEventListener(new DiscordMessageListener(this));
+
+        /* */
+//        new OldDonationProcessor(configHandler, "donations").load();
     }
 
     @Override
@@ -164,6 +197,10 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
 
     public int getMaxPlayers() {
         return maxPlayers;
+    }
+
+    public String getResourceFolder() {
+        return resourceFolder;
     }
 
     public ServerInfo getServer(Server server) {
@@ -211,6 +248,10 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
         return discord;
     }
 
+    public Statistics getStatistics() {
+        return statistics;
+    }
+
     public boolean mustLogin(BungeePlayer omp) {
         UUID uuid = omp.getUUID();
         return !lastLogin.containsKey(uuid) || !LOGIN_COOLDOWN.onCooldown(lastLogin.get(uuid));
@@ -223,16 +264,27 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
 
     private void registerCommands() {
         new CommandHelp();
+        new CommandMsg();
+        new CommandDiscordLink(this);
+        new CommandReply();
         new CommandHub();
         new CommandServer(this);
         new CommandList();
         new CommandWebsite();
+        new CommandDiscord();
+        new CommandShop();
+        new CommandReport(this);
 
         new CommandFind(this);
         new CommandSend(this);
         new CommandAnnouncement();
         new CommandMotd();
+        new CommandSilent();
+        new CommandLookup(this);
         new CommandMaintenance(this);
+
+        /* Console Commands */
+        getProxy().getPluginManager().registerCommand(this, new CommandDonation(this));
     }
 
     private void registerEvents(Listener... listeners) {
@@ -290,6 +342,34 @@ public class OrbitMinesBungee extends Plugin implements VoteHandler, VotifierPlu
         for (BungeePlayer omp : BungeePlayer.getPlayers()) {
             if (staffRank == null || omp.isEligible(staffRank))
                 omp.sendMessage(message);
+        }
+    }
+
+    public void toBungee(BungeePlayer omp, ComponentMessage.TempTextComponent prefix, boolean bold, String message, List<BungeePlayer> players) {
+        CachedPlayer sender = CachedPlayer.getPlayer(omp.getUUID());
+
+        ComponentMessage cM = new ComponentMessage();
+
+//        for (ComponentMessage.TempTextComponent component : omp.getChatPrefix()) {
+//            cM.add(component);
+//        }
+
+        cM.add(prefix);
+
+        cM.add(DiscordBungeeUtils.getPlayerMention(omp, omp.getRankPrefix() + omp.getName()));
+
+        cM.add("§7 » ");
+
+        Color rankChatColor = omp.getRankChatColor();
+
+        for (BungeePlayer player : players) {
+            ComponentMessage componentMessage = new ComponentMessage(cM);
+
+            for (ComponentMessage.TempTextComponent component : DiscordBungeeUtils.formatMessage(sender, player, rankChatColor, bold, message)) {
+                componentMessage.add(component);
+            }
+
+            componentMessage.send(player);
         }
     }
 

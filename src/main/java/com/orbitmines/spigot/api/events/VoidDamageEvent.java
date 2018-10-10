@@ -1,6 +1,7 @@
 package com.orbitmines.spigot.api.events;
 
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -11,23 +12,29 @@ import org.bukkit.event.entity.EntityDamageEvent;
 /*
 * OrbitMines - @author Fadi Shawki - 29-7-2017
 */
-public class VoidDamageEvent implements Listener {
+public abstract class VoidDamageEvent implements Listener {
+
+    private final World world;
+
+    public VoidDamageEvent(World world) {
+        this.world = world;
+    }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onDamage(EntityDamageEvent event) {
         if (!(event.getEntity() instanceof Player))
             return;
 
-        if (event.getCause() == EntityDamageEvent.DamageCause.VOID) {
+        if (event.getCause() == EntityDamageEvent.DamageCause.VOID && event.getEntity().getWorld().getName().equals(world.getName())) {
             event.setDamage(((LivingEntity) event.getEntity()).getHealth());
 
             Location respawnLocation = getRespawnLocation((Player) event.getEntity());
-            if (respawnLocation != null)
+            if (respawnLocation != null) {
+                event.getEntity().setFallDistance(0F);
                 event.getEntity().teleport(respawnLocation);
+            }
         }
     }
 
-    public Location getRespawnLocation(Player player) {
-        return null;
-    }
+    public abstract Location getRespawnLocation(Player player);
 }

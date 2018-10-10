@@ -1,6 +1,7 @@
 package com.orbitmines.bungeecord.commands;
 
 import com.orbitmines.api.Server;
+import com.orbitmines.api.utils.CommandLibrary;
 import com.orbitmines.bungeecord.handlers.BungeePlayer;
 import com.orbitmines.bungeecord.handlers.cmd.Command;
 import net.md_5.bungee.api.event.ChatEvent;
@@ -12,16 +13,8 @@ import java.util.List;
 */
 public class CommandList extends Command {
 
-    private String[] alias = { "/list" };
-
-    @Override
-    public String[] getAlias() {
-        return alias;
-    }
-
-    @Override
-    public String getHelp(BungeePlayer omp) {
-        return null;
+    public CommandList() {
+        super(CommandLibrary.LIST);
     }
 
     @Override
@@ -30,7 +23,7 @@ public class CommandList extends Command {
 
         int size = BungeePlayer.getPlayers().size();
 
-        omp.sendMessage(" §7§lOrbit§8§lMines " + size + "§6§l" + omp.lang(size == 1 ? "Speler" : "Spelers", size == 1 ? "Player" : "Players") + " Online");
+        omp.sendMessage(" §8§lOrbit§7§lMines " + "§6§l " + size + " " + omp.lang(size == 1 ? "Speler" : "Spelers", size == 1 ? "Player" : "Players") + " Online");
 
         for (Server server : Server.values()) {
             /* Not Setup */

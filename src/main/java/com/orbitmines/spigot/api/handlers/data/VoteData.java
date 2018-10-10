@@ -102,7 +102,14 @@ public class VoteData extends Data {
         if (!timeStamps.equals("null")) {
             for (String voteTimeStampsSet : timeStamps.split(":")) {
                 String[] voteTimeStampsData = voteTimeStampsSet.split("~");
-                ServerList serverList = ServerList.fromDomain(voteTimeStampsData[0]);
+
+                ServerList serverList;
+                try {
+                    serverList = ServerList.valueOf(voteTimeStampsData[0]);
+                } catch (IllegalArgumentException ex) {
+                    continue;
+                }
+
                 long timeStamp = Long.parseLong(voteTimeStampsData[1]);
 
                 /* No need to add to time stamps if player can vote */
@@ -127,7 +134,7 @@ public class VoteData extends Data {
                 stringBuilder.append(":");
 
             ServerList serverList = keySet.get(i);
-            stringBuilder.append(serverList.getDomainName());
+            stringBuilder.append(serverList.toString());
             stringBuilder.append("~");
             stringBuilder.append(voteTimeStamps.get(serverList));
         }

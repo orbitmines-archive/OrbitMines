@@ -3,9 +3,9 @@ package com.orbitmines.spigot.api.events;
 import com.orbitmines.api.Cooldown;
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
-import com.orbitmines.spigot.api.handlers.npc.*;
+import com.orbitmines.spigot.api.handlers.npc.FloatingItem;
+import com.orbitmines.spigot.api.handlers.npc.Npc;
 import com.orbitmines.spigot.api.handlers.npc.todo.CustomItem;
-import com.orbitmines.spigot.api.handlers.npc.todo.FloatingItem;
 import com.orbitmines.spigot.api.utils.PlayerUtils;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
@@ -13,10 +13,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.ItemDespawnEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 
@@ -35,7 +38,7 @@ public class NpcEvents implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onInteractEntityEvent(PlayerInteractEntityEvent event) {
-        MobNpc npc = MobNpc.getMobNpc(event.getRightClicked());
+        Npc npc = Npc.getNpc(event.getRightClicked());
         if (npc == null)
             return;
 
@@ -51,32 +54,13 @@ public class NpcEvents implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onEntityDamageEvent(EntityDamageEvent event) {
-        MobNpc npc = MobNpc.getMobNpc(event.getEntity());
+        Npc npc = Npc.getNpc(event.getEntity());
         if (npc != null)
             event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onItemPickUpEvent(PlayerPickupItemEvent event) {
-
-        floatingItem:
-        {
-            FloatingItem floatingItem = FloatingItem.getFloatingItem(event.getItem());
-
-            if (floatingItem == null)
-                break floatingItem;
-
-            if (!floatingItem.canPickUp()) {
-                event.setCancelled(true);
-                return;
-            }
-
-            event.setCancelled(false);
-
-            floatingItem.pickUp(event, OMPlayer.getPlayer(event.getPlayer()));
-            return;
-        }
-
         CustomItem customItem = CustomItem.getCustomItem(event.getItem());
 
         if (customItem == null)
@@ -90,7 +74,6 @@ public class NpcEvents implements Listener {
         event.setCancelled(false);
 
         customItem.pickUp(event, OMPlayer.getPlayer(event.getPlayer()));
-
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -102,35 +85,13 @@ public class NpcEvents implements Listener {
 
         Player player = event.getPlayer();
 
-        FloatingItem floatingItem = FloatingItem.getFloatingItem(armorStand);
+        Npc npc = Npc.getNpc(armorStand);
 
-        if (floatingItem != null) {
+        if (npc != null) {
             event.setCancelled(true);
 
-            if (floatingItem.canClick())
-                floatingItem.click(event, OMPlayer.getPlayer(player));
-
-            PlayerUtils.updateInventory(player);
-            return;
-        }
-
-        ArmorStandNpc armorStandNpc = ArmorStandNpc.getArmorStandNpc(armorStand);
-
-        if (armorStandNpc != null) {
-            event.setCancelled(true);
-
-            if (armorStandNpc.isClickable())
-                armorStandNpc.getInteractAction().onInteract(event, OMPlayer.getPlayer(player));
-
-            PlayerUtils.updateInventory(player);
-            return;
-        }
-
-
-        Hologram hologram = Hologram.getHologram(armorStand);
-
-        if (hologram != null) {
-            event.setCancelled(true);
+            if (npc.isClickable())
+                npc.getInteractAction().onInteract(event, OMPlayer.getPlayer(player));
 
             PlayerUtils.updateInventory(player);
         }
@@ -140,21 +101,33 @@ public class NpcEvents implements Listener {
     public void onWorldUnload(WorldUnloadEvent event) {
         String worldName = event.getWorld().getName();
 
-        for (MobNpc npc : new ArrayList<>(MobNpc.getMobNpcs())) {
+        for (Npc npc : new ArrayList<>(Npc.getNpcs())) {
             if (npc.getSpawnLocation().getWorld().getName().equals(worldName))
                 npc.destroy();
         }
-        for (ArmorStandNpc armorStandNpc : new ArrayList<>(ArmorStandNpc.getArmorStandNpcs())) {
-            if (armorStandNpc.getSpawnLocation().getWorld().getName().equals(worldName))
-                armorStandNpc.destroy();
-        }
-        for (Hologram hologram : new ArrayList<>(Hologram.getHolograms())) {
-            if (hologram.getSpawnLocation().getWorld().getName().equals(worldName))
-                hologram.destroy();
-        }
-        for (FloatingItem floatingItem : new ArrayList<>(FloatingItem.getFloatingItems())) {
-            if (floatingItem.getLocation().getWorld().getName().equals(worldName))
-                floatingItem.delete();
-        }
+    }
+
+    @EventHandler
+    public void onItemDespawnEvent(ItemDespawnEvent event) {
+        FloatingItem npc = FloatingItem.getFloatingItem(event.getEntity());
+
+        if (npc != null)
+            event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onWorldSwitch(PlayerChangedWorldEvent event) {
+        Player player = event.getPlayer();
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                /* Hide other npcs that shouldn't be visible */
+                for (Npc npc : Npc.getNpcIn(player.getWorld())) {
+                    if (npc.getWatchers() != null && !npc.getWatchers().contains(player))
+                        npc.hideFor(player);
+                }
+            }
+        }.runTaskLater(orbitMines, 10);
     }
 }

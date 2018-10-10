@@ -24,12 +24,19 @@ public class TimeUtils {
             stringBuilder.append(NumberUtils.locale(d)).append("d");
         if (h != 0)
             stringBuilder.append(NumberUtils.locale(h)).append(new Message("u", "h").lang(language));
-        if (m != 0)
+        if (h != 0 || m != 0)
             stringBuilder.append(NumberUtils.locale(m)).append("m");
-        if (d == 0 && s != 0)
+        if (d == 0 && (h != 0 || m != 0 || s != 0)) {
             stringBuilder.append(NumberUtils.locale(s)).append("s");
+        }
 
         return stringBuilder.toString();
+    }
+
+    public static String secondDecimal(long millis, String format) {
+        long seconds = (millis / 1000L);
+
+        return String.format(format, (double) seconds + ((double) (millis % 1000L)) / 1000D) + "s";
     }
 
     public static String biggestTimeUnit(long millis, Language language) {

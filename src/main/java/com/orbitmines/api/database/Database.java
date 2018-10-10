@@ -114,6 +114,10 @@ public class Database {
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                 }
+
+                /* Cannot use 'AFTER' AND 'DEFAULT' in the same query so we use this; */
+                if (column.getDefaultValue() != null)
+                    update(table, new Set(column, column.getDefaultValue()));
             }
         }
     }
@@ -205,6 +209,27 @@ public class Database {
             ex.printStackTrace();
         }
         return count;
+    }
+
+    public long getLongSum(Table table, Column column, Where... wheres) {
+        long sum = 0;
+
+        String query = "SELECT SUM(" + column.toString() + ") AS sum FROM `" + table.toString() + "`" + toString(wheres) + ";";
+
+        try {
+            checkConnection();
+
+            ResultSet rs = connection.prepareStatement(query).executeQuery();
+
+            while (rs.next()) {
+                sum = rs.getLong("sum");
+            }
+
+            rs.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return sum;
     }
 
     public int getInt(Table table, Column column, Where... wheres) {
@@ -341,6 +366,22 @@ public class Database {
         return values;
     }
 
+    public boolean entryEquals(Column keyColumn, Map<Column, String>... entries) {
+        if (entries == null || entries.length == 0)
+            return true;
+
+        for (Column column : entries[0].keySet()) {
+            if (column == keyColumn)
+                continue;
+
+            for (int i = 1; i < entries.length; i++) {
+                if (!entries[0].get(column).equals(entries[i].get(column)))
+                    return false;
+            }
+        }
+        return true;
+    }
+
     public List<Map<Column, Integer>> getIntEntries(Table table, Where... where) {
         return getIntEntries(table, table.getColumns(), where);
     }
@@ -363,6 +404,40 @@ public class Database {
                 Map<Column, Integer> entry = new HashMap<>();
                 for (Column column : columns) {
                     entry.put(column, rs.getInt(column.toString()));
+                }
+                values.add(entry);
+            }
+
+            rs.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        return values;
+    }
+
+    public List<Map<Column, Long>> getLongEntries(Table table, Where... where) {
+        return getLongEntries(table, table.getColumns(), where);
+    }
+
+    public List<Map<Column, Long>> getLongEntries(Table table, Column column, Where... wheres) {
+        return getLongEntries(table, new Column[] { column }, wheres);
+    }
+
+    public List<Map<Column, Long>> getLongEntries(Table table, Column[] columns, Where... wheres) {
+        List<Map<Column, Long>> values = new ArrayList<>();
+
+        String query = "SELECT " + toString(columns) + " FROM `" + table.toString() + "`" + toString(wheres) + ";";
+
+        try {
+            checkConnection();
+
+            ResultSet rs = connection.prepareStatement(query).executeQuery();
+
+            while (rs.next()) {
+                Map<Column, Long> entry = new HashMap<>();
+                for (Column column : columns) {
+                    entry.put(column, rs.getLong(column.toString()));
                 }
                 values.add(entry);
             }

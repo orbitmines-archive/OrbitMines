@@ -39,7 +39,7 @@ public class ClaimHandler {
     }
 
     public boolean canBuild(SurvivalPlayer omp, Location location, Material material) {
-        if (!survival.getWorld().equals(location.getWorld()))
+        if (!survival.canClaimIn(location.getWorld()))
             return false;
 
         Claim claim = getClaimAt(location, false, omp.getLastClaim());
@@ -109,6 +109,15 @@ public class ClaimHandler {
                 return claim;
         }
         return null;
+    }
+
+    public List<Claim> getClaims(UUID owner) {
+        List<Claim> claims = new ArrayList<>();
+        for (Claim claim : this.claims) {
+            if (claim.isRegistered() && (claim.getOwner() != null && claim.getOwner().equals(owner)))
+                claims.add(claim);
+        }
+        return claims;
     }
 
     public Collection<Claim> getClaims() {
@@ -203,7 +212,7 @@ public class ClaimHandler {
             bigZ = z1;
         }
 
-        Claim claim = new Claim(survival, id, DateUtils.now(), new Location(world, smallX, smallY, smallZ), new Location(world, bigX, bigY, bigZ), owner, new HashMap<>(), new HashMap<>());
+        Claim claim = new Claim(survival, id, null, DateUtils.now(), new Location(world, smallX, smallY, smallZ), new Location(world, bigX, bigY, bigZ), owner, new HashMap<>(), new HashMap<>());
         claim.setParent(parent);
 
         Claim.CreateResult result = new Claim.CreateResult();
@@ -404,8 +413,9 @@ public class ClaimHandler {
         Long parentId = !claim.hasParent() ? -1L : claim.getParent().getId();
 
         if (!Database.get().contains(Table.SURVIVAL_CLAIM, TableSurvivalClaim.ID, new Where(TableSurvivalClaim.ID, claim.getId()))) {
-            Database.get().insert(Table.SURVIVAL_CLAIM, Table.SURVIVAL_CLAIM.values(
+            Database.get().insert(Table.SURVIVAL_CLAIM,
                     claim.getId() + "",
+                    claim.getName(),
                     DateUtils.FORMAT.format(claim.getCreatedOn()),
                     Serializer.serialize(claim.getCorner1()),
                     Serializer.serialize(claim.getCorner2()),
@@ -413,9 +423,10 @@ public class ClaimHandler {
                     serializeMembers(claim),
                     serializeSettings(claim),
                     parentId + ""
-            ));
+            );
         } else {
             Database.get().update(Table.SURVIVAL_CLAIM, new Set[]{
+                    new Set(TableSurvivalClaim.NAME, claim.getName()),
                     new Set(TableSurvivalClaim.CORNER_1, Serializer.serialize(claim.getCorner1())),
                     new Set(TableSurvivalClaim.CORNER_2, Serializer.serialize(claim.getCorner2())),
                     new Set(TableSurvivalClaim.OWNER, owner),

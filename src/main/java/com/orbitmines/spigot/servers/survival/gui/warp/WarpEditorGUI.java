@@ -41,7 +41,7 @@ public class WarpEditorGUI extends GUI {
             }
         });
 
-        add(1, 4, new ItemInstance(new ItemBuilder(Material.BOOK_AND_QUILL, 1, 0, omp.lang("§7§lHernoem Warp", "§7§lRename Warp")).build()) {
+        add(1, 4, new ItemInstance(new ItemBuilder(Material.WRITABLE_BOOK, 1, omp.lang("§7§lHernoem Warp", "§7§lRename Warp")).build()) {
             @Override
             public void onClick(InventoryClickEvent e, OMPlayer omp) {
                 AnvilNms anvil = survival.getOrbitMines().getNms().anvilGui(omp.getPlayer(), (event) -> {
@@ -63,10 +63,11 @@ public class WarpEditorGUI extends GUI {
                         }
 
                         for (int i = 0; i < warpName.length(); i++) {
-                            if (!Character.isAlphabetic(warpName.charAt(i)) && !Character.isDigit(warpName.charAt(i)) && !Character.isSpaceChar(warpName.charAt(i))) {
+                            char c = warpName.charAt(i);
+                            if (!Character.isAlphabetic(c) && !Character.isDigit(c) && !Character.isSpaceChar(c)) {
                                 event.setWillClose(false);
                                 event.setWillDestroy(false);
-                                omp.sendMessage("Warp", Color.RED, "§7Je " + Warp.COLOR.getChatColor() + "warp naam§7 kan alleen maar bestaan uit " + Warp.COLOR.getChatColor() + "letters§7," + Warp.COLOR.getChatColor() + "nummers§7 en " + Warp.COLOR.getChatColor() + "spaties§7.", "§7Your " + Warp.COLOR.getChatColor() + "warp name§7 can only contain " + Warp.COLOR.getChatColor() + "alphabetic§7 and " + Warp.COLOR.getChatColor() + "numeric§7 characters and " + Warp.COLOR.getChatColor() + "spaces§7.");
+                                omp.sendMessage("Warp", Color.RED, "§7Je " + Warp.COLOR.getChatColor() + "warp naam§7 kan alleen maar bestaan uit " + Warp.COLOR.getChatColor() + "letters§7, " + Warp.COLOR.getChatColor() + "nummers§7 en " + Warp.COLOR.getChatColor() + "spaties§7.", "§7Your " + Warp.COLOR.getChatColor() + "warp name§7 can only contain " + Warp.COLOR.getChatColor() + "alphabetic§7 and " + Warp.COLOR.getChatColor() + "numeric§7 characters and " + Warp.COLOR.getChatColor() + "spaces§7.");
                                 return;
                             }
                         }
@@ -100,7 +101,7 @@ public class WarpEditorGUI extends GUI {
         });
 
         {
-            ItemBuilder item = new ItemBuilder(warp.getLocation() == null ? Material.EMPTY_MAP : Material.MAP, 1, 0, omp.lang("§7§lZet Warp Locatie", "§7§lSet Warp Location"));
+            ItemBuilder item = new ItemBuilder(warp.getLocation() == null ? Material.MAP : Material.FILLED_MAP, 1, omp.lang("§7§lZet Warp Locatie", "§7§lSet Warp Location"));
 
             if (warp.getLocation() == null)
                 item.glow();
@@ -108,7 +109,7 @@ public class WarpEditorGUI extends GUI {
             add(1, 5, new ItemInstance(item.build()) {
                 @Override
                 public void onClick(InventoryClickEvent event, OMPlayer omp) {
-                    if (omp.getLocation().getWorld() != survival.getWorld()) {
+                    if (!omp.isOpMode() && omp.getLocation().getWorld() != survival.getWorld()) {
                         omp.sendMessage("Warp", Color.RED, "§7Je kan alleen maar warps maken in de overworld!", "§7You're only allowed to create warps in the overworld!");
                         return;
                     }
@@ -129,7 +130,7 @@ public class WarpEditorGUI extends GUI {
             }
         });
 
-        add(1, 7, new ItemInstance(new ItemBuilder(warp.isEnabled() ? Material.EYE_OF_ENDER : Material.ENDER_PEARL, 1, 0, warp.isEnabled() ? omp.lang("§7§lTeleporteren §a§lINGESCHAKELD", "§7§lTeleporting §a§lENABLED") : omp.lang("§7§lTeleporteren §c§lUITGESCHAKELD", "§7§lTeleporting §c§lDISABLED")).build()) {
+        add(1, 7, new ItemInstance(new ItemBuilder(warp.isEnabled() ? Material.ENDER_EYE : Material.ENDER_PEARL, 1, warp.isEnabled() ? omp.lang("§7§lTeleporteren §a§lINGESCHAKELD", "§7§lTeleporting §a§lENABLED") : omp.lang("§7§lTeleporteren §c§lUITGESCHAKELD", "§7§lTeleporting §c§lDISABLED")).build()) {
             @Override
             public void onClick(InventoryClickEvent event, OMPlayer omp) {
                 if (warp.getLocation() == null)

@@ -5,17 +5,30 @@ import com.orbitmines.api.database.*;
 import com.orbitmines.api.database.Set;
 import com.orbitmines.api.database.tables.TablePlayers;
 import com.orbitmines.api.database.tables.TableServers;
-import com.orbitmines.api.settings.SettingsType;
+import com.orbitmines.api.punishment.Punishment;
+import com.orbitmines.api.punishment.PunishmentHandler;
+import com.orbitmines.api.punishment.offences.Offence;
+import com.orbitmines.api.punishment.offences.Severity;
+import com.orbitmines.api.settings.Settings;
 import com.orbitmines.api.utils.DateUtils;
+import com.orbitmines.api.utils.LootUtils;
 import com.orbitmines.api.utils.RandomUtils;
 import com.orbitmines.bungeecord.OrbitMinesBungee;
 import com.orbitmines.discordbot.DiscordBot;
+import com.orbitmines.discordbot.handlers.DiscordSquad;
+import com.orbitmines.discordbot.utils.BotToken;
+import com.orbitmines.discordbot.utils.ColorUtils;
+import com.orbitmines.discordbot.utils.DiscordUtils;
 import com.orbitmines.discordbot.utils.SkinLibrary;
 import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.data.PlayTimeData;
 import com.orbitmines.spigot.api.handlers.data.SettingsData;
 import com.orbitmines.spigot.api.handlers.data.VoteData;
+import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -28,7 +41,7 @@ import java.util.concurrent.TimeUnit;
 */
 public class BungeePlayer {
 
-    private static List<BungeePlayer> players = new ArrayList<>();
+    private static Map<UUID, BungeePlayer> players = new HashMap<>();
 
     private OrbitMinesBungee bungee;
     private final ProxiedPlayer player;
@@ -69,16 +82,10 @@ public class BungeePlayer {
     */
 
     public void login() {
-        BungeePlayer prev = BungeePlayer.getPlayer(player);
-        if (prev != null) {
-            /* The player rarely doesn't disconnect correctly due to a crash (even then it doesn't always happen, but for when it does); */
-            players.remove(prev);
-        }
-
-        players.add(this);
+        players.put(getUUID(), this);
 
         if (!Database.get().contains(Table.PLAYERS, TablePlayers.UUID, new Where(TablePlayers.UUID, getUUID().toString()))) {
-            Database.get().insert(Table.PLAYERS, getUUID().toString(), getRealName(), staffRank.toString(), vipRank.toString(), DateUtils.FORMAT.format(DateUtils.now()), language.toString(), SettingsType.ENABLED.toString(), SettingsType.ENABLED.toString(), SettingsType.ENABLED.toString(), silent ? "1" : "0", "0", "0");
+            Database.get().insert(Table.PLAYERS, getUUID().toString(), getRealName(), "", staffRank.toString(), vipRank.toString(), DateUtils.FORMAT.format(DateUtils.now()), language.toString(), "1", Settings.PRIVATE_MESSAGES.getDefaultType().toString(), Settings.PLAYER_VISIBILITY.getDefaultType().toString(), Settings.GADGETS.getDefaultType().toString(), Settings.STATS.getDefaultType().toString(), silent ? "1" : "0", "0", "0");
 
             onFirstLogin();
         } else {
@@ -95,11 +102,12 @@ public class BungeePlayer {
             language = Language.valueOf(values.get(TablePlayers.LANGUAGE));
             silent = "1".equals(values.get(TablePlayers.SILENT));
 
-               /* Update Name Change */
+            /* Update Name Change */
             String name = values.get(TablePlayers.NAME);
-            if (!name.equals(getRealName()))
+            if (!name.equals(getRealName())) {
                 Database.get().update(Table.PLAYERS, new Set(TablePlayers.NAME, getRealName()), new Where(TablePlayers.UUID, getUUID().toString()));
-
+                onNameChange(name, getRealName());
+            }
         }
 
         /* PrefixColor to DisplayName */
@@ -116,7 +124,17 @@ public class BungeePlayer {
             return;
         }
 
-        bungee.getProxy().getScheduler().schedule(bungee, () -> bungee.getMessageHandler().dataTransfer(PluginMessage.LOGIN_2FA, player, getUUID().toString()), 1, TimeUnit.SECONDS);
+        /* Update Ranks */
+        User linkedUser = bungee.getDiscord().getLinkedUser(BotToken.DEFAULT, getUUID());
+        if (linkedUser != null)
+            bungee.getDiscord().updateMute(linkedUser);
+
+        bungee.getProxy().getScheduler().schedule(bungee, () -> {
+            bungee.getMessageHandler().dataTransfer(PluginMessage.LOGIN_2FA, player, getUUID().toString());
+
+            if (isMuted())
+                muteOnSpigot(true);
+        }, 1, TimeUnit.SECONDS);
     }
 
     public void logout() {
@@ -128,13 +146,27 @@ public class BungeePlayer {
 
         ((PlayTimeData) getData(Data.Type.PLAY_TIME)).stopSession();
 
-        players.remove(this);
+        players.remove(getUUID());
+
+        SkinLibrary.deleteExistingEmotes(bungee.getDiscord().getGuild(bungee.getToken()), getUUID());
     }
 
     /* Called when a player joins the network, or successfully logs in with their 2FA code */
     public void on2FALogin() {
         /* Send Title Announcements */
         bungee.getAnnouncementHandler().send(player);
+    }
+
+    private void onNameChange(String previousName, String newName) {
+        /* Log Name Change */
+        DiscordBot discord = bungee.getDiscord();
+        BotToken token = bungee.getToken();
+        discord.getChannel(token, DiscordBot.ChannelType.name_change).sendMessage(DiscordUtils.getDisplay(discord, token, staffRank, vipRank, getUUID(), previousName) + " » " + DiscordUtils.getDisplay(discord, token, staffRank, vipRank, getUUID(), newName)).queue();
+
+        /* Update DiscordSquad Category */
+        DiscordSquad group = DiscordSquad.getGroup(getUUID());
+        if (group != null)
+            group.updateCategoryName();
     }
 
     public void updateLastOnline() {
@@ -149,12 +181,15 @@ public class BungeePlayer {
     }
 
     private void onFirstLogin() {
-        /* Give Welcome Loot */
-        Database.get().insert(Table.LOOT, "SOLARS", Rarity.RARE.toString(), "250", "&a&l&oWelcome to &7&lOrbit&8&lMines&a&l&o!");
-
         DiscordBot discord = bungee.getDiscord();
+        BotToken token = bungee.getToken();
+
+        /* Give Welcome Loot */
+        LootUtils.insert(discord, token, getUUID(), LootUtils.SOLARS, null, Rarity.RARE, "&a&l&oWelcome to &7&l&oOrbit&8&l&oMines&a&l&o!", 250);
+
         Guild guild = discord.getGuild(bungee.getToken());
-        discord.getChannel(bungee.getToken(), DiscordBot.ChannelType.new_players).sendMessage(SkinLibrary.getEmote(guild, getUUID()).getAsMention() + " **" + getName(true) + "** has joined OrbitMines for the first time!").queue();
+
+        bungee.getProxy().getScheduler().schedule(bungee, () -> discord.getChannel(token, DiscordBot.ChannelType.new_players).sendMessage(SkinLibrary.getEmote(guild, getUUID()).getAsMention() + " **" + getName(true) + "** has joined OrbitMines for the first time!").queue(), 1, TimeUnit.SECONDS);
     }
 
     /*
@@ -286,6 +321,17 @@ public class BungeePlayer {
 
         /* PrefixColor to DisplayName */
         setPrefix(getRankPrefixColor().getChatColor());
+
+        /* Update on Discord if Linked */
+        DiscordBot discord = bungee.getDiscord();
+        User user = discord.getLinkedUser(bungee.getToken(), getUUID());
+
+        if (user != null)
+            discord.updateRanks(user);
+
+        DiscordSquad group = DiscordSquad.getGroup(getUUID());
+        if (group != null)
+            group.updateCategoryName();
     }
 
     /*
@@ -328,6 +374,201 @@ public class BungeePlayer {
         this.silent = Database.get().getBoolean(Table.PLAYERS, TablePlayers.SILENT, new Where(TablePlayers.UUID, getUUID().toString()));
     }
 
+    public void punish(UUID uuid, Offence offence, Severity severity, String reason) {
+        CachedPlayer player = CachedPlayer.getPlayer(uuid);
+        String color = player.getRankPrefixColor().getChatColor();
+
+        PunishmentHandler handler = PunishmentHandler.getHandler(uuid);
+
+        if (handler.getActivePunishment(offence.getType()) != null) {
+            sendMessage("Mod", Color.RED, color + player.getPlayerName() + " §7heeft al een lopende straf!", color + player.getPlayerName() + " §7has already been punished!");
+            return;
+        }
+
+        sendMessage("Mod", Color.LIME, "Je hebt " + color + player.getPlayerName() + " §7succesvol een straf opgedragen. (Reden: " + reason + ")", "You have successfully punished " + color + player.getPlayerName() + "§7. (Reason: " + reason + ")");
+
+        Punishment punishment = new Punishment(uuid, offence, severity, handler.getPunishedTo(offence, severity), getUUID(), reason);
+        handler.addPunishment(punishment);
+
+        BungeePlayer mbp = BungeePlayer.getPlayer(uuid);
+
+        if (severity == Severity.WARNING) {
+            if (mbp != null) {
+                mbp.sendMessage("§4§m---------------------------------------------");
+                mbp.sendMessage("  §c§l" + mbp.lang("WAARSCHUWING", "WARNING"));
+                mbp.sendMessage("     §7" + mbp.lang("Je bent gewaarschuwd door", "You have been warned by") + " " + getRankPrefix() + getName() + "§7.");
+                mbp.sendMessage("     §7" + mbp.lang("Overtreding", "Offence") + ": §c" + mbp.lang(offence.getName()));
+                mbp.sendMessage("     §7" + mbp.lang("Reden", "Reason") + ": §c" + reason);
+                mbp.sendMessage("§4§m---------------------------------------------");
+            } else {
+                //TODO MESSAGE WHEN BACK ONLINE
+            }
+
+            getPunishmentChannel().sendMessage(DiscordUtils.getDisplay(bungee.getDiscord(), bungee.getToken(), player.getUUID()) + " has been WARNED!").queue();
+            {
+                EmbedBuilder builder = new EmbedBuilder();
+                builder.setAuthor("WARNING");
+                builder.setDescription("");
+                builder.setColor(ColorUtils.from(Color.GRAY));
+
+                builder.addField("Player", punishment.getPunished().getPlayerName(), true);
+                builder.addField("Offence", punishment.getOffence().getName().lang(Language.ENGLISH), true);
+                builder.addField("Warned By", punishment.getPunishedBy().getPlayerName(), true);
+                builder.addField("Reason", punishment.getReason(), true);
+
+                builder.setThumbnail(SkinLibrary.getSkinUrl(SkinLibrary.Type.BODY_3D, player.getUUID()));
+
+                getPunishmentChannel().sendMessage(builder.build()).queue();
+            }
+            return;
+        }
+
+        switch (offence.getType()) {
+
+            case MUTE:
+                if (mbp != null) {
+                    mbp.sendMessage("§4§m---------------------------------------------");
+                    mbp.sendMessage("  §c§l" + mbp.lang("GEMUTE", "MUTED"));
+                    mbp.sendMessage("     §7" + mbp.lang("Je bent gemute door", "You have been muted by") + " " + getRankPrefix() + getName() + "§7.");
+                    mbp.sendMessage("     §7" + mbp.lang("Reden", "Reason") + ": §c" + reason);
+                    mbp.sendMessage("     §7" + mbp.lang("Duur", "Duration") + ": §c" + (severity.getDuration() == Punishment.Duration.PERMANENT ? "§lPERMANENT" : punishment.getExpireInString(mbp.getLanguage())));
+                    mbp.sendMessage("§4§m---------------------------------------------");
+                    mbp.muteOnSpigot(true);
+
+                    DiscordBot discord = bungee.getDiscord();
+                    User linkedUser = discord.getLinkedUser(BotToken.DEFAULT, mbp.getUUID());
+                    if (linkedUser != null)
+                        discord.updateMute(linkedUser);
+
+                } else {
+                    //TODO MESSAGE WHEN BACK ONLINE
+                }
+
+                getPunishmentChannel().sendMessage(DiscordUtils.getDisplay(bungee.getDiscord(), bungee.getToken(), player.getUUID()) + " has been MUTED!").queue();
+
+                break;
+            case BAN:
+                if (mbp != null) {
+                    mbp.getPlayer().disconnect(punishment.getBanString(mbp.getLanguage()));
+                } else {
+                    //TODO MESSAGE WHEN BACK ONLINE
+                }
+
+                getPunishmentChannel().sendMessage(DiscordUtils.getDisplay(bungee.getDiscord(), bungee.getToken(), player.getUUID()) + " has been BANNED!").queue();
+                break;
+        }
+
+        {
+            EmbedBuilder builder = new EmbedBuilder();
+            builder.setAuthor(offence.getType() == Punishment.Type.MUTE ? "MUTE" : "BAN");
+            builder.setDescription("");
+            builder.setColor(ColorUtils.from(offence.getType() == Punishment.Type.MUTE ? Color.RED : Color.MAROON));
+
+            builder.addField("Player", punishment.getPunished().getPlayerName(), true);
+            builder.addField("Offence", punishment.getOffence().getName().lang(Language.ENGLISH), true);
+            builder.addField("Severity", punishment.getSeverity().getName().lang(Language.ENGLISH), true);
+            builder.addField("From", punishment.getFromString(DateUtils.FORMAT), true);
+
+            if (punishment.getSeverity().getDuration() != Punishment.Duration.PERMANENT)
+                builder.addField("To", punishment.getFromString(DateUtils.FORMAT), true);
+
+            builder.addField("Duration", punishment.getSeverity().getDuration() == Punishment.Duration.PERMANENT ? "PERMANENT" : punishment.getExpireInString(Language.ENGLISH), true);
+            builder.addField((offence.getType() == Punishment.Type.MUTE ? "Muted" : "Banned") + " By", punishment.getPunishedBy().getPlayerName(), true);
+            builder.addField("Reason", punishment.getReason(), true);
+
+            builder.setThumbnail(SkinLibrary.getSkinUrl(SkinLibrary.Type.BODY_3D, player.getUUID()));
+
+            getPunishmentChannel().sendMessage(builder.build()).queue();
+        }
+    }
+
+    public void pardon(UUID uuid, Offence offence, String reason) {
+        CachedPlayer player = CachedPlayer.getPlayer(uuid);
+        String color = player.getRankPrefixColor().getChatColor();
+
+        PunishmentHandler handler = PunishmentHandler.getHandler(uuid);
+        Punishment active = handler.getActivePunishment(offence.getType());
+
+        if (active == null) {
+            sendMessage("Mod", Color.BLUE, color + player.getPlayerName() + " §7heeft geen lopende straf meer!", color + player.getPlayerName() + " §7has already been pardoned!");
+            return;
+        }
+
+        active.pardon(getUUID(), reason);
+
+        sendMessage("Mod", Color.LIME, "Je hebt " + color + player.getPlayerName() + "§7 succesvol ontzegd van zijn/haar straf. (Reden: " + reason + ")", "You have successfully pardoned " + color + player.getPlayerName() + "§7. (Reason: " + reason + ")");
+
+        getPunishmentChannel().sendMessage(DiscordUtils.getDisplay(bungee.getDiscord(), bungee.getToken(), player.getUUID()) + " has been PARDONED!").queue();
+
+        {
+            EmbedBuilder builder = new EmbedBuilder();
+            builder.setAuthor("PARDON");
+            builder.setDescription("");
+            builder.setColor(ColorUtils.from(Color.LIME));
+
+            builder.addField("Player", active.getPunished().getPlayerName(), true);
+            builder.addField("Offence", active.getOffence().getName().lang(Language.ENGLISH), true);
+            builder.addField("Severity", active.getSeverity().getName().lang(Language.ENGLISH), true);
+            builder.addField("From", active.getFromString(DateUtils.FORMAT), true);
+
+            if (active.getSeverity().getDuration() != Punishment.Duration.PERMANENT)
+                builder.addField("To", active.getFromString(DateUtils.FORMAT), true);
+
+            builder.addField("Would have expired in", active.getSeverity().getDuration() == Punishment.Duration.PERMANENT ? "NEVER" : active.getExpireInString(Language.ENGLISH), true);
+            builder.addField((active.getSeverity() == Severity.WARNING ? "Warned" : (offence.getType() == Punishment.Type.MUTE ? "Muted" : "Banned")) + " By", active.getPunishedBy().getPlayerName(), true);
+            builder.addField("Reason", active.getReason(), true);
+            builder.addField("Pardoned Reason", active.getPardonedReason(), true);
+            builder.addField("Pardoned On", active.getPardonedOnString(DateUtils.FORMAT), true);
+            builder.addField("Pardoned By", active.getPardonedBy().getPlayerName(), true);
+
+            builder.setThumbnail(SkinLibrary.getSkinUrl(SkinLibrary.Type.BODY_3D, player.getUUID()));
+
+            getPunishmentChannel().sendMessage(builder.build()).queue();
+        }
+
+        if (offence.getType() != Punishment.Type.MUTE)
+            return;
+
+        /* Remove muted Role */
+        DiscordBot discord = bungee.getDiscord();
+        User linkedUser = discord.getLinkedUser(BotToken.DEFAULT, uuid);
+        if (linkedUser != null)
+            discord.updateMute(linkedUser);
+
+        /* Remove Mute */
+        BungeePlayer mbp = BungeePlayer.getPlayer(uuid);
+        if (mbp != null)
+            mbp.muteOnSpigot(false);
+    }
+
+    private TextChannel getPunishmentChannel() {
+        return bungee.getDiscord().getChannel(bungee.getToken(), DiscordBot.ChannelType.punishments);
+    }
+
+    public boolean isMuted() {
+        return PunishmentHandler.getHandler(getUUID()).getActivePunishment(Punishment.Type.MUTE) != null;
+    }
+
+    public void muteOnSpigot(boolean mute) {
+        bungee.getMessageHandler().dataTransfer(PluginMessage.MUTE, player, getUUID().toString(), mute + "");
+    }
+
+    public BungeePlayer getLastMsg() {
+        return lastMsg;
+    }
+
+    public void setLastMsg(BungeePlayer lastMsg) {
+        this.lastMsg = lastMsg;
+    }
+
+    public boolean hasLastMsg() {
+        if (lastMsg != null && !lastMsg.getPlayer().isConnected()) {
+            lastMsg = null;
+            return false;
+        }
+        return lastMsg != null;
+    }
+
     /*
         Data
      */
@@ -342,9 +583,6 @@ public class BungeePlayer {
             case VOTES:
                 data = new VoteData(getUUID());
                 break;
-//            case FRIENDS:
-//                data = new FriendsData(getUUID());
-//                break; -> Not avaiable in Bungee
             case SETTINGS:
                 data = new SettingsData(getUUID());
                 break;
@@ -359,10 +597,6 @@ public class BungeePlayer {
         this.data.put(type, data);
 
         return data;
-    }
-
-    public BungeePlayer getLastMsg() {
-        return lastMsg;
     }
 
     /*
@@ -453,6 +687,9 @@ public class BungeePlayer {
     }
 
     public Server getServer() {
+        if (player.getServer() == null)//TODO NULLPOINTER FIX?
+            return Server.HUB;
+
         return bungee.getServer(player.getServer().getInfo());
     }
 
@@ -489,39 +726,55 @@ public class BungeePlayer {
      */
 
     public static BungeePlayer getPlayer(ProxiedPlayer player) {
-        for (BungeePlayer omp : players) {
-            if (omp.getPlayer() == player)
-                return omp;
-        }
-        return null;
+        if (players.containsKey(player.getUniqueId()))
+            return players.get(player.getUniqueId());
+
+        BungeePlayer omp = new BungeePlayer(player);
+        omp.login();
+        return omp;
     }
 
     public static BungeePlayer getPlayer(String name) {
-        for (BungeePlayer omp : players) {
-            if (omp.getName(true).equalsIgnoreCase(name))
-                return omp;
-        }
-        return null;
+        ProxiedPlayer player = ProxyServer.getInstance().getPlayer(name);
+        if (player == null)
+            return null;
+
+        return getPlayer(player);
     }
 
     public static BungeePlayer getPlayer(UUID uuid) {
-        for (BungeePlayer omp : players) {
-            if (omp.getUUID().toString().equals(uuid.toString()))
-                return omp;
-        }
-        return null;
+        if (players.containsKey(uuid))
+            return players.get(uuid);
+
+        ProxiedPlayer player = ProxyServer.getInstance().getPlayer(uuid);
+        if (player == null)
+            return null;
+
+        BungeePlayer omp = new BungeePlayer(player);
+        omp.login();
+        return omp;
     }
 
-    public static List<BungeePlayer> getPlayers() {
-        return players;
+    public static Collection<BungeePlayer> getPlayers() {
+        return players.values();
     }
-
 
     public static List<BungeePlayer> getPlayers(Server server) {
         List<BungeePlayer> list = new ArrayList<>();
 
-        for (BungeePlayer bungeePlayer : players) {
+        for (BungeePlayer bungeePlayer : players.values()) {
             if (bungeePlayer.getServer() == server)
+                list.add(bungeePlayer);
+        }
+
+        return list;
+    }
+
+    public static List<BungeePlayer> getPlayersEligeble(StaffRank staffRank) {
+        List<BungeePlayer> list = new ArrayList<>();
+
+        for (BungeePlayer bungeePlayer : players.values()) {
+            if (bungeePlayer.isEligible(staffRank))
                 list.add(bungeePlayer);
         }
 

@@ -4,7 +4,6 @@ import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.datapoints.DataPointLoader;
 import com.orbitmines.spigot.api.datapoints.DataPointSign;
 import com.orbitmines.spigot.api.handlers.leaderboard.LeaderBoard;
-import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -20,7 +19,7 @@ public class DataPointLeaderBoard extends DataPointSign {
     private Map<Location, String[]> leaderboardData;
 
     public DataPointLeaderBoard() {
-        super("LEADERBOARD", Type.IRON_PLATE, Material.WOOL, DyeColor.RED.getWoolData());
+        super("LEADERBOARD", Type.IRON_PLATE, Material.RED_WOOL);
 
         leaderboardData = new HashMap<>();
     }

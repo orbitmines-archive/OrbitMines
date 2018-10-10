@@ -29,12 +29,15 @@ public abstract class Data {
 
         VOTES,
         FRIENDS,
+        DISCORD_GROUPS,
+        ACHIEVEMENTS,
         SETTINGS,
         PLAY_TIME,
         LOOT,
         PERIOD_LOOT,
 
-        SURVIVAL;
+        SURVIVAL,
+        KITPVP;
 
     }
 }

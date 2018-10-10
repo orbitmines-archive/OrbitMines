@@ -41,11 +41,12 @@ public class MobNpc extends Npc {
         this.mob = mob;
         this.onFire = false;
 
+        spawnLocation.add(0, getSpawnYOff(this.mob), 0);
+
         if (this instanceof PersonalisedMobNpc)
             return;
 
-        //TODO yOff for other mobs.
-        nameTag = new Hologram(spawnLocation, 1.75, Hologram.Face.UP);
+        nameTag = new Hologram(spawnLocation, getYOff(), Hologram.Face.UP);
 
         if (displayName == null)
             return;
@@ -56,14 +57,14 @@ public class MobNpc extends Npc {
     }
 
     @Override
-    protected void spawn() {//TODO DISABLE_COLLISION/DISABLE_SOUNDS OPTIONABLE, DISABLE_GRAVITY for 1.10+
+    protected void spawn() {
         if (this instanceof MovingMobNpc)
             this.entity = mob.spawn(getFixedLocation(), MobNpcNms.Option.DISABLE_ATTACK);
         else
             this.entity = mob.spawn(getFixedLocation(), MobNpcNms.Option.DISABLE_ATTACK, MobNpcNms.Option.DISABLE_MOVEMENT);
 
         /* Also spawn NameTag */
-        if (!(this instanceof PersonalisedMobNpc))
+        if (nameTag != null && !(this instanceof PersonalisedMobNpc))
             nameTag.spawn();
 
         this.runnable = new SpigotRunnable(SpigotRunnable.TimeUnit.TICK, 3) {
@@ -72,7 +73,7 @@ public class MobNpc extends Npc {
                 if (entity == null)
                     return;
 
-                entity.setFireTicks(onFire ? Integer.MAX_VALUE : 0);//TODO via NMS (make it so fire cant dissapear)?
+                entity.setFireTicks(onFire ? Integer.MAX_VALUE : 0);
             }
         };
     }
@@ -86,19 +87,21 @@ public class MobNpc extends Npc {
             runnable.cancel();
 
         /* Also despawn NameTag */
-        if (!(this instanceof PersonalisedMobNpc))
+        if (nameTag != null && !(this instanceof PersonalisedMobNpc))
             nameTag.despawn();
     }
 
     @Override
     public void update() {
         /* Also update NameTag */
-        if (!(this instanceof PersonalisedMobNpc))
+        if (nameTag != null && !(this instanceof PersonalisedMobNpc)) {
+            nameTag.setYOff(getYOff());
             nameTag.update();
+        }
     }
 
     @Override
-    protected Collection<? extends Entity> getEntities() {
+    public Collection<Entity> getEntities() {
         return Collections.singletonList(entity);
     }
 
@@ -116,28 +119,36 @@ public class MobNpc extends Npc {
     @Override
     public void setInteractAction(InteractAction interactAction) {
         super.setInteractAction(interactAction);
-        nameTag.setInteractAction(interactAction);
+
+        if (nameTag != null)
+            nameTag.setInteractAction(interactAction);
     }
 
     /* Also create NameTag */
     @Override
     public void create(Collection<? extends Player> createFor) {
         super.create(createFor);
-        nameTag.create(createFor);
+
+        if (nameTag != null)
+            nameTag.create(createFor);
     }
 
     /* Also destroy NameTag */
     @Override
     public void destroy() {
         super.destroy();
-        nameTag.destroy();
+
+        if (nameTag != null)
+            nameTag.destroy();
     }
 
     /* Also hide NameTag */
     @Override
     public void hideFor(Collection<? extends Player> players) {
         super.hideFor(players);
-        nameTag.hideFor(players);
+
+        if (nameTag != null)
+            nameTag.hideFor(players);
     }
 
     public Location getFixedLocation() {
@@ -145,17 +156,127 @@ public class MobNpc extends Npc {
         return spawnLocation;
     }
 
+    @Override
+    public void setSpawnLocation(Location spawnLocation) {
+        super.setSpawnLocation(spawnLocation.clone().add(0, getSpawnYOff(this.mob), 0));
+    }
+
     public Mob getMob() {
         return mob;
     }
 
     public void setMob(Mob mob) {
+        this.spawnLocation.add(0, getSpawnYOffPrev(this.mob), 0);
+
         this.mob = mob;
 
         if (entity != null)
             create();
+
+        if (nameTag != null) {
+            this.nameTag.setYOff(getYOff());
+            this.nameTag.update();
+        }
     }
 
+    protected double getSpawnYOffPrev(Mob previous) {
+        return getSpawnYOff(this.mob) - getSpawnYOff(previous);
+    }
+
+    protected double getSpawnYOff(Mob mob) {
+        switch (mob) {
+            case DOLPHIN:
+                return 1.25;
+        }
+        return 0;
+    }
+
+    protected double getYOff() {
+        switch (mob) {
+            case COD:
+            case DOLPHIN:
+            case ENDERMITE:
+            case SALMON:
+            case SILVERFISH:
+            case TURTLE:
+                return 0.75;
+
+            case OCELOT:
+                return 1;
+
+            case BAT:
+            case CAVE_SPIDER:
+            case CHICKEN:
+            case PARROT:
+            case PIG:
+            case PUFFERFISH:
+            case RABBIT:
+            case SHULKER:
+            case SPIDER:
+            case SQUID:
+            case TROPICAL_FISH:
+            case VEX:
+            case WOLF:
+                return 1.25;
+
+            case GUARDIAN:
+            case MAGMA_CUBE:
+            case SLIME:
+                return 1.5;
+
+            case BLAZE:
+            case COW:
+            case CREEPER:
+            case EVOKER:
+            case ILLUSIONER:
+            case MUSHROOM_COW:
+            case PHANTOM:
+            case POLAR_BEAR:
+            case SHEEP:
+            case SNOWMAN:
+            case STRAY:
+            case VILLAGER:
+            case VINDICATOR:
+            case WITCH:
+            case ZOMBIE:
+            case ZOMBIE_VILLAGER:
+                return 1.75;
+
+            case HUSK:
+            case MULE:
+            case PIG_ZOMBIE:
+            case SKELETON:
+            case DROWNED:
+                return 2;
+
+            case DONKEY:
+            case ENDERMAN:
+            case HORSE:
+            case LLAMA:
+            case SKELETON_HORSE:
+            case ZOMBIE_HORSE:
+                return 2.25;
+
+            case ELDER_GUARDIAN:
+            case WITHER:
+            case WITHER_SKELETON:
+                return 2.5;
+
+            case IRON_GOLEM:
+                return 2.75;
+
+            case ENDER_DRAGON:
+                return 3.25;
+
+            case GHAST:
+                return 5;
+
+            case GIANT:
+                return 11;
+        }
+
+        return 1.75;
+    }
 
 //    public void setSkeletonType(Skeleton.SkeletonType skeletonType) {
 //        ((Skeleton) entity).setSkeletonType(skeletonType);
@@ -256,7 +377,7 @@ public class MobNpc extends Npc {
 
     public static MobNpc getMobNpc(Entity entity) {
         for (MobNpc mobNpc : mobNpcs) {
-            if (mobNpc.getEntity() == entity) //TODO, might not work?
+            if (mobNpc.getEntity() == entity)
                 return mobNpc;
         }
         return null;

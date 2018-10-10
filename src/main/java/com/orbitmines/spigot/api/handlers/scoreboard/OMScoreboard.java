@@ -36,17 +36,22 @@ public class OMScoreboard {
 
     public void set(ScoreboardSet set) {
         if (set != null) {
-            if (this.set != null) {
-                for (int score : this.set.getScores().keySet()) {
-                    if (!set.getScores().containsKey(score))
-                        board.remove(score, this.set.getScore(score).getString());
+            if (omp.hasScoreboard() || set.canBypassSettings()) {
+                if (this.set != null) {
+                    for (int score : this.set.getScores().keySet()) {
+                        if (!set.getScores().containsKey(score))
+                            board.remove(score, this.set.getScore(score).getString());
+                    }
                 }
-            }
 
-            board.setTitle(set.getTitle().getString());
+                board.setTitle(set.getTitle().getString());
 
-            for (int score : set.getScores().keySet()) {
-                board.add(set.getScore(score).getString(), score);
+                for (int score : set.getScores().keySet()) {
+                    board.add(set.getScore(score).getString(), score);
+                }
+            } else {
+                this.board = new Board(omp.getName());
+                omp.getPlayer().getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
             }
 
             board.update();

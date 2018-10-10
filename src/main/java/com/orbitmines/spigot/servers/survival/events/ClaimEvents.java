@@ -3,6 +3,10 @@ package com.orbitmines.spigot.servers.survival.events;
 import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.api.Color;
 import com.orbitmines.spigot.api.handlers.chat.ActionBar;
+import com.orbitmines.spigot.api.nms.itemstack.ItemStackNms;
+import com.orbitmines.spigot.api.utils.ItemUtils;
+import com.orbitmines.spigot.api.utils.PlayerUtils;
+import com.orbitmines.spigot.api.utils.WorldUtils;
 import com.orbitmines.spigot.servers.survival.Survival;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalPlayer;
 import com.orbitmines.spigot.servers.survival.handlers.claim.Claim;
@@ -23,14 +27,16 @@ import org.bukkit.event.entity.*;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
+import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
+import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.vehicle.VehicleDamageEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.Dispenser;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffect;
@@ -51,6 +57,36 @@ public class ClaimEvents implements Listener {
 
     public ClaimEvents(Survival survival) {
         this.survival = survival;
+    }
+
+    @EventHandler
+    public void onCraft(CraftItemEvent event) {
+        for (ItemStack item : event.getInventory().getContents()) {
+            if (Claim.CLAIMING_TOOL.equals(item)) {
+                event.setCancelled(true);
+                SurvivalPlayer.getPlayer((Player) event.getWhoClicked()).sendMessage("Claim", Color.RED, "Je kan de " + Claim.CLAIMING_TOOL.getDisplayName() + " §7niet gebruiken om te craften.", "You can't use the " + Claim.CLAIMING_TOOL.getDisplayName() + " §7to craft.");
+                return;
+            } else if (Survival.SPAWNER_MINER.equals(item)) {
+                event.setCancelled(true);
+                SurvivalPlayer.getPlayer((Player) event.getWhoClicked()).sendMessage("Spawner Miner", Color.RED, "Je kan de " + Survival.SPAWNER_MINER.getDisplayName() + " §7niet gebruiken om te craften.", "You can't use the " + Survival.SPAWNER_MINER.getDisplayName() + " §7to craft.");
+                return;
+            } else if (Survival.PET_TICKET.equals(item)) {
+                event.setCancelled(true);
+                SurvivalPlayer.getPlayer((Player) event.getWhoClicked()).sendMessage("Pet Ticket", Color.RED, "Je kan de " + Survival.PET_TICKET.getDisplayName() + " §7niet gebruiken om te craften.", "You can't use the " + Survival.PET_TICKET.getDisplayName() + " §7to craft.");
+                return;
+            }
+        }
+    }
+
+    @EventHandler
+    public void onAnvil(PrepareAnvilEvent event) {
+        for (ItemStack item : event.getInventory().getContents()) {
+            if (!Claim.CLAIMING_TOOL.equals(item) && !Survival.SPAWNER_MINER.equals(item) && !Survival.PET_TICKET.equals(item))
+                continue;
+
+            event.setResult(null);
+            return;
+        }
     }
 
     /*
@@ -94,7 +130,7 @@ public class ClaimEvents implements Listener {
         if (event.getCause() != PlayerTeleportEvent.TeleportCause.NETHER_PORTAL)
             return;
 
-        if (!event.getTo().getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(event.getTo().getWorld()))
             return;
 
         Location to = event.getTo();
@@ -110,7 +146,7 @@ public class ClaimEvents implements Listener {
         }
 
         /* Not a new portal */
-        if (to.getBlock().getType() == Material.PORTAL)
+        if (to.getBlock().getType() == Material.NETHER_PORTAL)
             return;
 
         SurvivalPlayer omp = SurvivalPlayer.getPlayer(event.getPlayer());
@@ -123,7 +159,7 @@ public class ClaimEvents implements Listener {
 
         Claim claim = survival.getClaimHandler().getClaimAt(to, false, null);
 
-        if (claim != null && !claim.canBuild(omp, Material.PORTAL)) {
+        if (claim != null && !claim.canBuild(omp, Material.NETHER_PORTAL)) {
             event.setCancelled(true);
             new ActionBar(omp, () -> omp.lang("§c§lJe kan deze portal niet gebruiken omdat hij in een claim komt.", "§c§lYou can't use this portal as it ends up in a claim."), 60).send();
        }
@@ -137,7 +173,15 @@ public class ClaimEvents implements Listener {
 
     @EventHandler
     public void onInteract(PlayerInteractEntityEvent event) {
-        if (!event.getRightClicked().getWorld().getName().equals(survival.getWorld().getName()))
+        ItemStack item = event.getPlayer().getInventory().getItemInMainHand();
+        boolean petTicket = Survival.PET_TICKET.equals(item);
+
+        if (petTicket) {
+            event.setCancelled(true);
+            PlayerUtils.updateInventory(event.getPlayer());
+        }
+
+        if (!survival.canClaimIn(event.getRightClicked().getWorld()))
             return;
 
         SurvivalPlayer omp = SurvivalPlayer.getPlayer(event.getPlayer());
@@ -149,25 +193,84 @@ public class ClaimEvents implements Listener {
             if (tameable.isTamed() && tameable.getOwner() != null) {
                 UUID owner = tameable.getOwner().getUniqueId();
 
-                if (owner.equals(omp.getUUID()) || omp.isOpMode()) {
-                    //TODO SWITCH PET OWNERSHIP GUI
-//                    if (playerData.petGiveawayRecipient != null) {
-//                        tameable.setOwner(playerData.petGiveawayRecipient);
-//                        playerData.petGiveawayRecipient = null;
-//                        instance.sendMessage(player, TextMode.Success, Messages.PetGiveawayConfirmation);
-//                        event.setCancelled(true);
-//                    }
+                boolean isOwner = owner.equals(omp.getUUID()) || omp.isOpMode();
+
+                if (petTicket) {
+                    ItemStackNms nms = survival.getOrbitMines().getNms().customItem();
+                    String storedUuid = nms.getMetaData(item, "OrbitMines", "StoredUUID");
+
+                    if (storedUuid == null) {
+                        if (isOwner) {
+                            for (ItemStack content : omp.getInventory().getContents()) {
+                                String contentStoredUuid = nms.getMetaData(content, "OrbitMines", "StoredUUID");
+
+                                if (tameable.getUniqueId().toString().equals(contentStoredUuid)) {
+                                    new ActionBar(omp, () -> omp.lang("§c§lJe hebt al een " + Survival.PET_TICKET.getDisplayName() + " §c§lin je inventory voor dit huisdier.", "§c§lYou already have a " + Survival.PET_TICKET.getDisplayName() + " §c§lin your inventory for this pet."), 100).send();
+                                    return;
+                                }
+                            }
+
+                            ItemStack newItem = Survival.PET_TICKET.build();
+                            ItemMeta meta = newItem.getItemMeta();
+
+                            List<String> lore = new ArrayList<>();
+                            CachedPlayer ownerPlayer = CachedPlayer.getPlayer(owner);
+                            String name = ownerPlayer.getRankPrefixColor().getChatColor() + ownerPlayer.getPlayerName();
+                            lore.add(" §7Owner: " + name);
+                            lore.add(" §7Mob: §e" + com.orbitmines.spigot.api.Mob.from(tameable.getType()).getName());
+                            lore.add(" §7Name: §f" + (tameable.getCustomName() != null ? tameable.getCustomName() : "§lUnknown"));
+                            meta.setLore(lore);
+
+                            newItem.setItemMeta(meta);
+
+                            newItem = nms.setMetaData(newItem, "OrbitMines", "OwnerUUID", owner.toString());
+                            newItem = nms.setMetaData(newItem, "OrbitMines", "StoredUUID", tameable.getUniqueId().toString());
+
+                            omp.getPlayer().getInventory().setItemInMainHand(newItem);
+
+                            omp.sendMessage("Pet Ticket", Color.LIME, "Je hebt je huisdier gelinked aan deze " + Survival.PET_TICKET.getDisplayName() + "§7.", "You have linked your pet to this " + Survival.PET_TICKET.getDisplayName() + "§7.");
+                        } else {
+                            CachedPlayer ownerPlayer = CachedPlayer.getPlayer(owner);
+                            String name = ownerPlayer.getRankPrefixColor().getChatColor() + ownerPlayer.getPlayerName();
+
+                            new ActionBar(omp, () -> omp.lang("§c§lDat is van " + name + "§c§l!", "§c§lThat belongs to " + name + "§c§l!"), 60).send();
+                        }
+                    } else {
+                        if (tameable.getUniqueId().toString().equals(storedUuid)) {
+                            if (isOwner) {
+                                new ActionBar(omp, () -> omp.lang("§c§lDit dier is al van jou.", "§c§lThis animal is already yours."), 60).send();
+                            } else {
+                                if (survival.getOrbitMines().getNms().customItem().getMetaData(item, "OrbitMines", "OwnerUUID").equals(owner.toString())) {
+                                    tameable.setOwner(omp.getPlayer());
+                                    omp.getPlayer().getInventory().setItemInMainHand(null);
+                                    omp.sendMessage("Pet Ticket", Color.LIME, "Je bent nu de eigenaar van dit huisdier.", "You have successfully received ownership of this animal.");
+                                } else {
+                                    omp.getPlayer().getInventory().setItemInMainHand(null);
+                                    PlayerUtils.updateInventory(omp.getPlayer());
+
+                                    omp.sendMessage("Pet Ticket", Color.LIME, "Deze " + Survival.PET_TICKET.getDisplayName() + "§7 is verlopen.", "This " + Survival.PET_TICKET.getDisplayName() + "§7 has expired.");
+                                }
+                            }
+                        } else {
+                            if (isOwner)
+                                new ActionBar(omp, () -> omp.lang("§c§lDeze " + Survival.PET_TICKET.getDisplayName() + " §c§lis al gelinked aan een ander dier.", "§c§lThis " + Survival.PET_TICKET.getDisplayName() + " §c§lis already linked to another animal."), 100).send();
+                            else
+                                new ActionBar(omp, () -> omp.lang("§c§lDeze " + Survival.PET_TICKET.getDisplayName() + " §c§lis niet gelinked met dit dier.", "§c§lThis " + Survival.PET_TICKET.getDisplayName() + " §c§lisn't linked to this animal."), 100).send();
+                        }
+                    }
 
                     return;
                 }
 
-                CachedPlayer ownerPlayer = CachedPlayer.getPlayer(owner);
-                String name = ownerPlayer.getRankPrefixColor().getChatColor() + ownerPlayer.getPlayerName();
+                if (!isOwner) {
+                    CachedPlayer ownerPlayer = CachedPlayer.getPlayer(owner);
+                    String name = ownerPlayer.getRankPrefixColor().getChatColor() + ownerPlayer.getPlayerName();
 
-                new ActionBar(omp, () -> omp.lang("§c§lDat is van " + name + "§c§l!", "§c§lThat belongs to " + name + "§c§l!"), 60).send();
+                    new ActionBar(omp, () -> omp.lang("§c§lDat is van " + name + "§c§l!", "§c§lThat belongs to " + name + "§c§l!"), 60).send();
 
-                event.setCancelled(true);
-                return;
+                    event.setCancelled(true);
+                    return;
+                }
             }
         }
 
@@ -199,13 +302,18 @@ public class ClaimEvents implements Listener {
             }
         }
 
-        if (entity instanceof Creature && omp.getItemInMainHand() != null && omp.getItemInMainHand().getType() == Material.LEASH) {
+        if (entity instanceof Creature && omp.getItemInMainHand() != null && omp.getItemInMainHand().getType() == Material.LEAD) {
             Claim claim = survival.getClaimHandler().getClaimAt(entity.getLocation(), false, omp.getLastClaim());
 
             if (claim != null && !claim.canInteract(omp)) {
                 event.setCancelled(true);
                 return;
             }
+        }
+
+        if (petTicket) {
+            new ActionBar(omp, () -> omp.lang("§c§lJe kan dit alleen op getemde dieren gebruiken.", "§c§lYou can only use this on tamed animals."), 100).send();
+            return;
         }
     }
 
@@ -216,7 +324,7 @@ public class ClaimEvents implements Listener {
 
         Entity entity = event.getCaught();
 
-        if (!entity.getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(entity.getWorld()))
             return;
 
         if (entity instanceof ArmorStand || entity instanceof Animals) {
@@ -232,8 +340,11 @@ public class ClaimEvents implements Listener {
     }
 
     @EventHandler
-    public void onPickup(PlayerPickupItemEvent event) {
-        SurvivalPlayer omp = SurvivalPlayer.getPlayer(event.getPlayer());
+    public void onPickup(EntityPickupItemEvent event) {
+        if (!(event.getEntity() instanceof Player))
+            return;
+
+        SurvivalPlayer omp = SurvivalPlayer.getPlayer((Player) event.getEntity());
 
         Item item = event.getItem();
         List<MetadataValue> data = item.getMetadata("SURVIVAL_PROTECTED");
@@ -261,7 +372,7 @@ public class ClaimEvents implements Listener {
 
     @EventHandler
     public void onBucketEmpty(PlayerBucketEmptyEvent event) {
-        if (!event.getBlockClicked().getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(event.getBlockClicked().getWorld()))
             return;
 
         SurvivalPlayer omp = SurvivalPlayer.getPlayer(event.getPlayer());
@@ -272,7 +383,7 @@ public class ClaimEvents implements Listener {
             return;
         }
 
-        int distance = 5;
+        int distance = 3;
 
         Claim claim = survival.getClaimHandler().getClaimAt(block.getLocation(), false, omp.getLastClaim());
 
@@ -281,16 +392,14 @@ public class ClaimEvents implements Listener {
                 event.setCancelled(true);
                 return;
             }
-
-            distance = 3;
         }
 
-        if (event.getBucket() != Material.LAVA_BUCKET)
+        if (event.getBucket() != Material.LAVA_BUCKET || omp.isOpMode())
             return;
 
         for (Player player : block.getWorld().getPlayers()) {
             if (!player.equals(omp.getPlayer()) && player.getGameMode() == GameMode.SURVIVAL && block.getY() >= player.getLocation().getBlockY() - 1 && player.getLocation().distanceSquared(block.getLocation()) < distance * distance) {
-                omp.sendMessage("Survival", Color.RED, "§7Je kan een lava bucket niet zo dichtbij een speler zetten.", "§7You can't place lava buckets that close to other players.");
+                new ActionBar(omp, () -> omp.lang("§c§lJe kan een lava bucket niet zo dichtbij een speler zetten.", "§c§lYou can't place lava buckets that close to other players."), 100).send();
                 event.setCancelled(true);
                 return;
             }
@@ -299,7 +408,7 @@ public class ClaimEvents implements Listener {
 
     @EventHandler
     public void onBucketFill(PlayerBucketFillEvent event) {
-        if (!event.getBlockClicked().getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(event.getBlockClicked().getWorld()))
             return;
 
         SurvivalPlayer omp = SurvivalPlayer.getPlayer(event.getPlayer());
@@ -320,7 +429,7 @@ public class ClaimEvents implements Listener {
         if (action == Action.LEFT_CLICK_AIR || action == Action.PHYSICAL)
             return;
 
-        if (!event.getPlayer().getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(event.getPlayer().getWorld()))
             return;
 
         Block block = event.getClickedBlock();
@@ -340,7 +449,7 @@ public class ClaimEvents implements Listener {
                 if (lightLevel == 15 && adjacent.getType() == Material.FIRE) {
                     if (Region.isInRegion(omp, block.getLocation())) {
                         event.setCancelled(true);
-                        omp.getPlayer().sendBlockChange(adjacent.getLocation(), adjacent.getTypeId(), adjacent.getData());
+                        omp.getPlayer().sendBlockChange(adjacent.getLocation(), adjacent.getBlockData());
                         return;
                     }
 
@@ -349,7 +458,7 @@ public class ClaimEvents implements Listener {
 
                     if (claim != null && !claim.canBuild(omp, Material.AIR)) {
                         event.setCancelled(true);
-                        omp.getPlayer().sendBlockChange(adjacent.getLocation(), adjacent.getTypeId(), adjacent.getData());
+                        omp.getPlayer().sendBlockChange(adjacent.getLocation(), adjacent.getBlockData());
                         return;
                     }
                 }
@@ -364,7 +473,7 @@ public class ClaimEvents implements Listener {
             case CAULDRON:
             case JUKEBOX:
             case ANVIL:
-            case CAKE_BLOCK: {
+            case CAKE: {
                 Claim claim = survival.getClaimHandler().getClaimAt(block.getLocation(), false, omp.getLastClaim());
                 omp.setLastClaim(claim);
 
@@ -375,20 +484,48 @@ public class ClaimEvents implements Listener {
             }
             /* Access */
             case STONE_BUTTON:
-            case WOOD_BUTTON:
+
+            case OAK_BUTTON:
+            case ACACIA_BUTTON:
+            case BIRCH_BUTTON:
+            case JUNGLE_BUTTON:
+            case SPRUCE_BUTTON:
+            case DARK_OAK_BUTTON:
+
             case LEVER:
 
-            case WOOD_DOOR:
+            case OAK_DOOR:
             case ACACIA_DOOR:
             case BIRCH_DOOR:
             case JUNGLE_DOOR:
             case SPRUCE_DOOR:
             case DARK_OAK_DOOR:
 
-            case BED_BLOCK:
-            case TRAP_DOOR:
+            case WHITE_BED:
+            case ORANGE_BED:
+            case MAGENTA_BED:
+            case LIGHT_BLUE_BED:
+            case YELLOW_BED:
+            case LIME_BED:
+            case PINK_BED:
+            case GRAY_BED:
+            case LIGHT_GRAY_BED:
+            case CYAN_BED:
+            case PURPLE_BED:
+            case BLUE_BED:
+            case BROWN_BED:
+            case GREEN_BED:
+            case RED_BED:
+            case BLACK_BED:
 
-            case FENCE_GATE:
+            case OAK_TRAPDOOR:
+            case ACACIA_TRAPDOOR:
+            case BIRCH_TRAPDOOR:
+            case JUNGLE_TRAPDOOR:
+            case SPRUCE_TRAPDOOR:
+            case DARK_OAK_TRAPDOOR:
+
+            case OAK_FENCE_GATE:
             case ACACIA_FENCE_GATE:
             case BIRCH_FENCE_GATE:
             case JUNGLE_FENCE_GATE:
@@ -398,20 +535,17 @@ public class ClaimEvents implements Listener {
                 Claim claim = survival.getClaimHandler().getClaimAt(block.getLocation(), false, omp.getLastClaim());
                 omp.setLastClaim(claim);
 
-                if (claim != null && !claim.canAccess(omp))
+                if (claim != null && !claim.canAccess(omp, true))
                     event.setCancelled(true);
 
                 return;
             }
             /* Build */
             case NOTE_BLOCK:
-            case DIODE_BLOCK_ON:
-            case DIODE_BLOCK_OFF:
+            case REPEATER:
             case DRAGON_EGG:
             case DAYLIGHT_DETECTOR:
-            case DAYLIGHT_DETECTOR_INVERTED:
-            case REDSTONE_COMPARATOR_ON:
-            case REDSTONE_COMPARATOR_OFF:
+            case COMPARATOR:
             case FLOWER_POT: {
 
                 Claim claim = survival.getClaimHandler().getClaimAt(block.getLocation(), false, omp.getLastClaim());
@@ -432,22 +566,39 @@ public class ClaimEvents implements Listener {
 
         switch (item.getType()) {
             /* Build */
-            case INK_SACK:
+            case INK_SAC:
+            case ROSE_RED:
+            case CACTUS_GREEN:
+            case COCOA_BEANS:
+            case LAPIS_LAZULI:
+            case PURPLE_DYE:
+            case CYAN_DYE:
+            case LIGHT_GRAY_DYE:
+            case GRAY_DYE:
+            case PINK_DYE:
+            case LIME_DYE:
+            case DANDELION_YELLOW:
+            case LIGHT_BLUE_DYE:
+            case MAGENTA_DYE:
+            case ORANGE_DYE:
+            case BONE_MEAL:
+
             case ARMOR_STAND:
-            case MONSTER_EGG:
+
             case END_CRYSTAL:
 
-            case BOAT:
-            case BOAT_ACACIA:
-            case BOAT_BIRCH:
-            case BOAT_DARK_OAK:
-            case BOAT_JUNGLE:
-            case BOAT_SPRUCE:
+            case OAK_BOAT:
+            case ACACIA_BOAT:
+            case BIRCH_BOAT:
+            case DARK_OAK_BOAT:
+            case JUNGLE_BOAT:
+            case SPRUCE_BOAT:
 
             case MINECART:
-            case POWERED_MINECART:
-            case STORAGE_MINECART:
-            case EXPLOSIVE_MINECART:
+            case CHEST_MINECART:
+            case COMMAND_BLOCK_MINECART:
+            case FURNACE_MINECART:
+            case TNT_MINECART:
             case HOPPER_MINECART: {
                 Claim claim = survival.getClaimHandler().getClaimAt(block.getLocation(), false, omp.getLastClaim());
                 omp.setLastClaim(claim);
@@ -455,6 +606,26 @@ public class ClaimEvents implements Listener {
                 if (claim != null && !claim.canBuild(omp, item.getType()))
                     event.setCancelled(true);
 
+                return;
+            }
+        }
+
+        if (ItemUtils.EGGS.contains(item.getType())) {
+            Claim claim = survival.getClaimHandler().getClaimAt(block.getLocation(), false, omp.getLastClaim());
+            omp.setLastClaim(claim);
+
+            if (claim != null && !claim.canBuild(omp, item.getType()))
+                event.setCancelled(true);
+        } else if (item.getType() == Material.FLINT_AND_STEEL) {
+            if (omp.isOpMode())
+                return;
+
+            for (Player player : WorldUtils.getNearbyPlayers(event.getClickedBlock().getRelative(BlockFace.UP).getLocation().add(0.5, 0, 0.5), 1.5)) {
+                if (player == event.getPlayer())
+                    continue;
+
+                new ActionBar(omp, () -> omp.lang("§c§lJe kan een flint and steel niet zo dichtbij een speler gebruiken.", "§c§lYou can't use a flint and steel that close to other players."), 100).send();
+                event.setCancelled(true);
                 return;
             }
         }
@@ -472,7 +643,7 @@ public class ClaimEvents implements Listener {
     public void onBreak(BlockBreakEvent event) {
         Player p = event.getPlayer();
 
-        if (!p.getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(p.getWorld()))
             return;
 
         Block block = event.getBlock();
@@ -486,7 +657,7 @@ public class ClaimEvents implements Listener {
     public void onPlace(BlockPlaceEvent event) {
         Player p = event.getPlayer();
 
-        if (!p.getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(p.getWorld()))
             return;
 
         Block block = event.getBlock();
@@ -502,7 +673,7 @@ public class ClaimEvents implements Listener {
     public void onMultiPlace(BlockMultiPlaceEvent event) {
         Player p = event.getPlayer();
 
-        if (!p.getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(p.getWorld()))
             return;
 
         SurvivalPlayer omp = SurvivalPlayer.getPlayer(p);
@@ -522,7 +693,7 @@ public class ClaimEvents implements Listener {
         if (event.getDirection() == BlockFace.DOWN)
             return;
 
-        if (!event.getBlock().getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(event.getBlock().getWorld()))
             return;
 
         Block piston = event.getBlock();
@@ -600,7 +771,7 @@ public class ClaimEvents implements Listener {
         if (event.getDirection() == BlockFace.UP)
             return;
 
-        if (!event.getBlock().getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(event.getBlock().getWorld()))
             return;
 
         Block piston = event.getBlock();
@@ -614,7 +785,7 @@ public class ClaimEvents implements Listener {
         for (Block block : event.getBlocks()) {
             if (Region.isInRegion(block.getLocation())) {
                 event.setCancelled(true);
-                destroyPiston(piston, Material.PISTON_STICKY_BASE);
+                destroyPiston(piston, Material.STICKY_PISTON);
                 return;
             }
 
@@ -626,7 +797,7 @@ public class ClaimEvents implements Listener {
 
             if (!nextOwnerName.equals(pistomOwner)) {
                 event.setCancelled(true);
-                destroyPiston(piston, Material.PISTON_STICKY_BASE);
+                destroyPiston(piston, Material.PISTON);
                 return;
             }
         }
@@ -643,7 +814,7 @@ public class ClaimEvents implements Listener {
         if (event.getSource().getType() != Material.FIRE)
             return;
 
-        if (!event.getBlock().getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(event.getBlock().getWorld()))
             return;
 
         if (Region.isInRegion(event.getBlock().getLocation()) || survival.getClaimHandler().getClaimAt(event.getBlock().getLocation(), false, null) != null)
@@ -652,7 +823,7 @@ public class ClaimEvents implements Listener {
 
     @EventHandler
     public void onBurn(BlockBurnEvent event) {
-        if (!event.getBlock().getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(event.getBlock().getWorld()))
             return;
 
         if (Region.isInRegion(event.getBlock().getLocation()) || survival.getClaimHandler().getClaimAt(event.getBlock().getLocation(), false, null) != null)
@@ -666,7 +837,7 @@ public class ClaimEvents implements Listener {
         if (event.getFace() == BlockFace.DOWN)
             return;
 
-        if (!event.getBlock().getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(event.getBlock().getWorld()))
             return;
 
         Block to = event.getToBlock();
@@ -692,11 +863,11 @@ public class ClaimEvents implements Listener {
 
     @EventHandler
     public void onDispense(BlockDispenseEvent event) {
-        if (!event.getBlock().getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(event.getBlock().getWorld()))
             return;
 
         Block from = event.getBlock();
-        Dispenser dispenser = new Dispenser(Material.DISPENSER, from.getData());
+        org.bukkit.block.data.type.Dispenser dispenser = (org.bukkit.block.data.type.Dispenser) from.getBlockData();
 
         Block to = from.getRelative(dispenser.getFacing());
 
@@ -719,7 +890,7 @@ public class ClaimEvents implements Listener {
 
     @EventHandler
     public void onTreeGrow(StructureGrowEvent event) {
-        if (!event.getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(event.getWorld()))
             return;
 
         Location root = event.getLocation();
@@ -798,7 +969,7 @@ public class ClaimEvents implements Listener {
 
     @EventHandler
     public void onHangingBreak(HangingBreakEvent e) {
-        if (!e.getEntity().getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(e.getEntity().getWorld()))
             return;
 
         if (e.getCause() == HangingBreakEvent.RemoveCause.EXPLOSION) {
@@ -826,7 +997,7 @@ public class ClaimEvents implements Listener {
 
     @EventHandler
     public void onHangingPlace(HangingPlaceEvent event) {
-        if (!event.getEntity().getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(event.getEntity().getWorld()))
             return;
 
         SurvivalPlayer omp = SurvivalPlayer.getPlayer(event.getPlayer());
@@ -874,7 +1045,7 @@ public class ClaimEvents implements Listener {
             }
         }
 
-        if (!e.getEntity().getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(e.getEntity().getWorld()))
             return;
 
         if (!(e instanceof EntityDamageByEntityEvent))
@@ -911,7 +1082,7 @@ public class ClaimEvents implements Listener {
 
                 if (claim != null) {
                     if (omp == null) {
-                        if (event.getEntity() instanceof Villager && damager != null && damager instanceof Zombie)
+                        if (event.getEntity() instanceof Villager && damager instanceof Zombie)
                             return;
 
                         event.setCancelled(true);
@@ -973,7 +1144,7 @@ public class ClaimEvents implements Listener {
 
                     event.setCancelled(true);
 
-                    if (damager != null && damager instanceof Projectile)
+                    if (damager instanceof Projectile)
                         damager.remove();
 
                     return;
@@ -1018,7 +1189,7 @@ public class ClaimEvents implements Listener {
         if (event.getVehicle() == null)
             return;
 
-        if (!event.getVehicle().getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(event.getVehicle().getWorld()))
             return;
 
         Player attacker = null;
@@ -1115,7 +1286,7 @@ public class ClaimEvents implements Listener {
 
     @EventHandler
     public void onEntityBlockForm(EntityBlockFormEvent event) {
-        if (!event.getBlock().getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(event.getBlock().getWorld()))
             return;
 
         if (!(event.getEntity() instanceof Player))
@@ -1129,7 +1300,7 @@ public class ClaimEvents implements Listener {
 
     @EventHandler
     public void onEntityChangeBlock(EntityChangeBlockEvent event) {
-        if (!event.getBlock().getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(event.getBlock().getWorld()))
             return;
 
         Block block = event.getBlock();
@@ -1140,10 +1311,10 @@ public class ClaimEvents implements Listener {
             if (Region.isInRegion(block.getLocation()) || survival.getClaimHandler().getClaimAt(block.getLocation(), false, null) != null)
                 event.setCancelled(true);
 
-        } else if (event.getTo() == Material.DIRT && block.getType() == Material.SOIL) {
+        } else if (event.getTo() == Material.DIRT && block.getType() == Material.FARMLAND) {
 
             /* Trampled crops */
-            if (event.getEntity() instanceof Player) {
+            if (!(event.getEntity() instanceof Player)) {
                 if (Region.isInRegion(block.getLocation()) || survival.getClaimHandler().getClaimAt(block.getLocation(), false, null) != null)
                     event.setCancelled(true);
             } else {
@@ -1174,7 +1345,7 @@ public class ClaimEvents implements Listener {
                     if (Region.isInRegion(next) || !claim.inClaim(start, false, false)) {
                         event.setCancelled(true);
 
-                        ItemStack itemStack = new ItemStack(entity.getMaterial(), 1, entity.getBlockData());
+                        ItemStack itemStack = new ItemStack(entity.getBlockData().getMaterial(), 1);
                         Item item = block.getWorld().dropItem(entity.getLocation(), itemStack);
                         item.setVelocity(new Vector());
                     }
@@ -1201,10 +1372,10 @@ public class ClaimEvents implements Listener {
 
     @EventHandler
     public void onInteract(EntityInteractEvent event) {
-        if (event.getBlock().getType() != Material.SOIL)
+        if (event.getBlock().getType() != Material.FARMLAND)
             return;
 
-        if (!event.getBlock().getWorld().getName().equals(survival.getWorld().getName()))
+        if (!survival.canClaimIn(event.getBlock().getWorld()))
             return;
 
         for (Entity passenger : event.getEntity().getPassengers()) {
@@ -1222,20 +1393,38 @@ public class ClaimEvents implements Listener {
 
     @EventHandler
     public void onExplode(EntityExplodeEvent event) {
-        handleExplosion(event.getLocation(), event.blockList());
+        handleExplosion(/*event.getEntity(), */event.getLocation(), event.blockList());
     }
 
     @EventHandler
     public void onExplode(BlockExplodeEvent event) {
-        handleExplosion(event.getBlock().getLocation(), event.blockList());
+        handleExplosion(/*null, */event.getBlock().getLocation(), event.blockList());
     }
 
-    private void handleExplosion(Location location, List<Block> blocks) {
-        if (!location.getWorld().getName().equals(survival.getWorld().getName()))
+//    @EventHandler
+//    public void onIgnite(BlockIgniteEvent event) {
+//        if (!(event.getIgnitingEntity() instanceof TNTPrimed))
+//            return;
+//
+//        if (event.getPlayer() != null) {
+//            SurvivalPlayer omp = SurvivalPlayer.getPlayer(event.getPlayer());
+//            tnt.put((TNTPrimed) event.getIgnitingEntity(), omp);
+//        } else if (toIgnite.containsKey(event.getIgnitingBlock())) {
+//            tnt.put((TNTPrimed) event.getIgnitingEntity(), toIgnite.get(event.getIgnitingBlock()));
+//            toIgnite.remove(event.getIgnitingBlock());
+//        }
+//    }
+
+//    private Map<TNTPrimed, SurvivalPlayer> tnt = new HashMap<>();
+//    private Map<Block, SurvivalPlayer> toIgnite = new HashMap<>();
+
+    private void handleExplosion(/*Entity en, */Location location, List<Block> blocks) {
+        if (!survival.canClaimIn(location.getWorld()))
             return;
 
         Claim cached = null;
 
+        loop:
         for (Block block : new ArrayList<>(blocks)) {
             if (block.getType() == Material.AIR)
                 continue;
@@ -1245,12 +1434,43 @@ public class ClaimEvents implements Listener {
                 continue;
             }
 
-            Claim claim = survival.getClaimHandler().getClaimAt(block.getLocation(), false, cached);
+            Claim claim = survival.getClaimHandler().getClaimAt(block.getLocation(), true, cached);
 
             if (claim != null) {
                 cached = claim;
+
+//                if (en != null) {
+//                    if (en instanceof Creeper) {
+//                        for (Entity entity : en.getNearbyEntities(10, 10, 10)) {
+//                            if (!(entity instanceof Player))
+//                                continue;
+//
+//                            Player player = (Player) entity;
+//
+//                            if (claim.getPermission(player.getUniqueId()) != Claim.Permission.BUILD) {
+//                                blocks.remove(block);
+//                                continue loop;
+//                            }
+//                        }
+//
+//                        continue;
+//                    } else if (en instanceof TNTPrimed && this.tnt.containsKey(en)) {
+//                        if (claim.canBuild(this.tnt.get(en), Material.TNT)) {
+//                            blocks.remove(block);
+//                        } else {
+//                            if (block.getType() == Material.TNT)
+//                                this.toIgnite.put(block, this.tnt.get(en));
+//
+//                            continue;
+//                        }
+//                    }
+//                }
+
                 blocks.remove(block);
             }
         }
+
+//        if (en instanceof TNTPrimed)
+//            tnt.remove(en);
     }
 }

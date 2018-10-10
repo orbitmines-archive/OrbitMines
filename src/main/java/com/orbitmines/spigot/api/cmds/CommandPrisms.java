@@ -5,26 +5,15 @@ package com.orbitmines.spigot.api.cmds;
  */
 
 import com.orbitmines.api.Color;
+import com.orbitmines.api.utils.CommandLibrary;
 import com.orbitmines.api.utils.NumberUtils;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.cmd.Command;
 
 public class CommandPrisms extends Command {
 
-    private String[] alias = { "/prisms" };
-
     public CommandPrisms() {
-        super(null);
-    }
-
-    @Override
-    public String[] getAlias() {
-        return alias;
-    }
-
-    @Override
-    public String getHelp(OMPlayer omp) {
-        return null;
+        super(CommandLibrary.PRISMS);
     }
 
     @Override

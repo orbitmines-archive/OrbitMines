@@ -3,26 +3,27 @@ package com.orbitmines.api.punishment.offences;
  * OrbitMines - @author Fadi Shawki - 16-6-2018
  */
 
+import com.orbitmines.api.Message;
 import com.orbitmines.api.punishment.Punishment;
 
 public enum Offence {
 
-    GAME_PLAY("Game Play", Punishment.Type.BAN),
-    CHAT("Chat", Punishment.Type.MUTE),
-    HACKING("Hacking", Punishment.Type.BAN),
-    SKIN("Skin", Punishment.Type.BAN),
-    NAME("Name", Punishment.Type.BAN),
-    NETWORK_BAN("Network Ban", Punishment.Type.BAN);
+    PUNISHMENT(new Message("Punishment"), Punishment.Type.BAN),
+    CHAT(new Message("Chat Mute"), Punishment.Type.MUTE),
+    HACKING(new Message("Hacken", "Hacking"), Punishment.Type.BAN),
+    SKIN(new Message("Skin"), Punishment.Type.BAN),
+    NAME(new Message("Name"), Punishment.Type.BAN),
+    NETWORK_BAN(new Message("Permanente Ban", "Permanent Ban"), Punishment.Type.BAN);
 
-    private final String name;
+    private final Message name;
     private final Punishment.Type type;
 
-    Offence(String name, Punishment.Type type) {
+    Offence(Message name, Punishment.Type type) {
         this.name = name;
         this.type = type;
     }
 
-    public String getName() {
+    public Message getName() {
         return name;
     }
 

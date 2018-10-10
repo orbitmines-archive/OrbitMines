@@ -2,7 +2,7 @@ package com.orbitmines.bungeecord.commands.moderator;
 
 import com.orbitmines.api.Color;
 import com.orbitmines.api.Message;
-import com.orbitmines.api.StaffRank;
+import com.orbitmines.api.utils.CommandLibrary;
 import com.orbitmines.bungeecord.OrbitMinesBungee;
 import com.orbitmines.bungeecord.handlers.BungeePlayer;
 import com.orbitmines.bungeecord.handlers.chat.ComponentMessage;
@@ -19,22 +19,10 @@ public class CommandMotd extends StaffCommand {
 
     private OrbitMinesBungee bungee;
 
-    private String[] alias = { "/motd" };
-
     public CommandMotd() {
-        super(StaffRank.MODERATOR);
+        super(CommandLibrary.MOTD);
 
         bungee = OrbitMinesBungee.getBungee();
-    }
-
-    @Override
-    public String[] getAlias() {
-        return alias;
-    }
-
-    @Override
-    public String getHelp(BungeePlayer omp) {
-        return "view|1|2";
     }
 
     @Override

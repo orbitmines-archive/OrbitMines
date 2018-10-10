@@ -1,6 +1,6 @@
 package net.firefang.ip2c;
 
-import com.orbitmines.spigot.OrbitMines;
+import com.orbitmines.bungeecord.OrbitMinesBungee;
 import net.firefang.ip2c.input.MemoryMappedRandoeAccessFile;
 import net.firefang.ip2c.input.RandomAccessBuffer;
 import net.firefang.ip2c.input.RandomAccessFile2;
@@ -29,7 +29,7 @@ public class IP2Country {
     }
 
     public IP2Country(int n) throws IOException {
-        this(OrbitMines.getInstance().getResourceFolder() + "/ip/ip-to-country.bin", n);
+        this(OrbitMinesBungee.getBungee().getResourceFolder() + "/ip/ip-to-country.bin", n);
     }
 
     public IP2Country(String string, int n) throws IOException {
@@ -52,7 +52,7 @@ public class IP2Country {
             throw new IOException("Invalid file signature");
         }
         if (this.readInt() != 2) {
-            throw new IOException("Invalid format version");
+            throw new IOException("Invalid toMinecraft version");
         }
         this.m_firstTableOffset = this.readInt();
         this.m_numRangesFirstTable = this.readInt();
@@ -398,7 +398,7 @@ public class IP2Country {
         System.err.println();
         System.err.println("-= Resolve an ip address =-");
         System.err.println("java -jar ip2c.jar -r ip-address");
-        System.err.println("Output format:");
+        System.err.println("Output toMinecraft:");
         System.err.println("if not found:");
         System.err.println("UNKNOWN");
         System.err.println();

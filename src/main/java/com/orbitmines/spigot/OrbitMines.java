@@ -12,10 +12,14 @@ import com.orbitmines.api.utils.DateUtils;
 import com.orbitmines.discordbot.utils.ColorUtils;
 import com.orbitmines.spigot.api._2fa._2FA;
 import com.orbitmines.spigot.api.cmds.*;
+import com.orbitmines.spigot.api.cmds.moderator.*;
+import com.orbitmines.spigot.api.cmds.vip.CommandAfk;
+import com.orbitmines.spigot.api.cmds.vip.CommandNick;
 import com.orbitmines.spigot.api.datapoints.DataPointHandler;
 import com.orbitmines.spigot.api.events.*;
 import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.spigot.api.handlers.ConfigHandler;
+import com.orbitmines.spigot.api.handlers.NewsHologram;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.OrbitMinesMap;
 import com.orbitmines.spigot.api.handlers.leaderboard.LeaderBoard;
@@ -31,6 +35,7 @@ import com.orbitmines.spigot.runnables.NPCRunnable;
 import com.orbitmines.spigot.runnables.ScoreboardRunnable;
 import com.orbitmines.spigot.runnables.ServerSelectorRunnable;
 import net.dv8tion.jda.core.EmbedBuilder;
+import org.bukkit.GameRule;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -53,6 +58,8 @@ public class OrbitMines extends JavaPlugin {
     private _2FA _2fa;
 
     private Nms nms;
+
+    private PatchNotes patchNotes;
 
     private String resourceFolder;
 
@@ -181,9 +188,9 @@ public class OrbitMines extends JavaPlugin {
         lobby = OrbitMinesMap.getLobby(server);
 
         World lobbyWorld = worldLoader.fromZip(lobby.getWorldName(), true, lobby.getWorldGenerator());
-        lobbyWorld.setGameRuleValue("doDaylightCycle", "false");
-        lobbyWorld.setGameRuleValue("doMobSpawning", "false");
-        lobbyWorld.setGameRuleValue("doFireTick", "false");
+        lobbyWorld.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+        lobbyWorld.setGameRule(GameRule.DO_MOB_SPAWNING, false);
+        lobbyWorld.setGameRule(GameRule.DO_FIRE_TICK, false);
         lobbyWorld.setTime(18000);
 
         lobby.setWorld(lobbyWorld);
@@ -194,13 +201,14 @@ public class OrbitMines extends JavaPlugin {
         registerEvents(
                 new AfkEvents(),
                 new ClickEvent(),
-                new CommandPreprocessEvent(),
+                new CommandPreprocessEvent(this),
                 new FreezeEvent(),
                 new ItemHandlerEvents(),
                 new JoinQuitEvents(),
                 new NpcEvents(),
                 new PlayerChatEvent(),
                 new PlayerHeadOnMobEvent(),
+                new SignLogEvent(this),
                 new SpawnLocationEvent(),
                 new TeleportingMoveEvent(),
                 new WorldAdvancementsFix_1_12()
@@ -235,6 +243,13 @@ public class OrbitMines extends JavaPlugin {
 
         /* Discord Message Listener Message */
         serverHandler.getDiscord().getJDA(serverHandler.getToken()).addEventListener(new DiscordMessageListener(this));
+
+        /* News Holograms */
+        NewsHologram.setup();
+
+        /* Setup Patch Notes */
+        patchNotes = new PatchNotes(this);
+        patchNotes.build();
     }
 
     @Override
@@ -272,6 +287,10 @@ public class OrbitMines extends JavaPlugin {
         this.nms = nms;
     }
 
+    public PatchNotes getPatchNotes() {
+        return patchNotes;
+    }
+
     public String getResourceFolder() {
         return resourceFolder;
     }
@@ -301,7 +320,8 @@ public class OrbitMines extends JavaPlugin {
     }
 
     private void registerCommands() {
-        new CommandHelp(this);
+        new CommandRules(this);
+        new CommandPatchNotes(this);
 
         new CommandServers(this);
 
@@ -309,11 +329,22 @@ public class OrbitMines extends JavaPlugin {
 
         new CommandLoot();
         new CommandFriends();
+        new CommandDiscordServer();
         new CommandStats();
         new CommandSettings();
 
         new CommandPrisms();
         new CommandSolars();
+
+        new CommandAfk();
+        new CommandNick();
+
+        new CommandOpMode();
+        new CommandPunish();
+        new CommandHologram();
+        new CommandInvSee();
+        new CommandTeleport();
+        new CommandFly();
     }
 
     private void registerEvents(Listener... listeners) {

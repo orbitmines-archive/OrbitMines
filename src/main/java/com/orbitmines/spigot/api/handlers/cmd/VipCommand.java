@@ -1,8 +1,8 @@
 package com.orbitmines.spigot.api.handlers.cmd;
 
 import com.orbitmines.api.Message;
-import com.orbitmines.api.Server;
 import com.orbitmines.api.VipRank;
+import com.orbitmines.api.utils.CommandLibrary;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 
 /*
@@ -10,25 +10,24 @@ import com.orbitmines.spigot.api.handlers.OMPlayer;
 */
 public abstract class VipCommand extends Command {
 
-    private final VipRank vipRank;
+    public VipCommand(CommandLibrary library) {
+        super(library);
 
-    public VipCommand(Server server, VipRank vipRank) {
-        super(server);
-        
-        this.vipRank = vipRank;
+        if (library.getVipRank() == null)
+            throw new IllegalStateException();
     }
 
     public abstract void onDispatch(OMPlayer omp, String[] a);
 
     @Override
     public void dispatch(OMPlayer omp, String[] a) {
-        if (omp.isEligible(vipRank))
+        if (omp.isEligible(getVipRank()))
             onDispatch(omp, a);
         else
-            omp.sendMessage(Message.REQUIRE_RANK(vipRank));
+            omp.sendMessage(Message.REQUIRE_RANK(getVipRank()));
     }
 
     public VipRank getVipRank() {
-        return vipRank;
+        return library.getVipRank();
     }
 }

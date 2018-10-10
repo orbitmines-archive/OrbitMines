@@ -1,6 +1,7 @@
 package com.orbitmines.spigot.api.handlers.npc;
 
 import com.orbitmines.spigot.api.handlers.scoreboard.ScoreboardString;
+import com.orbitmines.spigot.api.utils.Serializer;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
@@ -19,13 +20,13 @@ public class Hologram extends Npc {
 
     private static ArrayList<Hologram> holograms = new ArrayList<>();
 
-    private ArrayList<Line> lines;
+    protected ArrayList<Line> lines;
 
-    private double yOff;
-    private Face face;
+    protected double yOff;
+    protected Face face;
 
     public Hologram(Location spawnLocation) {
-        this(spawnLocation, 1.75, Face.DOWN);//TODO IS THAT A THE RIGHT ADDITION? 1.75
+        this(spawnLocation, 1.75, Face.DOWN);
     }
 
     public Hologram(Location spawnLocation, double yOff, Face face) {
@@ -59,7 +60,7 @@ public class Hologram extends Npc {
     }
 
     @Override
-    protected Collection<? extends Entity> getEntities() {
+    public Collection<Entity> getEntities() {
         List<Entity> armorStands = new ArrayList<>();
         for (Line line : lines) {
             armorStands.add(line.armorStand);
@@ -134,6 +135,12 @@ public class Hologram extends Npc {
         }
     }
 
+    public void removeAllLines() {
+        for (Line line : lines) {
+            removeLine(getIndexOf(line));
+        }
+    }
+
     public void hideLine(int index) throws IndexOutOfBoundsException {
         Line l = getLine(index);
         l.setHidden(true);
@@ -171,6 +178,14 @@ public class Hologram extends Npc {
         }
     }
 
+    public List<String> getLines() {
+        List<String> lines = new ArrayList<>();
+        for (Line line : this.lines) {
+            lines.add(line.line.getString());
+        }
+        return lines;
+    }
+
     public double getYOff() {
         return yOff;
     }
@@ -187,6 +202,16 @@ public class Hologram extends Npc {
         this.face = face;
     }
 
+    public String serialize() {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Line line : lines) {
+            stringBuilder.append(line.getLine().getString().replaceAll("§", "&"));
+            stringBuilder.append(";");
+        }
+
+        return Serializer.serialize(spawnLocation.clone().subtract(0, yOff, 0)) + "~" + stringBuilder.toString().substring(0, stringBuilder.length() -1);
+    }
+
     public static ArrayList<Hologram> getHolograms() {
         return holograms;
     }
@@ -194,14 +219,14 @@ public class Hologram extends Npc {
     public static Hologram getHologram(Entity entity) {
         for (Hologram hologram : holograms) {
             for (Line line : hologram.lines) {
-                if (line.getArmorStand() != null && line.getArmorStand() == entity) //TODO, might not work?
+                if (line.getArmorStand() != null && line.getArmorStand() == entity)
                     return hologram;
             }
         }
         return null;
     }
 
-    private class Line {
+    protected class Line {
 
         private ArmorStand armorStand;
         private ScoreboardString line;

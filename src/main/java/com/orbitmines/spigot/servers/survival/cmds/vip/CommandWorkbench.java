@@ -4,27 +4,14 @@ package com.orbitmines.spigot.servers.survival.cmds.vip;
  * OrbitMines - @author Fadi Shawki - 2018
  */
 
-import com.orbitmines.api.Server;
-import com.orbitmines.api.VipRank;
+import com.orbitmines.api.utils.CommandLibrary;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.cmd.VipCommand;
 
 public class CommandWorkbench extends VipCommand {
 
-    private String[] alias = { "/workbench" };
-
     public CommandWorkbench() {
-        super(Server.SURVIVAL, VipRank.DIAMOND);
-    }
-
-    @Override
-    public String[] getAlias() {
-        return alias;
-    }
-
-    @Override
-    public String getHelp(OMPlayer omp) {
-        return null;
+        super(CommandLibrary.SURVIVAL_WORKBENCH);
     }
 
     @Override

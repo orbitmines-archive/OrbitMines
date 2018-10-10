@@ -11,14 +11,16 @@ import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.data.FriendsData;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.api.handlers.itembuilders.PlayerSkullBuilder;
+import com.orbitmines.spigot.servers.hub.gui.discordgroup.DiscordGroupManageGUI;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class FriendRequestGUI extends GUI {
+public class FriendRequestGUI extends GUI implements FriendGUIInstance {
 
     private final int REQUESTS_PER_PAGE = 36;
     private final int NEW_PER_PAGE = REQUESTS_PER_PAGE / 9;
@@ -42,10 +44,10 @@ public class FriendRequestGUI extends GUI {
         List<UUID> sentRequests = data.getSentRequests();
 
         {
-            add(0, 4, new ItemInstance(new PlayerSkullBuilder(() -> omp.getName(true), 1, "§b§lBack to Friends").build()) {
+            add(0, 4, new ItemInstance(new PlayerSkullBuilder(() -> omp.getName(true), 1, omp.lang("§b§l« Terug naar Vrienden", "§b§l« Back to Friends")).build()) {
                 @Override
                 public void onClick(InventoryClickEvent event, OMPlayer omp) {
-                    new FriendGUI().open(omp);
+                    new DiscordGroupManageGUI().open(omp);
                 }
             });
         }
@@ -59,7 +61,7 @@ public class FriendRequestGUI extends GUI {
                 boolean sent = sentRequests.contains(uuid);
 
                 CachedPlayer friend = CachedPlayer.getPlayer(uuid);
-                ItemBuilder item = new ItemBuilder(sent ? Material.EMPTY_MAP : Material.PAPER, 1, 0, friend.getRankPrefixColor().getChatColor() + friend.getPlayerName());
+                ItemBuilder item = new ItemBuilder(sent ? Material.MAP : Material.PAPER, 1, friend.getRankPrefixColor().getChatColor() + friend.getPlayerName());
                 List<String> lore = item.getLore();
 
                 if (sent) {
@@ -98,26 +100,28 @@ public class FriendRequestGUI extends GUI {
         }
 
         if (page != 0)
-            add(45, new ItemInstance(new ItemBuilder(Material.SIGN, 1, 0, omp.lang("« §7Meer Vriendschapsverzoeken", "« §7More Friend Requests")).build()) {
+            add(5, 0, new ItemInstance(new PlayerSkullBuilder(() -> "Light Blue Arrow Left", 1, omp.lang("§7« Meer Vriendschapsverzoeken", "§7« More Friend Requests")).setTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTM5NzExMjRiZTg5YWM3ZGM5YzkyOWZlOWI2ZWZhN2EwN2NlMzdjZTFkYTJkZjY5MWJmODY2MzQ2NzQ3N2M3In19fQ==").build()) {
                 @Override
                 public void onClick(InventoryClickEvent event, OMPlayer omp) {
                     page--;
+                    omp.playSound(Sound.UI_BUTTON_CLICK);
                     reopen(omp);
                 }
             });
         else
-            inventory.setItem(45, null);
+            clear(5, 0);
 
         if (canHaveMorePages(invites.size() + sentRequests.size()))
-            add(53, new ItemInstance(new ItemBuilder(Material.SIGN, 1, 0, omp.lang("§7Meer Vriendschapsverzoeken »", "§7More Friend Requests »")).build()) {
+            add(5, 8, new ItemInstance(new PlayerSkullBuilder(() -> "Light Blue Arrow Right", 1, omp.lang("§7Meer Vriendschapsverzoeken »", "§7More Friend Requests »")).setTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjY3MWM0YzA0MzM3YzM4YTVjN2YzMWE1Yzc1MWY5OTFlOTZjMDNkZjczMGNkYmVlOTkzMjA2NTVjMTlkIn19fQ==").build()) {
                 @Override
                 public void onClick(InventoryClickEvent event, OMPlayer omp) {
                     page++;
+                    omp.playSound(Sound.UI_BUTTON_CLICK);
                     reopen(omp);
                 }
             });
         else
-            inventory.setItem(53, null);
+            clear(5, 8);
 
         return true;
     }
@@ -143,7 +147,7 @@ public class FriendRequestGUI extends GUI {
                         check = (j + 1) / 9;
 
                     if (check != -1) {
-                        int next = REQUESTS_PER_PAGE + check + (NEW_PER_PAGE * i);
+                        int next = REQUESTS_PER_PAGE + check + (NEW_PER_PAGE * i) - 1;
                         pageFriends[j] = friends.size() > next ? friends.get(next) : null;
                     } else {
                         pageFriends[j] = pageFriends[j + 1];

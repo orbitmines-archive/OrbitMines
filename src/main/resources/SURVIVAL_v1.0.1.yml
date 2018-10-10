@@ -1,0 +1,45 @@
+v1.0.1:
+  Server: SURVIVAL
+  Name: 'Commands, Claim Changes & Bug Fixes'
+  Description: 'We''ve fixed a lot of bugs that occured over the past few days and added a few new features.'
+  Date: '2018-07-25'
+  Features:
+    'SPIGOT':
+      Color: ORANGE
+      Description: 'We have updated the a new version of Spigot 1.13 and the spigot-related issues should be resolved.'
+    'LOBBY FOOD':
+      Color: LIME
+      Description: 'Fixed: You weren''t able to consume food in the Lobby.'
+    'CUSTOM ANVIL':
+      Color: SILVER
+      Description: 'Fixed: Using a custom anvil would cost the player experience. Ex: Trusting players.'
+    'TELEPORT ISSUE':
+      Color: TEAL
+      Description: 'Fixed: /tphere would sometimes teleport you instead of the player you want to teleport.'
+    'MAX HOMES':
+      Color: ORANGE
+      Description: 'Fixed: Setting a home that already exists when having your maximum amount of homes would deny you to replace your home.'
+    'TRUSTING':
+      Color: LIME
+      Description: 'Fixed: Trusting players didn''t work.'
+    'SMALL BUGS':
+      Color: LIME
+      Description: 'Fixed: Several other small bugs were fixed.'
+    'TNT':
+      Color: RED
+      Description: 'You can now explode TNT within your own claim.'
+    'CREEPERS':
+      Color: RED
+      Description: 'Creepers will now explode in claims if the player has BUILDER access to the claim.'
+    'HOME NAMES':
+      Color: ORANGE
+      Description: 'You can use the character ''_'' in Home names.'
+    '/prismshop':
+      Color: BLUE
+      Description: 'Open the Prism & Solar Shop.'
+    '/credits':
+      Color: BLUE
+      Description: 'Display your credits.'
+    '/pay <player> <amount>':
+      Color: BLUE
+      Description: 'Give Credits to other players.'

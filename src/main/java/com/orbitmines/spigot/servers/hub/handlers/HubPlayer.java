@@ -1,17 +1,20 @@
 package com.orbitmines.spigot.servers.hub.handlers;
 
+import com.orbitmines.api.Color;
 import com.orbitmines.api.StaffRank;
 import com.orbitmines.api.settings.Settings;
 import com.orbitmines.api.settings.SettingsType;
 import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
+import com.orbitmines.spigot.api.handlers.chat.ComponentMessage;
 import com.orbitmines.spigot.api.handlers.data.FriendsData;
 import com.orbitmines.spigot.api.handlers.data.SettingsData;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.servers.hub.Hub;
-import org.bukkit.GameMode;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 
@@ -20,7 +23,7 @@ import java.util.*;
 */
 public class HubPlayer extends OMPlayer {
 
-    protected static List<HubPlayer> players = new ArrayList<>();
+    protected static Map<Player, HubPlayer> players = new HashMap<>();
 
     private final Hub hub;
 
@@ -32,24 +35,23 @@ public class HubPlayer extends OMPlayer {
 
     @Override
     protected void onLogin() {
-        players.add(this);
+        players.put(player, this);
 
         setScoreboard(new Hub.Scoreboard(orbitMines, this));
 
         hub.getLobbyKit(this).setItems(this);
-
-        player.setGameMode(GameMode.ADVENTURE);
+        player.getInventory().setHeldItemSlot(4);
 
 //        new BukkitRunnable() {
 //            @Override
 //            public void run() {
-//                AdvancementMessage a = new AdvancementMessage("redstone_block", "§7§lOrbit§8§lMines §7Advancement Message :D");
+//                AdvancementMessage a = new AdvancementMessage("redstone_block", "§8§lOrbit§7§lMines §7Advancement Message :D");
 //                a.send(HubPlayer.this);
 //            }
 //        }.runTaskLater(orbitMines, 40);
 
         //TODO COSMETIC HELMET
-        player.getInventory().setHelmet(new ItemBuilder(Material.STAINED_GLASS, 1, 0, "§7Helmet").build());
+        player.getInventory().setHelmet(new ItemBuilder(Material.WHITE_STAINED_GLASS, 1, "§7Helmet").build());
 
 //        {
 //            Location location = new Location(hub.getVoidWorld(), 0, 70, 0);
@@ -141,12 +143,37 @@ public class HubPlayer extends OMPlayer {
     @Override
     protected void onLogout() {
 
-        players.remove(this);
+        players.remove(player);
+    }
+
+    @Override
+    protected void onFirstLogin() {
+
+    }
+
+    @Override
+    public void on2FALogin() {
+        super.on2FALogin();
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (isFirstLogin())
+                    sendMessage("Server", Color.BLUE, "Welkom op §8§lOrbit§7§lMines§7, " + getName() + "§7. Gebruik de §3§lEnder Pearl§7 om een server te joinen.", "Welcome to §8§lOrbit§7§lMines§7, " + getName() + "§7. Use the §3§lEnder Pearl§7 to join a server.");
+                else
+                    sendMessage("Server", Color.BLUE, "Welkom terug, " + getName() + "§7. Gebruik de §3§lEnder Pearl§7 om een server te joinen.", "Welcome back, " + getName() + "§7. Use the §3§lEnder Pearl§7 to join a server.");
+            }
+        }.runTaskLater(orbitMines, 20);
     }
 
     @Override
     public boolean canReceiveVelocity() {
         return false;
+    }
+
+    @Override
+    public Collection<ComponentMessage.TempTextComponent> getChatPrefix() {
+        return Collections.emptyList();
     }
 
     @Override
@@ -182,7 +209,7 @@ public class HubPlayer extends OMPlayer {
                 for (OMPlayer omp : players) {
                     if (omp == this)
                         continue;
-
+                    //TODO DEPRECATED
                     if (omp.getStaffRank() != StaffRank.NONE || friends.contains(omp.getUUID()))
                         this.player.showPlayer(omp.getPlayer());
                     else
@@ -208,7 +235,7 @@ public class HubPlayer extends OMPlayer {
                     if (omp == this)
                         continue;
 
-                    if (omp.getStaffRank() != StaffRank.NONE)
+                    if ((omp.getStaffRank() != StaffRank.NONE && omp.getStaffRank() != StaffRank.ADMIN))
                         this.player.showPlayer(omp.getPlayer());
                     else
                         this.player.hidePlayer(omp.getPlayer());
@@ -226,30 +253,18 @@ public class HubPlayer extends OMPlayer {
      */
 
     public static HubPlayer getPlayer(Player player) {
-        for (HubPlayer omp : players) {
-            if (omp.getPlayer() == player)
-                return omp;
-        }
-        throw new IllegalStateException();
+        return player == null ? null : players.getOrDefault(player, null);
     }
 
     public static HubPlayer getPlayer(String name) {
-        for (HubPlayer omp : players) {
-            if (omp.getName(true).equalsIgnoreCase(name))
-                return omp;
-        }
-        throw new IllegalStateException();
+        return getPlayer(Bukkit.getPlayer(name));
     }
 
     public static HubPlayer getPlayer(UUID uuid) {
-        for (HubPlayer omp : players) {
-            if (omp.getUUID().toString().equals(uuid.toString()))
-                return omp;
-        }
-        throw new IllegalStateException();
+        return getPlayer(Bukkit.getPlayer(uuid));
     }
 
-    public static List<HubPlayer> getHubPlayers() {
-        return players;
+    public static Collection<HubPlayer> getHubPlayers() {
+        return players.values();
     }
 }
