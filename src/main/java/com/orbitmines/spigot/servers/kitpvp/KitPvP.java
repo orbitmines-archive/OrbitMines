@@ -289,6 +289,7 @@ public class KitPvP extends OrbitMinesServer {
             new KitDrunk(this);
             new KitPyro(this);
             new KitBunny(this);
+            new KitKing(this);
         }
 
         /* Player Tracker */

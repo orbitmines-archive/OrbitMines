@@ -31,8 +31,20 @@ public enum Active {
                     "  §b§o" + ((int) (active.getCooldown(level).getCooldown() / 1000)) + " second cooldown§7."
             };
         }
-    }
-    ;
+    },
+    HEAL("Healing", Color.FUCHSIA, new ActiveHealing()) {
+        @Override
+        public String[] getDescription(int level) {
+            ActiveHealing active = (ActiveHealing) getHandler();
+            PotionBuilder builder = active.getBuilder(level);
+
+            return new String[]{
+                    "  §7§oReceive §e§o" + ItemUtils.getName(builder.getType()) + " " + NumberUtils.toRoman(builder.getAmplifier() + 1),
+                    "  §7§ofor §9§o" + (builder.getDuration() / 20) + " seconds§7§o on a",
+                    "  §b§o" + ((int) (active.getCooldown(level).getCooldown() / 1000)) + " second cooldown§7."
+            };
+        }
+    };
 
     private final String name;
     private final Color color;
