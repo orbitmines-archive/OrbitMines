@@ -67,7 +67,7 @@ public class PassiveWreckerOfWorlds implements Passive.Handler<EntityDamageByEnt
             case 1:
                 return 0.3D;
             case 2:
-                return 0.6D; //TODO: NERF! MAYBE COOLDOWN!
+                return 0.5D; //TODO: NERF! MAYBE COOLDOWN!
             default:
                 throw new ArrayIndexOutOfBoundsException();
         }

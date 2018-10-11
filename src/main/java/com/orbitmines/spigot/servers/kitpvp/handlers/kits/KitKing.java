@@ -10,6 +10,7 @@ import com.orbitmines.spigot.servers.kitpvp.handlers.KitPvPKit;
 import com.orbitmines.spigot.servers.kitpvp.handlers.actives.Active;
 import com.orbitmines.spigot.servers.kitpvp.handlers.itembuilders.KitItemBuilder;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 
 public class KitKing extends KitPvPKit {
@@ -86,7 +87,7 @@ public class KitKing extends KitPvPKit {
             Kit kit = new Kit(name+ "_2");
 
             kit.setHelmet(new KitItemBuilder(this, Material.DIAMOND_HELMET));
-            kit.setChestplate(new KitItemBuilder(this, Material.GOLDEN_CHESTPLATE));
+            kit.setChestplate(new KitItemBuilder(this, Material.GOLDEN_CHESTPLATE).addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1));
             kit.setLeggings(new KitItemBuilder(this, Material.GOLDEN_LEGGINGS));
             kit.setBoots(new KitItemBuilder(this, Material.GOLDEN_BOOTS));
 
@@ -122,7 +123,7 @@ public class KitKing extends KitPvPKit {
             Kit kit = new Kit(name+ "_3");
 
             kit.setHelmet(new KitItemBuilder(this, Material.DIAMOND_HELMET));
-            kit.setChestplate(new KitItemBuilder(this, Material.GOLDEN_CHESTPLATE));
+            kit.setChestplate(new KitItemBuilder(this, Material.GOLDEN_CHESTPLATE).addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 2));
             kit.setLeggings(new KitItemBuilder(this, Material.GOLDEN_LEGGINGS));
             kit.setBoots(new KitItemBuilder(this, Material.GOLDEN_BOOTS));
 
