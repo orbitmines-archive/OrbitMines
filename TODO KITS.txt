@@ -1,15 +1,5 @@
 
 
-
-
-KING
-hp 20
-king lvl 1 stone sword. gold armor dia helmet.
-king lvl 2 stone sword heal 1. gold armor dia helmet.
-king lvl 3 stone sword sharpness 1 heal 2. gold armor dia helmet.
-heal 1 = regen 2 for 2 sec 10 sec cd
-heal 2 = regen 2 for 3 sec 10 sec cd
-
 SNOW GOLEM 70 % effectieve tegen knockback 	(slow 1)
 hp 25
 snow golem lvl 1 stone sword. leather (white) pumkin head prot 3 (from a player) iron chestplate  
@@ -97,3 +87,13 @@ gold    lvl 1 20 %	lvl 2 27.5 %	lvl 3 32.5 %
 iron    lvl 1 20 %	lvl 2 25%	lvl 3 27.5 %
 diamond lvl 1 10 %	lvl 2 12.5%	lvl 3 15 %
 after he gets a kill he will gain a random ore depending on the ore he will do special things for example gold will give him health regen for 5 sec (regen 1) coal gives him 3 hp back iron gives him 1 hp max plus 3 hp for 5 sec diamond regen for 10 sec (regen 1) plus 1 hp back imidiatly
+
+
+------------------------------
+EXPERIMENTAL - ONE LEVEL
+
+bloodmage    30 hp    whenever he gets a kill he will get 1 max hp
+ability loses 6 max hp gets a sword that does 6 hp dmg and has a chance to bleed the enemy (25% chance to bleed and 10% chance to steal 2 hp of the enemy)
+ability loses 3 max hp gets blood that he can throw on the enemy and it will burn and bleed the enemy can only be trhownen once (does 2 dmg every sec for 10 sec)
+ability loses 8 max hp gets a bow with and power 1
+ability loses 2 max hp gets 5 arrows

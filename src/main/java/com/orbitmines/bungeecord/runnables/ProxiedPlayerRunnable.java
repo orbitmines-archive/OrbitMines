@@ -38,7 +38,7 @@ public abstract class ProxiedPlayerRunnable {
         if (!playerRunnables.containsKey(time.getSeconds()))
             return;
 
-        if (task != null && playerRunnables.get(time.getSeconds()).size() == 1) {
+        if (task != null && playerRunnables.get(time.getSeconds()).size() <= 1) {
             task.cancel();
             playerRunnables.remove(time.getSeconds());
             return;

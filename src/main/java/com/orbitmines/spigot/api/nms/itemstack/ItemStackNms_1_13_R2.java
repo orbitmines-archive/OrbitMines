@@ -5,15 +5,14 @@ package com.orbitmines.spigot.api.nms.itemstack;
  */
 
 import com.orbitmines.spigot.api.handlers.itembuilders.WrittenBookBuilder;
-import net.minecraft.server.v1_13_R2.EnumHand;
-import net.minecraft.server.v1_13_R2.NBTTagCompound;
-import net.minecraft.server.v1_13_R2.NBTTagList;
+import net.minecraft.server.v1_13_R2.*;
 import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_13_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.UUID;
 
 public class ItemStackNms_1_13_R2 implements ItemStackNms {
 
@@ -102,5 +101,29 @@ public class ItemStackNms_1_13_R2 implements ItemStackNms {
         }
 
         return metaData;
+    }
+
+    @Override
+    public ItemStack setAttackDamage(ItemStack item, int damage) {
+        net.minecraft.server.v1_13_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
+
+        NBTTagCompound tag = nmsStack.hasTag() ? nmsStack.getTag() : new NBTTagCompound();
+
+        NBTTagList attributes = new NBTTagList();
+        NBTTagCompound damageAttribute = new NBTTagCompound();
+        damageAttribute.set("AttributeName", new NBTTagString("generic.attackDamage"));
+        damageAttribute.set("Name", new NBTTagString("generic.attackDamage"));
+        damageAttribute.set("Amount", new NBTTagInt(damage));
+        damageAttribute.set("Operation", new NBTTagInt(0));//0 -> value, 1 -> * 100%
+        damageAttribute.set("UUIDLeast", new NBTTagInt(894654));
+        damageAttribute.set("UUIDMost", new NBTTagInt(2872));
+        damageAttribute.set("Slot", new NBTTagString("mainhand"));
+        attributes.add(damageAttribute);
+
+        tag.set("AttributeModifiers", attributes);
+
+        nmsStack.setTag(tag);
+
+        return CraftItemStack.asCraftMirror(nmsStack);
     }
 }
