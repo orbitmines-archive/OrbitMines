@@ -82,6 +82,12 @@ public enum Passive {
             };
         }
     },
+    ENCHANTING_TABLE("Enchanting", Color.BLUE, Interaction.KILL_PLAYER, new PassiveEnchantingTable()){
+        @Override
+        public String[] getDescription(int level) {
+            return super.getDescription(level);
+        }
+    },
 
     /* Armor */
     LIGHTNING_PROTECTION("Lightning Protection", Color.YELLOW, Interaction.ON_HIT, true, false, new PassiveLightningProtection()) {
@@ -129,6 +135,12 @@ public enum Passive {
             return getColor().getChatColor() + "§oTrack nearby players.";
         }
     },
+    SPIDER_CLIMB("Spider Climb", Color.PURPLE, Interaction.MOVEMENT, false, true, new PassiveSpiderClimb()){
+        @Override
+        public String[] getDescription(int level) {
+            return super.getDescription(level);
+        }
+    }
     ;
 
     private final String name;
@@ -233,7 +245,8 @@ public enum Passive {
         KILL_PLAYER,
         ON_HIT,
         ON_SELECT,
-        LOW_HEALTH;
+        LOW_HEALTH,
+        MOVEMENT;
 
     }
 }

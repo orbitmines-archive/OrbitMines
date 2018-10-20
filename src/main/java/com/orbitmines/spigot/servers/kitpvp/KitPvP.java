@@ -208,8 +208,7 @@ public class KitPvP extends OrbitMinesServer {
     }
 
     public boolean isSaturday() {
-        return true;
-//        return Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY;
+        return Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY;
     }
 
     public Kit getLobbyKit(KitPvPPlayer omp) {
@@ -254,14 +253,15 @@ public class KitPvP extends OrbitMinesServer {
                     return getSpawnLocation(player);
                 }
             },
-            new DamageByEntityEvent(this),
-            new DamageEvent(this),
-            new DeathEvent(this),
-            new ExpChangeEvent(orbitMines),
-            new InteractEvent(this),
-            new ProjectileEvents(this),
-            new RegainHealthEvent(),
-            new SpectatorEvents()
+                new DamageByEntityEvent(this),
+                new DamageEvent(this),
+                new DeathEvent(this),
+                new ExpChangeEvent(orbitMines),
+                new InteractEvent(this),
+                new ProjectileEvents(this),
+                new RegainHealthEvent(),
+                new SpectatorEvents(),
+                new MovementEvent(this)
         );
 
         /* Handle Active Actionbar cooldown timers. */
@@ -291,6 +291,8 @@ public class KitPvP extends OrbitMinesServer {
             new KitDrunk(this);
             new KitPyro(this);
             new KitBunny(this);
+            new KitEnchanter(this);
+//            new KitSpider(this);
         }
 
         /* Player Tracker */

@@ -21,7 +21,7 @@ public class KitSelectorGUI extends GUI {
     private final KitPvP kitPvP;
 
     public KitSelectorGUI(KitPvP kitPvP) {
-        newInventory(9, "§0§lKit Selector");
+        newInventory(18, "§0§lKit Selector");
 
         this.kitPvP = kitPvP;
     }

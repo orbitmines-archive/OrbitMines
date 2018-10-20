@@ -9,7 +9,9 @@ import com.orbitmines.spigot.servers.kitpvp.KitClass;
 import com.orbitmines.spigot.servers.kitpvp.KitPvP;
 import com.orbitmines.spigot.servers.kitpvp.handlers.KitPvPKit;
 import com.orbitmines.spigot.servers.kitpvp.handlers.itembuilders.KitItemBuilder;
+import com.orbitmines.spigot.servers.kitpvp.handlers.itembuilders.KitItemSkullBuilder;
 import com.orbitmines.spigot.servers.kitpvp.handlers.itembuilders.KitLeatherArmorBuilder;
+import com.orbitmines.spigot.servers.kitpvp.handlers.passives.Passive;
 import org.bukkit.Material;
 
 public class KitSpider extends KitPvPKit {
@@ -33,7 +35,11 @@ public class KitSpider extends KitPvPKit {
 
     @Override
     protected Level[] registerLevels() {
-        return new Level[]{};
+        return new Level[]{
+                new Level1(),
+                new Level2(),
+                new Level3()
+        };
     }
 
     private class Level1 extends Level {
@@ -48,12 +54,88 @@ public class KitSpider extends KitPvPKit {
         protected Kit registerKit() {
             Kit kit = new Kit(name + "_1");
 
-            kit.setHelmet(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.HELMET, LEATHER_COLOR));
+            kit.setHelmet(new KitItemSkullBuilder(this, () -> "MHF_Spider", 1, getColor().getChatColor()+ kit.getName() + "'s Head"));
             kit.setChestplate(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.CHESTPLATE, LEATHER_COLOR));
             kit.setLeggings(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.LEGGINGS, LEATHER_COLOR));
-            kit.setBoots(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.BOOTS, LEATHER_COLOR));
+            kit.setBoots(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.BOOTS, LEATHER_COLOR).addPassive(Passive.SPIDER_CLIMB, 1));
 
-            kit.setItem(0, new KitItemBuilder(this, Material.SPIDER_EYE).addPassive(null /*TODO: */, 1));
+            kit.setItem(0, new KitItemBuilder(this, Material.SPIDER_EYE));
+
+            return kit;
+        }
+
+        @Override
+        public double getMaxHealth() {
+            return 18D;
+        }
+
+        @Override
+        public double getKnockbackResistance() {
+            return 0D;
+        }
+
+        @Override
+        public HealthRegen getHealthRegen() {
+            return HealthRegen.NORMAL;
+        }
+    }
+
+    private class Level2 extends Level {
+
+
+        @Override
+        public int getPrice() {
+            return 0;
+        }
+
+        @Override
+        protected Kit registerKit() {
+            Kit kit = new Kit(name + "_2");
+
+            kit.setHelmet(new KitItemSkullBuilder(this, () -> "MHF_Spider", 1, getColor().getChatColor()+ kit.getName() + "'s Head"));
+            kit.setChestplate(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.CHESTPLATE, LEATHER_COLOR));
+            kit.setLeggings(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.LEGGINGS, LEATHER_COLOR));
+            kit.setBoots(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.BOOTS, LEATHER_COLOR).addPassive(Passive.SPIDER_CLIMB, 1));
+
+            kit.setItem(0, new KitItemBuilder(this, Material.SPIDER_EYE));
+
+            return kit;
+        }
+
+        @Override
+        public double getMaxHealth() {
+            return 18D;
+        }
+
+        @Override
+        public double getKnockbackResistance() {
+            return 0D;
+        }
+
+        @Override
+        public HealthRegen getHealthRegen() {
+            return HealthRegen.NORMAL;
+        }
+    }
+
+    private class Level3 extends KitPvPKit.Level {
+
+
+        @Override
+        public int getPrice() {
+            return 0;
+        }
+
+        @Override
+        protected Kit registerKit() {
+            Kit kit = new Kit(name + "_3");
+
+            kit.setHelmet(new KitItemSkullBuilder(this, () -> "MHF_Spider", 1, getColor().getChatColor()+ kit.getName() + "'s Head"));
+            kit.setChestplate(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.CHESTPLATE, LEATHER_COLOR));
+            kit.setLeggings(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.LEGGINGS, LEATHER_COLOR));
+            kit.setBoots(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.BOOTS, LEATHER_COLOR).addPassive(Passive.SPIDER_CLIMB, 1));
+
+            kit.setItem(0, new KitItemBuilder(this, Material.SPIDER_EYE));
 
             return kit;
         }
