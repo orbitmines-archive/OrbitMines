@@ -11,9 +11,9 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 
 public class PassiveEnchantingTable implements Passive.Handler<PlayerDeathEvent> {
 
-    private Enchantment[] attack_enchantments = {Enchantment.DAMAGE_ALL, Enchantment.FIRE_ASPECT};
+    private final Enchantment[] attack_enchantments = {Enchantment.DAMAGE_ALL, Enchantment.FIRE_ASPECT};
 
-    private Enchantment[] protect_enchantments = {Enchantment.PROTECTION_ENVIRONMENTAL, Enchantment.THORNS};
+    private final Enchantment[] protect_enchantments = {Enchantment.PROTECTION_ENVIRONMENTAL, Enchantment.THORNS};
 
 
     @Override
@@ -25,33 +25,29 @@ public class PassiveEnchantingTable implements Passive.Handler<PlayerDeathEvent>
 
         KitPvPPlayer killer = KitPvPPlayer.getPlayer(kill);
 
-        if (killer.getInventory().getItemInMainHand().getType() == Material.ENCHANTED_BOOK) {
+        int slot = enchantedArmor(level) ? MathUtils.clamp(MathUtils.randomInteger(5), 0, 4) : 0;
 
-            int slot = enchantedArmor(level) ? MathUtils.clamp(MathUtils.randomInteger(5), 0, 4) : 0;
+        Kit kit = killer.getSelectedKit().getKit();
 
-            Kit kit = killer.getSelectedKit().getKit();
+        ItemBuilder item = getRandomBuilder(kit, slot);
 
-            ItemBuilder item = getRandomBuilder(kit, slot);
+        int tries = 0;
 
-            int tries = 0;
+        while (true) {
 
-            while (true) {
+            if (tries <= 10) {
+                Enchantment enchantment = getRandomEnchant(slot == 0 ? attack_enchantments : protect_enchantments);
+                int l = item.getEnchantments().getOrDefault(enchantment, 0) + 1;
 
-                if (tries <= 10) {
-                    Enchantment enchantment = getRandomEnchant(slot == 0 ? attack_enchantments : protect_enchantments);
-                    int l = item.getEnchantments().getOrDefault(enchantment, 0) + 1;
-                    System.out.println(l);
-
-                    if (enchantment.getMaxLevel() >= l) {
-                        item.getEnchantments().put(enchantment, l);
-                        killer.getSelectedKit().give(killer);
-                        break;
-                    }
-                    tries++;
-
-                } else {
-                    return;
+                if (enchantment.getMaxLevel() > l) {
+                    item.getEnchantments().put(enchantment, l);
+                    killer.getSelectedKit().give(killer);
+                    break;
                 }
+                tries++;
+
+            } else {
+                return;
             }
         }
     }
@@ -59,7 +55,7 @@ public class PassiveEnchantingTable implements Passive.Handler<PlayerDeathEvent>
     private ItemBuilder getRandomBuilder(Kit kit, int slot) {
         switch (slot) {
             case 0:
-                return kit.getItems(Material.ENCHANTED_BOOK).get(0);
+                return kit.getItems(Material.ENCHANTED_BOOK).get(0).clone();
             case 1:
                 return kit.getHelmet();
             case 2:
@@ -84,7 +80,6 @@ public class PassiveEnchantingTable implements Passive.Handler<PlayerDeathEvent>
 
     private Enchantment getRandomEnchant(Enchantment[] enchantments) {
         int index = MathUtils.randomInteger(enchantments.length);
-        System.out.println(enchantments[index].getName());
         return enchantments[index];
     }
 
