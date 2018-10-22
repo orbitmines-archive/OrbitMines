@@ -138,7 +138,7 @@ public class KitPvPPlayer extends OMPlayer {
             }
 
             setBestStreak(this.killStreak, true);
-        } else if (this.killStreak > getKitData(selectedKit.getHandler()).getBestStreak()) {
+        } else if (this.killStreak > getKitData((selectedKit != null ? selectedKit : getLastSelected()).getHandler()).getBestStreak()) {
             setBestStreak(this.killStreak, false);
         }
 

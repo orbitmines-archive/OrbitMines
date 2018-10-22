@@ -680,7 +680,7 @@ public class PatchNotes {
                 ),
                 new Feature(
                         "KNIGHT KIT", Color.GREEN,
-                        "The Knight kit has been added to KitPvP, a plane melee kit.",
+                        "The Knight kit has been added to KitPvP, a plain melee kit.",
                         "https://i.imgur.com/YuYDAYZ.jpg"
                 ),
                 new Feature(
@@ -690,7 +690,7 @@ public class PatchNotes {
                 ),
                 new Feature(
                         "SOLDIER KIT", Color.GREEN,
-                        "The Soldier kit has been added to KitPvP, a plane melee kit at first, but turns out to have Thor's hammer on later levels.",
+                        "The Soldier kit has been added to KitPvP, a plain melee kit at first, but turns out to have Thor's hammer on later levels.",
                         "https://i.imgur.com/YSglGDY.jpg"
                 ),
                 new Feature(
