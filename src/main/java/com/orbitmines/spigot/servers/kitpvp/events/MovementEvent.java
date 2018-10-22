@@ -16,34 +16,34 @@ public class MovementEvent implements Listener {
 
     private ItemStackNms nms;
 
-    public MovementEvent(KitPvP kitPvP){
+    public MovementEvent(KitPvP kitPvP) {
         this.nms = kitPvP.getOrbitMines().getNms().customItem();
     }
 
     @EventHandler
-    public void onMove(PlayerMoveEvent event){
+    public void onMove(PlayerMoveEvent event) {
 
         Player player = event.getPlayer();
 
         KitPvPPlayer omp = KitPvPPlayer.getPlayer(player);
 
-        if(omp.getSelectedKit() == null || omp.isSpectator()){
+        if (omp.getSelectedKit() == null || omp.isSpectator()) {
             return;
         }
 
         ItemStack item = player.getInventory().getBoots();
 
-        if(item == null){
+        if (item == null) {
             return;
         }
 
         Map<Passive, Integer> passives = Passive.from(nms, item, Passive.Interaction.MOVEMENT);
 
-        if(passives == null){
+        if (passives == null) {
             return;
         }
 
-        for(Passive passive : passives.keySet()){
+        for (Passive passive : passives.keySet()) {
             passive.getHandler().trigger(event, passives.get(passive));
         }
     }

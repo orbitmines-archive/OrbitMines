@@ -49,7 +49,7 @@ public class KitItemSkullBuilder extends PlayerSkullBuilder implements KitItem {
         this.unbreakable(true);
     }
 
-    public KitItemSkullBuilder(KitItemSkullBuilder builder){
+    public KitItemSkullBuilder(KitItemSkullBuilder builder) {
         super(builder.getPlayerName(), builder.getAmount(), builder.getDisplayName(), builder.getLore());
         this.kit = builder.kit;
 

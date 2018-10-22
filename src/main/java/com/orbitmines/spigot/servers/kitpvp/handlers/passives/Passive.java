@@ -85,7 +85,13 @@ public enum Passive {
     ENCHANTING_TABLE("Enchanting", Color.BLUE, Interaction.KILL_PLAYER, new PassiveEnchantingTable()){
         @Override
         public String[] getDescription(int level) {
-            return super.getDescription(level);
+            PassiveEnchantingTable passive = (PassiveEnchantingTable) getHandler();
+
+            return new String[] {
+                    "  §3§oReceive a random enchantment",
+                    "  §7§oon your weapon or armor when",
+                    "  §7§okilling an opponent."
+            };
         }
     },
 

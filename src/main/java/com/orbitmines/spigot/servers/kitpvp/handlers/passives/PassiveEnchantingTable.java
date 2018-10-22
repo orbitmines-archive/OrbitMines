@@ -82,5 +82,4 @@ public class PassiveEnchantingTable implements Passive.Handler<PlayerDeathEvent>
         int index = MathUtils.randomInteger(enchantments.length);
         return enchantments[index];
     }
-
 }

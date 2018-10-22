@@ -47,12 +47,9 @@ public class KitSelectorGUI extends GUI {
                 icon.glow();
 
                 if (level == 0) {
-//                    icon.setDisplayName(icon.getDisplayName() + " §d§l§m" + omp.lang("VERGRENDELD", "LOCKED"));
-//
-//                    icon.addLore("§d§lFREE KIT SATURDAY");
                     icon.setDisplayName(icon.getDisplayName() + " §d§l§m" + omp.lang("VERGRENDELD", "LOCKED"));
 
-                    icon.addLore("§c§lFREE KITS (KITPVP RELEASE)");
+                    icon.addLore("§d§lFREE KIT SATURDAY");
                 } else {
                     icon.setAmount(level);
 

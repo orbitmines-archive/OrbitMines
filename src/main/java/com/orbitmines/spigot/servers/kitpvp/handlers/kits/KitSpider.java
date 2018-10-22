@@ -24,7 +24,7 @@ public class KitSpider extends KitPvPKit {
         super(
                 kitPvP,
 
-                9L, "Spider",
+                10L, "Spider",
 
                 Color.PURPLE,
                 new ItemBuilder(Material.SPIDER_EYE),
@@ -54,7 +54,7 @@ public class KitSpider extends KitPvPKit {
         protected Kit registerKit() {
             Kit kit = new Kit(name + "_1");
 
-            kit.setHelmet(new KitItemSkullBuilder(this, () -> "MHF_Spider", 1, getColor().getChatColor()+ kit.getName() + "'s Head"));
+            kit.setHelmet(new KitItemSkullBuilder(this, () -> "MHF_Spider", 1, getColor().getChatColor() + kit.getName() + "'s Head"));
             kit.setChestplate(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.CHESTPLATE, LEATHER_COLOR));
             kit.setLeggings(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.LEGGINGS, LEATHER_COLOR));
             kit.setBoots(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.BOOTS, LEATHER_COLOR).addPassive(Passive.SPIDER_CLIMB, 1));
@@ -92,7 +92,7 @@ public class KitSpider extends KitPvPKit {
         protected Kit registerKit() {
             Kit kit = new Kit(name + "_2");
 
-            kit.setHelmet(new KitItemSkullBuilder(this, () -> "MHF_Spider", 1, getColor().getChatColor()+ kit.getName() + "'s Head"));
+            kit.setHelmet(new KitItemSkullBuilder(this, () -> "MHF_Spider", 1, getColor().getChatColor() + kit.getName() + "'s Head"));
             kit.setChestplate(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.CHESTPLATE, LEATHER_COLOR));
             kit.setLeggings(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.LEGGINGS, LEATHER_COLOR));
             kit.setBoots(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.BOOTS, LEATHER_COLOR).addPassive(Passive.SPIDER_CLIMB, 1));
@@ -130,7 +130,7 @@ public class KitSpider extends KitPvPKit {
         protected Kit registerKit() {
             Kit kit = new Kit(name + "_3");
 
-            kit.setHelmet(new KitItemSkullBuilder(this, () -> "MHF_Spider", 1, getColor().getChatColor()+ kit.getName() + "'s Head"));
+            kit.setHelmet(new KitItemSkullBuilder(this, () -> "MHF_Spider", 1, getColor().getChatColor() + kit.getName() + "'s Head"));
             kit.setChestplate(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.CHESTPLATE, LEATHER_COLOR));
             kit.setLeggings(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.LEGGINGS, LEATHER_COLOR));
             kit.setBoots(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.BOOTS, LEATHER_COLOR).addPassive(Passive.SPIDER_CLIMB, 1));

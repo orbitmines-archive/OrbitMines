@@ -13,23 +13,17 @@ public class PassiveSpiderClimb implements Passive.Handler<PlayerMoveEvent> {
 
         Location from = event.getFrom();
         Location to = event.getTo();
-        if(!(from.getX() == to.getX() && from.getZ() == to.getZ())) {
+        if (!(from.getX() == to.getX() && from.getZ() == to.getZ())) {
             if (!player.isSprinting()) {
                 if (from.getX() == to.getX() || from.getZ() == to.getZ()) {
-                    for(double i = 0; i < 0.1; i += 0.01){
+                    for (double i = 0; i < 0.1; i += 0.01) {
 
                         /*
-                        * TODO:
-                        * -FIX DONT TELEPORTING WHEN UNDER A BLOCK
-                        * -SMOOTH TELEPORTING WITH RUNNABLE!
-                        *
-                        * */
-
-
-
-
-
-
+                         * TODO:
+                         * -FIX DONT TELEPORTING WHEN UNDER A BLOCK
+                         * -SMOOTH TELEPORTING WITH RUNNABLE!
+                         *
+                         * */
 
 
                         //TELEPORTING
