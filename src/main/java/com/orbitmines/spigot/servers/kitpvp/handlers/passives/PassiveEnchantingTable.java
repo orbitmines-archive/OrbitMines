@@ -1,13 +1,14 @@
 package com.orbitmines.spigot.servers.kitpvp.handlers.passives;
 
+import com.orbitmines.api.utils.RandomUtils;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
 import com.orbitmines.spigot.api.handlers.kit.Kit;
-import com.orbitmines.spigot.api.utils.MathUtils;
 import com.orbitmines.spigot.servers.kitpvp.handlers.KitPvPPlayer;
-import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
 public class PassiveEnchantingTable implements Passive.Handler<PlayerDeathEvent> {
 
@@ -20,66 +21,79 @@ public class PassiveEnchantingTable implements Passive.Handler<PlayerDeathEvent>
     public void trigger(PlayerDeathEvent event, int level) {
 
         Player entity = event.getEntity();
-
         Player kill = entity.getKiller();
 
         KitPvPPlayer killer = KitPvPPlayer.getPlayer(kill);
-
-        int slot = enchantedArmor(level) ? MathUtils.clamp(MathUtils.randomInteger(5), 0, 4) : 0;
-
         Kit kit = killer.getSelectedKit().getKit();
+
+        int slot = enchantedArmor(level) ? RandomUtils.i(0, 4) : 0;
+
+        System.out.println(slot);
 
         ItemBuilder item = getRandomBuilder(kit, slot);
 
+        Enchantment[] enchantments = slot == 0 ? attack_enchantments : protect_enchantments;
+
+        Enchantment enchantment = RandomUtils.randomFrom(enchantments);
+        int l = -1;
+
         int tries = 0;
 
-        while (true) {
-
-            if (tries <= 10) {
-                Enchantment enchantment = getRandomEnchant(slot == 0 ? attack_enchantments : protect_enchantments);
-                int l = item.getEnchantments().getOrDefault(enchantment, 0) + 1;
-
-                if (enchantment.getMaxLevel() > l) {
-                    item.getEnchantments().put(enchantment, l);
-                    killer.getSelectedKit().give(killer);
-                    break;
-                }
-                tries++;
-
-            } else {
-                return;
-            }
+        while ((l == -1 || enchantment.getMaxLevel() <= l) && tries <= 10) {
+            enchantment = RandomUtils.randomFrom(enchantment);
+            l = item.getEnchantments().getOrDefault(enchantment, 0) + 1;
+            tries++;
+            System.out.println(enchantment.getKey().getKey() + ":" + l);
         }
+
+        item.getEnchantments().put(enchantment, l);
+
+        this.setItem(kill, slot, item.build());
     }
 
     private ItemBuilder getRandomBuilder(Kit kit, int slot) {
         switch (slot) {
             case 0:
-                return kit.getItems(Material.ENCHANTED_BOOK).get(0).clone();
+                return kit.getFirstItem().clone();
             case 1:
-                return kit.getHelmet();
+                return kit.getHelmet().clone();
             case 2:
-                return kit.getChestplate();
+                return kit.getChestplate().clone();
             case 3:
-                return kit.getLeggings();
+                return kit.getLeggings().clone();
             case 4:
-                return kit.getBoots();
+                return kit.getBoots().clone();
         }
         return null;
     }
 
-    private boolean enchantedArmor(int level) {
-        switch (level) {
+    private void setItem(Player p, int slot, ItemStack item) {
+        PlayerInventory inventory = p.getInventory();
+        switch (slot) {
+            case 0:
+                inventory.setItemInMainHand(item);
+                break;
             case 1:
-                return false;
+                inventory.setHelmet(item);
+                break;
             case 2:
-                return true;
+                inventory.setChestplate(item);
+                break;
+            case 3:
+                inventory.setLeggings(item);
+                break;
+            case 4:
+                inventory.setBoots(item);
+                break;
         }
-        return false;
     }
 
-    private Enchantment getRandomEnchant(Enchantment[] enchantments) {
-        int index = MathUtils.randomInteger(enchantments.length);
-        return enchantments[index];
+    private boolean enchantedArmor(int level) {
+        switch (level) {
+            case 2:
+                return true;
+            default:
+                return false;
+        }
     }
 }

@@ -94,6 +94,20 @@ public enum Passive {
             };
         }
     },
+    POISONOUS("Poisonous", Color.GREEN, Interaction.HIT_OTHER, new PassivePoisonous()) {
+        @Override
+        public String[] getDescription(int level) {
+            //TODO: PROVIDE DESCRIPTION!
+            return super.getDescription(level);
+        }
+    },
+    SUMMONER("Summoner", Color.PURPLE, Interaction.HIT_OTHER, new PassiveSummoner()){
+        @Override
+        public String[] getDescription(int level) {
+            //TODO: PROVIDE DESCRIPTION!
+            return super.getDescription(level);
+        }
+    },
 
     /* Armor */
     LIGHTNING_PROTECTION("Lightning Protection", Color.YELLOW, Interaction.ON_HIT, true, false, new PassiveLightningProtection()) {
@@ -144,6 +158,7 @@ public enum Passive {
     SPIDER_CLIMB("Spider Climb", Color.PURPLE, Interaction.MOVEMENT, false, true, new PassiveSpiderClimb()){
         @Override
         public String[] getDescription(int level) {
+            //TODO: PROVIDE DESCRIPTION!
             return super.getDescription(level);
         }
     }
