@@ -116,8 +116,8 @@ public class PufferFishNpc_1_13_R2 implements PufferFishNpc {
         }
 
         @Override
-        protected SoundEffect dC() {
-            return options.contains(Option.DISABLE_SOUNDS) ? null : super.dC();
+        protected SoundEffect dz() {
+            return options.contains(Option.DISABLE_SOUNDS) ? null : super.dz();
         }
 
         @Override

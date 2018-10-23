@@ -1,0 +1,187 @@
+package com.orbitmines.spigot.api.nms.anvilgui;
+
+/*
+ * OrbitMines - @author Fadi Shawki - 2018
+ */
+
+import com.orbitmines.spigot.OrbitMines;
+import net.minecraft.server.v1_13_R2.*;
+import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.HashMap;
+
+public class AnvilNms_1_13_R2 implements AnvilNms {
+
+
+    private class AnvilContainer extends ContainerAnvil {
+        public AnvilContainer(EntityHuman entity) {
+            super(entity.inventory, entity.world, BlockPosition.ZERO, entity);
+        }
+
+        @Override
+        public boolean canUse(EntityHuman entityhuman) {
+            return true;
+        }
+    }
+
+    private Player player;
+    private int totalExp;
+
+    private AnvilClickEventHandler handler;
+
+    private HashMap<AnvilSlot, ItemStack> items = new HashMap<>();
+
+    private Inventory inv;
+
+    private Listener listener;
+
+    public AnvilNms_1_13_R2(Player player, AnvilClickEventHandler handler, AnvilCloseEvent closeEvent) {
+        this.player = player;
+        this.handler = handler;
+
+        AnvilNms nms = this;
+
+        this.listener = new Listener() {
+            @EventHandler
+            public void onInventoryClick(InventoryClickEvent event) {
+                if (event.getWhoClicked() instanceof Player) {
+                    if (event.getInventory().equals(inv)) {
+                        event.setCancelled(true);
+
+                        ItemStack item = event.getCurrentItem();
+                        int slot = event.getRawSlot();
+                        String name = "";
+
+                        if (item != null) {
+                            if (item.hasItemMeta()) {
+                                ItemMeta meta = item.getItemMeta();
+
+                                if (meta.hasDisplayName()) {
+                                    name = meta.getDisplayName();
+                                }
+                            }
+                        }
+
+                        AnvilClickEvent clickEvent = new AnvilClickEvent(nms, AnvilSlot.bySlot(slot), name);
+
+                        handler.onAnvilClick(clickEvent);
+
+                        if (clickEvent.getWillClose())
+                            event.getWhoClicked().closeInventory();
+
+                        if (clickEvent.getWillDestroy())
+                            destroy();
+
+                        new BukkitRunnable() {
+                            @Override
+                            public void run() {
+                                player.setLevel(totalExp);
+                            }
+                        }.runTaskLater(OrbitMines.getInstance(), 1);
+                    }
+                }
+            }
+
+            @EventHandler
+            public void onInventoryClose(InventoryCloseEvent event) {
+                if (event.getPlayer() instanceof Player) {
+                    Inventory inv = event.getInventory();
+
+                    if (inv.equals(AnvilNms_1_13_R2.this.inv)) {
+                        inv.clear();
+                        destroy();
+
+                        if (closeEvent != null)
+                            closeEvent.onClose();
+                    }
+                }
+            }
+
+            @EventHandler
+            public void onPlayerQuit(PlayerQuitEvent event) {
+                if (event.getPlayer().equals(getPlayer())) {
+                    destroy();
+
+                    if (closeEvent != null)
+                        closeEvent.onClose();
+                }
+            }
+        };
+
+        Bukkit.getPluginManager().registerEvents(listener, OrbitMines.getInstance());
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    @Override
+    public HashMap<AnvilSlot, ItemStack> getItems() {
+        return items;
+    }
+
+    @Override
+    public ItemStack getSlot(Player p, int slot) {
+        return p.getOpenInventory().getTopInventory().getItem(slot);
+    }
+
+    @Override
+    public void setSlot(AnvilSlot slot, ItemStack item) {
+        items.put(slot, item);
+        player.getOpenInventory().getTopInventory().setItem(slot.getSlot(), item);
+    }
+
+    @Override
+    public void open() {
+        this.totalExp = player.getLevel();
+
+        EntityPlayer p = ((CraftPlayer) player).getHandle();
+
+        AnvilContainer container = new AnvilContainer(p);
+        container.levelCost = 0;
+
+        //Set the items to the items from the inventory given
+        inv = container.getBukkitView().getTopInventory();
+
+        for (AnvilSlot slot : items.keySet()) {
+            inv.setItem(slot.getSlot(), items.get(slot));
+        }
+
+        //Counter stuff that the game uses to keep track of inventories
+        int c = p.nextContainerCounter();
+
+        //Send the packet
+        p.playerConnection.sendPacket(new PacketPlayOutOpenWindow(c, "minecraft:anvil", new ChatMessage("Repairing", new Object[]{}), 0));
+
+        //Set their active container to the container
+        p.activeContainer = container;
+
+        //Set their active container window id to that counter stuff
+        p.activeContainer.windowId = c;
+
+        //Add the slot listener
+        p.activeContainer.addSlotListener(p);
+    }
+
+    public void destroy() {
+        player = null;
+        handler = null;
+        items = null;
+
+        HandlerList.unregisterAll(listener);
+
+        listener = null;
+    }
+}
