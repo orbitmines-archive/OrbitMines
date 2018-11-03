@@ -1,12 +1,16 @@
 package com.orbitmines.spigot.servers.kitpvp.handlers.passives;
 
 import com.orbitmines.api.utils.RandomUtils;
+import com.orbitmines.spigot.OrbitMines;
+import com.orbitmines.spigot.api.handlers.npc.FloatingItem;
+import com.orbitmines.spigot.api.utils.ItemUtils;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class PassiveEnchantingTable implements Passive.Handler<PlayerDeathEvent> {
 
@@ -42,6 +46,26 @@ public class PassiveEnchantingTable implements Passive.Handler<PlayerDeathEvent>
         item.addEnchantment(enchantment, l);
 
         this.setItem(kill, slot, item);
+
+        /* Build Item Hologram */
+        FloatingItem hologram = new FloatingItem(null, entity.getLocation()) {
+            @Override
+            public ItemStack build() {
+                return new ItemStack(item);
+            }
+        };
+        hologram.addLine(() -> Passive.ENCHANTING_TABLE.getColor().getChatColor() + "§l" + Passive.ENCHANTING_TABLE.getName(), false);
+        Enchantment finalEnchantment = enchantment;
+        int finalL = l;
+        hologram.addLine(() -> "§e§o+ " + ItemUtils.getName(finalEnchantment, finalL), false);
+        hologram.create(kill);
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                hologram.destroy();
+            }
+        }.runTaskLater(OrbitMines.getInstance(), 60L);
     }
 
     private ItemStack getRandomBuilder(PlayerInventory inventory, int slot) {

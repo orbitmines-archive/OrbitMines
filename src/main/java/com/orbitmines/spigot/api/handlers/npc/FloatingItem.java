@@ -10,6 +10,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,7 +48,7 @@ public class FloatingItem extends Hologram {
         clickBox = OrbitMines.getInstance().getNms().armorStand().spawn(spawnLocation.clone().subtract(0, getYOff() - Hologram.Y_OFFSET_PER_LINE * 3, 0), false);
         clickBox.setGravity(false);
 
-        item = spawnLocation.getWorld().dropItem(spawnLocation, itemBuilder.build());
+        item = spawnLocation.getWorld().dropItem(spawnLocation, build());
         item.setPickupDelay(Integer.MAX_VALUE);
         item.setInvulnerable(true);
 
@@ -68,7 +69,7 @@ public class FloatingItem extends Hologram {
     public void update() {
         super.update();
 
-        item.setItemStack(itemBuilder.build());
+        item.setItemStack(build());
     }
 
     @Override
@@ -113,6 +114,10 @@ public class FloatingItem extends Hologram {
 
     public void setItemBuilder(ItemBuilder itemBuilder) {
         this.itemBuilder = itemBuilder;
+    }
+
+    public ItemStack build() {
+        return this.itemBuilder.build();
     }
 
     public static List<FloatingItem> getFloatingItems() {
