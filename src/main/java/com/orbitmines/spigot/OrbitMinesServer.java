@@ -158,7 +158,7 @@ public abstract class OrbitMinesServer {
         Color chatColor = staffRank != StaffRank.NONE ? staffRank.getChatColor() : vipRank.getChatColor();
         Color prefixColor = staffRank != StaffRank.NONE ? staffRank.getPrefixColor() : vipRank.getPrefixColor();
 
-        cM.add(new Message("§9§lDISCORD§r"));
+        cM.add(new Message("§9§lDISCORD§r"), ClickEvent.Action.OPEN_URL, new Message("https://discord.gg/QjVGJMe"), HoverEvent.Action.SHOW_TEXT, new Message("§7Open §9https://discord.gg/QjVGJMe"));
         cM.add(new Message(" §7» "));
 
         String name = rankPrefix + "@" + member.getEffectiveName();

@@ -271,7 +271,7 @@ public class SurvivalPlayer extends OMPlayer {
 
     public Home getHome(String name) {
         for (Home home : this.homes) {
-            if (home.getName().equals(name))
+            if (home.getName().equalsIgnoreCase(name))
                 return home;
         }
         return null;

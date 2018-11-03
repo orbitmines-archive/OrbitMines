@@ -17,7 +17,6 @@ import com.orbitmines.spigot.api.cmds.vip.CommandAfk;
 import com.orbitmines.spigot.api.cmds.vip.CommandNick;
 import com.orbitmines.spigot.api.datapoints.DataPointHandler;
 import com.orbitmines.spigot.api.events.*;
-import com.orbitmines.api.CachedPlayer;
 import com.orbitmines.spigot.api.handlers.ConfigHandler;
 import com.orbitmines.spigot.api.handlers.NewsHologram;
 import com.orbitmines.spigot.api.handlers.OMPlayer;

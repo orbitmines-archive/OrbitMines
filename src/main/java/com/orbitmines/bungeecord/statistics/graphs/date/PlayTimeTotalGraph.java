@@ -29,14 +29,15 @@ public class PlayTimeTotalGraph extends DateGraphUpdater {
     protected void insert() {
         /* Fix First Entry */
         if (Database.get().getCount(Table.STATS_PLAY_TIME) == 0) {
-            Database.get().insert(Table.STATS_PLAY_TIME, System.currentTimeMillis() + "", "0", "0", "0");
+            Database.get().insert(Table.STATS_PLAY_TIME, System.currentTimeMillis() + "", "0", "0", "0", "0");
         } else {
             /* Insert */
             long HUB = Database.get().getLongSum(Table.PLAY_TIME, TablePlayTime.HUB);
             long SURVIVAL = Database.get().getLongSum(Table.PLAY_TIME, TablePlayTime.SURVIVAL);
-            long total = HUB + SURVIVAL;
+            long KITPVP = Database.get().getLongSum(Table.PLAY_TIME, TablePlayTime.KITPVP);
+            long total = HUB + SURVIVAL + KITPVP;
 
-            Database.get().insert(Table.STATS_PLAY_TIME, System.currentTimeMillis() + "", total + "", HUB + "", SURVIVAL + "");
+            Database.get().insert(Table.STATS_PLAY_TIME, System.currentTimeMillis() + "", total + "", HUB + "", SURVIVAL + "", KITPVP + "");
         }
     }
 
@@ -64,6 +65,13 @@ public class PlayTimeTotalGraph extends DateGraphUpdater {
                     }
                 },
                 new Instance(Server.SURVIVAL.toString(), Server.SURVIVAL.getColor(), TableStatsPlayTime.SURVIVAL) {
+                    @Override
+                    protected String getDescription() {
+                        long count = getCount(last, first);
+                        return NumberUtils.locale(count) + " " + (count == 1 ? "Hour" : "Hours");
+                    }
+                },
+                new Instance(Server.KITPVP.toString(), Server.KITPVP.getColor(), TableStatsPlayTime.KITPVP) {
                     @Override
                     protected String getDescription() {
                         long count = getCount(last, first);

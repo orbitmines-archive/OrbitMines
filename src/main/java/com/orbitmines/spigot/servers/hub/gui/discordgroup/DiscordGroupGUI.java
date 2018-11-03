@@ -164,7 +164,7 @@ public class DiscordGroupGUI extends GUI implements DiscordGroupGUIInstance {
 
                             for (int i = 0; i < name.length(); i++) {
                                 char c = name.charAt(i);
-                                if (!Character.isAlphabetic(c) && !Character.isDigit(c) && c != '_') {
+                                if (!Character.isAlphabetic(c) && !Character.isDigit(c) && c != '_' && c != ' ') {
                                     event.setWillClose(false);
                                     event.setWillDestroy(false);
                                     omp.sendMessage("Discord", Color.RED, "§7Je Discord Squad naam kan alleen maar bestaan uit letters en nummers.", "§7Your Discord Squad name can only contain alphabetic and numeric characters.");

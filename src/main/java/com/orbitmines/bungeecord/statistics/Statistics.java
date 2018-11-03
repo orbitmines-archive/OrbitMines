@@ -44,6 +44,7 @@ public class Statistics {
         tpsGraphs = new HashMap<>();
         tpsGraphs.put(Server.HUB, new TPSGraph(DiscordBot.ChannelType.stats_tps_hub, Server.HUB));
         tpsGraphs.put(Server.SURVIVAL, new TPSGraph(DiscordBot.ChannelType.stats_tps_survival, Server.SURVIVAL));
+        tpsGraphs.put(Server.KITPVP, new TPSGraph(DiscordBot.ChannelType.stats_tps_kitpvp, Server.KITPVP));
     }
 
     public OnlinePlayerGraph getOnlinePlayerGraph() {

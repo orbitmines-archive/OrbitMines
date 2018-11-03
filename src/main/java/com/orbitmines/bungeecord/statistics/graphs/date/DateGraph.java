@@ -315,7 +315,13 @@ public abstract class DateGraph extends Graph {
 
             for (Map<Column, String> entry : getEntries()) {
                 long millis = Long.parseLong(entry.get(timeColumn));
-                long loaded = Long.parseLong(entry.get(countColumn));
+                long loaded;
+                try {
+                    loaded = Long.parseLong(entry.get(countColumn));
+                } catch (NumberFormatException ex) {
+                    /* Column added later on */
+                    continue;
+                }
 
                 /* First Time */
                 if (firstTime == 0L) {

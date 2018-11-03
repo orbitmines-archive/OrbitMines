@@ -149,7 +149,8 @@ public class Survival extends OrbitMinesServer {
         world_the_end = Bukkit.getWorld("world_the_end");
         world_the_end.setPVP(false);
 
-        orbitMines.getLobby().getWorld().setTime(6000);
+//        orbitMines.getLobby().getWorld().setTime(6000);//TODO
+        orbitMines.getLobby().getWorld().setTime(18000);
 
         claimHandler = new ClaimHandler(this);
 
