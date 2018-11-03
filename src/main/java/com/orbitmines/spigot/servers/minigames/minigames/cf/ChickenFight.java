@@ -7,6 +7,7 @@ import com.orbitmines.spigot.servers.minigames.handlers.team.Team;
 import com.orbitmines.spigot.servers.minigames.handlers.team.place.Place;
 import com.orbitmines.spigot.servers.minigames.minigames.cf.phases.ChickenFightRunningPhase;
 import com.orbitmines.spigot.servers.minigames.utils.GameState;
+import org.bukkit.entity.Player;
 
 /**
  * Created by Robin on 4/5/2018.
@@ -23,6 +24,11 @@ public class ChickenFight extends MiniGameType {
 
 
         //ADDING PLACES
+    }
+
+    @Override
+    public MiniGamePlayer getPlayer(Player player) {
+        return null;
     }
 
     @Override

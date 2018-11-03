@@ -50,7 +50,12 @@ public abstract class DefaultLobbyPhase extends MiniGamePhase {
     public ScoreboardSet getScoreboard(MiniGamePlayer player) {
         return new DefaultScoreboard(player, () -> "ScoreboardTitle",
                 () -> "kek",
-                () -> "nuhh");
+                () -> "nuhh") {
+            @Override
+            public boolean canBypassSettings() {
+                return false;
+            }
+        };
         //TODO!
     }
 }

@@ -1,7 +1,8 @@
 package com.orbitmines.spigot.servers.uhsurvival2.handler;
 
 import com.orbitmines.spigot.api.handlers.OMPlayer;
-import com.orbitmines.spigot.servers.uhsurvival2.UHSurvival;
+import com.orbitmines.spigot.api.handlers.chat.ComponentMessage;
+import com.orbitmines.spigot.servers.uhsurvival.UHSurvival;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
@@ -38,6 +39,11 @@ public class UHPlayer extends OMPlayer {
     @Override
     public boolean canReceiveVelocity() {
         return false;
+    }
+
+    @Override
+    public Collection<ComponentMessage.TempTextComponent> getChatPrefix() {
+        return null;
     }
 
     public static UHPlayer getUHPlayer(UUID id){

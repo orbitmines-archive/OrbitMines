@@ -1,12 +1,15 @@
 package com.orbitmines.spigot.servers.uhsurvival;
 
 import com.google.common.io.ByteArrayDataInput;
+import com.orbitmines.api.CachedPlayer;
+import com.orbitmines.api.Color;
 import com.orbitmines.api.PluginMessage;
 import com.orbitmines.api.Server;
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.OrbitMinesServer;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.PluginMessageHandler;
+import com.orbitmines.spigot.api.handlers.chat.ComponentMessage;
 import com.orbitmines.spigot.servers.uhsurvival.commands.DungeonCommand;
 import com.orbitmines.spigot.servers.uhsurvival.event.*;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.UHPlayer;
@@ -15,6 +18,7 @@ import com.orbitmines.spigot.servers.uhsurvival.handlers.map.Map;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.map.block.BlockManager;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.map.dungeon.loottable.LootTableManager;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -96,6 +100,16 @@ public class UHSurvival extends OrbitMinesServer {
     @Override
     public void setupNpc(String npcName, Location location) {
 
+    }
+
+    @Override
+    public GameMode getGameMode() {
+        return GameMode.SURVIVAL;
+    }
+
+    @Override
+    public boolean format(CachedPlayer sender, OMPlayer receiver, Color color, String string, List<ComponentMessage.TempTextComponent> list) {
+        return false;
     }
 
     public Map getMap(World world){

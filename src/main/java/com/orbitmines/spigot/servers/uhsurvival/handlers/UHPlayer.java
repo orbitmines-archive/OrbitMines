@@ -1,6 +1,7 @@
 package com.orbitmines.spigot.servers.uhsurvival.handlers;
 
 import com.orbitmines.spigot.api.handlers.OMPlayer;
+import com.orbitmines.spigot.api.handlers.chat.ComponentMessage;
 import com.orbitmines.spigot.api.utils.MathUtils;
 import com.orbitmines.spigot.servers.uhsurvival.UHSurvival;
 import com.orbitmines.spigot.servers.uhsurvival.handlers.item.tool.Tool;
@@ -32,6 +33,11 @@ public class UHPlayer extends OMPlayer implements Attacker {
         this.instance = uhSurvival;
         this.updateMapLocation();
         this.inventory = new ToolInventory(getInventory());
+    }
+
+    @Override
+    public Collection<ComponentMessage.TempTextComponent> getChatPrefix() {
+        return null;
     }
 
     /* MAP METHODS */

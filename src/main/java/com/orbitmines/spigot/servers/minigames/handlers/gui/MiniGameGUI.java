@@ -38,13 +38,13 @@ public class MiniGameGUI extends GUI {
             ItemBuilder item;
             switch(miniGame.getState()){
                 case LOBBY:
-                    item = new ItemBuilder(Material.STAINED_GLASS, 1, 5);
+                    item = new ItemBuilder(Material.LIME_STAINED_GLASS);
                     break;
                 case MAINTENANCE:
-                    item = new ItemBuilder(Material.STAINED_GLASS, 1, 15);
+                    item = new ItemBuilder(Material.BLACK_STAINED_GLASS);
                     break;
                 default:
-                    item = new ItemBuilder(Material.STAINED_GLASS, 1, 14);
+                    item = new ItemBuilder(Material.RED_STAINED_GLASS);
                     break;
             }
 

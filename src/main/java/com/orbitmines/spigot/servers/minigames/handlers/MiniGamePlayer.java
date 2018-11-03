@@ -50,11 +50,6 @@ public abstract class MiniGamePlayer extends OMPlayer {
     }
 
     @Override
-    public void onVote(int votes) {
-
-    }
-
-    @Override
     public boolean canReceiveVelocity() {
         return false;
     }

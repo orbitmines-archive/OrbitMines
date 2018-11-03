@@ -1,7 +1,5 @@
 package com.orbitmines.spigot.servers.uhsurvival.commands;
 
-import com.orbitmines.api.Server;
-import com.orbitmines.api.StaffRank;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.cmd.StaffCommand;
 import com.orbitmines.spigot.api.utils.MathUtils;
@@ -16,7 +14,8 @@ public class DungeonCommand extends StaffCommand {
     private static final String[] presets = {"minY", "maxY", "loottable", "surface", "spawnrate", "name"};
 
     public DungeonCommand() {
-        super(Server.UHSURVIVAL, StaffRank.MODERATOR);
+//        super(Server.UHSURVIVAL, StaffRank.MODERATOR);
+        super(null);
     }
 
     @Override
@@ -125,8 +124,4 @@ public class DungeonCommand extends StaffCommand {
         return alias;
     }
 
-    @Override
-    public String getHelp(OMPlayer omp) {
-        return null;
-    }
 }
