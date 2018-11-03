@@ -39,7 +39,7 @@ public abstract class PlayerRunnable {
         if (!playerRunnables.containsKey(time.getTicks()))
             return;
 
-        if (task != null && playerRunnables.get(time.getTicks()).size() == 1) {
+        if (task != null && playerRunnables.get(time.getTicks()).size() <= 1) {
             task.cancel();
             playerRunnables.remove(time.getTicks());
             return;

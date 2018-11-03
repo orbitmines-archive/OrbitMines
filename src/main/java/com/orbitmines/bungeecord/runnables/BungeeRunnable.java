@@ -37,7 +37,7 @@ public abstract class BungeeRunnable {
         if (!runnables.containsKey(time.getSeconds()))
             return;
 
-        if (task != null && runnables.get(time.getSeconds()).size() == 1) {
+        if (task != null && runnables.get(time.getSeconds()).size() <= 1) {
             task.cancel();
             runnables.remove(time.getSeconds());
             return;

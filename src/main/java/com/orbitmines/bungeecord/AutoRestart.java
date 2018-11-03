@@ -62,7 +62,7 @@ public class AutoRestart extends BungeeRunnable {
         ConsoleUtils.msg("HourOfDay: " + Calendar.getInstance().get(Calendar.HOUR_OF_DAY));
 
         /* Initiate Restart at 4 o'clock */
-        if (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) == 4) {
+        if (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) % 6 ==  0) {
             initiateRestart();
             return;
         }

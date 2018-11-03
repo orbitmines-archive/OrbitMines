@@ -426,6 +426,7 @@ public class DiscordBot {
 //        stats_unique_joins(false),
         stats_tps_hub(false),
         stats_tps_survival(false),
+        stats_tps_kitpvp(false),
 
         staff(false);
 

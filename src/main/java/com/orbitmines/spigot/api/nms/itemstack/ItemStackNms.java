@@ -21,4 +21,6 @@ public interface ItemStackNms {
 
     Map<String, String> getMetaData(ItemStack item, String tagName);
 
+    ItemStack setAttackDamage(ItemStack item, int damage);
+
 }

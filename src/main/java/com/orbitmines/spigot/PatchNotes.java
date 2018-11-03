@@ -639,10 +639,89 @@ public class PatchNotes {
                 )
         ));
 
-        add(new Instance(Server.KITPVP, "v1.0.0", "KitPvP Release", "", "2018-10-10",
+        add(new Instance(Server.KITPVP, "v1.0.0", "KitPvP Release", "The KitPvP gamemode released on OrbitMines 5th anniversary, a revamp of OrbitMines' KitPvP.", "2018-10-10",
                 new Feature(
                         "KITPVP", Color.RED,
-                        "KitPvP Release!"
+                        "The KitPvP mode has been added to OrbitMines!"
+                ),
+                new Feature(
+                        "KITPVP LOBBY", Color.RED,
+                        "The KitPvP Lobby, built by Joep01 & Alderius.",
+                        "https://i.imgur.com/Sy97CIr.jpg"
+                ),
+                new Feature(
+                        "DESERT MAP", Color.RED,
+                        "The first KitPvP map! It's a revamp of an older OrbitMines KitPvP map built by Alderius.",
+                        "https://i.imgur.com/J9WF8Qz.jpg"
+                ),
+                new Feature(
+                        "KIT SELECTOR", Color.RED,
+                        "The Kit Selector allows you to easily see the differences between the different levels of a kit with its advanced system.",
+                        "https://i.imgur.com/A5ZpZIQ.jpg"
+                ),
+                new Feature(
+                        "PRISM SHOP", Color.BLUE,
+                        "You can buy coins with prisms in the KitPvP prism shop.",
+                        "https://i.imgur.com/bDAuD8U.jpg"
+                ),
+                new Feature(
+                        "STATS PER KIT", Color.LIME,
+                        "We're tracking kills, deaths and best kill streak per kit, and your total records!"
+                ),
+                new Feature(
+                        "KILLS PODIUM", Color.LIME,
+                        "The top 3 players with the highest kill count will be displayed in the lobby.",
+                        "https://i.imgur.com/gbd1HXe.jpg"
+                ),
+                new Feature(
+                        "COIN BOOSTERS", Color.ORANGE,
+                        "Coin boosters allow you to buy a booster for all players for 30 minutes with solars, increases multiplier with a higher rank.",
+                        "https://i.imgur.com/YtHFMwC.jpg"
+                ),
+                new Feature(
+                        "KNIGHT KIT", Color.GREEN,
+                        "The Knight kit has been added to KitPvP, a plain melee kit.",
+                        "https://i.imgur.com/YuYDAYZ.jpg"
+                ),
+                new Feature(
+                        "ARCHER KIT", Color.GREEN,
+                        "The Archer kit has been added to KitPvP, a kit focused on ranged attacks with a Lightning spell on their bow on later levels.",
+                        "https://i.imgur.com/4SAVZiZ.jpg"
+                ),
+                new Feature(
+                        "SOLDIER KIT", Color.GREEN,
+                        "The Soldier kit has been added to KitPvP, a plain melee kit at first, but turns out to have Thor's hammer on later levels.",
+                        "https://i.imgur.com/YSglGDY.jpg"
+                ),
+                new Feature(
+                        "MAGE KIT", Color.YELLOW,
+                        "The Mage kit has been added to KitPvP, a spellcaster kit who has a chance to receive more potions when killing an enemy.",
+                        "https://i.imgur.com/u6t9dKQ.jpg"
+                ),
+                new Feature(
+                        "TANK KIT", Color.YELLOW,
+                        "The Tank kit has been added to KitPvP, a melee kit with knockback evading, tankier but also slower than other kits.",
+                        "https://i.imgur.com/ETrG35bg.jpg"
+                ),
+                new Feature(
+                        "KING KIT", Color.YELLOW,
+                        "The King kit has been added to KitPvP, a melee kit with a regeneration spell on later levels.",
+                        "https://i.imgur.com/wrTzDwo.jpg"
+                ),
+                new Feature(
+                        "DRUNK KIT", Color.YELLOW,
+                        "The Drunk kit has been added to KitPvP, a drunk melee kit, or if you're up to a challenge: ranged.",
+                        "https://i.imgur.com/wPuYeeq.jpg"
+                ),
+                new Feature(
+                        "PYRO KIT", Color.YELLOW,
+                        "The Pyro kit has been added to KitPvP, a melee kit that causes and is immune to fire.",
+                        "https://i.imgur.com/e9YUGIZ.jpg"
+                ),
+                new Feature(
+                        "BUNNY KIT", Color.YELLOW,
+                        "The Bunny kit has been added to KitPvP, a speedy and jumpy melee kit with several spells on later levels.",
+                        "https://i.imgur.com/GOrJBEi.jpg"
                 )
         ));
     }

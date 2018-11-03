@@ -116,8 +116,8 @@ public class CodNpc_1_13_R2 implements CodNpc {
         }
 
         @Override
-        protected SoundEffect dC() {
-            return options.contains(Option.DISABLE_SOUNDS) ? null : super.dC();
+        protected SoundEffect dz() {
+            return options.contains(Option.DISABLE_SOUNDS) ? null : super.dz();
         }
 
         @Override

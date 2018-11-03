@@ -31,7 +31,7 @@ public class PassiveLastBreath implements Passive.LowHealthHandler<DummyEvent> {
 
     @Override
     public double getPercentage(int level) {
-        return 0.25D; /* Below 25% */
+        return 0.33D; /* Below 33% */
     }
 
     public PotionBuilder getBuilder(int level) {

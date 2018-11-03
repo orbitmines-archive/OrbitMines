@@ -53,7 +53,7 @@ public class ItemBuilder {
         this.enchantments = new HashMap<>(itemBuilder.enchantments);
         this.glow = itemBuilder.glow;
         this.unbreakable = itemBuilder.unbreakable;
-        this.itemFlags = itemBuilder.itemFlags;
+        this.itemFlags = new HashSet<>(itemBuilder.itemFlags);
     }
 
     public ItemBuilder(Material material, int amount, String displayName, List<String> lore) {

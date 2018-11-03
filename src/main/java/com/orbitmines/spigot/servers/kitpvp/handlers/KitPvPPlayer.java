@@ -114,6 +114,10 @@ public class KitPvPPlayer extends OMPlayer {
 
     /* Death & Kills */
     public void processKill(PlayerDeathEvent event, KitPvPPlayer killed) {
+        if (killed == this)
+            /* We don't want to do this, invite coins woohoo! */
+            return;
+
         addKill();
 
         this.killStreak++;
@@ -134,7 +138,7 @@ public class KitPvPPlayer extends OMPlayer {
             }
 
             setBestStreak(this.killStreak, true);
-        } else if (this.killStreak > getKitData(selectedKit.getHandler()).getBestStreak()) {
+        } else if (this.killStreak > getKitData((selectedKit != null ? selectedKit : getLastSelected()).getHandler()).getBestStreak()) {
             setBestStreak(this.killStreak, false);
         }
 
