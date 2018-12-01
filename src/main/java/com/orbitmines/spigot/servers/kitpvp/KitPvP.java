@@ -291,7 +291,7 @@ public class KitPvP extends OrbitMinesServer {
             new KitDrunk(this);
             new KitPyro(this);
             new KitBunny(this);
-//            new KitEnchanter(this);
+            new KitEnchanter(this);
 //            new KitSpider(this);
         }
 
