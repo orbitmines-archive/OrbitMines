@@ -5,7 +5,7 @@
 # Ignore target output
 target/
 
-# Ignore OS files
+# Ignore OS/Program files
 *.hprof
 *.pyc
 *.pyo
@@ -13,8 +13,10 @@ target/
 *.yarb
 *~
 .DS_Store
-.git;.hg
-.svn;CVS
+.git
+.hg
+.svn
+CVS
 __pycache__
 _svn
 vssver.scc
