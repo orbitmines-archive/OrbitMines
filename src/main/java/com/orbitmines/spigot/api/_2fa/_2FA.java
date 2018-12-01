@@ -21,6 +21,7 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.MapMeta;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -171,7 +172,8 @@ public class _2FA {
         } else {
             MapView mapView = Bukkit.createMap(omp.getWorld());
 
-            ItemStack item = new ItemBuilder(Material.MAP, 1, "§c§l2FA").setDamage(mapView.getId()).build();//TODO DOES THIS STILL WORK ? DAMAGE=MAPVIEW.GETID
+            ItemStack item = new ItemBuilder(Material.MAP, 1, "§c§l2FA").build();
+            //TODO FIX MAPVIEW.ID .setId(mapView.getId())
 
             omp.getPlayer().getInventory().setItem(0, item);
             omp.getPlayer().getInventory().setHeldItemSlot(0);
