@@ -164,6 +164,10 @@ public class ItemBuilder {
         return this;
     }
 
+    public boolean hasFlag(ItemFlag itemFlag) {
+        return itemFlags.contains(itemFlag);
+    }
+
     public Set<ItemFlag> getItemFlags() {
         return itemFlags;
     }

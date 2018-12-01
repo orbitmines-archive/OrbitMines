@@ -296,8 +296,9 @@ public class KitInfoGUI extends GUI {
             kitItem.applyRemovedPassive(removedPassives);
 
             /* Enchantments */
-            item.addFlag(ItemFlag.HIDE_ENCHANTS);
             for (Enchantment enchantment : item.getEnchantments().keySet()) {
+                item.addFlag(ItemFlag.HIDE_ENCHANTS);
+
                 String prefix = "";
                 if (!prevItem.getEnchantments().containsKey(enchantment)) {
                     prefix = "§a§l+NEW! ";

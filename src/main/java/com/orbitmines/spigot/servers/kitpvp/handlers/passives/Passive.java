@@ -88,7 +88,7 @@ public enum Passive {
             PassiveEnchantingTable passive = (PassiveEnchantingTable) getHandler();
 
             return new String[] {
-                    "  §3§oReceive a random enchantment",
+                    "  §7§oReceive §3§oa random enchantment",
                     "  §7§oon your weapon or armor when",
                     "  §7§okilling an opponent."
             };
