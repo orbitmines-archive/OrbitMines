@@ -73,7 +73,7 @@ function stop_server() {
     screen -X -S $1 kill
     sleep 2
   else
-	echo -e $PREFIX $LIGHT_RED$1' is not running. Start it with '$CYAN'orbitmines start '$1$LIGHT_RED'.'
+	echo -e $PREFIX $LIGHT_RED$1' is not running.  Start it with '$CYAN'orbitmines start '$1$LIGHT_RED'.'
   fi
 }
 
