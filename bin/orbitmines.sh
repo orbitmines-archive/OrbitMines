@@ -24,6 +24,8 @@ RESET='\033[0m'
 
 PREFIX=${RESET}[${DARK_GRAY}OrbitMines${RESET}]${WHITE}
 
+PLUGIN_JAR_PATH='/var/lib/jenkins/.m2/repository/com/orbitmines/OrbitMines/1.0-SNAPSHOT/OrbitMines-1.0-SNAPSHOT-jar-with-dependencies.jar'
+
 #
 # MySQL
 #
@@ -77,6 +79,16 @@ function stop_server() {
 
 function restart_server() {
   stop_server $1
+  start_server $1
+}
+
+function update_server() {
+  stop_server $1
+
+  echo -e $PREFIX $AQUA'Updating '$1'...'$RESET
+
+ $(cp ${PLUGIN_JAR_PATH} /home/orbitmines/$1)
+
   start_server $1
 }
 
@@ -173,6 +185,28 @@ case $1 in
       ;;
     esac
   ;;
+  update)
+    case $2 in
+      all)
+        echo -e $PREFIX 'Updating all servers...'
+        for server in "${servers[@]}"; do
+          update_server $server
+        done
+        echo -e $PREFIX 'Updated all servers.'
+      ;;
+      *)
+        if [ $# -eq 2 ]; then
+          server=${2^^}
+          if exists $server; then
+            update_server $server
+            open_console $server
+          fi
+        else
+          echo -e $PREFIX $RED'Unknown server.'
+        fi
+      ;;
+    esac
+  ;;
   console)
     if [ $# -eq 2 ]; then
       if exists ${2^^}; then
@@ -197,6 +231,7 @@ case $1 in
   echo -e $PREFIX '  ' $CYAN'orbitmines start (server)|all' $RESET'(Start a server)'
   echo -e $PREFIX '  ' $CYAN'orbitmines stop (server)|all' $RESET'(Stop a server)'
   echo -e $PREFIX '  ' $CYAN'orbitmines restart (server)|all' $RESET'(Restart a server)'
+  echo -e $PREFIX '  ' $CYAN'orbitmines update (server)|all' $RESET'(Update a server; last Jenkins Build)'
   echo -e $PREFIX '  ' $CYAN'orbitmines console (server)' $RESET'(Open a console, exit with Ctr+A+D)'
   ;;
 esac
