@@ -24,6 +24,7 @@ RESET='\033[0m'
 
 PREFIX=${RESET}[${DARK_GRAY}OrbitMines${RESET}]${WHITE}
 
+HOME_PATH='/home/orbitmines'
 PLUGIN_JAR_PATH='/var/lib/jenkins/.m2/repository/com/orbitmines/OrbitMines/1.0-SNAPSHOT/OrbitMines-1.0-SNAPSHOT-jar-with-dependencies.jar'
 
 #
@@ -62,7 +63,7 @@ function start_server() {
 	echo -e $PREFIX $ORANGE$1' is already running.'
   else
 	echo -e $PREFIX $LIGHT_GREEN'Starting '$1'...'$RESET
-    $(cd /home/orbitmines/$1 ; screen -dmS $1 sh start.sh ; cd /home/orbitmines)
+    $(cd ${HOME_PATH}/$1 ; screen -dmS $1 sh start.sh ; cd /home/orbitmines)
     sleep 1
   fi
 }
@@ -85,9 +86,11 @@ function restart_server() {
 function update_server() {
   stop_server $1
 
-  echo -e $PREFIX $AQUA'Updating '$1'...'$RESET
+  echo -e $PREFIX $LIGHT_CYAN'Updating '$1'...'$RESET
 
- $(cp ${PLUGIN_JAR_PATH} /home/orbitmines/$1)
+  sleep 1
+
+  $(cp ${PLUGIN_JAR_PATH} ${HOME_PATH}/$1/plugins)
 
   start_server $1
 }
