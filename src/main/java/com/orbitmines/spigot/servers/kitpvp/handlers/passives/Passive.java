@@ -143,6 +143,11 @@ public enum Passive {
         public String getDisplayName(int level) {
             return getColor().getChatColor() + "§o+" + level + ".0 Attack Damage";
         }
+
+        @Override
+        public ItemStack apply(ItemStackNms nms, ItemStack itemStack, int level) {
+            return nms.setAttackDamage(itemStack, level);
+        }
     },
     ARROW_REGEN("Arrow Regen", Color.SILVER, null, false, true, new PassiveArrowRegen()) {
         @Override

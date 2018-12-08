@@ -132,6 +132,10 @@ public class KitItemSkullBuilder extends PlayerSkullBuilder implements KitItem {
 
                 item = passive.apply(nms, item, level);
 
+                if (passive == Passive.ATTACK_DAMAGE)
+                    /* We handle this in apply */
+                    continue;
+
                 ItemMeta meta = item.getItemMeta();
                 List<String> lore = meta.getLore() != null ? meta.getLore() : new ArrayList<>();
 

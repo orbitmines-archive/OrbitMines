@@ -137,13 +137,13 @@ public class KitLeatherArmorBuilder extends LeatherArmorBuilder implements KitIt
             List<Passive> ordered = new ArrayList<>(this.passives.keySet());
             ordered.sort(Comparator.comparing(Enum::ordinal));
             for (Passive passive : ordered) {
-                if (passive == Passive.ATTACK_DAMAGE)
-                    /* We handle this in modify */
-                    continue;
-
                 int level = this.passives.get(passive);
 
                 item = passive.apply(nms, item, level);
+
+                if (passive == Passive.ATTACK_DAMAGE)
+                    /* We handle this in apply */
+                    continue;
 
                 ItemMeta meta = item.getItemMeta();
                 List<String> lore = meta.getLore() != null ? meta.getLore() : new ArrayList<>();
@@ -185,14 +185,7 @@ public class KitLeatherArmorBuilder extends LeatherArmorBuilder implements KitIt
 
     @Override
     protected ItemStack modify(ItemStack itemStack) {
-        ItemStack item = super.modify(itemStack);
-
-        if (passives.containsKey(Passive.ATTACK_DAMAGE)) {
-            ItemStackNms nms = kit.getHandler().getKitPvP().getOrbitMines().getNms().customItem();
-            item = nms.setAttackDamage(item, passives.get(Passive.ATTACK_DAMAGE));
-        }
-
-        return item;
+        return super.modify(itemStack);
     }
 
     @Override
