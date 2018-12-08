@@ -79,8 +79,13 @@ public class KitPvPPlayer extends OMPlayer {
     protected void onLogout() {
         EntityNms nms = orbitMines.getNms().entity();
 
-        if (selectedKit != null && player.getHealth() != nms.getAttribute(player, EntityNms.Attribute.MAX_HEALTH))
-            player.damage(nms.getAttribute(player, EntityNms.Attribute.MAX_HEALTH), player.getLastDamageCause().getEntity());
+        if (selectedKit != null) {
+            if (player.getHealth() != nms.getAttribute(player, EntityNms.Attribute.MAX_HEALTH))
+                player.damage(nms.getAttribute(player, EntityNms.Attribute.MAX_HEALTH), player.getLastDamageCause().getEntity());
+
+            /* Update damage dealt for current round */
+            getData().updateDamageDealt(selectedKit.getHandler().getId());
+        }
 
         players.remove(player);
     }
@@ -188,6 +193,9 @@ public class KitPvPPlayer extends OMPlayer {
 
     public void processDeath(PlayerDeathEvent event, @Nullable KitPvPPlayer killer) {
         addDeath();
+        
+        /* Update damage dealt for current round */
+        getData().updateDamageDealt(selectedKit.getHandler().getId());
 
         this.selectedKit = null;
         this.killStreak = 0;

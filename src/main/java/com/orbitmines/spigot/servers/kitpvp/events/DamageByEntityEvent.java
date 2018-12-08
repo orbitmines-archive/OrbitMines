@@ -16,6 +16,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
@@ -75,4 +76,13 @@ public class DamageByEntityEvent implements Listener {
         }
     }
 
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void afterOnDamage(EntityDamageByEntityEvent event) {
+        if (event.isCancelled() || !(event.getDamager() instanceof Player))
+            return;
+
+        Player damager = (Player) event.getDamager();
+        KitPvPPlayer ompD = KitPvPPlayer.getPlayer(damager);
+        ompD.getKitData(ompD.getSelectedKit().getHandler()).addDamageDealt(event.getFinalDamage());
+    }
 }
