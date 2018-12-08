@@ -177,6 +177,7 @@ public class StatsGUI extends GUI {
                 item.addLore("§7Kills: §c§l" + NumberUtils.locale(kitPvP.getKills()));
                 item.addLore("§7Deaths: §4§l" + NumberUtils.locale(kitPvP.getDeaths()));
                 item.addLore("§7Best streak: §5§l" + NumberUtils.locale(kitPvP.getBestStreak()));
+                item.addLore("§7Damage dealt: §c§l" + NumberUtils.biggestCountUnit(kitPvP.getDamageDealt()));
                 item.addLore("");
                 item.addLore("§7Kits");
                 for (int i = 0; i < kits.length; i++) {
