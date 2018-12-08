@@ -72,6 +72,7 @@ public class KitSelectorGUI extends GUI {
             icon.addLore("  §7Kills: §c§l" + NumberUtils.locale(data.getKills()));
             icon.addLore("  §7Deaths: §4§l" + NumberUtils.locale(data.getDeaths()));
             icon.addLore("  §7Best streak: §5§l" + NumberUtils.locale(data.getBestStreak()));
+            icon.addLore("  §7Damage dealt: §c§l" + NumberUtils.biggestCountUnit(data.getDamageDealt()));
 
             ItemInstance instance;
             if (level != 0 || saturday)

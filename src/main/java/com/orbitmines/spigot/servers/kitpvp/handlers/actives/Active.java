@@ -11,6 +11,7 @@ import com.orbitmines.spigot.api.handlers.itembuilders.PotionBuilder;
 import com.orbitmines.spigot.api.nms.itemstack.ItemStackNms;
 import com.orbitmines.spigot.api.utils.ItemUtils;
 import com.orbitmines.spigot.servers.kitpvp.handlers.KitPvPPlayer;
+import com.orbitmines.spigot.servers.kitpvp.handlers.passives.Passive;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -98,6 +99,14 @@ public enum Active {
 
     public ItemStack apply(ItemStackNms nms, ItemStack itemStack, int level) {
         return nms.setMetaData(itemStack, "active", toString(), level + "");
+    }
+
+    public int getLevel(ItemStackNms nms, ItemStack itemStack) {
+        Map<Active, Integer> all = from(nms, itemStack);
+        if (all == null)
+            return 0;
+
+        return all.getOrDefault(this, 0);
     }
 
     public boolean canUse(ItemStackNms nms, ItemStack itemStack, int level) {

@@ -639,6 +639,23 @@ public class PatchNotes {
                 )
         ));
 
+        add(new Instance(Server.KITPVP, "v1.1.0", "New Kit, Achievements & more", "The Enchanter Kit, 7 Achievements and damage tracking has been added to KitPvP!", "2018-12-08",
+                new Feature(
+                        "ENCHANTER KIT", Color.YELLOW,
+                        "The Enchanter Kit has been added to KitPvP. Become stronger with every kill you get!",
+                        "https://i.imgur.com/OPCWG2s.jpg"
+                ),
+                new Feature(
+                        "ACHIEVEMENTS", Color.FUCHSIA,
+                        "Seven Achievements have been added to KitPvP; Thor, Merlin, Kingslayer, Hunter, Drunken Fool, Manslaughter & Keeping Score.",
+                        "https://i.imgur.com/7xPnUfS.jpg"
+                ),
+                new Feature(
+                        "DAMAGE DEALT", Color.RED,
+                        "Damage dealt will now be tracked separately for all kits!"
+                )
+        ));
+
         add(new Instance(Server.KITPVP, "v1.0.0", "KitPvP Release", "The KitPvP gamemode released on OrbitMines 5th anniversary, a revamp of OrbitMines' KitPvP.", "2018-10-10",
                 new Feature(
                         "KITPVP", Color.RED,

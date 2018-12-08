@@ -20,11 +20,13 @@ import org.bukkit.potion.PotionEffectType;
 
 public class KitDrunk extends KitPvPKit {
 
+    public static final long ID = 6L;
+
     public KitDrunk(KitPvP kitPvP) {
         super(
                 kitPvP,
 
-                6L, "Drunk",
+                ID, "Drunk",
 
                 Color.YELLOW,
                 new ItemBuilder(Material.GLASS_BOTTLE),

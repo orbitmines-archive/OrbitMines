@@ -9,8 +9,12 @@ import com.orbitmines.api.database.Set;
 import com.orbitmines.api.database.tables.kitpvp.TableKitPvPKitStats;
 import com.orbitmines.api.database.tables.kitpvp.TableKitPvPPlayers;
 import com.orbitmines.spigot.api.handlers.Data;
+import com.orbitmines.spigot.servers.kitpvp.handlers.kits.KitArcher;
+import com.orbitmines.spigot.servers.kitpvp.handlers.kits.KitKnight;
+import com.orbitmines.spigot.servers.kitpvp.handlers.kits.KitSoldier;
 
 import java.util.*;
+import java.util.UUID;
 
 import static com.orbitmines.api.database.tables.kitpvp.TableKitPvPPlayers.*;
 
@@ -23,6 +27,8 @@ public class KitPvPData extends Data {
     private int deaths;
 
     private int bestStreak;
+
+    private double damageDealt;
 
     private long lastSelectedId;
     private int lastSelectedLevel;
@@ -40,6 +46,8 @@ public class KitPvPData extends Data {
 
         bestStreak = 0;
 
+        damageDealt = 0D;
+
         lastSelectedId = 0;
         lastSelectedLevel = 1;
 
@@ -49,7 +57,7 @@ public class KitPvPData extends Data {
     @Override
     public void load() {
         if (!Database.get().contains(table, new Column[] { TableKitPvPPlayers.UUID }, new Where(TableKitPvPPlayers.UUID, getUUID().toString()))) {
-            Database.get().insert(table, uuid.toString(), coins + "", experience + "", kills + "", deaths + "", bestStreak + "", lastSelectedId + "", lastSelectedLevel + "");
+            Database.get().insert(table, uuid.toString(), coins + "", experience + "", kills + "", deaths + "", bestStreak + "", damageDealt + "", lastSelectedId + "", lastSelectedLevel + "");
         } else {
             Map<Column, String> values = Database.get().getValues(table, new Column[] {
                     COINS,
@@ -57,6 +65,7 @@ public class KitPvPData extends Data {
                     KILLS,
                     DEATHS,
                     BEST_STREAK,
+                    DAMAGE_DEALT,
                     LAST_SELECTED_ID,
                     LAST_SELECTED_LEVEL
             }, new Where(TableKitPvPPlayers.UUID, getUUID().toString()));
@@ -68,6 +77,8 @@ public class KitPvPData extends Data {
             deaths = Integer.parseInt(values.get(DEATHS));
 
             bestStreak = Integer.parseInt(values.get(BEST_STREAK));
+
+            damageDealt = Double.parseDouble(values.get(DAMAGE_DEALT));
 
             lastSelectedId = Long.parseLong(values.get(LAST_SELECTED_ID));
             lastSelectedLevel = Integer.parseInt(values.get(LAST_SELECTED_LEVEL));
@@ -173,6 +184,32 @@ public class KitPvPData extends Data {
     }
 
     /*
+        DamageDealt
+     */
+
+    public double getDamageDealt() {
+        return damageDealt;
+    }
+
+    public void addDamageDealt(long kitId, double damageDealt) {
+        /* Total Stats */
+        this.damageDealt += damageDealt;
+
+        /* Kit Stats */
+        KitData data = getKitData(kitId);
+        data.addDamageDealt(damageDealt);
+    }
+
+    public void updateDamageDealt(long kitId) {
+        /* Total Stats */
+        Database.get().update(Table.KITPVP_PLAYERS, new Set(TableKitPvPPlayers.DAMAGE_DEALT, this.damageDealt), new Where(TableKitPvPPlayers.UUID, getUUID().toString()));
+
+        /* Kit Stats */
+        KitData data = getKitData(kitId);
+        data.updateDamageDealt();
+    }
+
+    /*
         Last Selected
      */
 
@@ -212,11 +249,19 @@ public class KitPvPData extends Data {
         return data;
     }
 
-    public List<KitData> getAllKitData() {
+    public List<KitData> getAllKitData(Long... kitIds) {
         List<KitData> list = new ArrayList<>();
 
+        //TODO ADD KIT IDS TO WHERE IN () CLAUSE
+        List<Long> ids = null;
+        if (kitIds != null && kitIds.length != 0)
+            ids = Arrays.asList(kitIds);
+        //
+
         for (Map<Column, String> entry : Database.get().getEntries(Table.KITPVP_KIT_STATS, TableKitPvPKitStats.KIT_ID, new Where(TableKitPvPKitStats.UUID, getUUID().toString()))) {
-            list.add(getKitData(Long.parseLong(entry.get(TableKitPvPKitStats.KIT_ID))));
+            long kitId = Long.parseLong(entry.get(TableKitPvPKitStats.KIT_ID));
+            if (ids == null || ids.contains(kitId))
+                list.add(getKitData(kitId));
         }
 
         return list;
@@ -233,27 +278,32 @@ public class KitPvPData extends Data {
 
         private int bestStreak;
 
+        private double damageDealt;
+
         public KitData(long kitId) {
             this.kitId = kitId;
 
             /* Unlock Knight, Archer & Soldier. */
-            this.unlockedLevel = kitId <= 2 ? 1 : 0;
+            this.unlockedLevel = this.kitId == KitKnight.ID || this.kitId == KitArcher.ID || this.kitId == KitSoldier.ID ? 1 : 0;
 
             this.kills = 0;
             this.deaths = 0;
 
             this.bestStreak = 0;
+
+            this.damageDealt = 0D;
         }
 
         public void load() {
             if (!Database.get().contains(Table.KITPVP_KIT_STATS, new Column[] { TableKitPvPKitStats.UUID }, new Where(TableKitPvPKitStats.UUID, getUUID().toString()), new Where(TableKitPvPKitStats.KIT_ID, kitId))) {
-                Database.get().insert(Table.KITPVP_KIT_STATS, uuid.toString(), kitId + "", unlockedLevel + "", kills + "", deaths + "", bestStreak + "");
+                Database.get().insert(Table.KITPVP_KIT_STATS, uuid.toString(), kitId + "", unlockedLevel + "", kills + "", deaths + "", bestStreak + "", damageDealt + "");
             } else {
                 Map<Column, String> values = Database.get().getValues(Table.KITPVP_KIT_STATS, new Column[] {
                         TableKitPvPKitStats.UNLOCKED_LEVEL,
                         TableKitPvPKitStats.KILLS,
                         TableKitPvPKitStats.DEATHS,
-                        TableKitPvPKitStats.BEST_STREAK
+                        TableKitPvPKitStats.BEST_STREAK,
+                        TableKitPvPKitStats.DAMAGE_DEALT
                 }, new Where(TableKitPvPKitStats.UUID, getUUID().toString()), new Where(TableKitPvPKitStats.KIT_ID, kitId));
 
                 unlockedLevel = Integer.parseInt(values.get(TableKitPvPKitStats.UNLOCKED_LEVEL));
@@ -262,6 +312,8 @@ public class KitPvPData extends Data {
                 deaths = Integer.parseInt(values.get(TableKitPvPKitStats.DEATHS));
 
                 bestStreak = Integer.parseInt(values.get(TableKitPvPKitStats.BEST_STREAK));
+
+                damageDealt = Double.parseDouble(values.get(TableKitPvPKitStats.DAMAGE_DEALT));
             }
         }
 
@@ -303,6 +355,18 @@ public class KitPvPData extends Data {
             this.bestStreak = bestStreak;
 
             Database.get().update(Table.KITPVP_KIT_STATS, new Set(TableKitPvPKitStats.BEST_STREAK, this.bestStreak), new Where(TableKitPvPKitStats.UUID, getUUID().toString()), new Where(TableKitPvPKitStats.KIT_ID, kitId));
+        }
+
+        public double getDamageDealt() {
+            return damageDealt;
+        }
+
+        public void addDamageDealt(double damageDealt) {
+            this.damageDealt += damageDealt;
+        }
+
+        public void updateDamageDealt() {
+            Database.get().update(Table.KITPVP_KIT_STATS, new Set(TableKitPvPKitStats.DAMAGE_DEALT, this.damageDealt), new Where(TableKitPvPKitStats.UUID, getUUID().toString()), new Where(TableKitPvPKitStats.KIT_ID, kitId));
         }
     }
 }

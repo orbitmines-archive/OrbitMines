@@ -43,6 +43,18 @@ public class NumberUtils {
         return romanEqui;
     }
 
+    public static String biggestCountUnit(double count) {
+        int unitSize = 1000;
+
+        if (count < unitSize)
+            return String.format("%.1f", count);
+
+        int exponent = (int) (Math.log(count) / Math.log(unitSize));
+        char pre = "kMGTPE".charAt(exponent-1);
+
+        return String.format("%.1f%s", count / Math.pow(unitSize, exponent), pre);
+    }
+
     public static String locale(long number) {
         return NumberFormat.getNumberInstance(Locale.US).format(number);
     }

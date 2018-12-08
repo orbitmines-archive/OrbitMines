@@ -15,12 +15,13 @@ import org.bukkit.inventory.ItemFlag;
 
 public class KitKing extends KitPvPKit {
 
+    public static final long ID = 5L;
 
     public KitKing(KitPvP kitPvP) {
         super(
                 kitPvP,
 
-                5L, "King",
+                ID, "King",
 
                 Color.YELLOW,
                 new ItemBuilder(Material.DIAMOND_HELMET).addFlag(ItemFlag.HIDE_ATTRIBUTES),

@@ -21,11 +21,13 @@ import org.bukkit.potion.PotionEffectType;
 
 public class KitPyro extends KitPvPKit {
 
+    public static final long ID = 7L;
+
     public KitPyro(KitPvP kitPvP) {
         super(
                 kitPvP,
 
-                7L, "Pyro",
+                ID, "Pyro",
 
                 Color.YELLOW,
                 new ItemBuilder(Material.GOLDEN_HELMET).addFlag(ItemFlag.HIDE_ATTRIBUTES),

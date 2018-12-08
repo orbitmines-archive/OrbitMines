@@ -21,6 +21,11 @@ public class Set {
         this(column, "" + value);
     }
 
+
+    public Set(Column column, double value) {
+        this(column, "" + value);
+    }
+
     public Set(Column column, String value) {
         this.column = column;
         this.value = value;

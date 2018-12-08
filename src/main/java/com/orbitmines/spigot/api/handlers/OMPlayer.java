@@ -16,6 +16,8 @@ import com.orbitmines.discordbot.utils.DiscordSpigotUtils;
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.Freezer;
 import com.orbitmines.spigot.api.Loot;
+import com.orbitmines.spigot.api.handlers.achievements.Achievement;
+import com.orbitmines.spigot.api.handlers.achievements.AchievementHandler;
 import com.orbitmines.spigot.api.handlers.achievements.StoredProgressAchievement;
 import com.orbitmines.spigot.api.handlers.chat.ComponentMessage;
 import com.orbitmines.spigot.api.handlers.chat.Title;
@@ -348,6 +350,15 @@ public abstract class OMPlayer {
         sendMessage("§7§m---------------------------------------------");
 
         checkCachedVotes();
+
+        /* Check if any new achievements have been completed/any have completed while the player was away */
+        for (Server server : Server.values()) {
+            for (Achievement achievement : server.achievementValues()) {
+                AchievementHandler handler = achievement.getHandler();
+                if (handler.hasCompleted(this))
+                    handler.complete(this, true);
+            }
+        }
     }
 
     /*

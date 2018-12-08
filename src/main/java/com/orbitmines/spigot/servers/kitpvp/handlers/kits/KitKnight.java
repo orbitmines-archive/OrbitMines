@@ -22,11 +22,13 @@ import org.bukkit.potion.PotionEffectType;
 
 public class KitKnight extends KitPvPKit {
 
+    public static final long ID = 0L;
+
     public KitKnight(KitPvP kitPvP) {
         super(
                 kitPvP,
 
-                0L, "Knight",
+                ID, "Knight",
 
                 Color.GREEN,
                 new ItemBuilder(Material.IRON_SWORD).addFlag(ItemFlag.HIDE_ATTRIBUTES),

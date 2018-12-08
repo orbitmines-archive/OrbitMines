@@ -4,13 +4,17 @@ import com.orbitmines.api.Color;
 import com.orbitmines.api.utils.NumberUtils;
 import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
+import com.orbitmines.spigot.api.handlers.achievements.StoredProgressAchievement;
 import com.orbitmines.spigot.api.handlers.chat.ActionBar;
 import com.orbitmines.spigot.api.handlers.chat.ComponentMessage;
 import com.orbitmines.spigot.api.handlers.chat.Title;
 import com.orbitmines.spigot.api.handlers.npc.FloatingItem;
 import com.orbitmines.spigot.api.nms.entity.EntityNms;
 import com.orbitmines.spigot.api.nms.itemstack.ItemStackNms;
+import com.orbitmines.spigot.api.utils.ItemUtils;
+import com.orbitmines.spigot.servers.kitpvp.KitClass;
 import com.orbitmines.spigot.servers.kitpvp.KitPvP;
+import com.orbitmines.spigot.servers.kitpvp.handlers.kits.*;
 import com.orbitmines.spigot.servers.kitpvp.handlers.passives.DummyEvent;
 import com.orbitmines.spigot.servers.kitpvp.handlers.passives.Passive;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -79,8 +83,13 @@ public class KitPvPPlayer extends OMPlayer {
     protected void onLogout() {
         EntityNms nms = orbitMines.getNms().entity();
 
-        if (selectedKit != null && player.getHealth() != nms.getAttribute(player, EntityNms.Attribute.MAX_HEALTH))
-            player.damage(nms.getAttribute(player, EntityNms.Attribute.MAX_HEALTH), player.getLastDamageCause().getEntity());
+        if (selectedKit != null) {
+            if (player.getHealth() != nms.getAttribute(player, EntityNms.Attribute.MAX_HEALTH))
+                player.damage(nms.getAttribute(player, EntityNms.Attribute.MAX_HEALTH), player.getLastDamageCause().getEntity());
+
+            /* Update damage dealt for current round */
+            getData().updateDamageDealt(selectedKit.getHandler().getId());
+        }
 
         players.remove(player);
     }
@@ -180,6 +189,46 @@ public class KitPvPPlayer extends OMPlayer {
         /* Kill Hologram */
         //TODO
 
+        /* Handle Achievements */
+        ItemStack itemStack = player.getInventory().getItemInMainHand();
+        if (!ItemUtils.isNull(itemStack) && itemStack.getItemMeta().getDisplayName().equals(KitSoldier.JARNBJORN)) {
+            StoredProgressAchievement handler = (StoredProgressAchievement) KitPvPAchievements.THOR.getHandler();
+            handler.progress(this, 1, true);
+        }
+
+        if (selectedKit.getHandler().getKitClass() == KitClass.SPELLCASTER) {
+            StoredProgressAchievement handler = (StoredProgressAchievement) KitPvPAchievements.MERLIN.getHandler();
+            if (handler.hasCompleted(this))
+                handler.complete(this, true);
+        }
+
+        if (killed.selectedKit.getHandler().getId() == KitKing.ID) {
+            StoredProgressAchievement handler = (StoredProgressAchievement) KitPvPAchievements.KINGSLAYER.getHandler();
+            handler.progress(this, 1, true);
+        }
+
+        if (selectedKit.getHandler().getId() == KitArcher.ID && killed.selectedKit.getHandler().getId() == KitBunny.ID) {
+            StoredProgressAchievement handler = (StoredProgressAchievement) KitPvPAchievements.HUNTER.getHandler();
+            handler.progress(this, 1, true);
+        }
+
+        if (selectedKit.getHandler().getId() == KitDrunk.ID) {
+            StoredProgressAchievement handler = (StoredProgressAchievement) KitPvPAchievements.DRUNKEN_FOOL.getHandler();
+            if (handler.hasCompleted(this))
+                handler.complete(this, true);
+        }
+
+        {
+            StoredProgressAchievement handler = (StoredProgressAchievement) KitPvPAchievements.MANSLAUGHTER.getHandler();
+            if (handler.hasCompleted(this))
+                handler.complete(this, true);
+        }
+
+        {
+            StoredProgressAchievement handler = (StoredProgressAchievement) KitPvPAchievements.KEEPING_SCORE.getHandler();
+            if (handler.hasCompleted(this))
+                handler.complete(this, true);
+        }
     }
 
     private int applyMultiplier(int current, double multiplier) {
@@ -188,6 +237,9 @@ public class KitPvPPlayer extends OMPlayer {
 
     public void processDeath(PlayerDeathEvent event, @Nullable KitPvPPlayer killer) {
         addDeath();
+
+        /* Update damage dealt for current round */
+        getData().updateDamageDealt(selectedKit.getHandler().getId());
 
         this.selectedKit = null;
         this.killStreak = 0;
@@ -475,7 +527,7 @@ public class KitPvPPlayer extends OMPlayer {
         throw new IllegalStateException();
     }
 
-    protected KitPvPData getData() {
+    public KitPvPData getData() {
         return (KitPvPData) getData(Data.Type.KITPVP);
     }
 

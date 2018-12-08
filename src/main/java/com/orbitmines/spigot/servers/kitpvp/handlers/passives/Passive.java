@@ -88,9 +88,10 @@ public enum Passive {
             PassiveEnchantingTable passive = (PassiveEnchantingTable) getHandler();
 
             return new String[] {
-                    "  §3§oReceive a random enchantment",
-                    "  §7§oon your weapon or armor when",
-                    "  §7§okilling an opponent."
+                    "  §3§o" + String.format("%.1f", passive.getChance(level) * 100) + "% §7§ochance to receive",
+                    "  §3§oa random enchantment §7§oon",
+                    "  §7§oyour weapon or armor",
+                    "  §7§owhen ewarkilling an opponent."
             };
         }
     },
@@ -141,6 +142,11 @@ public enum Passive {
         @Override
         public String getDisplayName(int level) {
             return getColor().getChatColor() + "§o+" + level + ".0 Attack Damage";
+        }
+
+        @Override
+        public ItemStack apply(ItemStackNms nms, ItemStack itemStack, int level) {
+            return super.apply(nms, nms.setAttackDamage(itemStack, level), level);
         }
     },
     ARROW_REGEN("Arrow Regen", Color.SILVER, null, false, true, new PassiveArrowRegen()) {
@@ -243,6 +249,14 @@ public enum Passive {
 
     public ItemStack apply(ItemStackNms nms, ItemStack itemStack, int level) {
         return nms.setMetaData(itemStack, "passive", toString(), level + "");
+    }
+
+    public int getLevel(ItemStackNms nms, ItemStack itemStack) {
+        Map<Passive, Integer> all = from(nms, itemStack);
+        if (all == null)
+            return 0;
+
+        return all.getOrDefault(this, 0);
     }
 
     public interface Handler<T extends Event> {
