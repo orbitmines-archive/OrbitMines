@@ -3,6 +3,7 @@ package com.orbitmines.spigot.servers.kitpvp.handlers.passives;
 import com.orbitmines.api.utils.RandomUtils;
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.handlers.npc.FloatingItem;
+import com.orbitmines.spigot.api.nms.itemstack.ItemStackNms;
 import com.orbitmines.spigot.api.utils.ItemUtils;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -15,6 +16,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class PassiveEnchantingTable implements Passive.Handler<PlayerDeathEvent> {
+
+    private final ItemStackNms nms;
+
+    public PassiveEnchantingTable() {
+        nms = OrbitMines.getInstance().getNms().customItem();
+    }
 
     @Override
     public void trigger(PlayerDeathEvent event, int level) {
@@ -35,15 +42,20 @@ public class PassiveEnchantingTable implements Passive.Handler<PlayerDeathEvent>
 
         int newLevel = itemStack.getEnchantmentLevel(enchantment) + 1;
 
+        /* Since 1.13 sharpness enchantment no longer applies on items it cannot enchant, so we do it ourselves. */
+        if (enchantment == Enchantment.DAMAGE_ALL && !enchantment.canEnchantItem(itemStack))
+            itemStack = Passive.ATTACK_DAMAGE.apply(nms, itemStack, newLevel);
+
         itemStack.addUnsafeEnchantment(enchantment, newLevel);
 
         slot.setFor(killer, itemStack);
 
         /* Build Item Hologram */
+        ItemStack fItemstack = itemStack;
         FloatingItem hologram = new FloatingItem(null, entity.getLocation()) {
             @Override
             public ItemStack build() {
-                return new ItemStack(itemStack);
+                return new ItemStack(fItemstack);
             }
         };
         hologram.addLine(() -> Passive.ENCHANTING_TABLE.getColor().getChatColor() + "§l" + Passive.ENCHANTING_TABLE.getName(), false);

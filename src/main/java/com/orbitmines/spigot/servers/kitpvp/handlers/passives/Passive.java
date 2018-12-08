@@ -91,7 +91,7 @@ public enum Passive {
                     "  §3§o" + String.format("%.1f", passive.getChance(level) * 100) + "% §7§ochance to receive",
                     "  §3§oa random enchantment §7§oon",
                     "  §7§oyour weapon or armor",
-                    "  §7§owhen killing an opponent."
+                    "  §7§owhen ewarkilling an opponent."
             };
         }
     },
