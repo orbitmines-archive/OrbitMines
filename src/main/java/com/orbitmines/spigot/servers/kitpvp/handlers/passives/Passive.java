@@ -146,7 +146,7 @@ public enum Passive {
 
         @Override
         public ItemStack apply(ItemStackNms nms, ItemStack itemStack, int level) {
-            return nms.setAttackDamage(itemStack, level);
+            return super.apply(nms, nms.setAttackDamage(itemStack, level), level);
         }
     },
     ARROW_REGEN("Arrow Regen", Color.SILVER, null, false, true, new PassiveArrowRegen()) {
