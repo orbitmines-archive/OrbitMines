@@ -102,7 +102,7 @@ public enum Active {
     }
 
     public int getLevel(ItemStackNms nms, ItemStack itemStack) {
-        Map<Passive, Integer> all = from(nms, itemStack);
+        Map<Active, Integer> all = from(nms, itemStack);
         if (all == null)
             return 0;
 

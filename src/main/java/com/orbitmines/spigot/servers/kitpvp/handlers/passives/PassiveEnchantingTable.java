@@ -45,7 +45,7 @@ public class PassiveEnchantingTable implements Passive.Handler<PlayerDeathEvent>
 
         /* Since 1.13 sharpness enchantment no longer applies on items it cannot enchant, so we do it ourselves. */
         if (enchantment == Enchantment.DAMAGE_ALL && !enchantment.canEnchantItem(itemStack))
-            itemStack = Passive.ATTACK_DAMAGE.apply(nms, itemStack, newLevel);
+            itemStack = Passive.ATTACK_DAMAGE.apply(nms, itemStack, Passive.ATTACK_DAMAGE.);
 
         itemStack.addUnsafeEnchantment(enchantment, newLevel);
 
@@ -225,11 +225,10 @@ public class PassiveEnchantingTable implements Passive.Handler<PlayerDeathEvent>
         }
 
         private int getMaxLevel(Enchantment enchantment) {
-            if (enchantment == Enchantment.DAMAGE_ALL ||
+            if (enchantment == Enchantment.ARROW_DAMAGE ||
+                enchantment == Enchantment.DAMAGE_ALL ||
                 enchantment == Enchantment.PROTECTION_ENVIRONMENTAL
             )
-                return 10;
-            else if (enchantment == Enchantment.ARROW_DAMAGE)
                 return 8;
             else if (enchantment == Enchantment.KNOCKBACK ||
                      enchantment == Enchantment.SWEEPING_EDGE ||

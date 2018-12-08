@@ -51,7 +51,7 @@ public class KitEnchanter extends KitPvPKit {
         protected Kit registerKit() {
             Kit kit = new Kit(name + "_1");
 
-            kit.setItem(0, new KitItemBuilder(this, Material.ENCHANTED_BOOK).addPassive(Passive.ENCHANTING_TABLE, 1).addPassive(Passive.ATTACK_DAMAGE, 4).addEnchantment(Enchantment.DAMAGE_ALL, 4));
+            kit.setItem(0, new KitItemBuilder(this, Material.ENCHANTED_BOOK).addPassive(Passive.ENCHANTING_TABLE, 1).addPassive(Passive.ATTACK_DAMAGE, 4));
 
             kit.setHelmet(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.HELMET, DEFAULT_COLOR).addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1));
             kit.setChestplate(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.CHESTPLATE, DEFAULT_COLOR).addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1));
@@ -88,7 +88,7 @@ public class KitEnchanter extends KitPvPKit {
         protected Kit registerKit() {
             Kit kit = new Kit(name + "_2");
 
-            kit.setItem(0, new KitItemBuilder(this, Material.ENCHANTED_BOOK).addPassive(Passive.ENCHANTING_TABLE, 2).addPassive(Passive.ATTACK_DAMAGE, 4).addEnchantment(Enchantment.DAMAGE_ALL, 4));
+            kit.setItem(0, new KitItemBuilder(this, Material.ENCHANTED_BOOK).addPassive(Passive.ENCHANTING_TABLE, 2).addPassive(Passive.ATTACK_DAMAGE, 4));
 
             kit.setHelmet(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.HELMET, DEFAULT_COLOR).addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1));
             kit.setChestplate(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.CHESTPLATE, DEFAULT_COLOR).addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1));
@@ -125,7 +125,7 @@ public class KitEnchanter extends KitPvPKit {
         protected Kit registerKit() {
             Kit kit = new Kit(name + "_3");
 
-            kit.setItem(0, new KitItemBuilder(this, Material.ENCHANTED_BOOK).addPassive(Passive.ENCHANTING_TABLE, 3).addPassive(Passive.ATTACK_DAMAGE, 5).addEnchantment(Enchantment.DAMAGE_ALL, 5));
+            kit.setItem(0, new KitItemBuilder(this, Material.ENCHANTED_BOOK).addPassive(Passive.ENCHANTING_TABLE, 3).addPassive(Passive.ATTACK_DAMAGE, 5));
 
             kit.setHelmet(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.HELMET, DEFAULT_COLOR).addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 2));
             kit.setChestplate(new KitLeatherArmorBuilder(this, LeatherArmorBuilder.Type.CHESTPLATE, DEFAULT_COLOR).addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 2));
