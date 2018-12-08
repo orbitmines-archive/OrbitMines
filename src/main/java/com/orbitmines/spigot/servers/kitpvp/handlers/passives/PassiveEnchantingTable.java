@@ -207,6 +207,9 @@ public class PassiveEnchantingTable implements Passive.Handler<PlayerDeathEvent>
         public Enchantment randomEnchantment(Player player) {
             ItemStack itemStack = getFor(player);
 
+            if (itemStack == null)
+                return null;
+
             Set<Enchantment> enchantments = new HashSet<>();
             for (Enchantment enchantment : this.enchantments) {
                 if (itemStack.getEnchantmentLevel(enchantment) < getMaxLevel(enchantment))
@@ -248,7 +251,7 @@ public class PassiveEnchantingTable implements Passive.Handler<PlayerDeathEvent>
         public static Slot random(Player player) {
             Set<Slot> slots = new HashSet<>();
             for (Slot slot : values()) {
-                if (slot.getFor(player) != null && slot.randomEnchantment(player) != null)
+                if (slot.randomEnchantment(player) != null)
                     slots.add(slot);
             }
 
