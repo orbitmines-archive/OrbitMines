@@ -163,7 +163,7 @@ public class StatsGUI extends GUI {
 
                 KitPvPPlayer dummy = new KitPvPPlayer(null, null) {
                     @Override
-                    protected KitPvPData getData() {
+                    public KitPvPData getData() {
                         return kitPvP;
                     }
                 };

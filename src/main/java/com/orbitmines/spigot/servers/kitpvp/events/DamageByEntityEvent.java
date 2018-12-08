@@ -83,6 +83,6 @@ public class DamageByEntityEvent implements Listener {
 
         Player damager = (Player) event.getDamager();
         KitPvPPlayer ompD = KitPvPPlayer.getPlayer(damager);
-        ompD.getKitData(ompD.getSelectedKit().getHandler()).addDamageDealt(event.getFinalDamage());
+        ompD.getData().addDamageDealt(ompD.getSelectedKit().getHandler().getId(), event.getFinalDamage());
     }
 }

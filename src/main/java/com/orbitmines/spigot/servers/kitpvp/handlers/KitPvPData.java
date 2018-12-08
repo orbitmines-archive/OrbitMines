@@ -9,8 +9,12 @@ import com.orbitmines.api.database.Set;
 import com.orbitmines.api.database.tables.kitpvp.TableKitPvPKitStats;
 import com.orbitmines.api.database.tables.kitpvp.TableKitPvPPlayers;
 import com.orbitmines.spigot.api.handlers.Data;
+import com.orbitmines.spigot.servers.kitpvp.handlers.kits.KitArcher;
+import com.orbitmines.spigot.servers.kitpvp.handlers.kits.KitKnight;
+import com.orbitmines.spigot.servers.kitpvp.handlers.kits.KitSoldier;
 
 import java.util.*;
+import java.util.UUID;
 
 import static com.orbitmines.api.database.tables.kitpvp.TableKitPvPPlayers.*;
 
@@ -245,11 +249,19 @@ public class KitPvPData extends Data {
         return data;
     }
 
-    public List<KitData> getAllKitData() {
+    public List<KitData> getAllKitData(Long... kitIds) {
         List<KitData> list = new ArrayList<>();
 
+        //TODO ADD KIT IDS TO WHERE IN () CLAUSE
+        List<Long> ids = null;
+        if (kitIds != null && kitIds.length != 0)
+            ids = Arrays.asList(kitIds);
+        //
+
         for (Map<Column, String> entry : Database.get().getEntries(Table.KITPVP_KIT_STATS, TableKitPvPKitStats.KIT_ID, new Where(TableKitPvPKitStats.UUID, getUUID().toString()))) {
-            list.add(getKitData(Long.parseLong(entry.get(TableKitPvPKitStats.KIT_ID))));
+            long kitId = Long.parseLong(entry.get(TableKitPvPKitStats.KIT_ID));
+            if (ids == null || ids.contains(kitId))
+                list.add(getKitData(kitId));
         }
 
         return list;
@@ -272,7 +284,7 @@ public class KitPvPData extends Data {
             this.kitId = kitId;
 
             /* Unlock Knight, Archer & Soldier. */
-            this.unlockedLevel = kitId <= 2 ? 1 : 0;
+            this.unlockedLevel = this.kitId == KitKnight.ID || this.kitId == KitArcher.ID || this.kitId == KitSoldier.ID ? 1 : 0;
 
             this.kills = 0;
             this.deaths = 0;
