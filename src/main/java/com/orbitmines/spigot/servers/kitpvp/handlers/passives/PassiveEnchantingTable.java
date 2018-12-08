@@ -5,6 +5,7 @@ import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.handlers.npc.FloatingItem;
 import com.orbitmines.spigot.api.nms.itemstack.ItemStackNms;
 import com.orbitmines.spigot.api.utils.ItemUtils;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -59,7 +60,7 @@ public class PassiveEnchantingTable implements Passive.Handler<PlayerDeathEvent>
             }
         };
         hologram.addLine(() -> Passive.ENCHANTING_TABLE.getColor().getChatColor() + "§l" + Passive.ENCHANTING_TABLE.getName(), false);
-        hologram.addLine(() -> "§e§o+ " + ItemUtils.getName(enchantment, newLevel), false);
+        hologram.addLine(() -> "§e§o+ " + ChatColor.stripColor(ItemUtils.getName(enchantment, newLevel)), false);
         hologram.create(killer);
 
         new BukkitRunnable() {
