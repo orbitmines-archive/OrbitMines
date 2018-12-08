@@ -14,8 +14,9 @@ public class TableKitPvPKitStats extends Table {
     public static final Column KILLS = new Column("Kills", Column.Type.INT);
     public static final Column DEATHS = new Column("Deaths", Column.Type.INT);
     public static final Column BEST_STREAK = new Column("BestStreak", Column.Type.INT);
+    public static final Column DAMAGE_DEALT = new Column("DamageDealt", Column.Type.FLOAT, 12, 2);
 
     public TableKitPvPKitStats() {
-        super("KitPvPKitStats", UUID, KIT_ID, UNLOCKED_LEVEL, KILLS, DEATHS, BEST_STREAK);
+        super("KitPvPKitStats", UUID, KIT_ID, UNLOCKED_LEVEL, KILLS, DEATHS, BEST_STREAK, DAMAGE_DEALT);
     }
 }
