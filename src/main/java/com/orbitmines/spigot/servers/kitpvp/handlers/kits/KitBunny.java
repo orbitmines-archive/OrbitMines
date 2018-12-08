@@ -25,13 +25,15 @@ import org.bukkit.potion.PotionEffectType;
 
 public class KitBunny extends KitPvPKit {
 
+    public static final long ID = 8L;
+
     private static final org.bukkit.Color LEATHER_COLOR = org.bukkit.Color.WHITE;
 
     public KitBunny(KitPvP kitPvP) {
         super(
                 kitPvP,
 
-                8L, "Bunny",
+                ID, "Bunny",
 
                 Color.YELLOW,
                 new ItemBuilder(Material.LEATHER_BOOTS).addFlag(ItemFlag.HIDE_ATTRIBUTES),

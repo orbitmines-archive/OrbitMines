@@ -16,13 +16,15 @@ import org.bukkit.enchantments.Enchantment;
 
 public class KitEnchanter extends KitPvPKit {
 
+    public static final long ID = 9L;
+
     private static final org.bukkit.Color DEFAULT_COLOR = org.bukkit.Color.PURPLE;
 
     public KitEnchanter(KitPvP kitPvP) {
         super(
                 kitPvP,
 
-                9L, "Enchanter",
+                ID, "Enchanter",
 
                 Color.PURPLE, new ItemBuilder(Material.ENCHANTED_BOOK),
 

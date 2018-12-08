@@ -21,11 +21,13 @@ import org.bukkit.inventory.ItemFlag;
 
 public class KitSoldier extends KitPvPKit {
 
+    public static final long ID = 2L;
+
     public KitSoldier(KitPvP kitPvP) {
         super(
                 kitPvP,
 
-                2L, "Soldier",
+                ID, "Soldier",
 
                 Color.GREEN,
                 new ItemBuilder(Material.IRON_LEGGINGS).addFlag(ItemFlag.HIDE_ATTRIBUTES),

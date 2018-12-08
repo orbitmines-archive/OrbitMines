@@ -21,11 +21,13 @@ import org.bukkit.potion.PotionEffectType;
 
 public class KitTank extends KitPvPKit {
 
+    public static final long ID = 4L;
+
     public KitTank(KitPvP kitPvP) {
         super(
                 kitPvP,
 
-                4L, "Tank",
+                ID, "Tank",
 
                 Color.YELLOW,
                 new ItemBuilder(Material.IRON_CHESTPLATE).addFlag(ItemFlag.HIDE_ATTRIBUTES),

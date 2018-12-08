@@ -17,13 +17,15 @@ import org.bukkit.enchantments.Enchantment;
 
 public class KitSpider extends KitPvPKit {
 
+    public static final long ID = 10L;
+
     private static final org.bukkit.Color LEATHER_COLOR = org.bukkit.Color.BLACK;
 
     public KitSpider(KitPvP kitPvP) {
         super(
                 kitPvP,
 
-                10L, "Spider",
+                ID, "Spider",
 
                 Color.PURPLE,
                 new ItemBuilder(Material.SPIDER_EYE),

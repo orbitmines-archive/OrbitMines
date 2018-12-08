@@ -21,11 +21,13 @@ import org.bukkit.potion.PotionEffectType;
 
 public class KitMage extends KitPvPKit {
 
+    public static final long ID = 3L;
+
     public KitMage(KitPvP kitPvP) {
         super(
                 kitPvP,
 
-                3L, "Mage",
+                ID, "Mage",
 
                 Color.YELLOW,
                 new PotionItemBuilder(PotionItemBuilder.Type.SPLASH, new PotionBuilder(PotionEffectType.HARM, 0)).addFlag(ItemFlag.HIDE_POTION_EFFECTS),

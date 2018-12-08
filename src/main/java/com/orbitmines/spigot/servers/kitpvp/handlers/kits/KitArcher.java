@@ -20,13 +20,15 @@ import org.bukkit.enchantments.Enchantment;
 
 public class KitArcher extends KitPvPKit {
 
+    public static final long ID = 1L;
+
     private static final org.bukkit.Color LEATHER_COLOR = org.bukkit.Color.fromRGB(51, 204, 255);
 
     public KitArcher(KitPvP kitPvP) {
         super(
                 kitPvP,
 
-                1L, "Archer",
+                ID, "Archer",
 
                 Color.GREEN,
                 new ItemBuilder(Material.BOW),
