@@ -251,6 +251,14 @@ public enum Passive {
         return nms.setMetaData(itemStack, "passive", toString(), level + "");
     }
 
+    public int getLevel(ItemStackNms nms, ItemStack itemStack) {
+        Map<Passive, Integer> all = from(nms, itemStack);
+        if (all == null)
+            return 0;
+
+        return all.getOrDefault(this, 0);
+    }
+
     public interface Handler<T extends Event> {
 
         void trigger(T event, int level);
