@@ -10,7 +10,9 @@ import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashSet;
@@ -33,13 +35,14 @@ public class PassiveEnchantingTable implements Passive.Handler<PlayerDeathEvent>
         if (Math.random() >= getChance(level))
             return;
 
-        Slot slot = Slot.random(entity);
+        Slot slot = Slot.random(killer);
+
+        if (slot == null)
+            /* All possible enchantments gained. */
+            return;
 
         ItemStack itemStack = slot.getFor(killer);
         Enchantment enchantment = slot.randomEnchantment(killer);
-
-        if (enchantment == null)
-            return;
 
         int newLevel = itemStack.getEnchantmentLevel(enchantment) + 1;
 
@@ -47,6 +50,15 @@ public class PassiveEnchantingTable implements Passive.Handler<PlayerDeathEvent>
         if (enchantment == Enchantment.DAMAGE_ALL && !enchantment.canEnchantItem(itemStack))
             itemStack = Passive.ATTACK_DAMAGE.apply(nms, itemStack, Passive.ATTACK_DAMAGE.getLevel(nms, itemStack) + 1);
 
+        /* Clear `glow` effect from item */
+        ItemMeta meta = itemStack.getItemMeta();
+        if (meta.hasItemFlag(ItemFlag.HIDE_ENCHANTS)) {
+            meta.removeEnchant(Enchantment.DURABILITY);
+            meta.removeItemFlags(ItemFlag.HIDE_ENCHANTS);
+            itemStack.setItemMeta(meta);
+        }
+
+        /* Add Enchantment */
         itemStack.addUnsafeEnchantment(enchantment, newLevel);
 
         slot.setFor(killer, itemStack);
@@ -74,11 +86,11 @@ public class PassiveEnchantingTable implements Passive.Handler<PlayerDeathEvent>
     public double getChance(int level) {
         switch (level) {
             case 1:
-                return 0.4D;
-            case 2:
                 return 0.5D;
-            case 3:
+            case 2:
                 return 0.6D;
+            case 3:
+                return 0.7D;
             default:
                 throw new ArrayIndexOutOfBoundsException();
         }
@@ -205,7 +217,7 @@ public class PassiveEnchantingTable implements Passive.Handler<PlayerDeathEvent>
         }
 
         public Enchantment randomEnchantment(Player player) {
-            ItemStack itemStack = getFor(player);
+            ItemStack itemStack = this.getFor(player);
 
             if (itemStack == null)
                 return null;
