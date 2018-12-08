@@ -4,61 +4,51 @@ import com.orbitmines.api.utils.RandomUtils;
 import com.orbitmines.spigot.OrbitMines;
 import com.orbitmines.spigot.api.handlers.npc.FloatingItem;
 import com.orbitmines.spigot.api.utils.ItemUtils;
+import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class PassiveEnchantingTable implements Passive.Handler<PlayerDeathEvent> {
 
-    private final Enchantment[] attack_enchantments = {Enchantment.DAMAGE_ALL, Enchantment.FIRE_ASPECT};
-
-    private final Enchantment[] protect_enchantments = {Enchantment.PROTECTION_ENVIRONMENTAL, Enchantment.THORNS};
-
-
     @Override
     public void trigger(PlayerDeathEvent event, int level) {
-
         Player entity = event.getEntity();
-        Player kill = entity.getKiller();
+        Player killer = entity.getKiller();
 
-        int slot = enchantedArmor(level) ? RandomUtils.i(0, 4) : 0;
+        /* There's a chance of the lightning hitting, otherwise move on */
+        if (Math.random() >= getChance(level))
+            return;
 
-        ItemStack item = getRandomBuilder(kill.getInventory(), slot);
-        ItemMeta meta = item.getItemMeta();
+        Slot slot = Slot.random(entity);
 
-        Enchantment[] enchantments = slot == 0 ? attack_enchantments : protect_enchantments;
+        ItemStack itemStack = slot.getFor(killer);
+        Enchantment enchantment = slot.randomEnchantment(killer);
 
-        Enchantment enchantment = RandomUtils.randomFrom(enchantments);
-        int l = -1;
+        if (enchantment == null)
+            return;
 
-        int tries = 0;
+        int newLevel = itemStack.getEnchantmentLevel(enchantment) + 1;
 
-        while ((l == -1 || enchantment.getMaxLevel() <= l) && tries <= 10) {
-            enchantment = RandomUtils.randomFrom(enchantments);
-            l = meta.getEnchantLevel(enchantment) + 1;
-            tries++;
-        }
+        itemStack.addUnsafeEnchantment(enchantment, newLevel);
 
-        item.addEnchantment(enchantment, l);
-
-        this.setItem(kill, slot, item);
+        slot.setFor(killer, itemStack);
 
         /* Build Item Hologram */
         FloatingItem hologram = new FloatingItem(null, entity.getLocation()) {
             @Override
             public ItemStack build() {
-                return new ItemStack(item);
+                return new ItemStack(itemStack);
             }
         };
         hologram.addLine(() -> Passive.ENCHANTING_TABLE.getColor().getChatColor() + "§l" + Passive.ENCHANTING_TABLE.getName(), false);
-        Enchantment finalEnchantment = enchantment;
-        int finalL = l;
-        hologram.addLine(() -> "§e§o+ " + ItemUtils.getName(finalEnchantment, finalL), false);
-        hologram.create(kill);
+        hologram.addLine(() -> "§e§o+ " + ItemUtils.getName(enchantment, newLevel), false);
+        hologram.create(killer);
 
         new BukkitRunnable() {
             @Override
@@ -68,49 +58,185 @@ public class PassiveEnchantingTable implements Passive.Handler<PlayerDeathEvent>
         }.runTaskLater(OrbitMines.getInstance(), 60L);
     }
 
-    private ItemStack getRandomBuilder(PlayerInventory inventory, int slot) {
-        switch (slot) {
-            case 0:
-                return inventory.getItemInMainHand();
-            case 1:
-                return inventory.getHelmet();
-            case 2:
-                return inventory.getChestplate();
-            case 3:
-                return inventory.getLeggings();
-            case 4:
-                return inventory.getBoots();
-        }
-        return null;
-    }
-
-    private void setItem(Player p, int slot, ItemStack item) {
-        PlayerInventory inventory = p.getInventory();
-        switch (slot) {
-            case 0:
-                inventory.setItemInMainHand(item);
-                break;
-            case 1:
-                inventory.setHelmet(item);
-                break;
-            case 2:
-                inventory.setChestplate(item);
-                break;
-            case 3:
-                inventory.setLeggings(item);
-                break;
-            case 4:
-                inventory.setBoots(item);
-                break;
-        }
-    }
-
-    private boolean enchantedArmor(int level) {
+    public double getChance(int level) {
         switch (level) {
+            case 1:
+                return 0.4D;
             case 2:
-                return true;
+                return 0.5D;
+            case 3:
+                return 0.6D;
             default:
-                return false;
+                throw new ArrayIndexOutOfBoundsException();
+        }
+    }
+
+    private enum Slot {
+
+        WEAPON(new Enchantment[] {
+                Enchantment.DAMAGE_ALL,
+                Enchantment.KNOCKBACK,
+                Enchantment.FIRE_ASPECT,
+                Enchantment.SWEEPING_EDGE
+        }) {
+            @Override
+            public ItemStack getFor(Player player) {
+                return player.getInventory().getItemInMainHand();
+            }
+
+            @Override
+            public void setFor(Player player, ItemStack itemStack) {
+                player.getInventory().setItemInMainHand(itemStack);
+            }
+        },
+        BOW(new Enchantment[] {
+                Enchantment.ARROW_DAMAGE,
+                Enchantment.ARROW_KNOCKBACK,
+                Enchantment.ARROW_FIRE,
+                Enchantment.ARROW_INFINITE
+        }) {
+            @Override
+            public ItemStack getFor(Player player) {
+                return player.getInventory().getItem(getSlot(player));
+            }
+
+            @Override
+            public void setFor(Player player, ItemStack itemStack) {
+                player.getInventory().setItem(getSlot(player), itemStack);
+            }
+
+            private int getSlot(Player player) {
+                return player.getInventory().first(Material.BOW);
+            }
+        },
+
+        HELMET(new Enchantment[] {
+                Enchantment.PROTECTION_ENVIRONMENTAL,
+                Enchantment.PROTECTION_FIRE,
+                Enchantment.PROTECTION_EXPLOSIONS,
+                Enchantment.PROTECTION_PROJECTILE,
+
+                Enchantment.OXYGEN
+        }) {
+            @Override
+            public ItemStack getFor(Player player) {
+                return player.getInventory().getHelmet();
+            }
+
+            @Override
+            public void setFor(Player player, ItemStack itemStack) {
+                player.getInventory().setHelmet(itemStack);
+            }
+        },
+        CHESTPLATE(new Enchantment[] {
+                Enchantment.PROTECTION_ENVIRONMENTAL,
+                Enchantment.PROTECTION_FIRE,
+                Enchantment.PROTECTION_EXPLOSIONS,
+                Enchantment.PROTECTION_PROJECTILE
+        }) {
+            @Override
+            public ItemStack getFor(Player player) {
+                return player.getInventory().getChestplate();
+            }
+
+            @Override
+            public void setFor(Player player, ItemStack itemStack) {
+                player.getInventory().setChestplate(itemStack);
+            }
+        },
+        LEGGINGS(new Enchantment[] {
+                Enchantment.PROTECTION_ENVIRONMENTAL,
+                Enchantment.PROTECTION_FIRE,
+                Enchantment.PROTECTION_EXPLOSIONS,
+                Enchantment.PROTECTION_PROJECTILE
+        }) {
+            @Override
+            public ItemStack getFor(Player player) {
+                return player.getInventory().getLeggings();
+            }
+
+            @Override
+            public void setFor(Player player, ItemStack itemStack) {
+                player.getInventory().setLeggings(itemStack);
+            }
+        },
+        BOOTS(new Enchantment[] {
+                Enchantment.PROTECTION_ENVIRONMENTAL,
+                Enchantment.PROTECTION_FIRE,
+                Enchantment.PROTECTION_EXPLOSIONS,
+                Enchantment.PROTECTION_PROJECTILE,
+
+                Enchantment.PROTECTION_FALL,
+                Enchantment.DEPTH_STRIDER,
+                Enchantment.FROST_WALKER
+        }) {
+            @Override
+            public ItemStack getFor(Player player) {
+                return player.getInventory().getBoots();
+            }
+
+            @Override
+            public void setFor(Player player, ItemStack itemStack) {
+                player.getInventory().setBoots(itemStack);
+            }
+        };
+
+        private final Enchantment[] enchantments;
+
+        Slot(Enchantment[] enchantments) {
+            this.enchantments = enchantments;
+        }
+
+        public Enchantment randomEnchantment(Player player) {
+            ItemStack itemStack = getFor(player);
+
+            Set<Enchantment> enchantments = new HashSet<>();
+            for (Enchantment enchantment : this.enchantments) {
+                if (itemStack.getEnchantmentLevel(enchantment) < getMaxLevel(enchantment))
+                    enchantments.add(enchantment);
+            }
+
+            return RandomUtils.randomFrom(enchantments);
+        }
+
+        public ItemStack getFor(Player player) {
+            throw new IllegalStateException();
+        }
+
+        public void setFor(Player player, ItemStack itemStack) {
+            throw new IllegalStateException();
+        }
+
+        private int getMaxLevel(Enchantment enchantment) {
+            if (enchantment == Enchantment.DAMAGE_ALL ||
+                enchantment == Enchantment.PROTECTION_ENVIRONMENTAL
+            )
+                return 10;
+            else if (enchantment == Enchantment.ARROW_DAMAGE)
+                return 8;
+            else if (enchantment == Enchantment.KNOCKBACK ||
+                     enchantment == Enchantment.SWEEPING_EDGE ||
+                     enchantment == Enchantment.ARROW_KNOCKBACK ||
+                     enchantment == Enchantment.PROTECTION_FIRE ||
+                     enchantment == Enchantment.PROTECTION_EXPLOSIONS ||
+                     enchantment == Enchantment.PROTECTION_PROJECTILE ||
+                     enchantment == Enchantment.PROTECTION_FALL
+            )
+                return 5;
+            else if (enchantment == Enchantment.FIRE_ASPECT)
+                return 3;
+            else
+                return enchantment.getMaxLevel();
+        }
+
+        public static Slot random(Player player) {
+            Set<Slot> slots = new HashSet<>();
+            for (Slot slot : values()) {
+                if (slot.getFor(player) != null && slot.randomEnchantment(player) != null)
+                    slots.add(slot);
+            }
+
+            return RandomUtils.randomFrom(slots);
         }
     }
 }

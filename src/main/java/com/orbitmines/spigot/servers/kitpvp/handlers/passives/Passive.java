@@ -88,9 +88,10 @@ public enum Passive {
             PassiveEnchantingTable passive = (PassiveEnchantingTable) getHandler();
 
             return new String[] {
-                    "  §7§oReceive §3§oa random enchantment",
-                    "  §7§oon your weapon or armor when",
-                    "  §7§okilling an opponent."
+                    "  §3§o" + String.format("%.1f", passive.getChance(level) * 100) + "% §7§ochance to receive",
+                    "  §3§oa random enchantment §7§oon your",
+                    "  §7§oweapon or armor when killing",
+                    "  §7§oan opponent."
             };
         }
     },
