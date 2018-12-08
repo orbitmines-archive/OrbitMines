@@ -92,6 +92,9 @@ public abstract class SpigotRunnable {
         this.task = new BukkitRunnable() {
             @Override
             public void run() {
+                if (!runnables.containsKey(ticks))
+                    return;
+
                 for (SpigotRunnable runnable : new ArrayList<>(runnables.get(ticks))) {
                     runnable.run();
                 }
