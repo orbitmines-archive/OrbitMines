@@ -97,7 +97,11 @@ public class PassiveEnchantingTable implements Passive.Handler<PlayerDeathEvent>
         }) {
             @Override
             public ItemStack getFor(Player player) {
-                return player.getInventory().getItem(getSlot(player));
+                int slot = getSlot(player);
+                if (slot == -1)
+                    return null;
+
+                return player.getInventory().getItem(slot);
             }
 
             @Override
