@@ -24,6 +24,7 @@ import com.orbitmines.spigot.api.handlers.npc.Hologram;
 import com.orbitmines.spigot.api.handlers.scoreboard.DefaultScoreboard;
 import com.orbitmines.spigot.servers.hub.datapoints.HubDataPointSpawnpoint;
 import com.orbitmines.spigot.servers.hub.datapoints.HubDataPointStaffHologram;
+import com.orbitmines.spigot.servers.hub.events.PlayerMove;
 import com.orbitmines.spigot.servers.hub.gui.SettingsGUI;
 import com.orbitmines.spigot.servers.hub.gui.discordgroup.DiscordGroupGUI;
 import com.orbitmines.spigot.servers.hub.gui.friends.FriendGUI;
@@ -171,8 +172,10 @@ public class Hub extends OrbitMinesServer {
                     public Location getRespawnLocation(Player player) {
                         return getSpawnLocation(player);
                     }
-                }
+                },
+                new PlayerMove()
         );
+
     }
 
     @Override

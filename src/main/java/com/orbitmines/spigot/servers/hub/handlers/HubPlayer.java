@@ -4,16 +4,27 @@ import com.orbitmines.api.Color;
 import com.orbitmines.api.StaffRank;
 import com.orbitmines.api.settings.Settings;
 import com.orbitmines.api.settings.SettingsType;
+import com.orbitmines.spigot.api.Mob;
 import com.orbitmines.spigot.api.handlers.Data;
 import com.orbitmines.spigot.api.handlers.OMPlayer;
 import com.orbitmines.spigot.api.handlers.chat.ComponentMessage;
 import com.orbitmines.spigot.api.handlers.data.FriendsData;
 import com.orbitmines.spigot.api.handlers.data.SettingsData;
 import com.orbitmines.spigot.api.handlers.itembuilders.ItemBuilder;
+import com.orbitmines.spigot.api.handlers.npc.ArmorStandNpc;
+import com.orbitmines.spigot.api.handlers.npc.MobNpc;
+import com.orbitmines.spigot.api.handlers.scoreboard.ScoreboardString;
 import com.orbitmines.spigot.servers.hub.Hub;
+import com.orbitmines.spigot.servers.hub.handlers.Cosmetics.ComposedCosmetic;
+import com.orbitmines.spigot.servers.hub.handlers.Cosmetics.Cosmetic;
+import com.orbitmines.spigot.servers.hub.handlers.Cosmetics.SimpleTrailCosmetic;
+import com.orbitmines.spigot.servers.hub.handlers.Cosmetics.TrailCosmetic;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
@@ -27,10 +38,13 @@ public class HubPlayer extends OMPlayer {
 
     private final Hub hub;
 
+    private List<Cosmetic> cosmetics;
+
     public HubPlayer(Hub hub, Player player) {
         super(player);
 
         this.hub = hub;
+        cosmetics = new ArrayList<>();
     }
 
     @Override
@@ -38,6 +52,8 @@ public class HubPlayer extends OMPlayer {
         players.put(player, this);
 
         setScoreboard(new Hub.Scoreboard(orbitMines, this));
+
+
 
         hub.getLobbyKit(this).setItems(this);
         player.getInventory().setHeldItemSlot(4);
@@ -138,6 +154,14 @@ public class HubPlayer extends OMPlayer {
         for (HubPlayer omp : HubPlayer.getHubPlayers()) {
             omp.updatePlayerVisibility(Collections.singletonList(this));
         }
+        activateCosmetics();
+    }
+
+    protected void activateCosmetics() {
+        hub.cosmeticsUpdater.addPlayer(this);
+        cosmetics.add(ComposedCosmetic.ChristmasHat(this));
+        cosmetics.add(SimpleTrailCosmetic.TestTrail(this));
+
     }
 
     @Override
@@ -174,6 +198,12 @@ public class HubPlayer extends OMPlayer {
     @Override
     public Collection<ComponentMessage.TempTextComponent> getChatPrefix() {
         return Collections.emptyList();
+    }
+
+    public void updateCosmetics() {
+        for (Cosmetic cm : cosmetics) {
+            cm.update();
+        }
     }
 
     @Override
