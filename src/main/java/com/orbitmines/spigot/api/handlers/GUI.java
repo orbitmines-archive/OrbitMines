@@ -3,6 +3,7 @@ package com.orbitmines.spigot.api.handlers;
 import com.orbitmines.spigot.api.utils.PlayerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -23,6 +24,9 @@ public abstract class GUI {
 
     /* @Override: Called after a player drags an item */
     protected void onDrag(InventoryDragEvent event, OMPlayer omp) {}
+
+    /* @Override: Called after a player closes the inventory */
+    protected void onClose(InventoryCloseEvent event, OMPlayer omp) {}
 
     public Inventory getInventory() {
         return inventory;
@@ -103,6 +107,14 @@ public abstract class GUI {
 //            itemInstance.onClick(event, omp);
 
         onDrag(event, omp);
+    }
+
+    public void processCloseEvent(InventoryCloseEvent event, OMPlayer omp) {
+        Inventory clicked = event.getInventory();
+        if (clicked == null || clicked.getTitle() == null || !clicked.getTitle().equals(inventory.getTitle()))
+            return;
+
+        onClose(event, omp);
     }
 
     public void clearInstances() {

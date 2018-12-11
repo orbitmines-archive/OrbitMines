@@ -199,7 +199,7 @@ public class OrbitMines extends JavaPlugin {
 
         registerEvents(
                 new AfkEvents(),
-                new ClickEvent(),
+                new InventoryEvents(),
                 new CommandPreprocessEvent(this),
                 new FreezeEvent(),
                 new ItemHandlerEvents(),
