@@ -11,6 +11,8 @@ import com.orbitmines.spigot.servers.survival.handlers.SurvivalAchievements;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalPlayer;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Monster;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.WitherSkeleton;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -77,16 +79,27 @@ public class AchievementEvents implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onDeath(EntityDeathEvent event) {
-        if (!(event.getEntity() instanceof WitherSkeleton))
+        Player killer = event.getEntity().getKiller();
+
+        if (killer == null)
             return;
 
-        for (ItemStack item : event.getDrops()) {
-            if (item.getType() == Material.WITHER_SKELETON_SKULL) {
-                SurvivalPlayer omp = SurvivalPlayer.getPlayer(event.getEntity().getKiller());
+        if (event.getEntity() instanceof WitherSkeleton) {
+            for (ItemStack item : event.getDrops()) {
+                if (item.getType() == Material.WITHER_SKELETON_SKULL) {
+                    SurvivalPlayer omp = SurvivalPlayer.getPlayer(killer);
 
-                StoredProgressAchievement handler = (StoredProgressAchievement) SurvivalAchievements.TIME_WITHERED_AWAY.getHandler();
-                handler.progress(omp, 1, true);
+                    StoredProgressAchievement handler = (StoredProgressAchievement) SurvivalAchievements.TIME_WITHERED_AWAY.getHandler();
+                    handler.progress(omp, 1, true);
+                }
             }
+        }
+
+        if (event.getEntity() instanceof Monster) {
+            SurvivalPlayer omp = SurvivalPlayer.getPlayer(killer);
+
+            StoredProgressAchievement handler = (StoredProgressAchievement) SurvivalAchievements.MONSTER_OSITY.getHandler();
+            handler.progress(omp, 1, true);
         }
     }
 

@@ -52,6 +52,14 @@ public enum SurvivalAchievements implements Achievement {
             new Message("Heb 10 verschillende", "Have 10 different"),
             new Message("spelers tegelijkertijd", "players in your claims"),
             new Message("in jouw claims.", "all at once.")
+    ),
+    MONSTER_OSITY("Monster-osity", Rarity.EPIC,
+            new Loot.Instance[] {
+                    new Loot.Instance(Loot.PRISMS, 20000),
+                    new Loot.Instance(Loot.SOLARS, 225)
+            },
+            new Message("Dood 12,500 vijandige", "Kill 12,500 hostile"),
+            new Message("mobs.", "mobs.")
     );
 
     static {
@@ -60,6 +68,7 @@ public enum SurvivalAchievements implements Achievement {
         SALESMAN.handler = new StoredProgressAchievement(SALESMAN, 100000);
         TIME_WITHERED_AWAY.handler = new StoredProgressAchievement(TIME_WITHERED_AWAY, 15);
         CROWDED.handler = new StoredProgressAchievement(CROWDED, 10);
+        MONSTER_OSITY.handler = new StoredProgressAchievement(MONSTER_OSITY, 12500);
     }
 
     private final String name;
