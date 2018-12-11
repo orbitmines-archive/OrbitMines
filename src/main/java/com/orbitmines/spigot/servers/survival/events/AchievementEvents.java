@@ -20,6 +20,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
+import org.bukkit.event.inventory.FurnaceExtractEvent;
 import org.bukkit.event.player.PlayerExpChangeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -101,6 +102,17 @@ public class AchievementEvents implements Listener {
             StoredProgressAchievement handler = (StoredProgressAchievement) SurvivalAchievements.MONSTER_OSITY.getHandler();
             handler.progress(omp, 1, true);
         }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onMelt(FurnaceExtractEvent event) {
+        if (event.getItemType() != Material.GOLD_INGOT)
+            return;
+
+        SurvivalPlayer omp = SurvivalPlayer.getPlayer(event.getPlayer());
+
+        StoredProgressAchievement handler = (StoredProgressAchievement) SurvivalAchievements.GOBLIN.getHandler();
+        handler.progress(omp, event.getItemAmount(), true);
     }
 
     private class DroppedItem {
