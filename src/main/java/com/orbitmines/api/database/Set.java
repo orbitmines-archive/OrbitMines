@@ -1,41 +1,27 @@
 package com.orbitmines.api.database;
 
-/*
-* OrbitMines - @author Fadi Shawki - 2017
-*/
-public class Set {
+public class Set<T> {
 
     protected final Column column;
-    protected final String value;
+    protected final T value;
 
-    public Set(Column column, boolean value) {
-        this(column, value ? "1" : "0");
-    }
-
-    public Set(Column column, int value) {
-        this(column, "" + value);
-    }
-
-
-    public Set(Column column, long value) {
-        this(column, "" + value);
-    }
-
-    public Set(Column column, String value) {
+    public Set(Column column, T t){
         this.column = column;
-        this.value = value;
+        this.value = t;
     }
 
+    /* GETTERS */
     public Column getColumn() {
         return column;
     }
 
-    public String getValue() {
+    public T getValue() {
         return value;
     }
 
+    /* OVERRIDABLE */
     @Override
     public String toString() {
-        return "`" + column + "`='" + value + "'";
+        return "`" + column + "`='" + value.toString() + "'";
     }
 }

@@ -1,57 +1,50 @@
 package com.orbitmines.api.database;
 
-/*
-* OrbitMines - @author Fadi Shawki - 2017
-*/
-public class Where extends Set {
+public class Where<T> extends Set {
 
     private final Operator operator;
 
-    public Where(Column column, boolean value) {
+    public Where(Column column, T value) {
         this(Operator.EQUALS, column, value);
     }
 
-    public Where(Column column, int value) {
-        this(Operator.EQUALS, column, value);
-    }
-
-    public Where(Column column, long value) {
-        this(Operator.EQUALS, column, value);
-    }
-
-    public Where(Column column, String value) {
-        this(Operator.EQUALS, column, value);
-    }
-
-    public Where(Operator operator, Column column, boolean value) {
+    @SafeVarargs
+    public Where(Operator operator, Column column, T... value) {
         super(column, value);
+
+        if(value.length == 0)
+            throw new IllegalArgumentException("Cannot search on 0 values!");
+
+
+        if(value.length > 1 && operator != Operator.IN)
+            throw new IllegalArgumentException("Cannot search into an array of values without IN operator!");
 
         this.operator = operator;
     }
 
-    public Where(Operator operator, Column column, int value) {
-        super(column, value);
-
-        this.operator = operator;
-    }
-
-    public Where(Operator operator, Column column, long value) {
-        super(column, value);
-
-        this.operator = operator;
-    }
-
-    public Where(Operator operator, Column column, String value) {
-        super(column, value);
-
-        this.operator = operator;
-    }
-
+    /* OVERRIDABLE */
     @Override
     public String toString() {
-        return "`" + column + "`" + operator.getOperator() + "'" + value + "'";
+        Object[] obj;
+
+        if(getValue() instanceof Object[])
+            obj = new Object[] {getValue()};
+        else
+            obj = (Object[]) getValue();
+
+        StringBuilder values = new StringBuilder();
+
+        for(int i = 0; i <  obj.length; i++){
+            if(i > 0 || i == (obj.length - 1))
+                values.append(",");
+
+            values.append(obj[i]);
+        }
+
+        return String.format("`%s`%s'%s'", column, operator.getOperator(), values.toString());
     }
 
+    /* SUB ENUM */
     public enum Operator {
 
         EQUALS("="),
@@ -62,7 +55,8 @@ public class Where extends Set {
         LESSER_THAN("<"),
         LESSER_THAN_OR_EQUAL("<="),
         LIKE(" LIKE "),
-        NOT_EQUAL("!=");
+        NOT_EQUAL("!="),
+        IN(" IN ");
 
         private final String operator;
 

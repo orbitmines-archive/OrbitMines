@@ -1,8 +1,5 @@
 package com.orbitmines.api.database;
 
-/*
-* OrbitMines - @author Fadi Shawki - 2017
-*/
 public class Column {
 
     private final String name;
@@ -21,27 +18,37 @@ public class Column {
         this.args = args;
     }
 
+    /* GETTERS */
     public Type getType() {
         return type;
-    }
-
-    public String getDefaultValue() {
-        return defaultValue;
     }
 
     public int[] getArgs() {
         return args;
     }
 
+    private String getDefaultValue() {
+        return defaultValue;
+    }
+
+    /* toString() METHODS */
     @Override
     public String toString() {
         return name;
     }
 
-    public String toTypeString() {
-        return "`" + toString() + "` " + type.toString(args);
+    String toTypeString(boolean table) {
+        StringBuilder query = new StringBuilder(String.format("`%s` %s", toString(), type.toString(args)));
+
+        if (defaultValue != null)
+            query.append(table ? "SET " : "")
+                    .append("DEFAULT ")
+                    .append(defaultValue);
+
+        return query.toString();
     }
 
+    /* SUB-ENUM */
     public enum Type {
 
         /* Numeric */
