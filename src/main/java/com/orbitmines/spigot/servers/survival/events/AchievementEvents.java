@@ -11,6 +11,8 @@ import com.orbitmines.spigot.servers.survival.handlers.SurvivalAchievements;
 import com.orbitmines.spigot.servers.survival.handlers.SurvivalPlayer;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Monster;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.WitherSkeleton;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -18,6 +20,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
+import org.bukkit.event.inventory.FurnaceExtractEvent;
 import org.bukkit.event.player.PlayerExpChangeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -77,17 +80,39 @@ public class AchievementEvents implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onDeath(EntityDeathEvent event) {
-        if (!(event.getEntity() instanceof WitherSkeleton))
+        Player killer = event.getEntity().getKiller();
+
+        if (killer == null)
             return;
 
-        for (ItemStack item : event.getDrops()) {
-            if (item.getType() == Material.WITHER_SKELETON_SKULL) {
-                SurvivalPlayer omp = SurvivalPlayer.getPlayer(event.getEntity().getKiller());
+        if (event.getEntity() instanceof WitherSkeleton) {
+            for (ItemStack item : event.getDrops()) {
+                if (item.getType() == Material.WITHER_SKELETON_SKULL) {
+                    SurvivalPlayer omp = SurvivalPlayer.getPlayer(killer);
 
-                StoredProgressAchievement handler = (StoredProgressAchievement) SurvivalAchievements.TIME_WITHERED_AWAY.getHandler();
-                handler.progress(omp, 1, true);
+                    StoredProgressAchievement handler = (StoredProgressAchievement) SurvivalAchievements.TIME_WITHERED_AWAY.getHandler();
+                    handler.progress(omp, 1, true);
+                }
             }
         }
+
+        if (event.getEntity() instanceof Monster) {
+            SurvivalPlayer omp = SurvivalPlayer.getPlayer(killer);
+
+            StoredProgressAchievement handler = (StoredProgressAchievement) SurvivalAchievements.MONSTER_OSITY.getHandler();
+            handler.progress(omp, 1, true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onMelt(FurnaceExtractEvent event) {
+        if (event.getItemType() != Material.GOLD_INGOT)
+            return;
+
+        SurvivalPlayer omp = SurvivalPlayer.getPlayer(event.getPlayer());
+
+        StoredProgressAchievement handler = (StoredProgressAchievement) SurvivalAchievements.GOBLIN.getHandler();
+        handler.progress(omp, event.getItemAmount(), true);
     }
 
     private class DroppedItem {

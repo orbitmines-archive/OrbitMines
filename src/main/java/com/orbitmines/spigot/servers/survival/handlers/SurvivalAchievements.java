@@ -36,6 +36,13 @@ public enum SurvivalAchievements implements Achievement {
             new Message("Verdien 100,000 Credits", "Earn 100,000 Credits"),
             new Message("met Chest Shops", "through Chest Shops.")
     ),
+    GOBLIN("Goblin", Rarity.RARE,
+            new Loot.Instance[] {
+                    new Loot.Instance(Loot.PRISMS, 7500),
+                    new Loot.Instance(Loot.SOLARS, 125)
+            },
+            new Message("Smelt 600 Gold Ore.", "Melt 600 Gold Ore.")
+    ),
     TIME_WITHERED_AWAY("Time Withered Away", Rarity.EPIC,
             new Loot.Instance[] {
                 new Loot.Instance(Loot.PRISMS, 10000),
@@ -52,14 +59,24 @@ public enum SurvivalAchievements implements Achievement {
             new Message("Heb 10 verschillende", "Have 10 different"),
             new Message("spelers tegelijkertijd", "players in your claims"),
             new Message("in jouw claims.", "all at once.")
+    ),
+    MONSTER_OSITY("Monster-osity", Rarity.EPIC,
+            new Loot.Instance[] {
+                    new Loot.Instance(Loot.PRISMS, 20000),
+                    new Loot.Instance(Loot.SOLARS, 225)
+            },
+            new Message("Dood 12,500 vijandige", "Kill 12,500 hostile"),
+            new Message("mobs.", "mobs.")
     );
 
     static {
         DIAMONDS.handler = new StoredProgressAchievement(DIAMONDS, 250);
         LOADS_OF_EXPERIENCE.handler = new StoredProgressAchievement(LOADS_OF_EXPERIENCE, 100);
         SALESMAN.handler = new StoredProgressAchievement(SALESMAN, 100000);
+        GOBLIN.handler = new StoredProgressAchievement(GOBLIN, 600);
         TIME_WITHERED_AWAY.handler = new StoredProgressAchievement(TIME_WITHERED_AWAY, 15);
         CROWDED.handler = new StoredProgressAchievement(CROWDED, 10);
+        MONSTER_OSITY.handler = new StoredProgressAchievement(MONSTER_OSITY, 12500);
     }
 
     private final String name;
